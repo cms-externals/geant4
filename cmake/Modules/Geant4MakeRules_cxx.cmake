@@ -173,7 +173,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
   # - Multithreading
   __configure_tls_models()
-  set(GEANT4_MULTITHREADED_CXX_FLAGS "-pthread")
+  set(GEANT4_MULTITHREADED_CXX_FLAGS "-ftls-model=global-dynamic -pthread")
 endif()
 
 
