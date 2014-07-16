@@ -131,14 +131,6 @@ G4RunManagerKernel::G4RunManagerKernel()
   versionString += vs;
   versionString += "   ";
   versionString += G4Date;
-  G4cout << G4endl
-    << "*************************************************************" << G4endl
-    << versionString << G4endl
-    << "                      Copyright : Geant4 Collaboration" << G4endl
-    << "                      Reference : NIM A 506 (2003), 250-303" << G4endl
-    << "                            WWW : http://cern.ch/geant4" << G4endl
-    << "*************************************************************" << G4endl
-    << G4endl;
 }
 
 G4RunManagerKernel::G4RunManagerKernel(RMKType rmkType)
