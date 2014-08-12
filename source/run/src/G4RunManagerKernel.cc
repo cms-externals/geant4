@@ -150,7 +150,10 @@ numberOfParallelWorld(0),geometryNeedsToBeClosed(true),
 #endif
 
 #ifdef G4FPE_DEBUG
-    InvalidOperationDetection();
+   static G4Mutex aLocalMutex = G4MUTEX_INITIALIZER;
+   G4AutoLock l(&aLocalMutex);
+   InvalidOperationDetection();
+   l.unlock();
 #endif
     
     defaultExceptionHandler = new G4ExceptionHandler();
@@ -269,6 +272,8 @@ G4RunManagerKernel::~G4RunManagerKernel()
 
   G4UnitDefinition::ClearUnitsTable();
   if(verboseLevel>1) G4cout << "Units table cleared." << G4endl;
+
+  // deletion of allocators
   G4AllocatorList* allocList = G4AllocatorList::GetAllocatorListIfExist();
   if(allocList)
   {
