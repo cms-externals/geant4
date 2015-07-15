@@ -154,6 +154,8 @@ void G4FTFModel::Init( const G4Nucleus& aNucleus, const G4DynamicParticle& aProj
          << " " << aNucleus.GetZ_asInt() << G4endl;
   #endif
 
+  theParticipants.Clean();
+
   theParticipants.SetProjectileNucleus( 0 );
 
   G4LorentzVector tmp( 0.0, 0.0, 0.0, 0.0 );
@@ -348,7 +350,7 @@ G4ExcitedStringVector* G4FTFModel::GetStrings() {
          << "To continue - enter 1, to stop - ^C" << G4endl;
   G4int Uzhi; G4cin >> Uzhi;
   #endif
-
+  theParticipants.Clean();
   return theStrings;
 }
 
