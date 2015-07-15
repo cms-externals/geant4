@@ -102,7 +102,7 @@ private:
   G4bool ReadDataItem(std::istream& dataFile, G4double& x);
   void ProcessDataLine();
 
-  void MakeLevels();
+  void MakeLevels(const G4String& filename);
   void ClearLevels();
 
   G4NuclearLevel* UseLevelOrMakeNew(G4NuclearLevel* level);
@@ -111,7 +111,7 @@ private:
 
   G4int _nucleusA;
   G4int _nucleusZ;
-  G4String _fileName;
+  //  G4String _fileName;
   G4bool _validity;
   G4PtrLevelVector* _levels;
 
