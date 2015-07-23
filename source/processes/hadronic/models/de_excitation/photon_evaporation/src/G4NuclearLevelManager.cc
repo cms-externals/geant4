@@ -61,7 +61,7 @@
 
 G4NuclearLevelManager::G4NuclearLevelManager(G4int Z, G4int A, 
 					     const G4String& filename) :
-    _nucleusA(A), _nucleusZ(Z), _fileName(filename), _validity(false), 
+    _nucleusA(A), _nucleusZ(Z), _validity(false), 
     _levels(0), _levelEnergy(0), _gammaEnergy(0), _probability(0)
 { 
   if (A <= 0 || Z <= 0 || Z > A ) {
@@ -69,7 +69,7 @@ G4NuclearLevelManager::G4NuclearLevelManager(G4int Z, G4int A,
 			      "==== G4NuclearLevelManager ==== (Z,A) <0, or Z>A");
   }
   for(G4int i=0; i<30; ++i) { buffer[i] = 0; }
-  MakeLevels();
+  MakeLevels(filename);
 }
 
 G4NuclearLevelManager::~G4NuclearLevelManager()
@@ -87,8 +87,8 @@ void G4NuclearLevelManager::SetNucleus(G4int Z, G4int A, const G4String& filenam
     {
       _nucleusA = A;
       _nucleusZ = Z;
-      _fileName = filename;
-      MakeLevels();
+      //      _fileName = filename;
+      MakeLevels(filename);
     }
 }
 
@@ -263,12 +263,12 @@ void G4NuclearLevelManager::ClearLevels()
   _levels = 0;
 }
 
-void G4NuclearLevelManager::MakeLevels()
+void G4NuclearLevelManager::MakeLevels(const G4String& filename)
 {
   _validity = false;
   if (NumberOfLevels() > 0) ClearLevels();	// Discard existing data
 
-  std::ifstream inFile(_fileName, std::ios::in);
+  std::ifstream inFile(filename, std::ios::in);
   if (! inFile) 
     {
 #ifdef GAMMAFILEWARNING
@@ -381,7 +381,7 @@ G4NuclearLevelManager::G4NuclearLevelManager(const G4NuclearLevelManager &right)
   _totalCC = right._totalCC;
   _nucleusA = right._nucleusA;
   _nucleusZ = right._nucleusZ;
-  _fileName = right._fileName;
+  //_fileName = right._fileName;
   _validity = right._validity;
 
   for(G4int i=0; i<30; ++i) { buffer[i] = 0; }
