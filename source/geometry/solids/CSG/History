@@ -1,4 +1,4 @@
-$Id: History 81636 2014-06-04 09:06:08Z gcosmo $
+$Id: History 90706 2015-06-08 09:54:31Z gcosmo $
 -------------------------------------------------------------------
 
      =========================================================
@@ -17,15 +17,55 @@ committal in the CVS repository !
      * Reverse chronological order (last date on top), please *
      ----------------------------------------------------------
 
-March 5, 2014  G.Cosmo                   geom-csg-V09-06-11
+May 20, 2015  T.Nikitina                 geom-csg-V10-00-08
+- Fixed DistanceToOut(p) and Inside(p) in G4Sphere for sphere cut in theta
+  for point (0,0,0) and for cases when Start/End angle have not to be taken
+  in account (STheta==0 || eTheta==pi).
+  Added corresponding test cases to unit test for testG4Sphere.
+  Fix triggered by analysing setup provided in problem report #1702.
+
+May 5, 2015  G.Cosmo
+- Fixed Coverity defect for unused variable quantity in G4Cons.
+
+April 28, 2015  T.Nikitina
+- Fixed calculation of Normal in G4Para for kPX and kMX sides in
+  DistanceToOut(p,v) and ApproxSurfaceNormal(p).
+  Addressing problem report #1736. 
+
+March 3, 2015  G.Cosmo
+- Use accessors x(), y() and z() from UVector3, instead of directly accessing
+  its data-members.
+
+February 16, 2015  G.Cosmo               geom-csg-V10-00-07
+- Fixed typo in copy-ctor and assignment operator for G4Tubs and G4OTubs.
+
+December 5, 2014  G.Cosmo
+- Fix in temporary class G4OTubs to include symbol in library in any case.
+
+September 17, 2014  G.Cosmo              geom-csg-V10-00-06
+- Added wrapper for UTrap shape; adapted switch to original G4Trap accordingly.
+  Requires tag "geom-usolids-V10-00-16".
+
+September 4, 2014  T.Nikitina            geom-csg-V10-00-05
+- G4Cons: fixed typo error in GetPointOnSurface() in the call
+  to GetRadiusInRing(). Responsible for occasionally wrong reports
+  when checking for overlaps.
+- G4Cons: fix in DistanceToIn(p,v) for points on the Surface, to resolve
+  error reported in unit testing by the OpticalEscape test.
+
+September 1, 2014  G.Cosmo               geom-csg-V10-00-04
+- Fixed use of polyhedron pointer, to avoid race condition in MT
+  when parameterised volumes are visualised.
+
+March 5, 2014  G.Cosmo                   geom-csg-V10-00-03
 - Fixed proper handling of polyhedron pointer in solids, to avoid memory
   leak for visualization of parameterised volumes.
 
-February 12, 2014  G.Cosmo               geom-csg-V09-06-10
+February 12, 2014  G.Cosmo               geom-csg-V10-00-02
 - Simply reset polyhedron pointer to zero for modifiers of G4U* wrappers
   in parameterisation. Resolves crash in MT visualization when using USolids. 
 
-February 12, 2014  G.Cosmo
+February 12, 2014  G.Cosmo               geom-csg-V10-00-01 (and -00)
 - Added correct cloning mechanism in G4U* wrappers.
   Addressing problem report #1553.
 

@@ -26,7 +26,7 @@
 /// \file electromagnetic/TestEm8/include/DetectorConstruction.hh
 /// \brief Definition of the DetectorConstruction class
 //
-// $Id: DetectorConstruction.hh 66241 2012-12-13 18:34:42Z gunter $
+// $Id: DetectorConstruction.hh 89039 2015-03-18 09:28:24Z gcosmo $
 //
 /////////////////////////////////////////////////////////////////////////
 //
@@ -52,16 +52,16 @@ class TargetSD;
 class G4VPhysicalVolume;
 class G4LogicalVolume;
 class G4ProductionCuts;
-class PrimaryGeneratorAction;
 
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
   
-  DetectorConstruction(PrimaryGeneratorAction*);
+  DetectorConstruction();
   virtual ~DetectorConstruction();
      
   virtual G4VPhysicalVolume* Construct();
+  virtual void ConstructSDandField();
 
   void SetGasMaterial (const G4String&);     
   void SetContainerMaterial (const G4String&);     
@@ -83,7 +83,7 @@ private:
 
   G4Material*        fWindowMat;
   G4double           fWindowThick;
- 
+
   G4Material*        fWorldMaterial;
             
   G4VPhysicalVolume* fPhysWorld;
@@ -92,12 +92,9 @@ private:
   G4LogicalVolume*   fLogicDet;
 
   DetectorMessenger* fDetectorMessenger;  
-  TargetSD*          fTargetSD;
   G4ProductionCuts*  fGasDetectorCuts;
   G4Region*          fRegGasDet;
 
-  PrimaryGeneratorAction* fPrimaryGenerator;
-      
 };
 
 #endif

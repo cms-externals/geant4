@@ -1,4 +1,4 @@
-$Id: History 81686 2014-06-04 14:44:57Z gcosmo $
+$Id: History 88944 2015-03-16 16:11:10Z gcosmo $
 -------------------------------------------------------------------
 
      =========================================================
@@ -17,43 +17,62 @@ committal in the CVS repository !
      * Reverse chronological order (last date on top), please *
      ----------------------------------------------------------
 
-May 21, 2014 J.Apostolakis                - field-V09-06-16
+Jan 28, 2015 J.Apostolakis             - field-V10-00-05
 --------------------------
-  G4FieldTrack
-  *  Fixed SetChargeAndMoments to use the new method G4ChargeState::SetChargesAndMoments
-      ( it was changing spin - because of erroneous change in 
-         G4ChargeState::SetChargesAndMoments - that method is now renamed 
-         SetChargeSpinMoments to show what it does. )     
-  *  Added pdg-spin as argument to constructors (needed to track polarization)
-  *  Renamed 'spin' to 'Polarization' in method, arguments, data member (avoid confusion)
-  *  Revised constructors to add pdg-spin as last argument (with default -1)
+- Revert unintended inclusion of changes in G4MagIntegratorDriver
 
-  G4ChargeState
-  - Addressed Coverity issue 56281 'Arguments in wrong order'  
-     G4ChargeState::SetChargeMoments when used in G4FieldTrack::SetChargeMoments
-     from addition of spin to arguments ( without revising name of method to reflect it.
-  - Constructor: changed order of arguments, making spin 3rd argument (was 2nd)
-     and making all arguments mandatory.
-  - Renamed SetChargeAndMoments method with 5 arguments including spin (2nd)
-       to SetChargeSpinMoments
-  - Added new methods including SetChargesAndMoments,  SetChargeMdm, SetChargeDipoleMoments (no spin), 
-      and also SetChargeSpin, SetChargeMdmSpin (which include spin) to provide most/all potential 
-      combinations.
+Jan 15, 2015 J.Apostolakis
+--------------------------
+- Small refinements in G4FieldTrack - access rest mass, avoid div by 0
+    Avoid division by zero for Unit direction in FieldTrack 
+    Added method to get Rest Mass.
+  Needed for fixes related to Problem report 1696.
+  Thanks to Nathan S. Froemming <nfroemm@uw.edu> who reported the issue
+   and created dedicated test to demonstrate it.
 
-  G4MagIntegratorDriver::OneGoodStep
-  *  Trial changes to address valgrind issue, about value used before being set
+Nov 03, 2014 G.Cosmo                   - field-V10-00-04
+--------------------
+- Moved constructors and simple methods to in line in G4ChargeState and
+  G4LineSection for CPU speedup (courtesy of S.Wenzel).
 
-Apr 01, 2014 J.Apostolakis                - field-V09-06-15
+May 21, 2014 J.Apostolakis             - field-V10-00-03
+--------------------------
+- G4FieldTrack:
+  * Fixed SetChargeAndMoments() to use the new method
+    G4ChargeState::SetChargesAndMoments(); it was changing spin, because of
+    erroneous change in G4ChargeState::SetChargesAndMoments(), that method
+    is now renamed SetChargeSpinMoments() to show what it does;
+  * Added pdg-spin as argument to constructors (needed to track polarization);
+  * Renamed 'spin' to 'Polarization' in method, arguments, data member to
+    avoid confusion;
+  * Revised constructors to add pdg-spin as last argument (with default -1).
+- G4ChargeState:
+  - Addressed Coverity issue #56281 'Arguments in wrong order'  
+    G4ChargeState::SetChargeMoments() when used in
+    G4FieldTrack::SetChargeMoments() from addition of spin to arguments,
+    without revising name of method to reflect it;
+  - Changed order of arguments in constructor, making spin 3rd argument
+    (was 2nd) and making all arguments mandatory;
+  - Renamed SetChargeAndMoments() method with 5 arguments including spin (2nd)
+    to SetChargeSpinMoments();
+  - Added new methods including SetChargesAndMoments(), SetChargeMdm(),
+    SetChargeDipoleMoments() (no spin), and also SetChargeSpin(),
+    SetChargeMdmSpin() (which includes spin) to provide most/all potential 
+    combinations.
+- G4MagIntegratorDriver::OneGoodStep():
+  * Trial changes to address Valgrind issue, about value used before being set.
+
+Apr 01, 2014 J.Apostolakis                - field-V10-00-02
 --------------------------
 - Moved G4FieldTrack::LoadFromArray() to .cc and removed non-necessary
   thread-local static data local to the function.
 
-Mar 14, 2014 J.Apostolakis
+Mar 14, 2014 J.Apostolakis                - field-V10-00-01
 --------------------------
 - Fix assignment operator for G4FieldTrack. (Copied Rest Mass)
 - Improve printing of G4FieldTrack
 
-Jan 17, 2014 P.Gumplinger                 - field-V09-06-14
+Jan 17, 2014 P.Gumplinger                 - field-V10-00-00
 -------------------------
 - add G4Mag_EqRhs::SetChargeMomentumMass( particleCharge, MomentumXc, mass)
   to G4Mag_SpinEqRhs::SetChargeMomentumMass, see bug reported at:

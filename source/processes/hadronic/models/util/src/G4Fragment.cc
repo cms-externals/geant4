@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4Fragment.cc 79213 2014-02-20 14:43:12Z gcosmo $
+// $Id: G4Fragment.cc 85824 2014-11-05 15:26:17Z gcosmo $
 //
 //---------------------------------------------------------------------
 //
@@ -57,6 +57,7 @@ G4Fragment::G4Fragment() :
   theGroundStateMass(0.0),
   theMomentum(G4LorentzVector(0,0,0,0)),
   theAngularMomentum(G4ThreeVector(0,0,0)),
+  creatorModel(-1),
   numberOfParticles(0),
   numberOfCharged(0),
   numberOfHoles(0),
@@ -76,6 +77,7 @@ G4Fragment::G4Fragment(const G4Fragment &right)
    theGroundStateMass = right.theGroundStateMass;
    theMomentum  = right.theMomentum;
    theAngularMomentum = right.theAngularMomentum;
+   creatorModel = right.creatorModel;
    numberOfParticles = right.numberOfParticles;
    numberOfCharged = right.numberOfCharged;
    numberOfHoles = right.numberOfHoles;
@@ -94,6 +96,7 @@ G4Fragment::G4Fragment(G4int A, G4int Z, const G4LorentzVector& aMomentum) :
   theZ(Z),
   theMomentum(aMomentum),
   theAngularMomentum(G4ThreeVector(0,0,0)),
+  creatorModel(-1),
   numberOfParticles(0),
   numberOfCharged(0),
   numberOfHoles(0),
@@ -117,11 +120,12 @@ G4Fragment::G4Fragment(G4int A, G4int Z, const G4LorentzVector& aMomentum) :
 
 // This constructor is for initialize photons or electrons
 G4Fragment::G4Fragment(const G4LorentzVector& aMomentum, 
-		       G4ParticleDefinition * aParticleDefinition) :
+		       const G4ParticleDefinition * aParticleDefinition) :
   theA(0),
   theZ(0),
   theMomentum(aMomentum),
   theAngularMomentum(G4ThreeVector(0,0,0)),
+  creatorModel(-1),
   numberOfParticles(0),
   numberOfCharged(0),
   numberOfHoles(0),
@@ -150,6 +154,7 @@ G4Fragment & G4Fragment::operator=(const G4Fragment &right)
     theGroundStateMass = right.theGroundStateMass;
     theMomentum  = right.theMomentum;
     theAngularMomentum = right.theAngularMomentum;
+    creatorModel = right.creatorModel;
     numberOfParticles = right.numberOfParticles;
     numberOfCharged = right.numberOfCharged;
     numberOfHoles = right.numberOfHoles;
@@ -191,7 +196,11 @@ std::ostream& operator << (std::ostream &out, const G4Fragment *theFragment)
 
   out << std::setprecision(3)
       << ", U = " << theFragment->GetExcitationEnergy()/CLHEP::MeV 
-      << " MeV  IsStable= " << theFragment->IsStable() << G4endl
+      << " MeV  IsStable= " << theFragment->IsStable();
+  if(theFragment->creatorModel >= 0) { 
+    out << " creatorModelType= " << theFragment->creatorModel; 
+  }
+  out << G4endl
       << "          P = (" 
       << theFragment->theMomentum.x()/CLHEP::MeV << ","
       << theFragment->theMomentum.y()/CLHEP::MeV << ","
@@ -201,7 +210,6 @@ std::ostream& operator << (std::ostream &out, const G4Fragment *theFragment)
       << G4endl;
        
   // What about Angular momentum???
-
   if (theFragment->GetNumberOfExcitons() != 0) {
     out << "          " 
 	<< "#Particles= " << theFragment->numberOfParticles 

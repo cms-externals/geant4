@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4LogicalSkinSurface.cc 81646 2014-06-04 09:28:37Z gcosmo $
+// $Id: G4LogicalSkinSurface.cc 88950 2015-03-16 16:31:29Z gcosmo $
 //
 // --------------------------------------------------------------------
 // G4LogicalSkinSurface Implementation
@@ -87,14 +87,13 @@ G4LogicalSkinSurface&
 G4LogicalSkinSurface::operator=(const G4LogicalSkinSurface& right)
 {
   if (&right == this) return *this;
-  if (&right)
-  {
-    SetSurfaceProperty(right.GetSurfaceProperty());
-    SetName(right.GetName());
-    SetTransitionRadiationSurface(right.GetTransitionRadiationSurface());
-    LogVolume = right.LogVolume;
-    (*theSkinSurfaceTable) = (*right.theSkinSurfaceTable);
-  }
+
+  SetSurfaceProperty(right.GetSurfaceProperty());
+  SetName(right.GetName());
+  SetTransitionRadiationSurface(right.GetTransitionRadiationSurface());
+  LogVolume = right.LogVolume;
+  (*theSkinSurfaceTable) = (*right.theSkinSurfaceTable);
+
   return *this;
 }
 

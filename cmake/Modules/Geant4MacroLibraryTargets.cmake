@@ -164,7 +164,7 @@ MACRO(GEANT4_LIBRARY_TARGET)
     # Because externals like clhep appear in G4LIBTARGET_LINK_LIBRARIES,
     # filter this list to replace shared builtins with their static variant
     string(REGEX REPLACE
-      "(G4clhep|G4expat|G4zlib)(;|$)" "\\1-static\\2"
+      "(G4clhep|G4expat|G4zlib|G4geomUSolids)(;|$)" "\\1-static\\2"
       G4LIBTARGET_LINK_LIBRARIES_STATIC
       "${G4LIBTARGET_LINK_LIBRARIES}"
       )
@@ -289,9 +289,10 @@ MACRO(GEANT4_GLOBAL_LIBRARY_TARGET)
     list(APPEND ${G4GLOBLIB_NAME}_BUILDTREE_INCLUDES ${${G4MODULENAME}_INCDIR})
   endforeach()
 
-  # Filter out duplicates in GLOBAL_DEPENDENCIES and LINK_LIBRARIES
+  # Filter out duplicates/self in GLOBAL_DEPENDENCIES and LINK_LIBRARIES
   if(${G4GLOBLIB_NAME}_GLOBAL_DEPENDENCIES)
     list(REMOVE_DUPLICATES ${G4GLOBLIB_NAME}_GLOBAL_DEPENDENCIES)
+    list(REMOVE_ITEM ${G4GLOBLIB_NAME}_GLOBAL_DEPENDENCIES ${G4GLOBLIB_NAME})
   endif()
   if(${G4GLOBLIB_NAME}_LINK_LIBRARIES)
     list(REMOVE_DUPLICATES ${G4GLOBLIB_NAME}_LINK_LIBRARIES)

@@ -35,8 +35,6 @@
 
 #include "G4OTubs.hh"
 
-#if !defined(G4GEOM_USE_UTUBS)
-
 #include "G4VoxelLimits.hh"
 #include "G4AffineTransform.hh"
 #include "G4GeometryTolerance.hh"
@@ -123,15 +121,14 @@ G4OTubs::G4OTubs(const G4OTubs& rhs)
     kRadTolerance(rhs.kRadTolerance), kAngTolerance(rhs.kAngTolerance),
     fRMin(rhs.fRMin), fRMax(rhs.fRMax), fDz(rhs.fDz),
     fSPhi(rhs.fSPhi), fDPhi(rhs.fDPhi),
-    sinCPhi(rhs.sinCPhi), cosCPhi(rhs.sinCPhi),
-    cosHDPhiOT(rhs.cosHDPhiOT), cosHDPhiIT(rhs.cosHDPhiOT),
+    sinCPhi(rhs.sinCPhi), cosCPhi(rhs.cosCPhi),
+    cosHDPhiOT(rhs.cosHDPhiOT), cosHDPhiIT(rhs.cosHDPhiIT),
     sinSPhi(rhs.sinSPhi), cosSPhi(rhs.cosSPhi),
     sinEPhi(rhs.sinEPhi), cosEPhi(rhs.cosEPhi), fPhiFullTube(rhs.fPhiFullTube),
     halfCarTolerance(rhs.halfCarTolerance),
     halfRadTolerance(rhs.halfRadTolerance),
     halfAngTolerance(rhs.halfAngTolerance)
 {
-   fpPolyhedron = GetPolyhedron();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -153,15 +150,14 @@ G4OTubs& G4OTubs::operator = (const G4OTubs& rhs)
    kRadTolerance = rhs.kRadTolerance; kAngTolerance = rhs.kAngTolerance;
    fRMin = rhs.fRMin; fRMax = rhs.fRMax; fDz = rhs.fDz;
    fSPhi = rhs.fSPhi; fDPhi = rhs.fDPhi;
-   sinCPhi = rhs.sinCPhi; cosCPhi = rhs.sinCPhi;
-   cosHDPhiOT = rhs.cosHDPhiOT; cosHDPhiIT = rhs.cosHDPhiOT;
+   sinCPhi = rhs.sinCPhi; cosCPhi = rhs.cosCPhi;
+   cosHDPhiOT = rhs.cosHDPhiOT; cosHDPhiIT = rhs.cosHDPhiIT;
    sinSPhi = rhs.sinSPhi; cosSPhi = rhs.cosSPhi;
    sinEPhi = rhs.sinEPhi; cosEPhi = rhs.cosEPhi;
    fPhiFullTube = rhs.fPhiFullTube;
    halfCarTolerance = rhs.halfCarTolerance;
    halfRadTolerance = rhs.halfRadTolerance;
    halfAngTolerance = rhs.halfAngTolerance;
-   fpPolyhedron = GetPolyhedron();
 
    return *this;
 }
@@ -1885,4 +1881,3 @@ G4Polyhedron* G4OTubs::CreatePolyhedron () const
 {
   return new G4PolyhedronTubs (fRMin, fRMax, fDz, fSPhi, fDPhi) ;
 }
-#endif

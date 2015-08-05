@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4AttDefStore.cc 79152 2014-02-19 15:22:08Z gcosmo $
+// $Id: G4AttDefStore.cc 78955 2014-02-05 09:45:46Z gcosmo $
 
 #include "G4AttDefStore.hh"
 
@@ -71,10 +71,10 @@ G4bool GetStoreKey
   for (i = m_defsmaps->begin(); i != m_defsmaps->end(); ++i)
     {
       if (i->second == definitions)
-	{
-	  key = i->first;
-	  return true;
-	}
+        {
+          key = i->first;
+          return true;
+        }
     }
 
   return false;

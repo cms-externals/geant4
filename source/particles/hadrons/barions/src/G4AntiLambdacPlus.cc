@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4AntiLambdacPlus.cc 79334 2014-02-24 10:53:32Z gcosmo $
+// $Id: G4AntiLambdacPlus.cc 79342 2014-02-24 11:42:42Z gcosmo $
 //
 // 
 // ----------------------------------------------------------------------
@@ -74,7 +74,7 @@ G4AntiLambdacPlus* G4AntiLambdacPlus::Definition()
                     0,               0,             0,
              "baryon",               0,            -1,       -4122,
                 false,     0.200e-3*ns,          NULL,
-                false,       "anti_lambda_c");
+                false,       "lambda_c");
   
   // decay mode is not defined here, with expectation of pre-assigned.
   } 

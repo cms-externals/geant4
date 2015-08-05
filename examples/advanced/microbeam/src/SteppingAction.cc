@@ -41,6 +41,7 @@
 #include "Analysis.hh"
 
 #include "G4Alpha.hh"
+#include "G4Electron.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
@@ -58,8 +59,36 @@ SteppingAction::~SteppingAction()
 void SteppingAction::UserSteppingAction(const G4Step* aStep)
   
 { 
+  // Analysis manager
+  
   G4AnalysisManager* man = G4AnalysisManager::Instance();
 
+  // Read phantom - Singleton
+   
+  fMyCellParameterisation = CellParameterisation::Instance(); 
+
+  //
+
+  // Material : 1 is cytoplasm, 2 is nucleus
+
+  G4int matVoxelPRE = -1;
+  G4int matVoxelPOST = -1;
+  G4int tmp=-1;
+  
+  tmp = aStep->GetPreStepPoint()->GetTouchableHandle()->GetReplicaNumber(); 
+    
+  if (tmp>0)  
+  {
+    matVoxelPRE =  fMyCellParameterisation->GetTissueType(tmp);
+  }
+  
+  tmp = aStep->GetPostStepPoint()->GetTouchableHandle()->GetReplicaNumber();
+  
+  if (tmp>0) 
+  {
+    matVoxelPOST =  fMyCellParameterisation->GetTissueType(tmp);
+  }
+  
 // COUNT GAS DETECTOR HITS
 
 if (       ((aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume() == fDetector->GetLogicalCollDetYoke())
@@ -90,7 +119,7 @@ if (       ((aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLog
 	
         || 
 	   ((aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume() == fDetector->GetLogicalPolyprop())
-        &&  (aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName() == "physicalCytoplasm")
+        &&  (matVoxelPOST == 1)
         &&  (aStep->GetTrack()->GetDynamicParticle()->GetDefinition() == G4Alpha::AlphaDefinition() ))
     )
 	{
@@ -121,6 +150,7 @@ if (       ((aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLog
          G4ThreeVector localPosition = localPosition1 + G4UniformRand()*(localPosition2-localPosition1);
 	 
 	 // end
+	 
 	 //Fill ntupleid=2
 	 man->FillNtupleDColumn(2,0,localPosition.x()/micrometer);
 	 man->FillNtupleDColumn(2,1,localPosition.y()/micrometer);
@@ -139,9 +169,9 @@ if (
 	
 	&&
 			
-          ( (aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName() == "physicalCytoplasm")
+          ( (matVoxelPOST==1)
 	||  (aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume() == fDetector->GetLogicalKgm())	
-	||  (aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName() == "physicalNucleus") )	
+	||  (matVoxelPOST==2) )	
 		
    )
 	
@@ -159,7 +189,7 @@ if (
 // TOTAL DOSE DEPOSIT AND DOSE DEPOSIT WITHIN A PHANTOM VOXEL
 // FOR ALL PARTICLES
 
-if (aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()  == "physicalNucleus")
+if (matVoxelPRE  == 2)
 
 	{ 
    	 G4double dose = (aStep->GetTotalEnergyDeposit()/joule)/(fRun->GetMassNucleus()/kg);
@@ -171,7 +201,7 @@ if (aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()  == "physicalNucleu
 	}
 
 
-if (aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()  == "physicalCytoplasm")
+if (matVoxelPRE  == 1)
 
 	{ 
    	 G4double dose = (aStep->GetTotalEnergyDeposit()/joule)/(fRun->GetMassCytoplasm()/kg);
@@ -181,4 +211,19 @@ if (aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()  == "physicalCytopl
     	 fRun->AddDoseBox(aStep->GetPreStepPoint()->GetTouchableHandle()->GetReplicaNumber(),
 	  aStep->GetTotalEnergyDeposit()/eV);
  	}
+
+// PROTECTION AGAINST MSC LOOPS FOR e-
+
+if ( aStep->GetTotalEnergyDeposit()/MeV<1e-25
+     && aStep->GetTrack()->GetDefinition()==G4Electron::ElectronDefinition()) 
+{
+  aStep->GetTrack()->SetTrackStatus(fStopAndKill);
+  /*
+  G4cout << "*** Warning *** : msc loop for " 
+    << aStep->GetTrack()->GetDefinition()->GetParticleName() 
+    << " in " << 
+    aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName() << G4endl;
+  */
+}
+
 }

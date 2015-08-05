@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 // 
-// $Id: G4PropagatorInField.hh 69711 2013-05-13 09:22:17Z gcosmo $
+// $Id: G4PropagatorInField.hh 90836 2015-06-10 09:31:06Z gcosmo $
 //
 //
 // Class G4PropagatorInField 
@@ -99,6 +99,10 @@ class G4PropagatorInField
    inline G4int  GetVerboseLevel() const;
    inline G4int  Verbose() const;
 
+   inline void    SetVerboseTrace( G4bool enable ) { fVerbTracePiF = enable; }
+   inline G4bool  GetVerboseTrace()        { return fVerbTracePiF; }
+   // Tracing key parts of Compute Step
+   
    inline G4int   GetMaxLoopCount() const;
    inline void    SetMaxLoopCount( G4int new_max );
      // A maximum for the number of steps that a (looping) particle can take.
@@ -155,6 +159,10 @@ class G4PropagatorInField
      // and return whether an intersection occurred
      // NOTE : SAFETY IS CHANGED
 
+   inline G4bool IsFirstStepInVolume()  { return fFirstStepInVolume; }
+   inline G4bool IsLastStepInVolume()   { return fLastStepInVolume;  }
+   void   PrepareNewTrack() { fNewTrack = true; fFirstStepInVolume=false; fLastStepInVolume=false; } 
+      
    inline G4VIntersectionLocator* GetIntersectionLocator();
    inline void SetIntersectionLocator(G4VIntersectionLocator *pLocator );
      // Change or get the object which calculates the exact 
@@ -166,6 +174,9 @@ class G4PropagatorInField
    inline G4double  GetDeltaOneStep() const;
 
    inline G4FieldManager*  GetCurrentFieldManager();
+   inline G4EquationOfMotion*  GetCurrentEquationOfMotion();
+      // Auxiliary methods - their results can/will change during propagation
+
    inline void             SetNavigatorForPropagating( G4Navigator *SimpleOrMultiNavigator ); 
    inline G4Navigator*     GetNavigatorForPropagating(); 
 
@@ -176,17 +187,21 @@ class G4PropagatorInField
 
    inline G4double  GetZeroStepThreshold(); 
    inline void      SetZeroStepThreshold( G4double newLength ); 
-
+   
    void RefreshIntersectionLocator(); 
      // Update the Locator with parameters from this class
      //    and from current field manager
 
- protected:  // with description
+ protected:  // without description
 
    void PrintStepLengthDiagnostic( G4double      currentProposedStepLength,
                                    G4double      decreaseFactor,
                                    G4double      stepTrial,
                              const G4FieldTrack& aFieldTrack);
+
+   void ReportLoopingParticle( G4int count, double StepTaken, G4VPhysicalVolume* pPhysVol);
+   void ReportStuckParticle( G4int noZeroSteps, G4double proposedStep, G4double lastTriedStep,
+                             G4VPhysicalVolume* physVol );   
  private:
    // ----------------------------------------------------------------------
    //  DATA Members
@@ -261,9 +276,12 @@ class G4PropagatorInField
        // Last safety origin & value: for optimisation
 
    G4int          fVerboseLevel;
-       // For debuging purposes
+   G4bool         fVerbTracePiF;
+       // For debugging purposes
 
- private:
+   G4bool         fFirstStepInVolume; 
+   G4bool         fLastStepInVolume; 
+   G4bool         fNewTrack;
 };
 
 // Inline methods.

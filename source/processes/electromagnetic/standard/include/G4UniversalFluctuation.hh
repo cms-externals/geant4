@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4UniversalFluctuation.hh 79188 2014-02-20 09:22:48Z gcosmo $
+// $Id: G4UniversalFluctuation.hh 81365 2014-05-27 12:56:32Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -122,6 +122,8 @@ private:
   G4double nmaxCont;
   G4double rate,fw;
 
+  G4int     sizearray;
+  G4double* rndmarray;
 
 };
 

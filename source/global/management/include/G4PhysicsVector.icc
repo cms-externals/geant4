@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4PhysicsVector.icc 79149 2014-02-19 15:08:06Z gcosmo $
+// $Id: G4PhysicsVector.icc 83009 2014-07-24 14:51:29Z gcosmo $
 //
 // 
 //---------------------------------------------------------------
@@ -41,10 +41,10 @@
 //
 //---------------------------------------------------------------
 
-extern G4GLOB_DLL G4ThreadLocal G4Allocator<G4PhysicsVector> *fpPVAllocator;
+//extern G4GLOB_DLL G4ThreadLocal G4Allocator<G4PhysicsVector> *fpPVAllocator;
 
 //---------------------------------------------------------------
-
+/*
 inline
  void* G4PhysicsVector::operator new(size_t)
 { 
@@ -59,16 +59,7 @@ inline
 {
   fpPVAllocator->FreeSingle((G4PhysicsVector*)aVector);
 }
-
-//---------------------------------------------------------------
-
-inline
- G4double G4PhysicsVector::Value(G4double theEnergy) const
-{
-  size_t idx=0;
-  return Value(theEnergy, idx);
-}
-
+*/
 //---------------------------------------------------------------
 
 inline
@@ -260,10 +251,10 @@ size_t G4PhysicsVector::FindBinLocation(G4double theEnergy) const
        else { bin3 = bin2; }
      }
 /*
-//   Bin location proposed by K.Genser (FNAL)
+// Bin location proposed by K.Genser (FNAL)
 // V.I. Usage of this algorithm provides identical results
-//      no CPU advantage is observed in EM tests
-//      if new validation information will be known this code may be used
+// no CPU advantage is observed in EM tests
+// if new validation information will be known this code may be used
      G4PVDataVector::const_iterator it =
        std::lower_bound(binVector.begin(), binVector.end(), theEnergy);
      bin = it - binVector.begin() - 1;
@@ -281,10 +272,20 @@ inline size_t G4PhysicsVector::FindBin(G4double e, size_t idx) const
     id = 0; 
   } else if(e >= binVector[numberOfNodes-2]) { 
     id = numberOfNodes - 2; 
-  } else if(idx >= numberOfNodes || e < binVector[idx] || e > binVector[idx+1]) { 
+  } else if(idx >= numberOfNodes || e < binVector[idx] 
+            || e > binVector[idx+1]) { 
     id = FindBinLocation(e); 
   }
   return id;
+}
+
+//---------------------------------------------------------------
+
+inline
+ G4double G4PhysicsVector::Value(G4double theEnergy) const
+{
+  size_t idx=0;
+  return Value(theEnergy, idx);
 }
 
 //---------------------------------------------------------------

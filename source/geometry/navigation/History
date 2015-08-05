@@ -1,4 +1,4 @@
-$Id: History 81755 2014-06-05 07:59:56Z gcosmo $
+$Id: History 90836 2015-06-10 09:31:06Z gcosmo $
 -------------------------------------------------------------------
 
      =========================================================
@@ -17,20 +17,266 @@ committal in the CVS repository !
      * Reverse chronological order (last date on top), please *
      ----------------------------------------------------------
 
-May 27, 2014 - J.Apostolakis  (geomnav-V09-06-22)
-----------------------------
-- G4Navigator: corrected saving/restoring of 'navigator state':
-  - Added bool sWasLimitedByGeometry to G4SaveNavigatorState struct
-     ( fixes side effect of call to ComputeSafety. )
-  - Corrected RestoreState() to reset the Safety Origin and Value
-  - ComputeSafety: If at endpoint of step, answer safety=0.0 quickly.
-       Do not save/restore state. 
+May 10, 2015 - J.Apostolakis (geomnav-V10-00-22)
+----------------------------	
+- G4NavigationLogger: Changes, refinements for ReportOutsideMotherVolume()
+  * Delegate printing details to new method 'ReportVolumeAndIntersection'.
+  * Print additional diagnostic information (to help with ATLAS issue.)
+  * New properties:
+     * fMinTriggerDistance: a larger error is fatal (def. DBL_MAX)
+     * fReportSoftWarnings: is set, report if small safety (abs<tolerance)
+                            is not rounded to zero.
+	
+June 3, 2015 - G.Cosmo
+----------------------
+- Minor printout fix in G4NavigationLogger::ReportOutsideMother().
 
-April 10, 2014 - G.Cosmo  (geomnav-V09-06-21)
+May 29, 2015 - G.Cosmo
+----------------------
+- Fixed compilation errors when compiling with G4DEBUG_FIELD turned on.
+  Addressing problem report #1748.
+
+May 11, 2015 - G.Cosmo
+----------------------
+- Minor fixes and code cleanup/simplification.
+
+May 10, 2015 - J.Apostolakis
+----------------------------
+- Navigation Helper classes (Normal, Voxel, Parameterised)
+  * Use return value of motherSolid DistanceToOut(p,v), each time
+    that it is called.  Correct 'invalid' to zero:
+      If it is  kInfinity, reset value to zero!
+      If it is  negative,  reset value to zero!
+  * Small cleanup - always use variables 'mother'ExitNormal.
+    'mother'ValidExitNormal.  Enables small simplification.
+  * Do not return motherExitNormal (valid=false), if outside mother.
+
+May 8, 2015 - G.Cosmo
+---------------------
+- Fixed spurious compilation warnings.
+
+May 7, 2015 - G.Cosmo
+---------------------
+- Protect all changes for extra checks made by navigators in ComputeStep()
+  introduced in the previous tags within 'check_mode' and G4VERBOSE, to
+  allow restoring original run-time performance penalised by more 8-10%.
+- Code cleanup and various minor fixes.
+
+May 3, 2015 - J.Apostolakis
+---------------------------
+- ComputeStep() methods of Normal/Voxel/Parameterised Navigation:
+  Protect stepping for case of being outside mother volume.
+  Always evaluate mother's DistanceToOut(p,v), in order to check whether
+  answer indicates invalid position (i.e. outside mother solid).
+  Created to address issue of tracking in ATLAS - (JIRA issue ATLAS-SIM 1815
+  and SIM-433, ie https://sft.its.cern.ch/jira/browse/SIM-433 )
+    
+  Detailed description:
+  ComputeStep() methods of the 'Navigation' helper methods changed to always
+  evaluate the mother DistanceToOut(p,v), in order to check whether the answer
+  is 
+      * valid, indicating that the point is inside / on surface), or
+      * invalid, indicating the point is outside (when the value is either
+        negative or equal to kInfinity).
+  Addresses / protects Navigation from the case that a point escapes a volume,
+  and never again encounters the volume boundary. 
+
+  Note: DistanceToOut(p,v,...) in some solids is able to return a value that
+        indicates that it has been called from Outside the solid (contrary to
+        its expectation / contract.)
+        But not all solids provide this diagnostic (it would be a very
+        invaluable improvement in the specification / implementation, and
+        likely simple to add and cheap to evaluate.)
+
+  Enabled ComputeStep() to recognise this response (invalid point - i.e.
+  outside mother). Before it was not recognised, but used instead as a numeric
+  value (kInfinity). In case it was kInfinity, this meant the volume could not
+  be chosen, and the track never exited the volume!
+
+  This invalid response now triggers an immediate exit from the volume
+  daughters do not need to be considered.
+    
+  'Behaviour' change: this modification changes the logic in ComputeStep(),
+  and always calls the mother solid's DistanceToOut() method.
+  (before it was called only if the currentStep was larger than the mother
+  Solid's safety. )
+
+  Expected performance impact:
+  The (mandatory) call to DistanceToOut(p,v) in ComputeStep is extra work,
+  as it was optional before.
+  Expect an overhead, proportional to the cost of the 'average' DistanceToOut()
+  method (in the geometry model).
+  The worst cases are expected to be geometries with one or more large 
+  complex volumes (e.g. Polycone.) which is either
+  - a leaf node (with above-average density material), or
+  - which has a large number of volumes placed directly inside it.
+
+  Potential alternative approach:
+  An invalid point must be recognised using some method of a solid.
+  There are three possibilities:
+  - the inside method is called for the mother volume at the start
+    of every step. This would be a new additional call;
+  - the safety method "DistanceToOut(p)" is used to recognise this condition.
+    This could be done if it returns a negative value for positions outside
+    the solid. This call already occurs, but would become more expensive;
+  - the intersection distance "DistanceToOut(p,v,..) is used, and must be
+    called at every step.   This is the choice that has now been made.
+    It is possible to consider the alternative choices, to evaluate their
+    computational cost, and the effort to review/improve the implementations.
+
+  The most realistic alternative is a) to rely on the Safety method(s) to
+  respond zero if the point is on the 'wrong' side of the volume boundary,
+  and b) to call DistanceToOut(p,v) only if (step < mother Safety).
+	
+May 02, 2015 - J.Apostolakis
+----------------------------
+- Correction for roundoff issue in G4PropagatorInField
+    
+April 30, 2015 - J.Apostolakis
+------------------------------
+- NavigationLogger:
+  * Added method  for Reporting A Point is Outside the Mother volume.
+  * Added methods CheckAndReportBadNormal, CheckDaughterEntryPoint
+- G4AuxiliaryNavigationServices:
+  * Optimisation: Reuse dot product, rather than recomputing
+  * Added optional printout (protected by debug flag)
+  * Replaced the fake 'TestOne' non-inline method, with utility method
+    ReportTolerances.
+- G4VIntersectionLocator
+  * New PrintStatus method with additional ostringstream argument.
+- G4NormalNavigation:
+  * Moved Set/Get Verbose Level methods to source file (reduces dependency
+    on logger)
+- G4PathFinder:
+  * Reformatted warning/error message.
+    (Consolidation, include changes commited February 19, 2015, but not
+    tagged).
+     
+January  28, 2015 - J.Apostolakis
+---------------------------------
+- G4PropagatorInField: Added new methods to report looping and stuck tracks.
+  Cleanup.
+- G4PathFinder: Fix to two calls to ComputeSafety - second argument is length,
+  not bool.
+    
+December 15, 2014 - J.Apostolakis
+---------------------------------
+- Improvements to enable identification of first and last step in a volume, when
+    tracking in a field. (Bugzilla issue 1032).
+  Revised G4PropagatorInField, adding new method PrepareNewTrack() and data members.
+  Note: Co-works with and is required tags in processes/transportation and track.  
+    
+January  15, 2015 - J.Apostolakis  (geomnav-V10-00-21)
+---------------------------------
+- G4PathFinder: Pass to equation of motion relevant properties of current
+    particle: latest charge state (electric, magnetic dipole moment),
+    PDG spin value, momentum and rest mass of current particle
+    Part of corrections needed for Bugzilla issue 1696.
+	
+- Increased maximum number of Navigators from 8 to 16.
+    
+December 15, 2014 - J.Apostolakis
+---------------------------------
+- G4ErrorPropagationNavigator: revise implementation of ComputeStep, to
+  avoid calling G4Navigator::ComputeSafety (which has side effects.)
+  Addresses problem report #1679.
+
+November 27, 2014 - G.Cosmo (geomnav-V10-00-19)
+---------------------------
+- Added protection in G4ReplicaNavigation::DistanceToOutRad() for potential
+  rare cases of negative value to sqrt() in equation calculation for rmin/rmax
+  intersection.
+- Improved warning printout in G4Navigator::GetGlobalExitNormal().
+
+November 20, 2014 - J.Apostolakis (geomnav-V10-00-18, 17)
+---------------------------------
+- G4ErrorPropagationNavigator: fix to make normal a unit vector,
+  and fix for Coverity issue, to protect against null 'target'.
+  Addressing problem report #1679.
+    
+November 19, 2014 - G.Cosmo (geomnav-V10-00-16)
+---------------------------
+- Some code cleanup in G4Navigator source.
+
+November 18, 2014 - J.Apostolakis (geomnav-V10-00-15)
+---------------------------------
+- G4ErrorPropagationNavigator: added GetGlobalExitNormal() method to
+  correspond to update of G4Navigator interface in Geant4 9.5.
+  Addresses problem report #1679.
+- G4Navigator: small fix to calculation of stored step endpoint, for steps
+  that do not hit a boundary.
+- Fixed GNUmakefile in test.
+
+November 14, 2014 - J.Apostolakis (geomnav-V10-00-13,14)
+---------------------------------
+- G4Navigator: Corrections for Exit Normal.
+
+October 20, 2014 - G.Cosmo (geomnav-V10-00-12)
+--------------------------
+- Leave out changes in G4FieldPropagation.cc laying on the trunk...
+
+October 18, 2014 - A.Dotti (geomnav-V10-00-11)
+------------------------
+- Code cleanup: removed unnecessary G4ThreadLocal in G4ReplicaNavigation.
+
+August 25, 2014 - G.Cosmo  (geomnav-V10-00-10)
+-------------------------
+- Minor code cleanup.
+
+August 22, 2014 - M.Asai  (geomnav-V10-00-08 and geomnav-V10-00-09)
+------------------------
+- G4TransportationManager: Add ClearParallelWorlds() method. This method is
+  invoked by G4RunManager when user destroys all the geometry and rebuild
+  from scratch.
+
+June  24, 2014 - G.Folger  (geomnav-V10-00-07)
+-------------------------
+- G4MultiNavigator: set 'fIdNavLimiting' index to navigator limiting the step,
+  if only one navigator limited the step. Fixes crash in RE05 on Windows.
+  Likely addressing problem report #1634.
+
+May   27, 2014 - J.Apostolakis  (geomnav-V10-00-06)
+------------------------------
+- G4Navigator: corrected saving/restoring of 'navigator state':
+  * Added bool sWasLimitedByGeometry to G4SaveNavigatorState struct
+     ( fixes side effect of call to ComputeSafety. )
+  * Corrected RestoreState() to reset the Safety Origin and Value
+  * ComputeSafety: If at endpoint of step, answer safety=0.0 quickly.
+       Do not save/restore state. 
+- G4PropagatorInField:
+  * Added new method GetCurrentEquationOfMotion() 
+
+May   16, 2014 - J.Apostolakis  (geomnav-V10-00-05)
+------------------------------
+- Fixed G4PathFinder::RecheckDistanceToCurrentBoundary():
+  A compilation error identified error: return value from Navigator
+  was not used to accumulate method return value.
+
+May   16, 2014 - J.Apostolakis  (geomnav-V10-00-04)
+------------------------------
+- Improved G4Navigator::RecheckDistanceToCurrentBoundary
+  * Extended it to check a daughter volume, in case the previous step ended at 
+    its boundary.  In case the proposed point is inside that daughter, it 
+    tries to identify a distance to backtrack (=> returns a negative value. )
+  * Added check that ComputeStep() that was called last, not a Locate method.
+      -currently optional - it fails due to call to Locate in ComputeSafety.
+
+May    7, 2014 - J.Apostolakis  (geomnav-V10-00-03) - (internal)
+------------------------------
+- Created  G4Navigator::RecheckDistanceToCurrentBoundary
+  * First version of a new method RecheckDistanceToCurrentBoundary
+   in G4SafetyHelper, G4Navigator and G4PathFinder
+  * The method checks
+       a proposed displacement (new Position) to see if it is in mother;
+       a proposed new direction to find potential backtrack to return to 
+          mother volume, or distance to new exit.
+  Requested by EM team (Vladimir Iv.) for use by MultipleScattering.
+
+April 10, 2014 - G.Cosmo  (geomnav-V10-00-02)
 ------------------------
 - Get rid of deprecated 'register' storage class specifier in source files.
 
-March 14, 2014 - J.Apostolakis
+March 14, 2014 - J.Apostolakis  (geomnav-V10-00-01)
 ------------------------------
 - G4PathFinder: Added method for end of track - needed to signal
    G4 Transportation Manager to use 'ordinary' Navigator.
@@ -39,7 +285,7 @@ March 14, 2014 - J.Apostolakis
 - PropagatorInField: When setting up a new Intersection Locator 
    pass pointer to current Navigator.
 
-December 11th, 2013 - G.Cosmo  (geomnav-V09-06-20)
+December 11th, 2013 - G.Cosmo  (geomnav-V10-00-00)
 -----------------------------
 - Fixed implementation of G4TransportationManager::SetNavigatorForTracking()
   to initialise active navigator and propagator-in-field with the new

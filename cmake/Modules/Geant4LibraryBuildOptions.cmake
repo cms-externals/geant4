@@ -80,18 +80,6 @@ endif()
 
 geant4_add_feature(GEANT4_BUILD_MULTITHREADED "Build multithread enabled libraries")
 
-# - G4TPMALLOC
-# Only usable when Multithreading is enabled and we are not on WIN32
-# If it is enabled, add the global definition "G4TPMALLOC"
-cmake_dependent_option(GEANT4_BUILD_TPMALLOC "Build multithread optimized malloc library" OFF "GEANT4_BUILD_MULTITHREADED;NOT WIN32" OFF)
-
-if(GEANT4_BUILD_TPMALLOC)
-  add_definitions(-DG4TPMALLOC)
-endif()
-
-mark_as_advanced(GEANT4_BUILD_TPMALLOC)
-geant4_add_feature(GEANT4_BUILD_TPMALLOC "Build multithread optimized malloc library")
-
 # - G4_STORE_TRAJECTORY
 # ON by default, switching off can improve performance. Needs to be on
 # for visualization to work fully. Mark as advanced because most users
@@ -135,6 +123,15 @@ if(CXXSTD_IS_AVAILABLE)
   geant4_add_feature(GEANT4_BUILD_CXXSTD "Compiling against C++ Standard '${GEANT4_BUILD_CXXSTD}'")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${${GEANT4_BUILD_CXXSTD}_FLAGS}")
+
+  # Get needed defs for selected standard
+  # NB this needs refactoring because, for example, newer MSVC versions
+  # will just support c++11, and the selection above isn't needed, nor
+  # available, so we cannot check it in the if statement below.
+  # Add the def(s) to flags, because it may be *required*
+  if(GEANT4_BUILD_CXXSTD MATCHES "c\\+\\+11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DG4USE_STD11")
+  endif()
 endif()
 
 #-----------------------------------------------------------------------
@@ -258,6 +255,12 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(GEANT4_COMPILER "g++")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(GEANT4_COMPILER "clang")
+
+  # - Newer g++ on OS X may identify as Clang
+  if(APPLE AND (CMAKE_CXX_COMPILER MATCHES ".*g\\+\\+"))
+    set(GEANT4_COMPILER "g++")
+  endif()
+
 elseif(MSVC)
   set(GEANT4_COMPILER "VC")
 elseif(CMAKE_CXX_COMPILER MATCHES "icpc.*|icc.*")

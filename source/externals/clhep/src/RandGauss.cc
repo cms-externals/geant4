@@ -43,8 +43,8 @@ std::string RandGauss::name() const {return "RandGauss";}
 HepRandomEngine & RandGauss::engine() {return *localEngine;}
 
 // Initialisation of static data
-bool RandGauss::set_st = false;
-double RandGauss::nextGauss_st = 0.0;
+CLHEP_THREAD_LOCAL bool RandGauss::set_st = false;
+CLHEP_THREAD_LOCAL double RandGauss::nextGauss_st = 0.0;
 
 RandGauss::~RandGauss() {
 }
@@ -164,6 +164,26 @@ void RandGauss::fireArray( const int size, double* vect,
 {
   for( double* v = vect; v != vect + size; ++v )
     *v = fire( mean, stdDev );
+}
+
+bool RandGauss::getFlag()
+{
+  return set_st;
+}
+
+void RandGauss::setFlag( bool val )
+{
+  set_st = val;
+}
+
+double RandGauss::getVal()
+{
+  return nextGauss_st;
+}
+
+void RandGauss::setVal( double nextVal )
+{
+  nextGauss_st = nextVal;
 }
 
 void RandGauss::saveEngineStatus ( const char filename[] ) {

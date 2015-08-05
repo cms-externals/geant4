@@ -31,12 +31,229 @@ add this in the documentation for the changed file as [BUGFIX #BUGNUMBER].
 
      ----------------------------------------------------------
 
-06th June 2014 - Ben Morgan (cmake-V09-06-49)
+8th June 2015 - Ben Morgan (cmake-V10-00-41)
+- Templates/Geant4Config.cmake.in : Always re-find Qt5 via find_package
+  if Geant4 was configured with Qt5 support. Qt5 libraries are in
+  public link interface of G4interfaces and G4OpenGL whether or not it
+  is activated for an application, so must always be linked. Without
+  refinding, dangling imported targets are left in the link interfaces 
+  of G4interfaces and G4OpenGL.
+
+5th May 2015 - Ben Morgan (cmake-V10-00-40)
+- Modules/Geant4ConfigureModulefile.cmake : Genarate a modulefile
+  for the build tree. Requested by developers, but otherwise unsupported.
+- Templates/geant4-modulefile.in : Update export variables to allow
+  transparent configuration of build/install tree versions.
+
+29th April 2015 - Ben Morgan
+- Modules/Geant4MakeRules_cxx.cmake: Add `-no-gcc` to CMAKE_CXX_FLAGS
+  when using Intel compiler. This is temporary fix to give
+  matching flags against old GNUmake build. It requires further checks
+  to understand full behaviour of this flag to tune code versus
+  Intel's `-gcc-sys` flag and `__INTEL_COMPILER` macro.
+
+22nd April 2015 - Ben Morgan
+- Modules/FindCLHEP.cmake: Add CLHEP_ROOT_DIR to CMake cache, allowing
+  it to be editted in the CMake curses/GUI. Use unset command to remove
+  LIBRARY and INCLUDE_DIR variables for CLHEP from the cache when
+  CLHEP_ROOT_DIR is changed.
+- Templates/geant4-env-skeleton.in: Add expansion entry for CLHEP library
+  path
+- Modules/Geant4ToolchainBackwardCompatibility.cmake: Export setting
+  of dynamic library path to prepend system CLHEP's library path in
+  geant4.(c)sh
+
+17th April 2015 - Ben Morgan
+- Fixes for JIRA DEV-185 (Allow use of system CLHEP granular libraries)
+- Modules/FindCLHEP.cmake: Allow component arguments to be supplied to
+  find_package, each component being a CLHEP granular library. Support
+  dependencies between components, and fail on REQUIRED if any requested
+  component or dependency is not found. Set cache variables for each requested
+  component library, and fill CLHEP_LIBRARIES with the requested libraries
+- Modules/Geant4OptionalComponents.cmake: Provide new advanced option 
+  GEANT4_USE_SYSTEM_CLHEP_GRANULAR, which can be set to enable use of CLHEP
+  granular libraries from the system. When activated, use new FindCLHEP 
+  interface to search for Geant4's required components. 
+- Templates/Geant4Config.cmake.in: Export and document a new variable, 
+  Geant4_system_clhep_ISGRANULAR that clients can query to check whether
+  the system CLHEP was linked in granular mode.
+- Modules/Geant4ConfigureConfigScript.cmake: Process and export system CLHEP
+  library list to support either singular or granular CLHEP libraries.
+- Templates/geant4-config.in: Support CLHEP granular library listing in
+  '--libs' argument.
+- Modules/Geant4ToolchainBackwardCompatibility.cmake: Export CLHEP_LIB env var
+  to support use of system CLHEP libraries in granular mode.
+- Templates/geant4make-skeleton.in: Export CLHEP_LIB env var to support
+  system CLHEP libs in granular mode.
+
+15th April 2015 - Ben Morgan
+- Modules/Geant4MakeRules_cxx.cmake: Update AppleClang version regex for
+  Xcode 6.1. This version adds the patch number to the "based on LLVM"
+  id. The full version number is now derived.
+
+20th March 2015 - Gabriele Cosmo (cmake-V10-00-39)
+- Modules/Geant4MacroLibraryTargets.cmake: Added external G4geomUSolids
+  library to static linkage list. Addressing problem report #1725.
+
+29th January 2015 - Ben Morgan (cmake-V10-00-38)
+- Modules/Geant4MakeRules_cxx.cmake: Minor update to only use c++11
+  on Intel 15 compiler and better. Though this standard can be used
+  on slightly earlier versions, only 15 has full features (for Geant4's
+  needs). We would like to be consistent in standard use so that 'c++0x'
+  is always used for compilers with partial support (even if 'c++11' is
+  allowed), reserving 'c++11' for fully supported cases. This still
+  needs review for GNU and Clang.
+
+29th January 2015 - Ben Morgan
+- Modules/Geant4MakeRules_cxx.cmake: Add support for compiling against
+  c++1y standard for GNU and Clang compilers. Add support for compiling
+  against c++11 standard for Intel compiler.
+  
+17th December - Ben Morgan
+- Modules/Geant4InterfaceOptions.cmake: BUGFIX #1683. Correct search
+  path for X11 libraries to ensure location of Xquartz libs on OS X.
+
+05th December 2014 - Ben Morgan 
+- Modules/Geant4LibraryBuildOptions.cmake: When on OS X, check
+  whether compiler IDed as Clang is actually g++ via command
+  path. Ensures that "GEANT4_COMPILER" is correctly set for
+  GNUmake compatibility.
+
+01st December 2014 - Ben Morgan (cmake-V10-00-37)
+- Modules/Geant4BuildProjectConfig.cmake: Correct export of USolids
+  system headers so that these are exported whether or not USolids
+  are used to replace G4 solids.
+
+18th November 2014 - Ben Morgan (cmake-V10-00-36)
+- Templates/UseGeant4.cmake : Include Geant4 headers as SYSTEM and after
+  other headers. This is to help to suppress warnings when user has
+  more stringent compiler settings than us.
+
+12th November 2014 - Ben Morgan (cmake-V10-00-35)
+- Modules/Geant4LibraryBuildOptions.cmake: Remove GEANT4_BUILD_TPMALLOC
+  as this is no longer required
+
+11th November 2014 - Gunter Folger (cmake-V10-00-34)
+- Modules/Geant4DatasetDefinitions.cmake: update md5sum 
+   for G4EMLOW6.21 after correction of files access permissions. 
+
+10th November 2014 - Gunter Folger (cmake-V10-00-33)
+- Modules/Geant4DatasetDefinitions.cmake: RadioactiveDecay4.2
+   and update md5sum for G4EMLOW6.21 after correction of files 
+	access permissions. 
+
+07th November 2014 - Ben Morgan (cmake-V10-00-32)
+- Modules/Geant4OptionalComponents.cmake : BUGFIX: Failures of static 
+  builds traced to typo in USolids settings in static mode where
+  EXPAT_LIBRARIES was overwritten. Correct typo.
+
+30th October 2014 - Ben Morgan (cmake-V10-00-31)(INTERNAL)
+- Modules/Geant4OptionalComponents.cmake : Update USolids configuration
+  to decouple GEANT4_USE_USOLIDS and GEANT4_USE_SYSTEM_USOLIDS
+  options.
+  - GEANT4_USE_USOLIDS ON means that Geant4 solids are replaced with
+    USolids equivalents, OFF means Geant4 solids and USolids are available
+  - A USolids lib must ALWAYS be availble, so GEANT4_USE_SYSTEM_USOLIDS
+    simply switches between these.
+- Templates/Geant4Config.cmake.in : decouple GEANT4_USE_USOLIDS and 
+  GEANT4_USE_SYSTEM_USOLIDS
+- Templates/geant4-config.in : decouple GEANT4_USE_USOLIDS and 
+  GEANT4_USE_SYSTEM_USOLIDS
+
+30th October 2014 - Ben Morgan (cmake-V10-00-30)(INTERNAL)
+- Support builtin/system USolids library
+- Modules/Geant4OptionalComponents.cmake : Update USolids configuration
+  use internal G4geomUSolids by default if USolids support requested.
+  Add dependent option to allow system USolids to be searched for.
+  This assumes that USolids will supply a "USolidsConfig.cmake" file
+- Modules/Geant4BuildProjectConfig.cmake : Update to export USolids
+  settings as required.
+- Templates/Geant4Config.cmake.in : Update to provide new USolids
+  component and relevant variables and settings
+- Modules/Geant4ConfigureConfigScript.cmake : Update to export
+  USolids settings as required
+- Templates/geant4-config.in : Update to support USolids builtin/system
+  switch.
+
+23rd October 2014 - Ben Morgan (cmake-V10-00-29)
+- Templates/geant4-config.in : Add command line arguments to report
+  C++ standard compiled against and TLS model used if multithreading
+  support available.
+  Add presence of static libs as a feature argument that can be checked.
+- Modules/Geant4ConfigureConfigScript.cmake : Export yes/no value
+  indicating presence of static libraries to config script.
+- Templates/Geant4Config.cmake.in : Add variables to indicate C++
+  standard compiled against and TLS model used. Latter is only set
+  if multithreading support is available.
+- Modules/
+
+22nd October 2014 - Gunter Folger (cmake-V10-00-28)
+- Modules/Geant4DatasetDefinitions.cmake: G4EMLOW.6.41
+
+21st October 2014 - Ben Morgan (cmake-V10-00-27)
+- Modules/Geant4ConfigureModulefile.cmake : New file to configure
+  and install a basic Environment Modules modulefile for Geant4.
+  Provides basic Path/Datapath settings only, in line with geant4.(c)sh
+  scripts. Because the location of modulefiles can be highly system
+  dependent, install file in datarootdir with absolute paths coded in.
+  Allows file to be moved later on as required on the system and
+  patched accordingly.
+- Templates/geant4-modulefile.in : basic template for a modulefile
+- Modules/Geant4ToolchainBackwardCompatibility.cmake : include and
+  call functionality in Geant4ConfigureModulefile.
+
+20th October 2014 - Ben Morgan
+- Modules/Geant4ToolchainBackwardCompatibility.cmake,
+  Templates/geant4make-skeleton.in: Revert changes introduced to 
+  support modulefiles due to uneeded variables being exported.
+
+10th October 2014 - Andrea Dotti (cmake-V10-00-26)
+- Modules/FindROOT.cmake add ROOT_BIN_DIR variable to point to the
+  path of root executables. Needed to use hadd application for
+  physics testings (merging of output files for MT) 
+
+08th October 2014 - Ben Morgan (cmake-V10-00-25)
+- Templates/UseGeant4.cmake : BUGFIX #1663, Append existing CMake 
+  CXX/EXE_LINKER flags to Geant4 flags when setting overall CMake flags.
+  This allows users to override the base set if needed, at their own
+  risk.
+
+26th September 2014 - Ben Morgan (cmake-V10-00-24)
+- Modules/Geant4ToolchainBackwardCompatibility.cmake,
+  Templates/geant4make-skeleton.in: Revert changes introduced to 
+  support modulefiles due to incorrect installation names of scripts.
+
+26th August 2014 - Gunter Folger (cmake-V10-00-23)
+-  Modules/Geant4CTest.cmake: Add variable for reference files for testing
+
+26th August 2014 - Ben Morgan (cmake-V10-00-22)
+- Modules/Geant4MacroLibraryTargets.cmake : Remove any self-links
+  from internal library link list when building global libraries.
+
+26th August 2014 - Gunter Folger (cmake-V10-00-21)
+- Modules/Geant4DatasetDefinitions.cmake: G4EMLOW.6.40
+
+19th August 2014 - Gunter Folger (cmake-V10-00-20)
+- Modules/Geant4DatasetDefinitions.cmake: G4NDL.4.5
+
+08th July 2014 - Andrea Dotti (cmake-V10-00-19)
+- Templates/UseGeant4_internal.cmake in geant4_add_test function convert
+  character '=' present in command line to be executed to '@'
+- Modules/Geant4TestDriver.cmake convert back character '@' to '=' for
+  command line to be executed in test
+Both changes are needed to support "offloading" of tests (e.g. will be
+used by testing on Xeon Phi co-processors that require complex command
+lines containing '=' character).
+
+06th June 2014 - Ben Morgan (cmake-V10-00-18)
 - Templates/geant4-config.in : Add zlib and g3tog4 to list of features
   that --has-feature recognizes and can query (Patch from Ivana
   Hrivnacova)
 
-27th May 2014 - Ben Morgan (cmake-V09-06-48)
+05th June 2014 - Gunter Folger (cmake-V10-00-17)
+- Modules/Geant4DatasetDefinitions.cmake: G4EMLOW6.39
+
+27th May 2014 - Ben Morgan (cmake-V10-00-16)
 - Modules/Geant4MakeRules_cxx.cmake : Factor -ftls-model flag
   out of GEANT4_MULTITHREADED_CXX_FLAGS and provide function
   supplying available thread local storage model flag arguments.
@@ -45,16 +262,32 @@ add this in the documentation for the changed file as [BUGFIX #BUGNUMBER].
   to select thread local storage model when building multithreaded.
   Default to supported initial-exec model. Addresses JIRA DEV-142.
  
-26th May 2014 - Ben Morgan
+26th May 2014 - Ben Morgan (cmake-V10-00-15)
 - Modules/Geant4MakeRules_cxx.cmake : Add -DG4FPE_DEBUG to GNU/Clang
-  flags for Debug build mode. Added following discussion with Gunter
-  Folger to help developers diagnose FPE problems.
+flags for Debug build mode. Added following discussion with Gunter
+Folger to help developers diagnose FPE problems.
 
-20th March 2014 - Ben Morgan (cmake-V09-06-47)
+09th May 2014 - Gunter Folger (cmake-V10-00-14)
+- Modules/Geant4DatasetDefinitions.cmake: G4EMLOW6.38
+
+10th April - Ben Morgan (cmake-V10-00-13)
+- Modules/Geant4LibraryBuildOptions.cmake: When building against the C++11
+  standard, append -DG4USE_STD11 to CMAKE_CXX_FLAGS. Requested by Gabriele
+  Cosmo (DEV-138). Known issues: Provides no guarantee that required
+  C++11 features are present. Does not work on MSVC yet, but neither
+  will the parts of the code making use of C++11 features.
+
+18th March 2014 - Gunter Folger (cmake-V10-00-12)
+- Modules/Geant4DatasetDefinitions.cmake: G4EMLOW6.37
+
+20th March 2014 - Ben Morgan (cmake-V10-00-11)
 - Templates/Geant4Config.cmake.in : Fixes by Witold Pokorski for correct
   static archive flags on Clang and syntax fixes for GNU.
 
-6th March 2014 - Ben Morgan
+18th March 2014 - Gunter Folger (cmake-V10-00-10)
+- Modules/Geant4DatasetDefinitions.cmake: G4EMLOW6.36
+
+6th March 2014 - Ben Morgan (cmake-V10-00-09)
 - Modules/Geant4Config.cmake.in : When static libraries are used,
   wrap G4physicslists library with flags suitable to import whole
   archive. Implemented for GNU/Clang/Intel compilers. Other compilers
@@ -62,14 +295,20 @@ add this in the documentation for the changed file as [BUGFIX #BUGNUMBER].
   This functionality is needed to support global registration of
   factories.
 
-5th March 2014 - Ben Morgan
+5th March 2014 - Ben Morgan (cmake-V10-00-08)
 - Modules/Geant4MacroLibraryTargets.cmake : Fixup usage of shared/static
   builtin libraries. Ensure that shared builtins do not get linked to
   static.
 - Templates/Geant4Config.cmake.in : Add new component 'static' allowing
   user to select static Geant4 libraries if they are available.
 
-18th February 2014 - Ben Morgan (cmake-V09-06-46)
+26th February 2014 - Gunter Folger (cmake-V10-00-07)
+- Modules/Geant4DatasetDefinitions.cmake: PhotonEvaporation3.1
+
+26th February 2014 - Gunter Folger (cmake-V10-00-06)
+- Modules/Geant4DatasetDefinitions.cmake: RadioactiveDecay4.1
+
+18th February 2014 - Ben Morgan (cmake-V10-00-05)
 - Modules/Geant4ConfigureConfigScript.cmake : Export use of builtin
   zlib or otherwise to geant4-config (Bugfix #1572).
 - Template/geant4-config.in : Add builtin zlib to list of features, 
@@ -79,28 +318,28 @@ add this in the documentation for the changed file as [BUGFIX #BUGNUMBER].
   to get length of array. Problem reported on Hypernews:
   http://hypernews.slac.stanford.edu/HyperNews/geant4/get/installconfig/1614.html
 
-17th February 2014 - Ben Morgan
+17th February 2014 - Ben Morgan (cmake-V10-00-04)
 - Templates/geant4make-skeleton.in : Add variables for 
   G4LIB_{BUILD,USE}_EXPAT as for ZLIB. Fixes Bug #1567
 - Modules/Geant4ToolchainBackwardCompatibility.cmake : Export 
   G4LIB_{BUILD,USE}_EXPAT based on value of GEANT4_USE_SYSTEM_EXPAT.
   Fixes Bug #1567.
 
-21st January 2014 - Jonathan Madsen
+21st January 2014 - Jonathan Madsen (cmake-V10-00-03)
 - Updated Modules/Geant4InterfaceOptions.cmake to include /opt/X11
    paths that are now the standard places for X11 and OpenGL on Mac OSX
    as of Mavericks (OS X 10.9). Without these paths configuring CMake with 
    GEANT4_USE_OPENGL_X11=ON fails
 
-18th December 2013 - Gunter Folger
+18th December 2013 - Gunter Folger (cmake-V10-00-02)
 - Modules/Geant4TestDriver.cmake: CTEST_TEST_TIMEOUT is empty, or 
    its setting is not visible. 
 	Directly using environment variable CTEST_TIMEOUT finally works. 
 
-16th December 2013 - Gunter Folger
+16th December 2013 - Gunter Folger (cmake-V10-00-01)
 - Modules/Geant4TestDriver.cmake: fix typo introduced in previous tag
 
-16th December 2013 - Gunter Folger
+16th December 2013 - Gunter Folger (cmake-V10-00-00)
 - Modules/Geant4TestDriver.cmake: use CTEST_TEST_TIMEOUT if set to set
   default timeout
 

@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4SimplexDownhill.hh 81649 2014-06-04 09:56:53Z gcosmo $
+// $Id: G4SimplexDownhill.hh 79763 2014-03-13 15:16:47Z gcosmo $
 //
 // Class description:
 //

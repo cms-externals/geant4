@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4Tubs.cc 81636 2014-06-04 09:06:08Z gcosmo $
+// $Id: G4Tubs.cc 88946 2015-03-16 16:14:24Z gcosmo $
 //
 // 
 // class G4Tubs
@@ -128,7 +128,6 @@ G4Tubs::G4Tubs( __void__& a )
     sinSPhi(0.), cosSPhi(0.), sinEPhi(0.), cosEPhi(0.),
     fPhiFullTube(false), halfCarTolerance(0.), halfRadTolerance(0.),
     halfAngTolerance(0.)
-
 {
 }
 
@@ -149,15 +148,14 @@ G4Tubs::G4Tubs(const G4Tubs& rhs)
     kRadTolerance(rhs.kRadTolerance), kAngTolerance(rhs.kAngTolerance),
     fRMin(rhs.fRMin), fRMax(rhs.fRMax), fDz(rhs.fDz),
     fSPhi(rhs.fSPhi), fDPhi(rhs.fDPhi),
-    sinCPhi(rhs.sinCPhi), cosCPhi(rhs.sinCPhi),
-    cosHDPhiOT(rhs.cosHDPhiOT), cosHDPhiIT(rhs.cosHDPhiOT),
+    sinCPhi(rhs.sinCPhi), cosCPhi(rhs.cosCPhi),
+    cosHDPhiOT(rhs.cosHDPhiOT), cosHDPhiIT(rhs.cosHDPhiIT),
     sinSPhi(rhs.sinSPhi), cosSPhi(rhs.cosSPhi),
     sinEPhi(rhs.sinEPhi), cosEPhi(rhs.cosEPhi), fPhiFullTube(rhs.fPhiFullTube),
     halfCarTolerance(rhs.halfCarTolerance),
     halfRadTolerance(rhs.halfRadTolerance),
     halfAngTolerance(rhs.halfAngTolerance)
 {
-   fpPolyhedron = GetPolyhedron();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -179,15 +177,14 @@ G4Tubs& G4Tubs::operator = (const G4Tubs& rhs)
    kRadTolerance = rhs.kRadTolerance; kAngTolerance = rhs.kAngTolerance;
    fRMin = rhs.fRMin; fRMax = rhs.fRMax; fDz = rhs.fDz;
    fSPhi = rhs.fSPhi; fDPhi = rhs.fDPhi;
-   sinCPhi = rhs.sinCPhi; cosCPhi = rhs.sinCPhi;
-   cosHDPhiOT = rhs.cosHDPhiOT; cosHDPhiIT = rhs.cosHDPhiOT;
+   sinCPhi = rhs.sinCPhi; cosCPhi = rhs.cosCPhi;
+   cosHDPhiOT = rhs.cosHDPhiOT; cosHDPhiIT = rhs.cosHDPhiIT;
    sinSPhi = rhs.sinSPhi; cosSPhi = rhs.cosSPhi;
    sinEPhi = rhs.sinEPhi; cosEPhi = rhs.cosEPhi;
    fPhiFullTube = rhs.fPhiFullTube;
    halfCarTolerance = rhs.halfCarTolerance;
    halfRadTolerance = rhs.halfRadTolerance;
    halfAngTolerance = rhs.halfAngTolerance;
-   fpPolyhedron = GetPolyhedron();
 
    return *this;
 }

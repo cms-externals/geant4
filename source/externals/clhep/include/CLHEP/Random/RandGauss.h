@@ -31,6 +31,7 @@
 
 #include "CLHEP/Random/Random.h"
 #include "CLHEP/Utility/memory.h"
+#include "CLHEP/Utility/thread_local.h"
 
 namespace CLHEP {
 
@@ -108,9 +109,9 @@ public:
   //  code before shoot/fire will force generation of a new couple of
   //  values.
 
-  static  bool getFlag() {return set_st;}
+  static  bool getFlag();
 
-  static  void setFlag( bool val ) {set_st = val;}
+  static  void setFlag( bool val );
 
   bool getF() const {return set;}
   
@@ -142,9 +143,9 @@ public:
 
 protected:
 
-  static  double getVal() {return nextGauss_st;}
+  static  double getVal();
 
-  static  void setVal( double nextVal ) {nextGauss_st = nextVal;}
+  static  void setVal( double nextVal );
 
   double normal();
 
@@ -159,8 +160,8 @@ private:
   double nextGauss;
 
   // static data
-  static bool set_st;
-  static double nextGauss_st;
+  static CLHEP_THREAD_LOCAL bool set_st;
+  static CLHEP_THREAD_LOCAL double nextGauss_st;
 
 };
 

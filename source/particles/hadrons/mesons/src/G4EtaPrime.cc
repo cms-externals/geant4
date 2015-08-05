@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4EtaPrime.cc 67971 2013-03-13 10:13:24Z gcosmo $
+// $Id: G4EtaPrime.cc 88959 2015-03-16 16:49:02Z gcosmo $
 //
 // 
 // ----------------------------------------------------------------
@@ -70,7 +70,7 @@ G4EtaPrime* G4EtaPrime::Definition()
   //             shortlived      subType    anti_encoding
 
    anInstance = new G4ParticleDefinition(
-                 name,     0.95778*GeV,     0.199*MeV,         0.0,
+                 name,     0.95778*GeV,     0.198*MeV,         0.0,
                     0,              -1,            +1,
                     0,               0,            +1,
               "meson",               0,             0,         331,
@@ -80,15 +80,21 @@ G4EtaPrime* G4EtaPrime::Definition()
   G4DecayTable* table = new G4DecayTable();
 
  // create decay channels
-  G4VDecayChannel** mode = new G4VDecayChannel*[3];
+  G4VDecayChannel** mode = new G4VDecayChannel*[5];
   // EtaPrime -> eta + pi+ + pi-
-  mode[0] = new G4PhaseSpaceDecayChannel("eta_prime",0.437,3,"eta","pi+","pi-");
+  mode[0] = new G4PhaseSpaceDecayChannel("eta_prime",0.429,3,"eta","pi+","pi-");
   // EtaPrime -> eta + pi0 + pi0
-  mode[1] = new G4PhaseSpaceDecayChannel("eta_prime",0.208,3,"eta","pi0","pi0");
+  mode[1] = new G4PhaseSpaceDecayChannel("eta_prime",0.222,3,"eta","pi0","pi0");
   // EtaPrime -> rho0 + gamma
-  mode[2] = new G4PhaseSpaceDecayChannel("eta_prime",0.302,2,"rho0","gamma");
+  mode[2] = new G4PhaseSpaceDecayChannel("eta_prime",0.291,2,"rho0","gamma");
 
-  for (G4int index=0; index <3; index++ ) table->Insert(mode[index]);
+  // EtaPrime -> gamma + gamma
+  mode[3] = new G4PhaseSpaceDecayChannel("eta_prime",0.0220,2,"gamma","gamma");
+
+  // EtaPrime -> omega + gamma
+  mode[4] = new G4PhaseSpaceDecayChannel("eta_prime",0.0275,2,"omega","gamma");
+
+  for (G4int index=0; index <5; index++ ) table->Insert(mode[index]);
   delete [] mode;
 
    anInstance->SetDecayTable(table);

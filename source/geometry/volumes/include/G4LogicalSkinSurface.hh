@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4LogicalSkinSurface.hh 81646 2014-06-04 09:28:37Z gcosmo $
+// $Id: G4LogicalSkinSurface.hh 80067 2014-03-31 13:48:09Z gcosmo $
 //
 // class G4LogicalSkinSurface
 //

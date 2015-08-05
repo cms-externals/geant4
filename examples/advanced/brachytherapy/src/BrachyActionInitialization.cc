@@ -30,15 +30,15 @@
 #include "BrachySteppingAction.hh"
 #include "G4RunManager.hh"
 
-BrachyActionInitialization::BrachyActionInitialization(BrachyAnalysisManager* analysis_manager):
+BrachyActionInitialization::BrachyActionInitialization():
 G4VUserActionInitialization()
 {
-analysis = analysis_manager;
 }
 
 
 BrachyActionInitialization::~BrachyActionInitialization()
-{}
+{
+}
 
 void BrachyActionInitialization::BuildForMaster() const
 {
@@ -52,10 +52,10 @@ void BrachyActionInitialization::BuildForMaster() const
 void BrachyActionInitialization::Build() const
 {   
  // Initialize the primary particles
-BrachyPrimaryGeneratorAction* primary = new BrachyPrimaryGeneratorAction(analysis);
+BrachyPrimaryGeneratorAction* primary = new BrachyPrimaryGeneratorAction();
 SetUserAction(primary); 
 
-BrachySteppingAction* stepping = new BrachySteppingAction(analysis);
+BrachySteppingAction* stepping = new BrachySteppingAction();
 SetUserAction(stepping);
 	
 }  

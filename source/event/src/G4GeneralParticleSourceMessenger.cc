@@ -45,6 +45,11 @@
 //     - old commands have been retained for backward compatibility, will be
 //       removed in the future. 
 //
+//
+// 20/03/2014, Andrew Green - Modifications for MT
+//      - Added a check to force only one thread to parse the macro file
+//          This information is fed into the GPS which now has a split mechanism for the large data (hence need to only read in 1 thread)
+//      - Thread ID used is 0, so *should* work under interactive mode as well - may need checking, or the may be another way...
 ///////////////////////////////////////////////////////////////////////////////
 //
 
@@ -55,6 +60,7 @@
 #include "G4Geantino.hh"
 #include "G4ThreeVector.hh"
 #include "G4ParticleTable.hh"
+#include "G4IonTable.hh"
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithoutParameter.hh"
 #include "G4UIcmdWithAString.hh"
@@ -70,16 +76,58 @@
 #include "G4SingleParticleSource.hh"
 #include "G4GeneralParticleSource.hh"
 
+#include "G4AutoLock.hh"
+
+namespace {
+    G4Mutex creationM = G4MUTEX_INITIALIZER;
+    G4GeneralParticleSourceMessenger* theInstance = 0;
+}
+
+G4GeneralParticleSourceMessenger* G4GeneralParticleSourceMessenger::GetInstance(G4GeneralParticleSource* ps)
+{
+    G4AutoLock l(&creationM);
+    if ( theInstance == 0 ) theInstance = new G4GeneralParticleSourceMessenger(ps);
+    return theInstance;
+}
+
+void G4GeneralParticleSourceMessenger::Destroy() {
+    G4AutoLock l(&creationM);
+    if ( theInstance != 0 ) {
+        delete theInstance;
+        theInstance = 0;
+    }
+}
 ///////////////////////////////////////////////////////////////////////////////
 //
 G4GeneralParticleSourceMessenger::G4GeneralParticleSourceMessenger
   (G4GeneralParticleSource *fPtclGun) 
-    : fGPS(fPtclGun),fShootIon(false)
+    : fGPS(fPtclGun),fParticleGun(0),fShootIon(false),
+      fAtomicNumber(0),fAtomicMass(0),fIonCharge(0),fIonExciteEnergy(0.),
+      fShootIonL(0),fAtomicNumberL(0),fAtomicMassL(0),fIonChargeL(0),fIonEnergyLevel(0)
+      
 {
+  //A.Dotti - 10th October 2014
+  //This messenger is special: it is instantiated in a user action but (e.g. in
+  // a thread).
+  //the UI commands it defines should be executed by the *master* thread because
+  //they operate on shared resources and we want the UI commands to take
+  //effect BEFORE the threads do some work (so all data are properly initialized)
+  //To achieve this behavior we set to true a base calss protected
+  //data member. Since it makes no sense to have more than one instance
+  //of the messenger we check that we actually have only one.
+  //Note that the logic of implementing, in a given worker thread only one
+  //messenger is deletefated to the creator
+  commandsShouldBeInMaster = true;
+
+  
+    
   particleTable = G4ParticleTable::GetParticleTable();
   histtype = "biasx";
 
-  gpsDirectory = new G4UIdirectory("/gps/");
+  //UI Commands only for master
+    G4bool broadcast = false;
+  gpsDirectory = new G4UIdirectory("/gps/",broadcast);
+    
   gpsDirectory->SetGuidance("General Paricle Source control commands.");
   //  gpsDirectory->SetGuidance(" The first 9 commands are the same as in G4ParticleGun ");
 
@@ -124,7 +172,7 @@ G4GeneralParticleSourceMessenger::G4GeneralParticleSourceMessenger
   multiplevertexCmd->SetDefaultValue(false);
 
   flatsamplingCmd = new G4UIcmdWithABool("/gps/source/flatsampling",this);
-  flatsamplingCmd->SetGuidance("true for appling flat (biased) sampling among the sources");
+  flatsamplingCmd->SetGuidance("true for applying flat (biased) sampling among the sources");
   flatsamplingCmd->SetGuidance("Default is false");
   flatsamplingCmd->SetParameterName("flatsampling",true);
   flatsamplingCmd->SetDefaultValue(false);
@@ -154,6 +202,7 @@ G4GeneralParticleSourceMessenger::G4GeneralParticleSourceMessenger
   directionCmd = new G4UIcmdWith3Vector("/gps/direction",this);
   directionCmd->SetGuidance("Set momentum direction.");
   directionCmd->SetGuidance("Direction needs not to be a unit vector.");
+  directionCmd->SetGuidance("Angular distribution type is set to planar.");
   directionCmd->SetParameterName("Px","Py","Pz",false,false); 
   directionCmd->SetRange("Px != 0 || Py != 0 || Pz != 0");
   
@@ -165,7 +214,8 @@ G4GeneralParticleSourceMessenger::G4GeneralParticleSourceMessenger
   //energyCmd->SetUnitCandidates("eV keV MeV GeV TeV");
 
   positionCmd = new G4UIcmdWith3VectorAndUnit("/gps/position",this);
-  positionCmd->SetGuidance("Set starting position of the particle.");
+  positionCmd->SetGuidance("Set starting position of the particle for a Point like source.");
+  positionCmd->SetGuidance("Same effect as the two /gps/pos/type Point /gps/pos/centre commands.");
   positionCmd->SetParameterName("X","Y","Z",false,false);
   positionCmd->SetDefaultUnit("cm");
   //positionCmd->SetUnitCategory("Length");
@@ -261,7 +311,7 @@ G4GeneralParticleSourceMessenger::G4GeneralParticleSourceMessenger
 
   centreCmd1 = new G4UIcmdWith3VectorAndUnit("/gps/pos/centre",this);
   centreCmd1->SetGuidance("Set centre coordinates of source.");
-  centreCmd1->SetGuidance("   same effect as the /gps/position command");
+  //centreCmd1->SetGuidance("   same effect as the /gps/position command");
   centreCmd1->SetParameterName("X","Y","Z",false,false);
   centreCmd1->SetDefaultUnit("cm");
   //  centreCmd1->SetUnitCandidates("micron mm cm m km");
@@ -354,108 +404,108 @@ G4GeneralParticleSourceMessenger::G4GeneralParticleSourceMessenger
   confineCmd1->SetDefaultValue("NULL");
 
   // old implementations
-  typeCmd = new G4UIcmdWithAString("/gps/type",this);
-  typeCmd->SetGuidance("Sets source distribution type. (obsolete!)");
-  typeCmd->SetGuidance("Either Point, Beam, Plane, Surface or Volume");
-  typeCmd->SetParameterName("DisType",false,false);
-  typeCmd->SetDefaultValue("Point");
-  typeCmd->SetCandidates("Point Beam Plane Surface Volume");
+ typeCmd = new G4UIcmdWithAString("/gps/type",this);
+ typeCmd->SetGuidance("Sets source distribution type. (obsolete!)");
+ typeCmd->SetGuidance("Either Point, Beam, Plane, Surface or Volume");
+ typeCmd->SetParameterName("DisType",false,false);
+ typeCmd->SetDefaultValue("Point");
+ typeCmd->SetCandidates("Point Beam Plane Surface Volume");
 
-  shapeCmd = new G4UIcmdWithAString("/gps/shape",this);
-  shapeCmd->SetGuidance("Sets source shape type.(obsolete!)");
-  shapeCmd->SetParameterName("Shape",false,false);
-  shapeCmd->SetDefaultValue("NULL");
-  shapeCmd->SetCandidates("Circle Annulus Ellipse Square Rectangle Sphere Ellipsoid Cylinder Para");
+ shapeCmd = new G4UIcmdWithAString("/gps/shape",this);
+ shapeCmd->SetGuidance("Sets source shape type.(obsolete!)");
+ shapeCmd->SetParameterName("Shape",false,false);
+ shapeCmd->SetDefaultValue("NULL");
+ shapeCmd->SetCandidates("Circle Annulus Ellipse Square Rectangle Sphere Ellipsoid Cylinder Para");
 
-  centreCmd = new G4UIcmdWith3VectorAndUnit("/gps/centre",this);
-  centreCmd->SetGuidance("Set centre coordinates of source.(obsolete!)");
-  centreCmd->SetParameterName("X","Y","Z",false,false);
-  centreCmd->SetDefaultUnit("cm");
-  //  centreCmd->SetUnitCandidates("micron mm cm m km");
+ centreCmd = new G4UIcmdWith3VectorAndUnit("/gps/centre",this);
+ centreCmd->SetGuidance("Set centre coordinates of source.(obsolete!)");
+ centreCmd->SetParameterName("X","Y","Z",false,false);
+ centreCmd->SetDefaultUnit("cm");
+ //  centreCmd->SetUnitCandidates("micron mm cm m km");
 
-  posrot1Cmd = new G4UIcmdWith3Vector("/gps/posrot1",this);
-  posrot1Cmd->SetGuidance("Set rotation matrix of x'.(obsolete!)");
-  posrot1Cmd->SetGuidance("Posrot1 does not need to be a unit vector.");
-  posrot1Cmd->SetParameterName("R1x","R1y","R1z",false,false); 
-  posrot1Cmd->SetRange("R1x != 0 || R1y != 0 || R1z != 0");
+ posrot1Cmd = new G4UIcmdWith3Vector("/gps/posrot1",this);
+ posrot1Cmd->SetGuidance("Set rotation matrix of x'.(obsolete!)");
+ posrot1Cmd->SetGuidance("Posrot1 does not need to be a unit vector.");
+ posrot1Cmd->SetParameterName("R1x","R1y","R1z",false,false); 
+ posrot1Cmd->SetRange("R1x != 0 || R1y != 0 || R1z != 0");
 
-  posrot2Cmd = new G4UIcmdWith3Vector("/gps/posrot2",this);
-  posrot2Cmd->SetGuidance("Set rotation matrix of y'.(obsolete!)");
-  posrot2Cmd->SetGuidance("Posrot2 does not need to be a unit vector.");
-  posrot2Cmd->SetParameterName("R2x","R2y","R2z",false,false); 
-  posrot2Cmd->SetRange("R2x != 0 || R2y != 0 || R2z != 0");
+ posrot2Cmd = new G4UIcmdWith3Vector("/gps/posrot2",this);
+ posrot2Cmd->SetGuidance("Set rotation matrix of y'.(obsolete!)");
+ posrot2Cmd->SetGuidance("Posrot2 does not need to be a unit vector.");
+ posrot2Cmd->SetParameterName("R2x","R2y","R2z",false,false); 
+ posrot2Cmd->SetRange("R2x != 0 || R2y != 0 || R2z != 0");
 
-  halfxCmd = new G4UIcmdWithADoubleAndUnit("/gps/halfx",this);
-  halfxCmd->SetGuidance("Set x half length of source.(obsolete!)");
-  halfxCmd->SetParameterName("Halfx",false,false);
-  halfxCmd->SetDefaultUnit("cm");
-  //  halfxCmd->SetUnitCandidates("micron mm cm m km");
+ halfxCmd = new G4UIcmdWithADoubleAndUnit("/gps/halfx",this);
+ halfxCmd->SetGuidance("Set x half length of source.(obsolete!)");
+ halfxCmd->SetParameterName("Halfx",false,false);
+ halfxCmd->SetDefaultUnit("cm");
+ //  halfxCmd->SetUnitCandidates("micron mm cm m km");
 
-  halfyCmd = new G4UIcmdWithADoubleAndUnit("/gps/halfy",this);
-  halfyCmd->SetGuidance("Set y half length of source.(obsolete!)");
-  halfyCmd->SetParameterName("Halfy",false,false);
-  halfyCmd->SetDefaultUnit("cm");
-  //  halfyCmd->SetUnitCandidates("micron mm cm m km");
+ halfyCmd = new G4UIcmdWithADoubleAndUnit("/gps/halfy",this);
+ halfyCmd->SetGuidance("Set y half length of source.(obsolete!)");
+ halfyCmd->SetParameterName("Halfy",false,false);
+ halfyCmd->SetDefaultUnit("cm");
+ //  halfyCmd->SetUnitCandidates("micron mm cm m km");
 
-  halfzCmd = new G4UIcmdWithADoubleAndUnit("/gps/halfz",this);
-  halfzCmd->SetGuidance("Set z half length of source.(obsolete!)");
-  halfzCmd->SetParameterName("Halfz",false,false);
-  halfzCmd->SetDefaultUnit("cm");
-  //  halfzCmd->SetUnitCandidates("micron mm cm m km");
+ halfzCmd = new G4UIcmdWithADoubleAndUnit("/gps/halfz",this);
+ halfzCmd->SetGuidance("Set z half length of source.(obsolete!)");
+ halfzCmd->SetParameterName("Halfz",false,false);
+ halfzCmd->SetDefaultUnit("cm");
+ //  halfzCmd->SetUnitCandidates("micron mm cm m km");
 
-  radiusCmd = new G4UIcmdWithADoubleAndUnit("/gps/radius",this);
-  radiusCmd->SetGuidance("Set radius of source.(obsolete!)");
-  radiusCmd->SetParameterName("Radius",false,false);
-  radiusCmd->SetDefaultUnit("cm");
-  //  radiusCmd->SetUnitCandidates("micron mm cm m km");
+ radiusCmd = new G4UIcmdWithADoubleAndUnit("/gps/radius",this);
+ radiusCmd->SetGuidance("Set radius of source.(obsolete!)");
+ radiusCmd->SetParameterName("Radius",false,false);
+ radiusCmd->SetDefaultUnit("cm");
+ //  radiusCmd->SetUnitCandidates("micron mm cm m km");
 
-  radius0Cmd = new G4UIcmdWithADoubleAndUnit("/gps/radius0",this);
-  radius0Cmd->SetGuidance("Set inner radius of source.(obsolete!)");
-  radius0Cmd->SetParameterName("Radius0",false,false);
-  radius0Cmd->SetDefaultUnit("cm");
-  //  radius0Cmd->SetUnitCandidates("micron mm cm m km");
+ radius0Cmd = new G4UIcmdWithADoubleAndUnit("/gps/radius0",this);
+ radius0Cmd->SetGuidance("Set inner radius of source.(obsolete!)");
+ radius0Cmd->SetParameterName("Radius0",false,false);
+ radius0Cmd->SetDefaultUnit("cm");
+ //  radius0Cmd->SetUnitCandidates("micron mm cm m km");
 
-  possigmarCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmaposr",this);
-  possigmarCmd->SetGuidance("Set standard deviation of beam position in radial(obsolete!)");
-  possigmarCmd->SetParameterName("Sigmar",false,false);
-  possigmarCmd->SetDefaultUnit("cm");
-  // possigmarCmd->SetUnitCandidates("micron mm cm m km");
+ possigmarCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmaposr",this);
+ possigmarCmd->SetGuidance("Set standard deviation of beam position in radial(obsolete!)");
+ possigmarCmd->SetParameterName("Sigmar",false,false);
+ possigmarCmd->SetDefaultUnit("cm");
+ //  possigmarCmd->SetUnitCandidates("micron mm cm m km");
 
-  possigmaxCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmaposx",this);
-  possigmaxCmd->SetGuidance("Set standard deviation of beam position in x-dir(obsolete!)");
-  possigmaxCmd->SetParameterName("Sigmax",false,false);
-  possigmaxCmd->SetDefaultUnit("cm");
-  //  possigmaxCmd->SetUnitCandidates("micron mm cm m km");
+ possigmaxCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmaposx",this);
+ possigmaxCmd->SetGuidance("Set standard deviation of beam position in x-dir(obsolete!)");
+ possigmaxCmd->SetParameterName("Sigmax",false,false);
+ possigmaxCmd->SetDefaultUnit("cm");
+ //  possigmaxCmd->SetUnitCandidates("micron mm cm m km");
 
-  possigmayCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmaposy",this);
-  possigmayCmd->SetGuidance("Set standard deviation of beam position in y-dir(obsolete!)");
-  possigmayCmd->SetParameterName("Sigmay",false,false);
-  possigmayCmd->SetDefaultUnit("cm");
-  //  possigmayCmd->SetUnitCandidates("micron mm cm m km");
+ possigmayCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmaposy",this);
+ possigmayCmd->SetGuidance("Set standard deviation of beam position in y-dir(obsolete!)");
+ possigmayCmd->SetParameterName("Sigmay",false,false);
+ possigmayCmd->SetDefaultUnit("cm");
+ //  possigmayCmd->SetUnitCandidates("micron mm cm m km");
 
-  paralpCmd = new G4UIcmdWithADoubleAndUnit("/gps/paralp",this);
-  paralpCmd->SetGuidance("Angle from y-axis of y' in Para(obsolete!)");
-  paralpCmd->SetParameterName("paralp",false,false);
-  paralpCmd->SetDefaultUnit("rad");
-  //  paralpCmd->SetUnitCandidates("rad deg");
+ paralpCmd = new G4UIcmdWithADoubleAndUnit("/gps/paralp",this);
+ paralpCmd->SetGuidance("Angle from y-axis of y' in Para(obsolete!)");
+ paralpCmd->SetParameterName("paralp",false,false);
+ paralpCmd->SetDefaultUnit("rad");
+ //  paralpCmd->SetUnitCandidates("rad deg");
 
-  partheCmd = new G4UIcmdWithADoubleAndUnit("/gps/parthe",this);
-  partheCmd->SetGuidance("Polar angle through centres of z faces(obsolete!)");
-  partheCmd->SetParameterName("parthe",false,false);
-  partheCmd->SetDefaultUnit("rad");
-  //  partheCmd->SetUnitCandidates("rad deg");
+ partheCmd = new G4UIcmdWithADoubleAndUnit("/gps/parthe",this);
+ partheCmd->SetGuidance("Polar angle through centres of z faces(obsolete!)");
+ partheCmd->SetParameterName("parthe",false,false);
+ partheCmd->SetDefaultUnit("rad");
+ //  partheCmd->SetUnitCandidates("rad deg");
 
-  parphiCmd = new G4UIcmdWithADoubleAndUnit("/gps/parphi",this);
-  parphiCmd->SetGuidance("Azimuth angle through centres of z faces(obsolete!)");
-  parphiCmd->SetParameterName("parphi",false,false);
-  parphiCmd->SetDefaultUnit("rad");
-  //  parphiCmd->SetUnitCandidates("rad deg");
+ parphiCmd = new G4UIcmdWithADoubleAndUnit("/gps/parphi",this);
+ parphiCmd->SetGuidance("Azimuth angle through centres of z faces(obsolete!)");
+ parphiCmd->SetParameterName("parphi",false,false);
+ parphiCmd->SetDefaultUnit("rad");
+ //  parphiCmd->SetUnitCandidates("rad deg");
 
-  confineCmd = new G4UIcmdWithAString("/gps/confine",this);
-  confineCmd->SetGuidance("Confine source to volume (NULL to unset)(obsolete!) .");
-  confineCmd->SetGuidance("usage: confine VolName");
-  confineCmd->SetParameterName("VolName",false,false);
-  confineCmd->SetDefaultValue("NULL");
+ confineCmd = new G4UIcmdWithAString("/gps/confine",this);
+ confineCmd->SetGuidance("Confine source to volume (NULL to unset)(obsolete!) .");
+ confineCmd->SetGuidance("usage: confine VolName");
+ confineCmd->SetParameterName("VolName",false,false);
+ confineCmd->SetDefaultValue("NULL");
 
   // Angular distribution commands
   angularDirectory = new G4UIdirectory("/gps/ang/");
@@ -544,79 +594,79 @@ G4GeneralParticleSourceMessenger::G4GeneralParticleSourceMessenger
   surfnormCmd1->SetDefaultValue(false);
 
   // old ones
-  angtypeCmd = new G4UIcmdWithAString("/gps/angtype",this);
-  angtypeCmd->SetGuidance("Sets angular source distribution type (obsolete!)");
-  angtypeCmd->SetGuidance("Possible variables are: iso, cos planar beam1d beam2d or user");
-  angtypeCmd->SetParameterName("AngDis",false,false);
-  angtypeCmd->SetDefaultValue("iso");
-  angtypeCmd->SetCandidates("iso cos planar beam1d beam2d user");
+ angtypeCmd = new G4UIcmdWithAString("/gps/angtype",this);
+ angtypeCmd->SetGuidance("Sets angular source distribution type (obsolete!)");
+ angtypeCmd->SetGuidance("Possible variables are: iso, cos planar beam1d beam2d or user");
+ angtypeCmd->SetParameterName("AngDis",false,false);
+ angtypeCmd->SetDefaultValue("iso");
+ angtypeCmd->SetCandidates("iso cos planar beam1d beam2d user");
 
-  angrot1Cmd = new G4UIcmdWith3Vector("/gps/angrot1",this);
-  angrot1Cmd->SetGuidance("Sets the x' vector for angular distribution(obsolete!) ");
-  angrot1Cmd->SetGuidance("Need not be a unit vector");
-  angrot1Cmd->SetParameterName("AR1x","AR1y","AR1z",false,false);
-  angrot1Cmd->SetRange("AR1x != 0 || AR1y != 0 || AR1z != 0");
+ angrot1Cmd = new G4UIcmdWith3Vector("/gps/angrot1",this);
+ angrot1Cmd->SetGuidance("Sets the x' vector for angular distribution(obsolete!) ");
+ angrot1Cmd->SetGuidance("Need not be a unit vector");
+ angrot1Cmd->SetParameterName("AR1x","AR1y","AR1z",false,false);
+ angrot1Cmd->SetRange("AR1x != 0 || AR1y != 0 || AR1z != 0");
 
-  angrot2Cmd = new G4UIcmdWith3Vector("/gps/angrot2",this);
-  angrot2Cmd->SetGuidance("Sets the y' vector for angular distribution (obsolete!)");
-  angrot2Cmd->SetGuidance("Need not be a unit vector");
-  angrot2Cmd->SetParameterName("AR2x","AR2y","AR2z",false,false);
-  angrot2Cmd->SetRange("AR2x != 0 || AR2y != 0 || AR2z != 0");
+ angrot2Cmd = new G4UIcmdWith3Vector("/gps/angrot2",this);
+ angrot2Cmd->SetGuidance("Sets the y' vector for angular distribution (obsolete!)");
+ angrot2Cmd->SetGuidance("Need not be a unit vector");
+ angrot2Cmd->SetParameterName("AR2x","AR2y","AR2z",false,false);
+ angrot2Cmd->SetRange("AR2x != 0 || AR2y != 0 || AR2z != 0");
 
-  minthetaCmd = new G4UIcmdWithADoubleAndUnit("/gps/mintheta",this);
-  minthetaCmd->SetGuidance("Set minimum theta (obsolete!)");
-  minthetaCmd->SetParameterName("MinTheta",false,false);
-  minthetaCmd->SetDefaultUnit("rad");
-  //  minthetaCmd->SetUnitCandidates("rad deg");
+ minthetaCmd = new G4UIcmdWithADoubleAndUnit("/gps/mintheta",this);
+ minthetaCmd->SetGuidance("Set minimum theta (obsolete!)");
+ minthetaCmd->SetParameterName("MinTheta",false,false);
+ minthetaCmd->SetDefaultUnit("rad");
+ //   minthetaCmd->SetUnitCandidates("rad deg");
 
-  maxthetaCmd = new G4UIcmdWithADoubleAndUnit("/gps/maxtheta",this);
-  maxthetaCmd->SetGuidance("Set maximum theta (obsolete!)");
-  maxthetaCmd->SetParameterName("MaxTheta",false,false);
-  maxthetaCmd->SetDefaultValue(3.1416);
-  maxthetaCmd->SetDefaultUnit("rad");
+ maxthetaCmd = new G4UIcmdWithADoubleAndUnit("/gps/maxtheta",this);
+ maxthetaCmd->SetGuidance("Set maximum theta (obsolete!)");
+ maxthetaCmd->SetParameterName("MaxTheta",false,false);
+ maxthetaCmd->SetDefaultValue(3.1416);
+ maxthetaCmd->SetDefaultUnit("rad");
   //  maxthetaCmd->SetUnitCandidates("rad deg");
 
-  minphiCmd = new G4UIcmdWithADoubleAndUnit("/gps/minphi",this);
-  minphiCmd->SetGuidance("Set minimum phi (obsolete!)");
-  minphiCmd->SetParameterName("MinPhi",false,false);
-  minphiCmd->SetDefaultUnit("rad");
+ minphiCmd = new G4UIcmdWithADoubleAndUnit("/gps/minphi",this);
+ minphiCmd->SetGuidance("Set minimum phi (obsolete!)");
+ minphiCmd->SetParameterName("MinPhi",false,false);
+ minphiCmd->SetDefaultUnit("rad");
   //  minphiCmd->SetUnitCandidates("rad deg");
 
-  maxphiCmd = new G4UIcmdWithADoubleAndUnit("/gps/maxphi",this);
-  maxphiCmd->SetGuidance("Set maximum phi(obsolete!)");
-  maxphiCmd->SetParameterName("MaxPhi",false,false);
-  maxphiCmd->SetDefaultUnit("rad");
+ maxphiCmd = new G4UIcmdWithADoubleAndUnit("/gps/maxphi",this);
+ maxphiCmd->SetGuidance("Set maximum phi(obsolete!)");
+ maxphiCmd->SetParameterName("MaxPhi",false,false);
+ maxphiCmd->SetDefaultUnit("rad");
   //  maxphiCmd->SetUnitCandidates("rad deg");
 
-  angsigmarCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmaangr",this);
-  angsigmarCmd->SetGuidance("Set standard deviation of beam direction in radial(obsolete!).");
-  angsigmarCmd->SetParameterName("Sigmara",false,false);
-  angsigmarCmd->SetDefaultUnit("rad");
+ angsigmarCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmaangr",this);
+ angsigmarCmd->SetGuidance("Set standard deviation of beam direction in radial(obsolete!).");
+ angsigmarCmd->SetParameterName("Sigmara",false,false);
+ angsigmarCmd->SetDefaultUnit("rad");
   //  angsigmarCmd->SetUnitCandidates("rad deg");
 
-  angsigmaxCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmaangx",this);
-  angsigmaxCmd->SetGuidance("Set standard deviation of beam direction in x-direc(obsolete!).");
-  angsigmaxCmd->SetParameterName("Sigmaxa",false,false);
-  angsigmaxCmd->SetDefaultUnit("rad");
+ angsigmaxCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmaangx",this);
+ angsigmaxCmd->SetGuidance("Set standard deviation of beam direction in x-direc(obsolete!).");
+ angsigmaxCmd->SetParameterName("Sigmaxa",false,false);
+ angsigmaxCmd->SetDefaultUnit("rad");
   //  angsigmaxCmd->SetUnitCandidates("rad deg");
 
-  angsigmayCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmaangy",this);
-  angsigmayCmd->SetGuidance("Set standard deviation of beam direction in y-direc.(obsolete!)");
-  angsigmayCmd->SetParameterName("Sigmaya",false,false);
-  angsigmayCmd->SetDefaultUnit("rad");
+ angsigmayCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmaangy",this);
+ angsigmayCmd->SetGuidance("Set standard deviation of beam direction in y-direc.(obsolete!)");
+ angsigmayCmd->SetParameterName("Sigmaya",false,false);
+ angsigmayCmd->SetDefaultUnit("rad");
   //  angsigmayCmd->SetUnitCandidates("rad deg");
 
-  useuserangaxisCmd = new G4UIcmdWithABool("/gps/useuserangaxis",this);
-  useuserangaxisCmd->SetGuidance("true for using user defined angular co-ordinates(obsolete!)");
-  useuserangaxisCmd->SetGuidance("Default is false");
-  useuserangaxisCmd->SetParameterName("useuserangaxis",true);
-  useuserangaxisCmd->SetDefaultValue(false);
+ useuserangaxisCmd = new G4UIcmdWithABool("/gps/useuserangaxis",this);
+ useuserangaxisCmd->SetGuidance("true for using user defined angular co-ordinates(obsolete!)");
+ useuserangaxisCmd->SetGuidance("Default is false");
+ useuserangaxisCmd->SetParameterName("useuserangaxis",true);
+ useuserangaxisCmd->SetDefaultValue(false);
 
-  surfnormCmd = new G4UIcmdWithABool("/gps/surfnorm",this);
-  surfnormCmd->SetGuidance("Makes a user-defined distribution with respect to surface normals rather than x,y,z axes (obsolete!).");
-  surfnormCmd->SetGuidance("Default is false");
-  surfnormCmd->SetParameterName("surfnorm",true);
-  surfnormCmd->SetDefaultValue(false);
+ surfnormCmd = new G4UIcmdWithABool("/gps/surfnorm",this);
+ surfnormCmd->SetGuidance("Makes a user-defined distribution with respect to surface normals rather than x,y,z axes (obsolete!).");
+ surfnormCmd->SetGuidance("Default is false");
+ surfnormCmd->SetParameterName("surfnorm",true);
+ surfnormCmd->SetDefaultValue(false);
 
   // Energy commands
 
@@ -691,68 +741,68 @@ G4GeneralParticleSourceMessenger::G4GeneralParticleSourceMessenger
   diffspecCmd1->SetDefaultValue(true);
 
   //old ones
-  energytypeCmd = new G4UIcmdWithAString("/gps/energytype",this);
-  energytypeCmd->SetGuidance("Sets energy distribution type (obsolete!)");
-  energytypeCmd->SetParameterName("EnergyDis",false,false);
-  energytypeCmd->SetDefaultValue("Mono");
-  energytypeCmd->SetCandidates("Mono Lin Pow Exp Gauss Brem Bbody Cdg User Arb Epn");
+ energytypeCmd = new G4UIcmdWithAString("/gps/energytype",this);
+ energytypeCmd->SetGuidance("Sets energy distribution type (obsolete!)");
+ energytypeCmd->SetParameterName("EnergyDis",false,false);
+ energytypeCmd->SetDefaultValue("Mono");
+ energytypeCmd->SetCandidates("Mono Lin Pow Exp Gauss Brem Bbody Cdg User Arb Epn");
 
-  eminCmd = new G4UIcmdWithADoubleAndUnit("/gps/emin",this);
-  eminCmd->SetGuidance("Sets Emin (obsolete!)");
-  eminCmd->SetParameterName("emin",false,false);
-  eminCmd->SetDefaultUnit("keV");
+ eminCmd = new G4UIcmdWithADoubleAndUnit("/gps/emin",this);
+ eminCmd->SetGuidance("Sets Emin (obsolete!)");
+ eminCmd->SetParameterName("emin",false,false);
+ eminCmd->SetDefaultUnit("keV");
   //  eminCmd->SetUnitCandidates("eV keV MeV GeV TeV PeV");
 
-  emaxCmd = new G4UIcmdWithADoubleAndUnit("/gps/emax",this);
-  emaxCmd->SetGuidance("Sets Emax (obsolete!)");
-  emaxCmd->SetParameterName("emax",false,false);
-  emaxCmd->SetDefaultUnit("keV");
+ emaxCmd = new G4UIcmdWithADoubleAndUnit("/gps/emax",this);
+ emaxCmd->SetGuidance("Sets Emax (obsolete!)");
+ emaxCmd->SetParameterName("emax",false,false);
+ emaxCmd->SetDefaultUnit("keV");
   //  emaxCmd->SetUnitCandidates("eV keV MeV GeV TeV PeV");
 
-  monoenergyCmd = new G4UIcmdWithADoubleAndUnit("/gps/monoenergy",this);
-  monoenergyCmd->SetGuidance("Sets Monoenergy (obsolete, use gps/energy instead!)");
-  monoenergyCmd->SetParameterName("monoenergy",false,false);
-  monoenergyCmd->SetDefaultUnit("keV");
+ monoenergyCmd = new G4UIcmdWithADoubleAndUnit("/gps/monoenergy",this);
+ monoenergyCmd->SetGuidance("Sets Monoenergy (obsolete, use gps/energy instead!)");
+ monoenergyCmd->SetParameterName("monoenergy",false,false);
+ monoenergyCmd->SetDefaultUnit("keV");
   //  monoenergyCmd->SetUnitCandidates("eV keV MeV GeV TeV PeV");
 
-  engsigmaCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmae",this);
-  engsigmaCmd->SetGuidance("Sets the standard deviation for Gaussian energy dist.(obsolete!)");
-  engsigmaCmd->SetParameterName("Sigmae",false,false);
-  engsigmaCmd->SetDefaultUnit("keV");
+ engsigmaCmd = new G4UIcmdWithADoubleAndUnit("/gps/sigmae",this);
+ engsigmaCmd->SetGuidance("Sets the standard deviation for Gaussian energy dist.(obsolete!)");
+ engsigmaCmd->SetParameterName("Sigmae",false,false);
+ engsigmaCmd->SetDefaultUnit("keV");
   //  engsigmaCmd->SetUnitCandidates("eV keV MeV GeV TeV PeV");
 
-  alphaCmd = new G4UIcmdWithADouble("/gps/alpha",this);
-  alphaCmd->SetGuidance("Sets Alpha (index) for power-law energy dist(obsolete!).");
-  alphaCmd->SetParameterName("alpha",false,false);
+ alphaCmd = new G4UIcmdWithADouble("/gps/alpha",this);
+ alphaCmd->SetGuidance("Sets Alpha (index) for power-law energy dist(obsolete!).");
+ alphaCmd->SetParameterName("alpha",false,false);
   
-  tempCmd = new G4UIcmdWithADouble("/gps/temp",this);
-  tempCmd->SetGuidance("Sets the temperature for Brem and BBody (in Kelvin)(obsolete!)");
-  tempCmd->SetParameterName("temp",false,false);
+ tempCmd = new G4UIcmdWithADouble("/gps/temp",this);
+ tempCmd->SetGuidance("Sets the temperature for Brem and BBody (in Kelvin)(obsolete!)");
+ tempCmd->SetParameterName("temp",false,false);
 
-  ezeroCmd = new G4UIcmdWithADouble("/gps/ezero",this);
-  ezeroCmd->SetGuidance("Sets ezero exponential distributions (in MeV)(obsolete!)");
-  ezeroCmd->SetParameterName("ezero",false,false);
+ ezeroCmd = new G4UIcmdWithADouble("/gps/ezero",this);
+ ezeroCmd->SetGuidance("Sets ezero exponential distributions (in MeV)(obsolete!)");
+ ezeroCmd->SetParameterName("ezero",false,false);
 
-  gradientCmd = new G4UIcmdWithADouble("/gps/gradient",this);
-  gradientCmd->SetGuidance("Sets the gradient for Lin distributions (in 1/MeV)(obsolete!)");
-  gradientCmd->SetParameterName("gradient",false,false);
+ gradientCmd = new G4UIcmdWithADouble("/gps/gradient",this);
+ gradientCmd->SetGuidance("Sets the gradient for Lin distributions (in 1/MeV)(obsolete!)");
+ gradientCmd->SetParameterName("gradient",false,false);
 
-  interceptCmd = new G4UIcmdWithADouble("/gps/intercept",this);
-  interceptCmd->SetGuidance("Sets the intercept for Lin distributions (in MeV)(obsolete!)");
-  interceptCmd->SetParameterName("intercept",false,false);
+ interceptCmd = new G4UIcmdWithADouble("/gps/intercept",this);
+ interceptCmd->SetGuidance("Sets the intercept for Lin distributions (in MeV)(obsolete!)");
+ interceptCmd->SetParameterName("intercept",false,false);
 
-  calculateCmd = new G4UIcmdWithoutParameter("/gps/calculate",this);
-  calculateCmd->SetGuidance("Calculates distributions for Cdg and BBody(obsolete!)");
+ calculateCmd = new G4UIcmdWithoutParameter("/gps/calculate",this);
+ calculateCmd->SetGuidance("Calculates distributions for Cdg and BBody(obsolete!)");
 
-  energyspecCmd = new G4UIcmdWithABool("/gps/energyspec",this);
-  energyspecCmd->SetGuidance("True for energy and false for momentum spectra(obsolete!)");
-  energyspecCmd->SetParameterName("energyspec",true);
-  energyspecCmd->SetDefaultValue(true);
+ energyspecCmd = new G4UIcmdWithABool("/gps/energyspec",this);
+ energyspecCmd->SetGuidance("True for energy and false for momentum spectra(obsolete!)");
+ energyspecCmd->SetParameterName("energyspec",true);
+ energyspecCmd->SetDefaultValue(true);
 
-  diffspecCmd = new G4UIcmdWithABool("/gps/diffspec",this);
-  diffspecCmd->SetGuidance("True for differential and flase for integral spectra(obsolete!)");
-  diffspecCmd->SetParameterName("diffspec",true);
-  diffspecCmd->SetDefaultValue(true);
+ diffspecCmd = new G4UIcmdWithABool("/gps/diffspec",this);
+ diffspecCmd->SetGuidance("True for differential and flase for integral spectra(obsolete!)");
+ diffspecCmd->SetParameterName("diffspec",true);
+ diffspecCmd->SetDefaultValue(true);
 
   // Biasing + histograms in general
   histDirectory = new G4UIdirectory("/gps/hist/");
@@ -787,53 +837,53 @@ G4GeneralParticleSourceMessenger::G4GeneralParticleSourceMessenger
   arbintCmd1->SetCandidates("Lin Log Exp Spline");
 
   // old ones
-  histnameCmd = new G4UIcmdWithAString("/gps/histname",this);
-  histnameCmd->SetGuidance("Sets histogram type (obsolete!)");
-  histnameCmd->SetParameterName("HistType",false,false);
-  histnameCmd->SetDefaultValue("biasx");
-  histnameCmd->SetCandidates("biasx biasy biasz biast biasp biase biaspt biaspp theta phi energy arb epn");
+ histnameCmd = new G4UIcmdWithAString("/gps/histname",this);
+ histnameCmd->SetGuidance("Sets histogram type (obsolete!)");
+ histnameCmd->SetParameterName("HistType",false,false);
+ histnameCmd->SetDefaultValue("biasx");
+ histnameCmd->SetCandidates("biasx biasy biasz biast biasp biase biaspt biaspp theta phi energy arb epn");
 
-  // re-set the histograms
-  resethistCmd = new G4UIcmdWithAString("/gps/resethist",this);
-  resethistCmd->SetGuidance("Re-Set the histogram (obsolete!)");
-  resethistCmd->SetParameterName("HistType",false,false);
-  resethistCmd->SetDefaultValue("energy");
-  resethistCmd->SetCandidates("biasx biasy biasz biast biasp biase biaspt biaspp theta phi energy arb epn");
+ // re-set the histograms
+ resethistCmd = new G4UIcmdWithAString("/gps/resethist",this);
+ resethistCmd->SetGuidance("Re-Set the histogram (obsolete!)");
+ resethistCmd->SetParameterName("HistType",false,false);
+ resethistCmd->SetDefaultValue("energy");
+ resethistCmd->SetCandidates("biasx biasy biasz biast biasp biase biaspt biaspp theta phi energy arb epn");
 
-  histpointCmd = new G4UIcmdWith3Vector("/gps/histpoint",this);
-  histpointCmd->SetGuidance("Allows user to define a histogram (obsolete!)");
-  histpointCmd->SetGuidance("Enter: Ehi Weight");
-  histpointCmd->SetParameterName("Ehi","Weight","Junk",false,false);
-  histpointCmd->SetRange("Ehi >= 0. && Weight >= 0.");
+ histpointCmd = new G4UIcmdWith3Vector("/gps/histpoint",this);
+ histpointCmd->SetGuidance("Allows user to define a histogram (obsolete!)");
+ histpointCmd->SetGuidance("Enter: Ehi Weight");
+ histpointCmd->SetParameterName("Ehi","Weight","Junk",false,false);
+ histpointCmd->SetRange("Ehi >= 0. && Weight >= 0.");
 
-  arbintCmd = new G4UIcmdWithAString("/gps/arbint",this);
-  arbintCmd->SetGuidance("Sets Arbitrary Interpolation type.(obsolete!) ");
-  arbintCmd->SetParameterName("int",false,false);
-  arbintCmd->SetDefaultValue("NULL");
-  arbintCmd->SetCandidates("Lin Log Exp Spline");
+ arbintCmd = new G4UIcmdWithAString("/gps/arbint",this);
+ arbintCmd->SetGuidance("Sets Arbitrary Interpolation type.(obsolete!) ");
+ arbintCmd->SetParameterName("int",false,false);
+ arbintCmd->SetDefaultValue("NULL");
+ arbintCmd->SetCandidates("Lin Log Exp Spline");
 
 }
 
 G4GeneralParticleSourceMessenger::~G4GeneralParticleSourceMessenger()
 {
   delete positionDirectory;
-  delete typeCmd;
-  delete shapeCmd;
-  delete centreCmd;
-  delete posrot1Cmd;
-  delete posrot2Cmd;
-  delete halfxCmd;
-  delete halfyCmd;
-  delete halfzCmd;
-  delete radiusCmd;
-  delete radius0Cmd;
-  delete possigmarCmd;
-  delete possigmaxCmd;
-  delete possigmayCmd;
-  delete paralpCmd;
-  delete partheCmd;
-  delete parphiCmd;
-  delete confineCmd;
+ delete typeCmd;
+ delete shapeCmd;
+ delete centreCmd;
+ delete posrot1Cmd;
+ delete posrot2Cmd;
+ delete halfxCmd;
+ delete halfyCmd;
+ delete halfzCmd;
+ delete radiusCmd;
+ delete radius0Cmd;
+ delete possigmarCmd;
+ delete possigmaxCmd;
+ delete possigmayCmd;
+ delete paralpCmd;
+ delete partheCmd;
+ delete parphiCmd;
+ delete confineCmd;
   delete typeCmd1;
   delete shapeCmd1;
   delete centreCmd1;
@@ -853,18 +903,18 @@ G4GeneralParticleSourceMessenger::~G4GeneralParticleSourceMessenger()
   delete confineCmd1;
 
   delete angularDirectory;
-  delete angtypeCmd;
-  delete angrot1Cmd;
-  delete angrot2Cmd;
-  delete minthetaCmd;
-  delete maxthetaCmd;
-  delete minphiCmd;
-  delete maxphiCmd;
-  delete angsigmarCmd;
-  delete angsigmaxCmd;
-  delete angsigmayCmd;
-  delete useuserangaxisCmd;
-  delete surfnormCmd;
+ delete angtypeCmd;
+ delete angrot1Cmd;
+ delete angrot2Cmd;
+ delete minthetaCmd;
+ delete maxthetaCmd;
+ delete minphiCmd;
+ delete maxphiCmd;
+ delete angsigmarCmd;
+ delete angsigmaxCmd;
+ delete angsigmayCmd;
+ delete useuserangaxisCmd;
+ delete surfnormCmd;
   delete angtypeCmd1;
   delete angrot1Cmd1;
   delete angrot2Cmd1;
@@ -880,19 +930,19 @@ G4GeneralParticleSourceMessenger::~G4GeneralParticleSourceMessenger()
   delete surfnormCmd1;
 
   delete energyDirectory;
-  delete energytypeCmd;
-  delete eminCmd;
-  delete emaxCmd;
-  delete monoenergyCmd;
-  delete engsigmaCmd;
-  delete alphaCmd;
-  delete tempCmd;
-  delete ezeroCmd;
-  delete gradientCmd;
-  delete interceptCmd;
-  delete calculateCmd;
-  delete energyspecCmd;
-  delete diffspecCmd;
+ delete energytypeCmd;
+ delete eminCmd;
+ delete emaxCmd;
+ delete monoenergyCmd;
+ delete engsigmaCmd;
+ delete alphaCmd;
+ delete tempCmd;
+ delete ezeroCmd;
+ delete gradientCmd;
+ delete interceptCmd;
+ delete calculateCmd;
+ delete energyspecCmd;
+ delete diffspecCmd;
   delete energytypeCmd1;
   delete eminCmd1;
   delete emaxCmd1;
@@ -943,316 +993,328 @@ G4GeneralParticleSourceMessenger::~G4GeneralParticleSourceMessenger()
   delete flatsamplingCmd;
 
   delete gpsDirectory;
-  
+  theInstance = 0;
 }
+
+#define CHECKPG() { if (fParticleGun==NULL) { \
+                 G4ExceptionDescription msg; \
+                 msg << "Command "<< command->GetCommandPath()<<"/";\
+                 msg<<command->GetCommandName() << " used but no particle sources are set.";\
+                 msg <<" Add at least a source with: /gps/source/add.";\
+		      G4Exception("G4GeneralParticleSourceMessenger::SetNewValue","G4GPS003",\
+				  FatalException,msg); return;\
+    } }
 
 void G4GeneralParticleSourceMessenger::SetNewValue(G4UIcommand *command, G4String newValues)
 {
-  if(command == typeCmd)
+ if(command == typeCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetPosDisType(newValues);
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == shapeCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetPosDisShape(newValues);
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == centreCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetCentreCoords(centreCmd->GetNew3VectorValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == posrot1Cmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetPosRot1(posrot1Cmd->GetNew3VectorValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == posrot2Cmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetPosRot2(posrot2Cmd->GetNew3VectorValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == halfxCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetHalfX(halfxCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == halfyCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetHalfY(halfyCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == halfzCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetHalfZ(halfzCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == radiusCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetRadius(radiusCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == radius0Cmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetRadius0(radius0Cmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == possigmarCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetBeamSigmaInR(possigmarCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == possigmaxCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetBeamSigmaInX(possigmaxCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == possigmayCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetBeamSigmaInY(possigmayCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == paralpCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetParAlpha(paralpCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == partheCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetParTheta(partheCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == parphiCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->SetParPhi(parphiCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == confineCmd)
+   {
+     CHECKPG(); fParticleGun->GetPosDist()->ConfineSourceToVolume(newValues);
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == angtypeCmd)
+   {
+     CHECKPG(); fParticleGun->GetAngDist()->SetAngDistType(newValues);
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == angrot1Cmd)
+   {
+     CHECKPG();
+     G4String a = "angref1";
+     fParticleGun->GetAngDist()->DefineAngRefAxes(a,angrot1Cmd->GetNew3VectorValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == angrot2Cmd)
+   {
+     CHECKPG();
+     G4String a = "angref2";
+     fParticleGun->GetAngDist()->DefineAngRefAxes(a,angrot2Cmd->GetNew3VectorValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == minthetaCmd)
+   {
+     CHECKPG(); fParticleGun->GetAngDist()->SetMinTheta(minthetaCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == minphiCmd)
+   {
+     CHECKPG(); fParticleGun->GetAngDist()->SetMinPhi(minphiCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == maxthetaCmd)
+   {
+     CHECKPG(); fParticleGun->GetAngDist()->SetMaxTheta(maxthetaCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == maxphiCmd)
+   {
+     CHECKPG(); fParticleGun->GetAngDist()->SetMaxPhi(maxphiCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == angsigmarCmd)
+   {
+     CHECKPG(); fParticleGun->GetAngDist()->SetBeamSigmaInAngR(angsigmarCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == angsigmaxCmd)
+   {
+     CHECKPG(); fParticleGun->GetAngDist()->SetBeamSigmaInAngX(angsigmaxCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == angsigmayCmd)
+   {
+     CHECKPG(); fParticleGun->GetAngDist()->SetBeamSigmaInAngY(angsigmayCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == useuserangaxisCmd)
+   {
+     CHECKPG(); fParticleGun->GetAngDist()->SetUseUserAngAxis(useuserangaxisCmd->GetNewBoolValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == surfnormCmd)
+   {
+     CHECKPG(); fParticleGun->GetAngDist()->SetUserWRTSurface(surfnormCmd->GetNewBoolValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == energytypeCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->SetEnergyDisType(newValues);
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == eminCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->SetEmin(eminCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == emaxCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->SetEmax(emaxCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == monoenergyCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->SetMonoEnergy(monoenergyCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == engsigmaCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->SetBeamSigmaInE(engsigmaCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == alphaCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->SetAlpha(alphaCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == tempCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->SetTemp(tempCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == ezeroCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->SetEzero(ezeroCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == gradientCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->SetGradient(gradientCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == interceptCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->SetInterCept(interceptCmd->GetNewDoubleValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == calculateCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->Calculate();
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == energyspecCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->InputEnergySpectra(energyspecCmd->GetNewBoolValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == diffspecCmd)
+   {
+     CHECKPG(); fParticleGun->GetEneDist()->InputDifferentialSpectra(diffspecCmd->GetNewBoolValue(newValues));
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == histnameCmd)
+   {
+     histtype = newValues;
+     G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
+            << " The command is obsolete and will be removed soon." << G4endl
+            << " Please try to use the new structured commands!" << G4endl;
+   }
+ else if(command == histpointCmd)
     {
-      fParticleGun->GetPosDist()->SetPosDisType(newValues);
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == shapeCmd)
-    {
-      fParticleGun->GetPosDist()->SetPosDisShape(newValues);
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == centreCmd)
-    {
-      fParticleGun->GetPosDist()->SetCentreCoords(centreCmd->GetNew3VectorValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == posrot1Cmd)
-    {
-      fParticleGun->GetPosDist()->SetPosRot1(posrot1Cmd->GetNew3VectorValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == posrot2Cmd)
-    {
-      fParticleGun->GetPosDist()->SetPosRot2(posrot2Cmd->GetNew3VectorValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == halfxCmd)
-    {
-      fParticleGun->GetPosDist()->SetHalfX(halfxCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == halfyCmd)
-    {
-      fParticleGun->GetPosDist()->SetHalfY(halfyCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == halfzCmd)
-    {
-      fParticleGun->GetPosDist()->SetHalfZ(halfzCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == radiusCmd)
-    {
-      fParticleGun->GetPosDist()->SetRadius(radiusCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == radius0Cmd)
-    {
-      fParticleGun->GetPosDist()->SetRadius0(radius0Cmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == possigmarCmd)
-    {
-      fParticleGun->GetPosDist()->SetBeamSigmaInR(possigmarCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == possigmaxCmd)
-    {
-      fParticleGun->GetPosDist()->SetBeamSigmaInX(possigmaxCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == possigmayCmd)
-    {
-      fParticleGun->GetPosDist()->SetBeamSigmaInY(possigmayCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == paralpCmd)
-    {
-      fParticleGun->GetPosDist()->SetParAlpha(paralpCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == partheCmd)
-    {
-      fParticleGun->GetPosDist()->SetParTheta(partheCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == parphiCmd)
-    {
-      fParticleGun->GetPosDist()->SetParPhi(parphiCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == confineCmd)
-    {
-      fParticleGun->GetPosDist()->ConfineSourceToVolume(newValues);
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == angtypeCmd)
-    {
-      fParticleGun->GetAngDist()->SetAngDistType(newValues);
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == angrot1Cmd)
-    {
-      G4String a = "angref1";
-      fParticleGun->GetAngDist()->DefineAngRefAxes(a,angrot1Cmd->GetNew3VectorValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == angrot2Cmd)
-    {
-      G4String a = "angref2";
-      fParticleGun->GetAngDist()->DefineAngRefAxes(a,angrot2Cmd->GetNew3VectorValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == minthetaCmd)
-    {
-      fParticleGun->GetAngDist()->SetMinTheta(minthetaCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == minphiCmd)
-    {
-      fParticleGun->GetAngDist()->SetMinPhi(minphiCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == maxthetaCmd)
-    {
-      fParticleGun->GetAngDist()->SetMaxTheta(maxthetaCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == maxphiCmd)
-    {
-      fParticleGun->GetAngDist()->SetMaxPhi(maxphiCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == angsigmarCmd)
-    {
-      fParticleGun->GetAngDist()->SetBeamSigmaInAngR(angsigmarCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == angsigmaxCmd)
-    {
-      fParticleGun->GetAngDist()->SetBeamSigmaInAngX(angsigmaxCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == angsigmayCmd)
-    {
-      fParticleGun->GetAngDist()->SetBeamSigmaInAngY(angsigmayCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == useuserangaxisCmd)
-    {
-      fParticleGun->GetAngDist()->SetUseUserAngAxis(useuserangaxisCmd->GetNewBoolValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == surfnormCmd)
-    {
-      fParticleGun->GetAngDist()->SetUserWRTSurface(surfnormCmd->GetNewBoolValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == energytypeCmd)
-    {
-      fParticleGun->GetEneDist()->SetEnergyDisType(newValues);
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == eminCmd)
-    {
-      fParticleGun->GetEneDist()->SetEmin(eminCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == emaxCmd)
-    {
-      fParticleGun->GetEneDist()->SetEmax(emaxCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == monoenergyCmd)
-    {
-      fParticleGun->GetEneDist()->SetMonoEnergy(monoenergyCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == engsigmaCmd)
-    {
-      fParticleGun->GetEneDist()->SetBeamSigmaInE(engsigmaCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == alphaCmd)
-    {
-      fParticleGun->GetEneDist()->SetAlpha(alphaCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == tempCmd)
-    {
-      fParticleGun->GetEneDist()->SetTemp(tempCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == ezeroCmd)
-    {
-      fParticleGun->GetEneDist()->SetEzero(ezeroCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == gradientCmd)
-    {
-      fParticleGun->GetEneDist()->SetGradient(gradientCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == interceptCmd)
-    {
-      fParticleGun->GetEneDist()->SetInterCept(interceptCmd->GetNewDoubleValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == calculateCmd)
-    {
-      fParticleGun->GetEneDist()->Calculate();
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == energyspecCmd)
-    {
-      fParticleGun->GetEneDist()->InputEnergySpectra(energyspecCmd->GetNewBoolValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == diffspecCmd)
-    {
-      fParticleGun->GetEneDist()->InputDifferentialSpectra(diffspecCmd->GetNewBoolValue(newValues));
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == histnameCmd)
-    {
-      histtype = newValues;
-      G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
-             << " The command is obsolete and will be removed soon." << G4endl
-             << " Please try to use the new structured commands!" << G4endl;
-    }
-  else if(command == histpointCmd)
-    {
+      CHECKPG();
       if(histtype == "biasx")
 	fParticleGun->GetBiasRndm()->SetXBias(histpointCmd->GetNew3VectorValue(newValues));
       if(histtype == "biasy")
@@ -1279,6 +1341,7 @@ void G4GeneralParticleSourceMessenger::SetNewValue(G4UIcommand *command, G4Strin
     }
   else if(command == resethistCmd)
     {
+      CHECKPG();
       if(newValues == "theta" || newValues == "phi") {
 	fParticleGun->GetAngDist()->ReSetHist(newValues);
       } else if (newValues == "energy" || newValues == "arb" || newValues == "epn") {
@@ -1292,29 +1355,35 @@ void G4GeneralParticleSourceMessenger::SetNewValue(G4UIcommand *command, G4Strin
     }
   else if(command == arbintCmd)
     {
+      CHECKPG();
       fParticleGun->GetEneDist()->ArbInterpolate(newValues);
       G4cout << " G4GeneralParticleSourceMessenger - Warning:" << G4endl
              << " The command is obsolete and will be removed soon." << G4endl
              << " Please try to use the new structured commands!" << G4endl;
     }
   else if( command==directionCmd )
-    { 
+    {
+      CHECKPG();
       fParticleGun->GetAngDist()->SetAngDistType("planar");
       fParticleGun->GetAngDist()->SetParticleMomentumDirection(directionCmd->GetNew3VectorValue(newValues));
     }
   else if( command==energyCmd )
-    {    
+    {
+      CHECKPG();
       fParticleGun->GetEneDist()->SetEnergyDisType("Mono");
       fParticleGun->GetEneDist()->SetMonoEnergy(energyCmd->GetNewDoubleValue(newValues));
     }
   else if( command==positionCmd )
-    { 
+    {
+      CHECKPG();
       fParticleGun->GetPosDist()->SetPosDisType("Point");    
       fParticleGun->GetPosDist()->SetCentreCoords(positionCmd->GetNew3VectorValue(newValues));
     }
   else if(command == verbosityCmd)
     {
-      fParticleGun->SetVerbosity(verbosityCmd->GetNewIntValue(newValues));
+	  fGPS->SetVerbosity(verbosityCmd->GetNewIntValue(newValues));
+      //CHECKPG();
+      //fParticleGun->SetVerbosity(verbosityCmd->GetNewIntValue(newValues));
     }
   else if( command==particleCmd )
     {
@@ -1324,15 +1393,15 @@ void G4GeneralParticleSourceMessenger::SetNewValue(G4UIcommand *command, G4Strin
 	fShootIon = false;
 	G4ParticleDefinition* pd = particleTable->FindParticle(newValues);
 	if(pd != NULL)
-	  { fParticleGun->SetParticleDefinition( pd ); }
+	  { CHECKPG(); fParticleGun->SetParticleDefinition( pd ); }
       }
     }
   else if( command==timeCmd )
-    { fParticleGun->SetParticleTime(timeCmd->GetNewDoubleValue(newValues)); }
+    { CHECKPG(); fParticleGun->SetParticleTime(timeCmd->GetNewDoubleValue(newValues)); }
   else if( command==polCmd )
-    { fParticleGun->SetParticlePolarization(polCmd->GetNew3VectorValue(newValues)); }
+    { CHECKPG(); fParticleGun->SetParticlePolarization(polCmd->GetNew3VectorValue(newValues)); }
   else if( command==numberCmd )
-    { fParticleGun->SetNumberOfParticles(numberCmd->GetNewIntValue(newValues)); }
+    { CHECKPG(); fParticleGun->SetNumberOfParticles(numberCmd->GetNewIntValue(newValues)); }
   else if( command==ionCmd )
     { IonCommand(newValues); }
   else if( command==ionLvlCmd )
@@ -1341,7 +1410,7 @@ void G4GeneralParticleSourceMessenger::SetNewValue(G4UIcommand *command, G4Strin
     particleTable->DumpTable(); 
   }
   else if( command==addsourceCmd )
-    { 
+    {
       fGPS->AddaSource(addsourceCmd->GetNewDoubleValue(newValues));
     }
   else if( command==listsourceCmd )
@@ -1351,6 +1420,7 @@ void G4GeneralParticleSourceMessenger::SetNewValue(G4UIcommand *command, G4Strin
   else if( command==clearsourceCmd )
     { 
       fGPS->ClearAll();
+      fParticleGun = 0;      
     }
   else if( command==getsourceCmd )
     { 
@@ -1359,7 +1429,22 @@ void G4GeneralParticleSourceMessenger::SetNewValue(G4UIcommand *command, G4Strin
     }
   else if( command==setsourceCmd )
     { 
-      fGPS->SetCurrentSourceto(setsourceCmd->GetNewIntValue(newValues));
+	  //NOTE: This will also sets fParticleGun to the courrent source
+	  //      Not very clean, the GPS::SetCurrentSourceto will call:
+	  //      this::SetParticleSource( G4ParticleSource* )
+	  //      The point is that GPS has no public API to get a source by
+	  //      index
+	  //TODO: Can we add this API?
+	  const G4int sn = setsourceCmd->GetNewIntValue(newValues);
+	  if ( sn >= fGPS->GetNumberofSource() )
+	  {
+		G4ExceptionDescription msg;
+		msg << "Using command "<<setsourceCmd->GetCommandPath()<<"/"<<setsourceCmd->GetCommandName()<<" "<<sn;
+		msg << " is invalid "<<fGPS->GetNumberofSource()<<" source(s) are defined.";
+		G4Exception("G4GeneralParticleSourceMessenger::SetNewValue","G4GPS005",FatalException,msg);
+	  }
+	  fGPS->SetCurrentSourceto(setsourceCmd->GetNewIntValue(newValues));
+
     }
   else if( command==setintensityCmd )
     { 
@@ -1383,181 +1468,195 @@ void G4GeneralParticleSourceMessenger::SetNewValue(G4UIcommand *command, G4Strin
   //
   else if(command == typeCmd1)
     {
+      CHECKPG();
       fParticleGun->GetPosDist()->SetPosDisType(newValues);
     }
   else if(command == shapeCmd1)
     {
+      CHECKPG();
       fParticleGun->GetPosDist()->SetPosDisShape(newValues);
     }
   else if(command == centreCmd1)
     {
+      CHECKPG();
       fParticleGun->GetPosDist()->SetCentreCoords(centreCmd1->GetNew3VectorValue(newValues));
     }
   else if(command == posrot1Cmd1)
     {
+      CHECKPG();
       fParticleGun->GetPosDist()->SetPosRot1(posrot1Cmd1->GetNew3VectorValue(newValues));
     }
   else if(command == posrot2Cmd1)
     {
+      CHECKPG();
       fParticleGun->GetPosDist()->SetPosRot2(posrot2Cmd1->GetNew3VectorValue(newValues));
     }
   else if(command == halfxCmd1)
     {
+      CHECKPG();
       fParticleGun->GetPosDist()->SetHalfX(halfxCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == halfyCmd1)
     {
+      CHECKPG();
       fParticleGun->GetPosDist()->SetHalfY(halfyCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == halfzCmd1)
     {
+      CHECKPG();
       fParticleGun->GetPosDist()->SetHalfZ(halfzCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == radiusCmd1)
     {
+      CHECKPG();
       fParticleGun->GetPosDist()->SetRadius(radiusCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == radius0Cmd1)
     {
+      CHECKPG();
       fParticleGun->GetPosDist()->SetRadius0(radius0Cmd1->GetNewDoubleValue(newValues));
     }
   else if(command == possigmarCmd1)
     {
+      CHECKPG();
       fParticleGun->GetPosDist()->SetBeamSigmaInR(possigmarCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == possigmaxCmd1)
     {
-      fParticleGun->GetPosDist()->SetBeamSigmaInX(possigmaxCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetPosDist()->SetBeamSigmaInX(possigmaxCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == possigmayCmd1)
     {
-      fParticleGun->GetPosDist()->SetBeamSigmaInY(possigmayCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetPosDist()->SetBeamSigmaInY(possigmayCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == paralpCmd1)
     {
-      fParticleGun->GetPosDist()->SetParAlpha(paralpCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetPosDist()->SetParAlpha(paralpCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == partheCmd1)
     {
-      fParticleGun->GetPosDist()->SetParTheta(partheCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetPosDist()->SetParTheta(partheCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == parphiCmd1)
     {
-      fParticleGun->GetPosDist()->SetParPhi(parphiCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetPosDist()->SetParPhi(parphiCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == confineCmd1)
     {
-      fParticleGun->GetPosDist()->ConfineSourceToVolume(newValues);
+      CHECKPG(); fParticleGun->GetPosDist()->ConfineSourceToVolume(newValues);
     }
   else if(command == angtypeCmd1)
     {
-      fParticleGun->GetAngDist()->SetAngDistType(newValues);
+      CHECKPG(); fParticleGun->GetAngDist()->SetAngDistType(newValues);
     }
   else if(command == angrot1Cmd1)
     {
+      CHECKPG(); 
       G4String a = "angref1";
       fParticleGun->GetAngDist()->DefineAngRefAxes(a,angrot1Cmd1->GetNew3VectorValue(newValues));
     }
   else if(command == angrot2Cmd1)
     {
+      CHECKPG(); 
       G4String a = "angref2";
       fParticleGun->GetAngDist()->DefineAngRefAxes(a,angrot2Cmd1->GetNew3VectorValue(newValues));
     }
   else if(command == minthetaCmd1)
     {
+      CHECKPG(); 
       fParticleGun->GetAngDist()->SetMinTheta(minthetaCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == minphiCmd1)
     {
-      fParticleGun->GetAngDist()->SetMinPhi(minphiCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetAngDist()->SetMinPhi(minphiCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == maxthetaCmd1)
     {
-      fParticleGun->GetAngDist()->SetMaxTheta(maxthetaCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetAngDist()->SetMaxTheta(maxthetaCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == maxphiCmd1)
     {
-      fParticleGun->GetAngDist()->SetMaxPhi(maxphiCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetAngDist()->SetMaxPhi(maxphiCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == angsigmarCmd1)
     {
-      fParticleGun->GetAngDist()->SetBeamSigmaInAngR(angsigmarCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetAngDist()->SetBeamSigmaInAngR(angsigmarCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == angsigmaxCmd1)
     {
-      fParticleGun->GetAngDist()->SetBeamSigmaInAngX(angsigmaxCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetAngDist()->SetBeamSigmaInAngX(angsigmaxCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == angsigmayCmd1)
     {
-      fParticleGun->GetAngDist()->SetBeamSigmaInAngY(angsigmayCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetAngDist()->SetBeamSigmaInAngY(angsigmayCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == angfocusCmd)
     {
-      fParticleGun->GetAngDist()->SetFocusPoint(angfocusCmd->GetNew3VectorValue(newValues));
+      CHECKPG(); fParticleGun->GetAngDist()->SetFocusPoint(angfocusCmd->GetNew3VectorValue(newValues));
     }
   else if(command == useuserangaxisCmd1)
     {
-      fParticleGun->GetAngDist()->SetUseUserAngAxis(useuserangaxisCmd1->GetNewBoolValue(newValues));
+      CHECKPG(); fParticleGun->GetAngDist()->SetUseUserAngAxis(useuserangaxisCmd1->GetNewBoolValue(newValues));
     }
   else if(command == surfnormCmd1)
     {
-      fParticleGun->GetAngDist()->SetUserWRTSurface(surfnormCmd1->GetNewBoolValue(newValues));
+      CHECKPG(); fParticleGun->GetAngDist()->SetUserWRTSurface(surfnormCmd1->GetNewBoolValue(newValues));
     }
   else if(command == energytypeCmd1)
     {
-      fParticleGun->GetEneDist()->SetEnergyDisType(newValues);
+      CHECKPG(); fParticleGun->GetEneDist()->SetEnergyDisType(newValues);
     }
   else if(command == eminCmd1)
     {
-      fParticleGun->GetEneDist()->SetEmin(eminCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetEneDist()->SetEmin(eminCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == emaxCmd1)
     {
-      fParticleGun->GetEneDist()->SetEmax(emaxCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetEneDist()->SetEmax(emaxCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == monoenergyCmd1)
     {
-      fParticleGun->GetEneDist()->SetMonoEnergy(monoenergyCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetEneDist()->SetMonoEnergy(monoenergyCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == engsigmaCmd1)
     {
-      fParticleGun->GetEneDist()->SetBeamSigmaInE(engsigmaCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetEneDist()->SetBeamSigmaInE(engsigmaCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == alphaCmd1)
     {
-      fParticleGun->GetEneDist()->SetAlpha(alphaCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetEneDist()->SetAlpha(alphaCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == tempCmd1)
     {
-      fParticleGun->GetEneDist()->SetTemp(tempCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetEneDist()->SetTemp(tempCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == ezeroCmd1)
     {
-      fParticleGun->GetEneDist()->SetEzero(ezeroCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetEneDist()->SetEzero(ezeroCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == gradientCmd1)
     {
-      fParticleGun->GetEneDist()->SetGradient(gradientCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetEneDist()->SetGradient(gradientCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == interceptCmd1)
     {
-      fParticleGun->GetEneDist()->SetInterCept(interceptCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetEneDist()->SetInterCept(interceptCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == arbeintCmd1)
     {
-      fParticleGun->GetEneDist()->SetBiasAlpha(arbeintCmd1->GetNewDoubleValue(newValues));
+      CHECKPG(); fParticleGun->GetEneDist()->SetBiasAlpha(arbeintCmd1->GetNewDoubleValue(newValues));
     }
   else if(command == calculateCmd1)
     {
-      fParticleGun->GetEneDist()->Calculate();
+      CHECKPG(); fParticleGun->GetEneDist()->Calculate();
     }
   else if(command == energyspecCmd1)
     {
-      fParticleGun->GetEneDist()->InputEnergySpectra(energyspecCmd1->GetNewBoolValue(newValues));
+      CHECKPG(); fParticleGun->GetEneDist()->InputEnergySpectra(energyspecCmd1->GetNewBoolValue(newValues));
     }
   else if(command == diffspecCmd1)
     {
-      fParticleGun->GetEneDist()->InputDifferentialSpectra(diffspecCmd1->GetNewBoolValue(newValues));
+      CHECKPG(); fParticleGun->GetEneDist()->InputDifferentialSpectra(diffspecCmd1->GetNewBoolValue(newValues));
     }
   else if(command == histnameCmd1)
     {
@@ -1566,10 +1665,11 @@ void G4GeneralParticleSourceMessenger::SetNewValue(G4UIcommand *command, G4Strin
   else if(command == histfileCmd1)
     {
       histtype = "arb";
-      fParticleGun->GetEneDist()->ArbEnergyHistoFile(newValues);
+      CHECKPG(); fParticleGun->GetEneDist()->ArbEnergyHistoFile(newValues);
     }
   else if(command == histpointCmd1)
     {
+      CHECKPG(); 
       if(histtype == "biasx")
 	fParticleGun->GetBiasRndm()->SetXBias(histpointCmd1->GetNew3VectorValue(newValues));
       if(histtype == "biasy")
@@ -1599,6 +1699,7 @@ void G4GeneralParticleSourceMessenger::SetNewValue(G4UIcommand *command, G4Strin
     }
   else if(command == resethistCmd1)
     {
+      CHECKPG(); 
       if(newValues == "theta" || newValues == "phi") {
 	fParticleGun->GetAngDist()->ReSetHist(newValues);
       } else if (newValues == "energy" || newValues == "arb" || newValues == "epn") {
@@ -1609,7 +1710,7 @@ void G4GeneralParticleSourceMessenger::SetNewValue(G4UIcommand *command, G4Strin
     }
   else if(command == arbintCmd1)
     {
-      fParticleGun->GetEneDist()->ArbInterpolate(newValues);
+      CHECKPG(); fParticleGun->GetEneDist()->ArbInterpolate(newValues);
     }
   else 
     {
@@ -1668,7 +1769,7 @@ void G4GeneralParticleSourceMessenger::IonCommand(G4String newValues)
       }
     }
     G4ParticleDefinition* ion;
-    ion =  particleTable->GetIon( fAtomicNumber, fAtomicMass, fIonExciteEnergy);
+    ion =  G4IonTable::GetIonTable()->GetIon( fAtomicNumber, fAtomicMass, fIonExciteEnergy);
     if (ion==0)
     {
       G4cout << "Ion with Z=" << fAtomicNumber;
@@ -1710,7 +1811,7 @@ void G4GeneralParticleSourceMessenger::IonLvlCommand(G4String newValues)
     }
 
     G4ParticleDefinition* ion;
-    ion = particleTable->GetIon(fAtomicNumberL, fAtomicMassL, fIonEnergyLevel);
+    ion =  G4IonTable::GetIonTable()->GetIon(fAtomicNumberL, fAtomicMassL, fIonEnergyLevel);
     if (ion == 0) {
       G4cout << "Ion with Z=" << fAtomicNumberL;
       G4cout << " A=" << fAtomicMass << "is not be defined" << G4endl;

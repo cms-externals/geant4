@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4FTFBuilder.cc 81845 2014-06-06 09:30:30Z gcosmo $
+// $Id: G4FTFBuilder.cc 81935 2014-06-06 15:41:42Z gcosmo $
 //
 //---------------------------------------------------------------------------
 //
@@ -56,7 +56,6 @@ G4FTFBuilder::~G4FTFBuilder()
 {
   delete fStringDecay;
   delete fStringModel;
-  //delete fPrecoInterface;
   delete fLund;
 }                                     
 
@@ -70,7 +69,6 @@ G4HadronicInteraction* G4FTFBuilder::BuildModel()
   theFTFModel->SetHighEnergyGenerator(fStringModel);
 
   if(!fPreCompound) {
-    //G4ExcitationHandler* handler = new G4ExcitationHandler();
     fPreCompound = new G4PreCompoundModel();
   }
 

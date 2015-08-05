@@ -4,7 +4,7 @@
         ############################################
 
 *************************************************************
- Geant4 version Name: geant4-10-00-patch-02    (13-June-2014)
+ Geant4 version Name: geant4-10-01-patch-02    (19-June-2015)
                       Copyright : Geant4 Collaboration
                       Reference : NIM A 506 (2003), 250-303
                             WWW : http://cern.ch/geant4
@@ -23,7 +23,7 @@
 
 
  Material:      Air    density:  1.290 mg/cm3  RadL: 285.161 m    Nucl.Int.Length: 662.680 m  
-                       Imean:  85.703 eV   temperature: 273.15 K  pressure:   1.00 atm
+                       Imean:  85.703 eV   temperature: 293.15 K  pressure:   1.00 atm
 
    --->  Element: Nitrogen (N)   Z =  7.0   N =  14.0   A =  14.01 g/mole
          --->  Isotope:   N14   Z =  7   N =  14   A =  14.00 g/mole   abundance:  99.63 %
@@ -117,8 +117,8 @@
 /testem/det/setMat Iron
 /testem/det/setSize 1 m
 #
-/testem/phys/addPhysics standard
-/testem/phys/setCuts 1 mm
+/testem/phys/addPhysics emstandard_opt0
+/run/setCut 1 mm
 #
 /run/initialize
 userDetector->Construct() start.
@@ -128,121 +128,13 @@ Iron is registered to the default region.
 physicsList->Construct() start.
 physicsList->CheckParticleList() start.
 physicsList->setCut() start.
-PhysicsList::SetCuts:CutLength : 1 mm 
 #
 /gun/particle mu+
 /gun/energy 10 TeV
 #
-/testem/event/printModulo 1000
+/run/printProgress 1000
 #
 /run/beamOn 10000
-
-hIoni:   for  proton    SubType= 2
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      finalRange(mm)= 0.1, dRoverRange= 0.2, integral: 1, fluct: 1, linLossLimit= 0.01
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-               Bragg :  Emin=        0 eV    Emax=        2 MeV
-          BetheBloch :  Emin=        2 MeV   Emax=     1000 PeV
-
-hBrems:   for  proton    SubType= 3
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-               hBrem :  Emin=        0 eV    Emax=     1000 PeV
-
-hPairProd:   for  proton    SubType= 4
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      Sampling table 33x1001 from 7.50618 GeV to 1e+06 TeV 
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-           hPairProd :  Emin=        0 eV    Emax=     1000 PeV
-
-muIoni:   for  mu+    SubType= 2
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      finalRange(mm)= 1, dRoverRange= 0.2, integral: 1, fluct: 1, linLossLimit= 0.01
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-               Bragg :  Emin=        0 eV    Emax=      200 keV
-          BetheBloch :  Emin=      200 keV   Emax=        1 GeV
-        MuBetheBloch :  Emin=        1 GeV   Emax=     1000 PeV
-
-muBrems:   for  mu+    SubType= 3
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-              MuBrem :  Emin=        0 eV    Emax=     1000 PeV
-
-muPairProd:   for  mu+    SubType= 4
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      Sampling table 37x1001 from 1 GeV to 1e+06 TeV 
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-          muPairProd :  Emin=        0 eV    Emax=     1000 PeV
-
-muIoni:   for  mu-    SubType= 2
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      finalRange(mm)= 1, dRoverRange= 0.2, integral: 1, fluct: 1, linLossLimit= 0.01
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-            ICRU73QO :  Emin=        0 eV    Emax=      200 keV
-          BetheBloch :  Emin=      200 keV   Emax=        1 GeV
-        MuBetheBloch :  Emin=        1 GeV   Emax=     1000 PeV
-
-muBrems:   for  mu-    SubType= 3
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-              MuBrem :  Emin=        0 eV    Emax=     1000 PeV
-
-muPairProd:   for  mu-    SubType= 4
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      Sampling table 37x1001 from 1 GeV to 1e+06 TeV 
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-          muPairProd :  Emin=        0 eV    Emax=     1000 PeV
-
-hIoni:   for  pi+    SubType= 2
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      finalRange(mm)= 0.1, dRoverRange= 0.2, integral: 1, fluct: 1, linLossLimit= 0.01
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-               Bragg :  Emin=        0 eV    Emax=  297.505 keV
-          BetheBloch :  Emin=  297.505 keV   Emax=     1000 PeV
-
-hBrems:   for  pi+    SubType= 3
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-               hBrem :  Emin=        0 eV    Emax=     1000 PeV
-
-hPairProd:   for  pi+    SubType= 4
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      Sampling table 36x1001 from 1.11656 GeV to 1e+06 TeV 
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-           hPairProd :  Emin=        0 eV    Emax=     1000 PeV
-
-hIoni:   for  pi-    SubType= 2
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      finalRange(mm)= 0.1, dRoverRange= 0.2, integral: 1, fluct: 1, linLossLimit= 0.01
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-            ICRU73QO :  Emin=        0 eV    Emax=  297.505 keV
-          BetheBloch :  Emin=  297.505 keV   Emax=     1000 PeV
-
-hBrems:   for  pi-    SubType= 3
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-               hBrem :  Emin=        0 eV    Emax=     1000 PeV
-
-hPairProd:   for  pi-    SubType= 4
-      dE/dx and range tables from 100 eV  to 1000 PeV in 160 bins
-      Lambda tables from threshold to 1000 PeV in 160 bins, spline: 1
-      Sampling table 36x1001 from 1.11656 GeV to 1e+06 TeV 
-      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-           hPairProd :  Emin=        0 eV    Emax=     1000 PeV
 
 Region <DefaultRegionForTheWorld> --  -- appears in <Iron> world volume
  This region is in the mass world.
@@ -280,41 +172,33 @@ G4GeometryManager::ReportVoxelStats -- Voxel Statistics
  Initial seed (index) = 0
  Current couple of seeds = 9876, 54321
 ----------------------------------------
+--> Event 0 starts.
 
 ---> Begin of Event: 0
-
----> Begin of Event: 1000
-
----> Begin of Event: 2000
-
----> Begin of Event: 3000
-
----> Begin of Event: 4000
-
----> Begin of Event: 5000
-
----> Begin of Event: 6000
-
----> Begin of Event: 7000
-
----> Begin of Event: 8000
-
----> Begin of Event: 9000
-Run terminated.
+--> Event 1000 starts.
+--> Event 2000 starts.
+--> Event 3000 starts.
+--> Event 4000 starts.
+--> Event 5000 starts.
+--> Event 6000 starts.
+--> Event 7000 starts.
+--> Event 8000 starts.
+--> Event 9000 starts.
+ Run terminated.
 Run Summary
   Number of events processed : 10000
-  User=3.69s Real=8.04s Sys=0s
+  User=4.79s Real=4.82s Sys=0s
 
  The run consists of 10000 mu+ of 10 TeV through 1 m   of Iron (density: 7.9 g/cm3 )
 
- Number of process calls --->	muIoni : 463808	muPairProd : 64065	muBrems : 660
+ Number of process calls --->	muIoni : 462906	muPairProd : 63968	muBrems : 714	CoulombScat : 5414
 
- Simulation: total CrossSection = 0.52853 /cm	 MeanFreePath = 1.892 cm 	 massicCrossSection = 0.067158 cm2/g
+ Simulation: total CrossSection = 0.533 /cm	 MeanFreePath = 1.8762 cm 	 massicCrossSection = 0.067726 cm2/g
  Theory:     total CrossSection = 0.53938 /cm	 MeanFreePath = 1.854 cm 	 massicCrossSection = 0.068536 cm2/g
 
 --------- Ranecu engine status ---------
  Initial seed (index) = 0
- Current couple of seeds = 270232083, 1444709301
+ Current couple of seeds = 1552255521, 1752515224
 ----------------------------------------
 #
 /gun/particle pi+
@@ -349,42 +233,34 @@ Index : 0     used in the geometry : Yes
 
 --------- Ranecu engine status ---------
  Initial seed (index) = 0
- Current couple of seeds = 270232083, 1444709301
+ Current couple of seeds = 1552255521, 1752515224
 ----------------------------------------
+--> Event 0 starts.
 
 ---> Begin of Event: 0
-
----> Begin of Event: 1000
-
----> Begin of Event: 2000
-
----> Begin of Event: 3000
-
----> Begin of Event: 4000
-
----> Begin of Event: 5000
-
----> Begin of Event: 6000
-
----> Begin of Event: 7000
-
----> Begin of Event: 8000
-
----> Begin of Event: 9000
-Run terminated.
+--> Event 1000 starts.
+--> Event 2000 starts.
+--> Event 3000 starts.
+--> Event 4000 starts.
+--> Event 5000 starts.
+--> Event 6000 starts.
+--> Event 7000 starts.
+--> Event 8000 starts.
+--> Event 9000 starts.
+ Run terminated.
 Run Summary
   Number of events processed : 10000
-  User=3.72s Real=9.02s Sys=0s
+  User=3.3s Real=3.31s Sys=0s
 
  The run consists of 10000 pi+ of 10 TeV through 1 m   of Iron (density: 7.9 g/cm3 )
 
- Number of process calls --->	hIoni : 435005	hPairProd : 59600	hBrems : 337
+ Number of process calls --->	hIoni : 434638	CoulombScat : 5707	hPairProd : 59449	hBrems : 341
 
- Simulation: total CrossSection = 0.49494 /cm	 MeanFreePath = 2.0204 cm 	 massicCrossSection = 0.06289 cm2/g
+ Simulation: total CrossSection = 0.50013 /cm	 MeanFreePath = 1.9995 cm 	 massicCrossSection = 0.06355 cm2/g
 
 --------- Ranecu engine status ---------
  Initial seed (index) = 0
- Current couple of seeds = 364471086, 1147835068
+ Current couple of seeds = 819747716, 37073470
 ----------------------------------------
 #
 /gun/particle proton
@@ -419,42 +295,34 @@ Index : 0     used in the geometry : Yes
 
 --------- Ranecu engine status ---------
  Initial seed (index) = 0
- Current couple of seeds = 364471086, 1147835068
+ Current couple of seeds = 819747716, 37073470
 ----------------------------------------
+--> Event 0 starts.
 
 ---> Begin of Event: 0
-
----> Begin of Event: 1000
-
----> Begin of Event: 2000
-
----> Begin of Event: 3000
-
----> Begin of Event: 4000
-
----> Begin of Event: 5000
-
----> Begin of Event: 6000
-
----> Begin of Event: 7000
-
----> Begin of Event: 8000
-
----> Begin of Event: 9000
-Run terminated.
+--> Event 1000 starts.
+--> Event 2000 starts.
+--> Event 3000 starts.
+--> Event 4000 starts.
+--> Event 5000 starts.
+--> Event 6000 starts.
+--> Event 7000 starts.
+--> Event 8000 starts.
+--> Event 9000 starts.
+ Run terminated.
 Run Summary
   Number of events processed : 10000
-  User=3.53s Real=8.44s Sys=0s
+  User=3.14s Real=3.23s Sys=0s
 
  The run consists of 10000 proton of 10 TeV through 1 m   of Iron (density: 7.9 g/cm3 )
 
- Number of process calls --->	hIoni : 434903	hPairProd : 34114	hBrems : 7
+ Number of process calls --->	hIoni : 434063	CoulombScat : 5453	hPairProd : 33855	hBrems : 10
 
- Simulation: total CrossSection = 0.46902 /cm	 MeanFreePath = 2.1321 cm 	 massicCrossSection = 0.059596 cm2/g
+ Simulation: total CrossSection = 0.47338 /cm	 MeanFreePath = 2.1125 cm 	 massicCrossSection = 0.06015 cm2/g
 
 --------- Ranecu engine status ---------
  Initial seed (index) = 0
- Current couple of seeds = 613508996, 2103217183
+ Current couple of seeds = 667041111, 1575612926
 ----------------------------------------
 #
 G4 kernel has come to Quit state.
@@ -465,9 +333,10 @@ UserPrimaryGenerator deleted.
 RunManager is deleting RunManagerKernel.
 EventManager deleted.
 Units table cleared.
+Total navigation history collections cleaned: 6
 ================== Deleting memory pools ===================
-Number of memory pools allocated: 10 of which, static: 0
-Dynamic pools deleted: 10 / Total memory freed: 0.094 Mb
+Number of memory pools allocated: 9 of which, static: 0
+Dynamic pools deleted: 9 / Total memory freed: 0.054 Mb
 ============================================================
 G4Allocator objects are deleted.
 UImanager deleted.

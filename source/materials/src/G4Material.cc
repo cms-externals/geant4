@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4Material.cc 81839 2014-06-06 08:47:44Z gcosmo $
+// $Id: G4Material.cc 88957 2015-03-16 16:46:05Z gcosmo $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //
@@ -310,7 +310,7 @@ void G4Material::ComputeDerivedQuantities()
   if (VecNbOfAtomsPerVolume) { delete [] VecNbOfAtomsPerVolume; }
   VecNbOfAtomsPerVolume = new G4double[fNumberOfElements];
   TotNbOfElectPerVolume = 0.;
-  for (size_t i=0; i<fNumberOfElements; ++i) {
+  for (G4int i=0; i<fNumberOfElements; ++i) {
      Zi = (*theElementVector)[i]->GetZ();
      Ai = (*theElementVector)[i]->GetA();
      VecNbOfAtomsPerVolume[i] = Avogadro*fDensity*fMassFractionVector[i]/Ai;
@@ -344,11 +344,12 @@ void G4Material::CopyPointersOfBaseMaterial()
   const G4double* v = fBaseMaterial->GetVecNbOfAtomsPerVolume();
   if (VecNbOfAtomsPerVolume)  { delete [] VecNbOfAtomsPerVolume; }
   VecNbOfAtomsPerVolume = new G4double[fNumberOfElements];
-  for (size_t i=0; i<fNumberOfElements; ++i) {
+  for (G4int i=0; i<fNumberOfElements; ++i) {
     VecNbOfAtomsPerVolume[i] = factor*v[i];
   }
   fRadlen = fBaseMaterial->GetRadlen()/factor;
   fNuclInterLen = fBaseMaterial->GetNuclearInterLength()/factor;
+
   if (fIonisation) { delete fIonisation; }
   fIonisation = new G4IonisParamMat(this);
 
@@ -369,7 +370,7 @@ void G4Material::AddElement(G4Element* element, G4int nAtoms)
   }
 
   // filling ...
-  if ( G4int(fNumberOfElements) < maxNbComponents ) {
+  if ( fNumberOfElements < maxNbComponents ) {
      theElementVector->push_back(element);     
      fAtomsVector[fNumberOfElements] = nAtoms;
      fNumberOfComponents = ++fNumberOfElements;
@@ -380,9 +381,9 @@ void G4Material::AddElement(G4Element* element, G4int nAtoms)
            "Attempt to add more than the declared number of elements.");
   } 
   // filled.
-  if ( G4int(fNumberOfElements) == maxNbComponents ) {     
+  if ( fNumberOfElements == maxNbComponents ) {     
     // compute proportion by mass
-    size_t i=0;
+    G4int i=0;
     G4double Amol = 0.;
     for (i=0; i<fNumberOfElements; ++i) {
       G4double w = fAtomsVector[i]*(*theElementVector)[i]->GetA(); 
@@ -417,8 +418,8 @@ void G4Material::AddElement(G4Element* element, G4double fraction)
     fAtomsVector        = new G4int   [fArrayLength];
   }
   // filling ...
-  if (G4int(fNumberOfComponents) < maxNbComponents) {
-    size_t el = 0;
+  if (fNumberOfComponents < maxNbComponents) {
+    G4int el = 0;
     while ((el<fNumberOfElements)&&(element!=(*theElementVector)[el])) { ++el; }
     if (el<fNumberOfElements) fMassFractionVector[el] += fraction;
     else {
@@ -436,9 +437,9 @@ void G4Material::AddElement(G4Element* element, G4double fraction)
   }    
 
   // filled.
-  if (G4int(fNumberOfComponents) == maxNbComponents) {
+  if (fNumberOfComponents == maxNbComponents) {
 
-    size_t i=0;
+    G4int i=0;
     G4double Zmol(0.), Amol(0.);
     // check sum of weights -- OK?
     G4double wtSum(0.0);
@@ -480,7 +481,7 @@ void G4Material::AddMaterial(G4Material* material, G4double fraction)
     fAtomsVector        = new G4int   [fArrayLength];
   }
 
-  size_t nelm = material->GetNumberOfElements();
+  G4int nelm = material->GetNumberOfElements();
 
   // arrays should be extended
   if(nelm > 1) {
@@ -499,11 +500,11 @@ void G4Material::AddMaterial(G4Material* material, G4double fraction)
   }
 
   // filling ...
-  if (G4int(fNumberOfComponents) < maxNbComponents) {
-    for (size_t elm=0; elm<nelm; ++elm)
+  if (fNumberOfComponents < maxNbComponents) {
+    for (G4int elm=0; elm<nelm; ++elm)
       {
         G4Element* element = (*(material->GetElementVector()))[elm];
-        size_t el = 0;
+        G4int el = 0;
         while ((el<fNumberOfElements)&&(element!=(*theElementVector)[el])) el++;
         if (el < fNumberOfElements) fMassFractionVector[el] += fraction
                                           *(material->GetFractionVector())[elm];
@@ -527,8 +528,8 @@ void G4Material::AddMaterial(G4Material* material, G4double fraction)
   }    
 
   // filled.
-  if (G4int(fNumberOfComponents) == maxNbComponents) {
-    size_t i=0;
+  if (fNumberOfComponents == maxNbComponents) {
+    G4int i=0;
     G4double Zmol(0.), Amol(0.);
     // check sum of weights -- OK?
     G4double wtSum(0.0);
@@ -557,7 +558,7 @@ void G4Material::AddMaterial(G4Material* material, G4double fraction)
 void G4Material::ComputeRadiationLength()
 {
   G4double radinv = 0.0 ;
-  for (size_t i=0;i<fNumberOfElements;++i) {
+  for (G4int i=0;i<fNumberOfElements;++i) {
      radinv += VecNbOfAtomsPerVolume[i]*((*theElementVector)[i]->GetfRadTsai());
   }
   fRadlen = (radinv <= 0.0 ? DBL_MAX : 1./radinv);
@@ -569,7 +570,7 @@ void G4Material::ComputeNuclearInterLength()
 {
   static const G4double lambda0 = 35*CLHEP::g/CLHEP::cm2;
   G4double NILinv = 0.0;
-  for (size_t i=0; i<fNumberOfElements; ++i) {
+  for (G4int i=0; i<fNumberOfElements; ++i) {
     G4int Z = G4lrint( (*theElementVector)[i]->GetZ());
     G4double A = (*theElementVector)[i]->GetN();
     if(1 == Z) {
@@ -619,13 +620,13 @@ G4Material::GetMaterial(const G4String& materialName, G4bool warning)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+/*
 G4Material::G4Material(const G4Material& right)
 {
   InitializePointers();
   *this = right;
 }
-
+*/
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 G4double G4Material::GetZ() const
@@ -653,7 +654,7 @@ G4double G4Material::GetA() const
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+/*
 const G4Material& G4Material::operator=(const G4Material& right)
 {
   if (this != &right)
@@ -689,10 +690,10 @@ const G4Material& G4Material::operator=(const G4Material& right)
         CopyPointersOfBaseMaterial();
 
       } else {                  
-	theElementVector    = new G4ElementVector(fNumberOfElements,0);
+	theElementVector = new G4ElementVector((unsigned int)fNumberOfElements,0);
 	fMassFractionVector = new G4double[fNumberOfElements];     
 	fAtomsVector        = new G4int[fNumberOfElements];
-	for (size_t i=0; i<fNumberOfElements; ++i) {
+	for (G4int i=0; i<fNumberOfElements; ++i) {
 	  (*theElementVector)[i] = (*right.theElementVector)[i];
 	  fMassFractionVector[i] = right.fMassFractionVector[i];
 	  fAtomsVector[i]        = right.fAtomsVector[i];
@@ -702,7 +703,7 @@ const G4Material& G4Material::operator=(const G4Material& right)
     } 
   return *this;
 }
-
+*/
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 G4int G4Material::operator==(const G4Material& right) const
@@ -719,7 +720,7 @@ G4int G4Material::operator!=(const G4Material& right) const
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-std::ostream& operator<<(std::ostream& flux, G4Material* material)
+std::ostream& operator<<(std::ostream& flux, const G4Material* material)
 {
   std::ios::fmtflags mode = flux.flags();
   flux.setf(std::ios::fixed,std::ios::floatfield);
@@ -733,9 +734,11 @@ std::ostream& operator<<(std::ostream& flux, G4Material* material)
     << "  RadL: "            << std::setw(7)  << std::setprecision(3)  
     << G4BestUnit(material->fRadlen,"Length")
     << "  Nucl.Int.Length: " << std::setw(7)  << std::setprecision(3)  
-    << G4BestUnit(material->fNuclInterLen,"Length") <<"\n" << std::setw(30)   
+    << G4BestUnit(material->fNuclInterLen,"Length") 
+    << "\n" << std::setw(30)   
     << "  Imean: "           << std::setw(7)  << std::setprecision(3)  
-    << G4BestUnit(material->GetIonisation()->GetMeanExcitationEnergy(),"Energy");
+    << G4BestUnit(material->GetIonisation()->GetMeanExcitationEnergy(),
+		  "Energy");
     
   if(material->fState == kStateGas) {
     flux
@@ -746,7 +749,7 @@ std::ostream& operator<<(std::ostream& flux, G4Material* material)
   }
   flux << "\n";
   
-  for (size_t i=0; i<material->fNumberOfElements; i++) {
+  for (G4int i=0; i<material->fNumberOfElements; i++) {
     flux 
       << "\n   ---> " << (*(material->theElementVector))[i] 
       << "\n          ElmMassFraction: " 
@@ -765,7 +768,7 @@ std::ostream& operator<<(std::ostream& flux, G4Material* material)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-std::ostream& operator<<(std::ostream& flux, G4Material& material)
+std::ostream& operator<<(std::ostream& flux, const G4Material& material)
 {
   flux << &material;        
   return flux;

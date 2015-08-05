@@ -111,8 +111,6 @@ private:
 
   inline void UpdateCache();
   
-  inline G4double SampleDisplacement();
-
   inline G4double SimpleScattering(G4double xmeanth, G4double x2meanth);
 
   inline G4double LatCorrelation();
@@ -175,6 +173,11 @@ private:
   G4bool   firstStep;
   G4bool   inside;
   G4bool   insideskin;
+
+  G4bool   latDisplasmentbackup ;
+
+  G4double rangecut;
+  G4double drr,finalr;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -204,7 +207,7 @@ void G4UrbanMscModel::UpdateCache()
     coeffth2 = facz*(4.0780e-2 + 1.7315e-4*Zeff);
 
     // tail parameters
-    G4double Z13 = std::exp(lnZ/3.);
+    G4double Z13 = w*w;
     coeffc1  = 2.3785    - Z13*(4.1981e-1 - Z13*6.3100e-2);
     coeffc2  = 4.7526e-1 + Z13*(1.7694    - Z13*3.3885e-1);
     coeffc3  = 2.3683e-1 - Z13*(1.8111    - Z13*3.2774e-1);
@@ -225,11 +228,11 @@ G4double G4UrbanMscModel::ComputeTheta0(G4double trueStepLength,
   // for all particles take the width of the central part
   //  from a  parametrization similar to the Highland formula
   // ( Highland formula: Particle Physics Booklet, July 2002, eq. 26.10)
-  G4double invbetacp = sqrt((currentKinEnergy+mass)*(KineticEnergy+mass)/
-			    (currentKinEnergy*(currentKinEnergy+2.*mass)*
-			     KineticEnergy*(KineticEnergy+2.*mass)));
+  G4double invbetacp = std::sqrt((currentKinEnergy+mass)*(KineticEnergy+mass)/
+				 (currentKinEnergy*(currentKinEnergy+2.*mass)*
+				  KineticEnergy*(KineticEnergy+2.*mass)));
   y = trueStepLength/currentRadLength;
-  G4double theta0 = c_highland*std::abs(charge)*sqrt(y)*invbetacp;
+  G4double theta0 = c_highland*std::abs(charge)*std::sqrt(y)*invbetacp;
   y = G4Log(y);
   // correction factor from e- scattering data
   theta0 *= (coeffth1+coeffth2*y);
@@ -248,25 +251,12 @@ G4double G4UrbanMscModel::SimpleScattering(G4double xmeanth, G4double x2meanth)
 
   // sampling
   G4double cth = 1.;
-  if(G4UniformRand() < prob) {
-    cth = -1.+2.*G4Exp(G4Log(G4UniformRand())/(a+1.));
+  if(rndmEngineMod->flat() < prob) {
+    cth = -1.+2.*G4Exp(G4Log(rndmEngineMod->flat())/(a+1.));
   } else {
-    cth = -1.+2.*G4UniformRand();
+    cth = -1.+2.*rndmEngineMod->flat();
   }
   return cth;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-inline
-G4double G4UrbanMscModel::SampleDisplacement()
-{
-  G4double r = 0.0;
-  if ((currentTau >= tausmall) && !insideskin) {
-    G4double rmax = sqrt((tPathLength-zPathLength)*(tPathLength+zPathLength));
-    r = rmax*G4Exp(G4Log(G4UniformRand())*third);
-  }
-  return r;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

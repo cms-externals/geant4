@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PEEffectFluoModel.cc 73607 2013-09-02 10:04:03Z gcosmo $
+// $Id: G4PEEffectFluoModel.cc 88979 2015-03-17 10:10:21Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -91,6 +91,14 @@ void G4PEEffectFluoModel::Initialise(const G4ParticleDefinition*,
 {
   fAtomDeexcitation = G4LossTableManager::Instance()->AtomDeexcitation();
   if(!fParticleChange) { fParticleChange = GetParticleChangeForGamma(); }
+  size_t nmat = G4Material::GetNumberOfMaterials();
+  fMatEnergyTh.resize(nmat, 0.0);
+  for(size_t i=0; i<nmat; ++i) { 
+    fMatEnergyTh[i] = (*(G4Material::GetMaterialTable()))[i]
+      ->GetSandiaTable()->GetSandiaCofForMaterial(0, 0);
+    //G4cout << "G4PEEffectFluoModel::Initialise Eth(eV)= " 
+    //	   << fMatEnergyTh[i]/eV << G4endl; 
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....
@@ -103,7 +111,6 @@ G4PEEffectFluoModel::ComputeCrossSectionPerAtom(const G4ParticleDefinition*,
 {
   // This method may be used only if G4MaterialCutsCouple pointer
   //   has been set properly
-
   CurrentCouple()->GetMaterial()
     ->GetSandiaTable()->GetSandiaCofPerAtom((G4int)Z, energy, fSandiaCof);
 
@@ -123,6 +130,9 @@ G4PEEffectFluoModel::CrossSectionPerVolume(const G4Material* material,
 					   G4double energy,
 					   G4double, G4double)
 {
+  // This method may be used only if G4MaterialCutsCouple pointer
+  //   has been set properly
+  energy = std::max(energy, fMatEnergyTh[material->GetIndex()]);
   const G4double* SandiaCof = 
     material->GetSandiaTable()->GetSandiaCofForMaterial(energy);
 				
@@ -190,14 +200,17 @@ G4PEEffectFluoModel::SampleSecondaries(std::vector<G4DynamicParticle*>* fvect,
           bindingEnergy = eshell;
           edep = eshell;
 	}
-	size_t nbefore = fvect->size();
+	G4int nbefore = fvect->size();
 	fAtomDeexcitation->GenerateParticles(fvect, shell, Z, index);
-	size_t nafter = fvect->size();
-	if(nafter > nbefore) {
-	  for (size_t j=nbefore; j<nafter; ++j) {
-            G4double e = ((*fvect)[j])->GetKineticEnergy();
-            if(esec + e > edep) {
-	      /*
+	G4int nafter = fvect->size();
+	for (G4int j=nbefore; j<nafter; ++j) {
+	  G4double e = ((*fvect)[j])->GetKineticEnergy();
+	  if(esec + e > edep) {
+	    // correct energy in order to have energy balance
+	    e = edep - esec;
+	    ((*fvect)[j])->SetKineticEnergy(e);
+	    esec += e;
+	    /*
 	      G4cout << "### G4PEffectFluoModel Edep(eV)= " << edep/eV 
 		     << " Esec(eV)= " << esec/eV 
 		     << " E["<< j << "](eV)= " << e/eV
@@ -206,13 +219,15 @@ G4PEEffectFluoModel::SampleSecondaries(std::vector<G4DynamicParticle*>* fvect,
 		     << "  Ebind(keV)= " << bindingEnergy/keV 
 		     << "  Eshell(keV)= " << shell->BindingEnergy()/keV 
 		     << G4endl;
-	      */
-              for (size_t jj=j; jj<nafter; ++jj) { delete (*fvect)[jj]; }
-              for (size_t jj=j; jj<nafter; ++jj) { fvect->pop_back(); }
-	      break;	      
+	    */
+	    // delete the rest of secondaries
+	    for (G4int jj=nafter-1; jj>j; --jj) { 
+	      delete (*fvect)[jj]; 
+	      fvect->pop_back(); 
 	    }
-	    esec += e;
-	  } 
+	    break;	      
+	  }
+	  esec += e; 
 	}
         edep -= esec;
       }

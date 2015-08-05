@@ -26,7 +26,7 @@
 /// \file electromagnetic/TestEm8/include/PhysicsList.hh
 /// \brief Definition of the PhysicsList class
 //
-// $Id: PhysicsList.hh 67268 2013-02-13 11:38:40Z ihrivnac $
+// $Id: PhysicsList.hh 90770 2015-06-09 12:12:47Z gcosmo $
 //
 //---------------------------------------------------------------------------
 //
@@ -44,7 +44,6 @@
 
 #include "G4VModularPhysicsList.hh"
 #include "globals.hh"
-#include "G4EmConfigurator.hh"
 
 class G4VPhysicsConstructor;
 class StepMax;
@@ -62,10 +61,6 @@ public:
   virtual void ConstructParticle();
     
   virtual void SetCuts();
-  void SetCutForGamma(G4double);
-  void SetCutForElectron(G4double);
-  void SetCutForPositron(G4double);
-  void SetCutForProton(G4double);
         
   void AddPhysicsList(const G4String& name);
   virtual void ConstructProcess();
@@ -78,13 +73,6 @@ private:
   void  NewPAIModel(const G4ParticleDefinition*, const G4String& modname, 
                     const G4String& procname);
 
-  G4EmConfigurator* fConfig;
-
-  G4double fCutForGamma;
-  G4double fCutForElectron;
-  G4double fCutForPositron;
-  G4double fCutForProton;
-
   G4VPhysicsConstructor*  fEmPhysicsList;
   G4VPhysicsConstructor*  fDecayPhysicsList;
   std::vector<G4VPhysicsConstructor*> fHadronPhys;
@@ -93,6 +81,7 @@ private:
   StepMax* fStepMaxProcess;
     
   PhysicsListMessenger* fMessenger;
+  G4bool fPAI;
 
 };
 

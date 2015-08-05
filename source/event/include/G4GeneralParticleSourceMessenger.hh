@@ -45,6 +45,14 @@
 //     - old commonds have been retained for backward compatibility, will be
 //       removed in the future. 
 //
+// Version 3.0, Aug-Oct 2014, Andrea Dotti
+//    Transformations for thread safety and use in MT application
+//    Messenger is now a singleton w/ explicit Destroy() method for deletion
+//    Note the following: the class should be instantiated only once
+//    by a worker thread. It relies on a new feature of basic messenger class
+//    that allows for UI commands to be created by worker threads but being
+//    executed by master thread. For this reason the messenger itself should
+//    be created once, form here the singleton pattern
 ///////////////////////////////////////////////////////////////////////////////
 //
 //
@@ -98,11 +106,30 @@ class G4UIcmdWithoutParameter;
 class G4SingleParticleSource;
 class G4GeneralParticleSource;
 
+/** Andrea Dotti Feb 2015
+ * GPS messenger design requires some explanation for what distributions
+ * parameters are concerned : Each thread has its own GPS
+ * since primary generation is a user action.
+ * However to save memory the underlying structures that provide the
+ * GPS functionalities ( the G4SPS*Distribution classes and the
+ * G4SPSRandomGenerator class)
+ * are shared among threads. This implies that modifying parameters of sources
+ * requires some attention:
+ * 1- Only one thread should change source parameters.
+ * 2- Changing of parameters can happen only between runs, when is guaranteed
+ *    that no thread is accessing them
+ * 2- UI commands require that even if messenger is instantiated in a thread
+ *    the commands are executed in the master (this is possible since V10.1)
+ * The simplest solution is to use UI commands to change GPS parameters and
+ * avoid C++ APIs. If this is inevitable a simple solution is to instantiate
+ * an instance of G4GeneralParticleSource explicitly in the master thread
+ * (for example in G4VUserActionInitialization::BuildForMaster() and set the
+ * defaults parameter there).
+ */
+
 class G4GeneralParticleSourceMessenger: public G4UImessenger
 {
   public:
-    G4GeneralParticleSourceMessenger(G4GeneralParticleSource*);
-    ~G4GeneralParticleSourceMessenger();
 
     void SetParticleGun(G4SingleParticleSource *fpg) { fParticleGun = fpg; } ;
     // Select the particle gun to be defined/modified
@@ -114,7 +141,12 @@ class G4GeneralParticleSourceMessenger: public G4UImessenger
 
     G4String GetCurrentValue(G4UIcommand *command);
 
-  private:
+    static G4GeneralParticleSourceMessenger* GetInstance(G4GeneralParticleSource*);
+    static void Destroy();
+ private:
+    G4GeneralParticleSourceMessenger(G4GeneralParticleSource*);
+    ~G4GeneralParticleSourceMessenger();
+
     void IonCommand(G4String newValues);
     void IonLvlCommand(G4String newValues);
 
@@ -159,25 +191,25 @@ class G4GeneralParticleSourceMessenger: public G4UImessenger
     G4UIcmdWithADoubleAndUnit  *parphiCmd1;  
     G4UIcmdWithAString         *confineCmd1;
          
-  //old ones, will be reomved soon
-  G4UIcmdWithAString         *typeCmd;
-  G4UIcmdWithAString         *shapeCmd;
-  G4UIcmdWith3VectorAndUnit  *centreCmd;
-  G4UIcmdWith3Vector         *posrot1Cmd;
-  G4UIcmdWith3Vector         *posrot2Cmd;
-  G4UIcmdWithADoubleAndUnit  *halfxCmd;
-  G4UIcmdWithADoubleAndUnit  *halfyCmd;
-  G4UIcmdWithADoubleAndUnit  *halfzCmd;
-  G4UIcmdWithADoubleAndUnit  *radiusCmd;
-  G4UIcmdWithADoubleAndUnit  *radius0Cmd;
-  G4UIcmdWithADoubleAndUnit  *possigmarCmd;
-  G4UIcmdWithADoubleAndUnit  *possigmaxCmd;
-  G4UIcmdWithADoubleAndUnit  *possigmayCmd;
-  G4UIcmdWithADoubleAndUnit  *paralpCmd;
-  G4UIcmdWithADoubleAndUnit  *partheCmd;
-  G4UIcmdWithADoubleAndUnit  *parphiCmd;  
-  G4UIcmdWithAString         *confineCmd; 
-        
+//  //old ones, will be reomved soon
+ G4UIcmdWithAString         *typeCmd;
+ G4UIcmdWithAString         *shapeCmd;
+ G4UIcmdWith3VectorAndUnit  *centreCmd;
+ G4UIcmdWith3Vector         *posrot1Cmd;
+ G4UIcmdWith3Vector         *posrot2Cmd;
+ G4UIcmdWithADoubleAndUnit  *halfxCmd;
+ G4UIcmdWithADoubleAndUnit  *halfyCmd;
+ G4UIcmdWithADoubleAndUnit  *halfzCmd;
+ G4UIcmdWithADoubleAndUnit  *radiusCmd;
+ G4UIcmdWithADoubleAndUnit  *radius0Cmd;
+ G4UIcmdWithADoubleAndUnit  *possigmarCmd;
+ G4UIcmdWithADoubleAndUnit  *possigmaxCmd;
+ G4UIcmdWithADoubleAndUnit  *possigmayCmd;
+ G4UIcmdWithADoubleAndUnit  *paralpCmd;
+ G4UIcmdWithADoubleAndUnit  *partheCmd;
+ G4UIcmdWithADoubleAndUnit  *parphiCmd;  
+ G4UIcmdWithAString         *confineCmd; 
+    
     // angular commands
     G4UIdirectory* angularDirectory;
     G4UIcmdWithAString         *angtypeCmd1;
@@ -195,18 +227,18 @@ class G4GeneralParticleSourceMessenger: public G4UImessenger
     G4UIcmdWithABool           *surfnormCmd1;
 
   // old ones, will be removed soon
-  G4UIcmdWithAString         *angtypeCmd;
-  G4UIcmdWith3Vector         *angrot1Cmd;
-  G4UIcmdWith3Vector         *angrot2Cmd;
-  G4UIcmdWithADoubleAndUnit  *minthetaCmd;
-  G4UIcmdWithADoubleAndUnit  *maxthetaCmd;
-  G4UIcmdWithADoubleAndUnit  *minphiCmd;
-  G4UIcmdWithADoubleAndUnit  *maxphiCmd;
-  G4UIcmdWithADoubleAndUnit  *angsigmarCmd;
-  G4UIcmdWithADoubleAndUnit  *angsigmaxCmd;
-  G4UIcmdWithADoubleAndUnit  *angsigmayCmd;
-  G4UIcmdWithABool           *useuserangaxisCmd;
-  G4UIcmdWithABool           *surfnormCmd;
+ G4UIcmdWithAString         *angtypeCmd;
+ G4UIcmdWith3Vector         *angrot1Cmd;
+ G4UIcmdWith3Vector         *angrot2Cmd;
+ G4UIcmdWithADoubleAndUnit  *minthetaCmd;
+ G4UIcmdWithADoubleAndUnit  *maxthetaCmd;
+ G4UIcmdWithADoubleAndUnit  *minphiCmd;
+ G4UIcmdWithADoubleAndUnit  *maxphiCmd;
+ G4UIcmdWithADoubleAndUnit  *angsigmarCmd;
+ G4UIcmdWithADoubleAndUnit  *angsigmaxCmd;
+ G4UIcmdWithADoubleAndUnit  *angsigmayCmd;
+ G4UIcmdWithABool           *useuserangaxisCmd;
+ G4UIcmdWithABool           *surfnormCmd;
 
     // energy commands
     G4UIdirectory* energyDirectory;
@@ -226,19 +258,19 @@ class G4GeneralParticleSourceMessenger: public G4UImessenger
     G4UIcmdWithABool           *diffspecCmd1;
 
     // old ones, will be removed soon
-    G4UIcmdWithAString         *energytypeCmd;
-    G4UIcmdWithADoubleAndUnit  *eminCmd;
-    G4UIcmdWithADoubleAndUnit  *emaxCmd;
-    G4UIcmdWithADoubleAndUnit  *monoenergyCmd;
-    G4UIcmdWithADoubleAndUnit  *engsigmaCmd;
-    G4UIcmdWithADouble         *alphaCmd;
-    G4UIcmdWithADouble         *tempCmd;
-    G4UIcmdWithADouble         *ezeroCmd;
-    G4UIcmdWithADouble         *gradientCmd;
-    G4UIcmdWithADouble         *interceptCmd;
-    G4UIcmdWithoutParameter    *calculateCmd;
-    G4UIcmdWithABool           *energyspecCmd;
-    G4UIcmdWithABool           *diffspecCmd;
+   G4UIcmdWithAString         *energytypeCmd;
+   G4UIcmdWithADoubleAndUnit  *eminCmd;
+   G4UIcmdWithADoubleAndUnit  *emaxCmd;
+   G4UIcmdWithADoubleAndUnit  *monoenergyCmd;
+   G4UIcmdWithADoubleAndUnit  *engsigmaCmd;
+   G4UIcmdWithADouble         *alphaCmd;
+   G4UIcmdWithADouble         *tempCmd;
+   G4UIcmdWithADouble         *ezeroCmd;
+   G4UIcmdWithADouble         *gradientCmd;
+   G4UIcmdWithADouble         *interceptCmd;
+   G4UIcmdWithoutParameter    *calculateCmd;
+   G4UIcmdWithABool           *energyspecCmd;
+   G4UIcmdWithABool           *diffspecCmd;
 
     // histogram commands
     G4UIdirectory              *histDirectory;

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: F04ElementField.hh 79251 2014-02-20 16:16:23Z gcosmo $
+// $Id: F04ElementField.hh 78551 2014-01-07 09:45:08Z gcosmo $
 //
 /// \file field/field04/include/F04ElementField.hh
 /// \brief Definition of the F04ElementField class

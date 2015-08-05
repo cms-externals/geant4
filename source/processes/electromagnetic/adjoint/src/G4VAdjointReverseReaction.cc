@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VAdjointReverseReaction.cc 81856 2014-06-06 10:06:15Z gcosmo $
+// $Id: G4VAdjointReverseReaction.cc 87443 2014-12-04 12:26:31Z gunter $
 //
 #include "G4VAdjointReverseReaction.hh"
 #include "G4SystemOfUnits.hh"
@@ -128,7 +128,7 @@ G4double G4VAdjointReverseReaction::GetMeanFreePath(const G4Track& track,
   G4double fwd_TotCS;
   G4double corr =  theAdjointCSManager->GetCrossSectionCorrection(track.GetDefinition(),preStepKinEnergy,track.GetMaterialCutsCouple(),IsFwdCSUsed, fwd_TotCS);
 
-  if(fabs(corr) > 100.) { Sigma = 0.0; }
+  if(std::fabs(corr) > 100.) { Sigma = 0.0; }
   else { Sigma *= corr; }
 
   //G4cout<<fwd_TotCS<<G4endl;

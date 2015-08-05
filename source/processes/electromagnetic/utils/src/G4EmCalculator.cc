@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmCalculator.cc 79268 2014-02-20 16:46:31Z gcosmo $
+// $Id: G4EmCalculator.cc 88981 2015-03-17 10:14:15Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -984,8 +984,9 @@ const G4MaterialCutsCouple* G4EmCalculator::FindCouple(
   }
   if(!couple) {
     G4ExceptionDescription ed;
-    ed << "G4EmCalculator::FindCouple: fail for material " << material
-       << " <" << currentMaterialName << " > and region " << region;
+    ed << "G4EmCalculator::FindCouple: fail for material <" 
+       << currentMaterialName << ">";
+    if(region) { ed << " and region " << region->GetName(); }
     G4Exception("G4EmCalculator::FindCouple", "em0078",
 		FatalException, ed);
   }
@@ -1256,6 +1257,25 @@ G4EmCalculator::FindMscProcess(const G4ParticleDefinition* part,
   }
   return proc;
 }
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+G4VProcess* G4EmCalculator::FindProcess(const G4ParticleDefinition* part,
+					const G4String& processName)
+{
+  G4VProcess* proc = 0;
+  const G4ProcessManager* procman = part->GetProcessManager();
+  G4ProcessVector* pv = procman->GetProcessList();
+  G4int nproc = pv->size();
+  for(G4int i=0; i<nproc; ++i) {
+    if(processName == (*pv)[i]->GetProcessName()) {
+      proc = (*pv)[i];
+      break;
+    }
+  }
+  return proc;
+}
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 

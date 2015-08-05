@@ -72,7 +72,7 @@ class G4ReactionProduct
  public:
     G4ReactionProduct();
     
-    G4ReactionProduct( G4ParticleDefinition *aParticleDefinition );
+    G4ReactionProduct(const G4ParticleDefinition *aParticleDefinition );
 
     ~G4ReactionProduct() {}
     
@@ -104,12 +104,12 @@ class G4ReactionProduct
     inline G4bool operator!= ( const G4ReactionProduct &right ) const
     { return ( this != (G4ReactionProduct*) &right ); }
     
-    inline G4ParticleDefinition *GetDefinition() const
+    inline const G4ParticleDefinition* GetDefinition() const
     { return theParticleDefinition; }
-    
-    void SetDefinition( G4ParticleDefinition *aParticleDefinition );
+
+    void SetDefinition(const G4ParticleDefinition* aParticleDefinition );
    
-    void SetDefinitionAndUpdateE( G4ParticleDefinition *aParticleDefinition );
+    void SetDefinitionAndUpdateE(const G4ParticleDefinition* aParticleDefinition );
       
     void SetMomentum( const G4double x, const G4double y, const G4double z );
     
@@ -162,6 +162,12 @@ class G4ReactionProduct
     inline G4int GetSide() const
     { return side; }
     
+    inline void SetCreatorModel( const G4int mod )
+    { theCreatorModel = mod; }
+    
+    inline G4int GetCreatorModel() const
+    { return theCreatorModel; }
+    
     inline void SetNewlyAdded( const G4bool f )
     { NewlyAdded = f; }
     
@@ -205,14 +211,9 @@ class G4ReactionProduct
     
     inline G4bool HasInitialStateParton() const { return hasInitialStateParton; }
  
-#ifdef PRECOMPOUND_TEST
-     void SetCreatorModel(const G4String& aModel) { theCreatorModel = aModel; }
-     G4String GetCreatorModel() const { return theCreatorModel; }
-#endif
- 
- private:
+private:
     
-    G4ParticleDefinition *theParticleDefinition;
+    const G4ParticleDefinition *theParticleDefinition;
     
     // for use with string models and cascade.
     G4ThreeVector positionInNucleus;
@@ -234,14 +235,12 @@ class G4ReactionProduct
     //  forward (+) and backward (-) hemispheres in the center of mass system
     G4int side;
 
+    G4int theCreatorModel;
+
     // NewlyAdded refers to particles added by "nuclear excitation", or as
     //  "black track" particles, or as deuterons, tritons, and alphas
     G4bool NewlyAdded;
     G4bool MayBeKilled;
-
-#ifdef PRECOMPOUND_TEST
-    G4String theCreatorModel;
-#endif
 };
  
 #endif

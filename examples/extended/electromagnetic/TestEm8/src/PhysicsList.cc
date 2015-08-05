@@ -26,7 +26,7 @@
 /// \file electromagnetic/TestEm8/src/PhysicsList.cc
 /// \brief Implementation of the PhysicsList class
 //
-// $Id: PhysicsList.cc 77094 2013-11-21 10:51:54Z gcosmo $
+// $Id: PhysicsList.cc 90770 2015-06-09 12:12:47Z gcosmo $
 //
 //---------------------------------------------------------------------------
 //
@@ -52,6 +52,7 @@
 #include "G4EmStandardPhysics_option4.hh"
 #include "G4EmLivermorePhysics.hh"
 #include "G4EmPenelopePhysics.hh"
+#include "G4EmLowEPPhysics.hh"
 #include "G4DecayPhysics.hh"
 
 #include "G4PAIModel.hh"
@@ -66,6 +67,8 @@
 #include "G4SystemOfUnits.hh"
 #include "G4LossTableManager.hh"
 #include "G4ProductionCutsTable.hh"
+#include "G4EmConfigurator.hh"
+#include "G4EmParameters.hh"
 
 #include "StepMax.hh"
 
@@ -76,20 +79,16 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 PhysicsList::PhysicsList() : G4VModularPhysicsList(),
-  fConfig(0),
   fEmPhysicsList(0),
   fDecayPhysicsList(0),
   fStepMaxProcess(0),
-  fMessenger(0)
+  fMessenger(0),
+  fPAI(false)
 {
-  fConfig = G4LossTableManager::Instance()->EmConfigurator();
-  G4LossTableManager::Instance()->SetVerbose(1);
-  defaultCutValue = 1.*mm;
-  fCutForGamma     = defaultCutValue;
-  fCutForElectron  = defaultCutValue;
-  fCutForPositron  = defaultCutValue;
-  fCutForProton    = defaultCutValue;
+  G4EmParameters::Instance()->SetVerbose(1);
 
+  SetDefaultCutValue(1*mm);
+ 
   fMessenger = new PhysicsListMessenger(this);
 
   fStepMaxProcess = new StepMax();
@@ -128,9 +127,11 @@ void PhysicsList::ConstructProcess()
 {
   AddTransportation();
   fEmPhysicsList->ConstructProcess();
+  if(fPAI) { AddPAIModel(fEmName); }
   fDecayPhysicsList->ConstructProcess();
   for(size_t i=0; i<fHadronPhys.size(); ++i) { 
-    fHadronPhys[i]->ConstructProcess(); }
+    fHadronPhys[i]->ConstructProcess(); 
+  }
   AddStepMax();
 }
 
@@ -181,15 +182,21 @@ void PhysicsList::AddPhysicsList(const G4String& name)
     delete fEmPhysicsList;
     fEmPhysicsList = new G4EmPenelopePhysics();
 
+  } else if (name == "emlowenergy") {
+
+    fEmName = name;
+    delete fEmPhysicsList;
+    fEmPhysicsList = new G4EmLowEPPhysics();
+
   } else if (name == "pai") {
 
     fEmName = name;
-    AddPAIModel(name);
+    fPAI = true;
 
   } else if (name == "pai_photon") { 
 
     fEmName = name;
-    AddPAIModel(name);
+    fPAI = true;
 
   } else {
 
@@ -223,53 +230,7 @@ void PhysicsList::AddStepMax()
 void PhysicsList::SetCuts()
 {
   G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(100.*eV,1e5);
-  if ( verboseLevel > 0 )
-  {
-    G4cout << "PhysicsList::SetCuts:";
-    G4cout << "CutLength : " << G4BestUnit(defaultCutValue,"Length") << G4endl;
-  }
-
-  // set cut values for gamma at first and for e- second and next for e+,
-  // because some processes for e+/e- need cut values for gamma
-
-  SetCutValue(fCutForGamma, "gamma");
-  SetCutValue(fCutForElectron, "e-");
-  SetCutValue(fCutForPositron, "e+");
-  SetCutValue(fCutForProton, "proton");
-
   if ( verboseLevel > 0 ) { DumpCutValuesTable(); }
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void PhysicsList::SetCutForGamma(G4double cut)
-{
-  fCutForGamma = cut;
-  SetParticleCuts(fCutForGamma, G4Gamma::Gamma());
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void PhysicsList::SetCutForElectron(G4double cut)
-{
-  fCutForElectron = cut;
-  SetParticleCuts(fCutForElectron, G4Electron::Electron());
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void PhysicsList::SetCutForPositron(G4double cut)
-{
-  fCutForPositron = cut;
-  SetParticleCuts(fCutForPositron, G4Positron::Positron());
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void PhysicsList::SetCutForProton(G4double cut)
-{
-  fCutForProton = cut;
-  SetParticleCuts(fCutForProton, G4Proton::Proton());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -302,15 +263,16 @@ void PhysicsList::NewPAIModel(const G4ParticleDefinition* part,
                               const G4String& modname,
                               const G4String& procname)
 {
+  G4EmConfigurator* config = G4LossTableManager::Instance()->EmConfigurator();
   G4String partname = part->GetParticleName();
   if(modname == "pai") {
     G4PAIModel* pai = new G4PAIModel(part,"PAIModel");
-    fConfig->SetExtraEmModel(partname,procname,pai,"GasDetector",
-                              0.0,100.*TeV,pai);
+    config->SetExtraEmModel(partname,procname,pai,"GasDetector",
+                            0.0,100.*TeV,pai);
   } else if(modname == "pai_photon") {
     G4PAIPhotModel* pai = new G4PAIPhotModel(part,"PAIPhotModel");
-    fConfig->SetExtraEmModel(partname,procname,pai,"GasDetector",
-                              0.0,100.*TeV,pai);
+    config->SetExtraEmModel(partname,procname,pai,"GasDetector",
+                            0.0,100.*TeV,pai);
   }
 }
 

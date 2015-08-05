@@ -77,6 +77,13 @@ if(NOT GEANT4_BUILD_GRANULAR_LIBS AND UNIX)
   get_system_include_dirs(_cxx_compiler_dirs)
 
   # Setup variables needed for expansion in configuration file
+  # - Static libs
+  if(BUILD_STATIC_LIBS)
+    set(G4_BUILTWITH_STATICLIBS "yes")
+  else()
+    set(G4_BUILTWITH_STATICLIBS "no")
+  endif()
+
   # - Multithreading
   if(GEANT4_BUILD_MULTITHREADED)
     set(G4_BUILTWITH_MULTITHREADING "yes")
@@ -87,6 +94,15 @@ if(NOT GEANT4_BUILD_GRANULAR_LIBS AND UNIX)
   # - CLHEP
   if(GEANT4_USE_SYSTEM_CLHEP)
     set(G4_BUILTWITH_CLHEP "no")
+    #libpath
+    list(GET CLHEP_LIBRARIES 0 _zeroth_clhep_lib)
+    get_filename_component(_system_clhep_libdir "${_zeroth_clhep_lib}" PATH)
+    set(G4_SYSTEM_CLHEP_LIBRARIES "-L${_system_clhep_libdir}")
+    foreach(_clhep_lib ${CLHEP_LIBRARIES})
+      get_filename_component(_curlib "${_clhep_lib}" NAME)
+      string(REGEX REPLACE "^lib(.*)\\.(so|a|dylib|lib|dll)$" "\\1" _curlib "${_curlib}")
+      set(G4_SYSTEM_CLHEP_LIBRARIES "${G4_SYSTEM_CLHEP_LIBRARIES} -l${_curlib}")
+    endforeach()
   else()
     set(G4_BUILTWITH_CLHEP "yes")
   endif()
@@ -132,6 +148,12 @@ if(NOT GEANT4_BUILD_GRANULAR_LIBS AND UNIX)
     set(G4_BUILTWITH_USOLIDS "yes")
   else()
     set(G4_BUILTWITH_USOLIDS "no")
+  endif()
+
+  if(GEANT4_USE_SYSTEM_USOLIDS)
+    set(G4_BUILTWITH_BUILTIN_USOLIDS "no")
+  else()
+    set(G4_BUILTWITH_BUILTIN_USOLIDS "yes")
   endif()
 
   # - Qt

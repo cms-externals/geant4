@@ -50,8 +50,10 @@ function(__configure_cxxstd_gnu)
     set(_CXXSTDS "c++98")
   elseif(_gnucxx_version VERSION_LESS 4.7)
     set(_CXXSTDS "c++98" "c++0x")
-  else()
+  elseif(_gnucxx_version VERSION_LESS 4.9)
     set(_CXXSTDS "c++98" "c++0x" "c++11")
+  else()
+    set(_CXXSTDS "c++98" "c++0x" "c++11" "c++1y")
   endif()
 
   set(CXXSTD_IS_AVAILABLE ${_CXXSTDS} PARENT_SCOPE)
@@ -78,16 +80,23 @@ function(__configure_cxxstd_clang)
   # If this is the case, the previous regex will not do anything.
   # Check to see if we have "Apple LLVM version" in the output,
   # and if so extract the original LLVM version which should appear as
-  # "based on LLVM X.Ysvn"
+  # "based on LLVM X.Ysvn". The "svn" extension means the development
+  # version of LLVM X.Y, not a release, so it may not provide all features
+  # present in the X.Y release.
   if(APPLE AND "${_clangcxx_version}" MATCHES ".*Apple LLVM version.*")
-    string(REGEX REPLACE ".*based on LLVM ([0-9]\\.[0-9]+)svn.*" "\\1" _clangcxx_version ${_clangcxx_version})
+    string(REGEX REPLACE ".*based on LLVM ([0-9](\\.[0-9])+)svn.*" "\\1" _clangcxx_version ${_clangcxx_version})
   endif()
   message(STATUS "Clang version : ${_clangcxx_version}")
 
   if(_clangcxx_version VERSION_LESS 2.9)
     set(_CXXSTDS "c++98")
-  else()
+  elseif(_clangcxx_version VERSION_LESS 3.3)
     set(_CXXSTDS "c++98" "c++0x" "c++11")
+  elseif(_clangcxx_version VERSION_LESS 3.5)
+    set(_CXXSTDS "c++98" "c++0x" "c++11" "c++1y")
+  else()
+    # Be cautious for now and only use c++1y rather than c++14
+    set(_CXXSTDS "c++98" "c++0x" "c++11" "c++1y")
   endif()
 
   set(CXXSTD_IS_AVAILABLE ${_CXXSTDS} PARENT_SCOPE)
@@ -110,13 +119,15 @@ function(__configure_cxxstd_intel)
 
   if(_icpc_dumpedversion VERSION_LESS 11.0)
     set(_CXXSTDS "c++98")
-  else()
+  elseif(_icpc_dumpedversion VERSION_LESS 15.0)
     set(_CXXSTDS "c++98" "c++0x")
+  else()
+    set(_CXXSTDS "c++98" "c++11")
   endif()
 
   set(CXXSTD_IS_AVAILABLE ${_CXXSTDS} PARENT_SCOPE)
   foreach(_s ${_CXXSTDS})
-    # - Intel does not support '-std=c++98'
+    # - Intel does not support '-std=c++98' (in versions earlier than 13?)
     if(${_s} MATCHES "c\\+\\+98")
       set(${_s}_FLAGS "-ansi" PARENT_SCOPE)
     else()
@@ -173,7 +184,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
   # - Multithreading
   __configure_tls_models()
-  set(GEANT4_MULTITHREADED_CXX_FLAGS "-ftls-model=global-dynamic -pthread")
+  set(GEANT4_MULTITHREADED_CXX_FLAGS "-pthread")
 endif()
 
 
@@ -203,7 +214,7 @@ endif()
 #
 # Sufficient id on all platforms?
 if(CMAKE_CXX_COMPILER MATCHES "icpc.*|icc.*")
-  set(CMAKE_CXX_FLAGS_INIT "-w1 -Wno-non-virtual-dtor -Wpointer-arith -Wwrite-strings -fp-model precise")
+  set(CMAKE_CXX_FLAGS_INIT "-w1 -Wno-non-virtual-dtor -Wpointer-arith -Wwrite-strings -no-gcc -fp-model precise")
   set(CMAKE_CXX_FLAGS_DEBUG_INIT "-g")
   set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O2 -DNDEBUG")
   set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT "-Os -DNDEBUG")

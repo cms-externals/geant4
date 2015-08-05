@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PenelopePhotoElectricModel.cc 81862 2014-06-06 10:19:30Z gcosmo $
+// $Id: G4PenelopePhotoElectricModel.cc 81067 2014-05-20 09:19:32Z gcosmo $
 //
 // Author: Luciano Pandola
 //

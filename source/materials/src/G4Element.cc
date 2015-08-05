@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4Element.cc 81839 2014-06-06 08:47:44Z gcosmo $
+// $Id: G4Element.cc 88957 2015-03-16 16:46:05Z gcosmo $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -160,7 +160,7 @@ void G4Element::AddIsotope(G4Isotope* isotope, G4double abundance)
   G4int iz = isotope->GetZ();
 
   // filling ...
-  if ( fNumberOfIsotopes < theIsotopeVector->size() ) {
+  if ( fNumberOfIsotopes < (G4int)theIsotopeVector->size() ) {
     // check same Z
     if (fNumberOfIsotopes==0) { fZeff = G4double(iz); }
     else if (G4double(iz) != fZeff) { 
@@ -184,13 +184,13 @@ void G4Element::AddIsotope(G4Isotope* isotope, G4double abundance)
   }
 
   // filled.
-  if ( fNumberOfIsotopes == theIsotopeVector->size() ) {
+  if ( fNumberOfIsotopes == (G4int)theIsotopeVector->size() ) {
     // Compute Neff, Aeff
     G4double wtSum=0.0;
 
     G4double aeff = 0.0;
     G4double neff = 0.0;
-    for (size_t i=0;i<fNumberOfIsotopes;i++) {
+    for (G4int i=0; i<fNumberOfIsotopes; i++) {
       aeff +=  fRelativeAbundanceVector[i]*(*theIsotopeVector)[i]->GetA();
       neff +=  fRelativeAbundanceVector[i]*(*theIsotopeVector)[i]->GetN();
       wtSum +=  fRelativeAbundanceVector[i];
@@ -203,7 +203,7 @@ void G4Element::AddIsotope(G4Isotope* isotope, G4double abundance)
     }
 
     if(wtSum != 1.0) {
-      for(size_t i=0; i<fNumberOfIsotopes; ++i) { 
+      for(G4int i=0; i<fNumberOfIsotopes; ++i) { 
 	fRelativeAbundanceVector[i] /= wtSum; 
       }
     }
@@ -346,7 +346,7 @@ void G4Element::AddNaturalIsotopes()
   for(G4int i=0; i<n; ++i) {
     if(nist->GetIsotopeAbundance(Z, N0+i) > 0.0) { ++fNumberOfIsotopes; }
   }
-  theIsotopeVector         = new G4IsotopeVector(fNumberOfIsotopes,0);
+  theIsotopeVector = new G4IsotopeVector((unsigned int)fNumberOfIsotopes,0);
   fRelativeAbundanceVector = new G4double[fNumberOfIsotopes];
   G4int idx = 0;
   G4double xsum = 0.0;
@@ -475,9 +475,9 @@ const G4Element& G4Element::operator=(const G4Element& right)
       fNumberOfIsotopes        = right.fNumberOfIsotopes;
       if (fNumberOfIsotopes > 0)
         {
-	 theIsotopeVector         = new G4IsotopeVector(fNumberOfIsotopes,0);
+	 theIsotopeVector = new G4IsotopeVector((unsigned int)fNumberOfIsotopes,0);
 	 fRelativeAbundanceVector = new G4double[fNumberOfIsotopes];
-	 for (size_t i=0;i<fNumberOfIsotopes;i++)
+	 for (G4int i=0;i<fNumberOfIsotopes;i++)
 	    {
              (*theIsotopeVector)[i]      = (*right.theIsotopeVector)[i];
              fRelativeAbundanceVector[i] = right.fRelativeAbundanceVector[i];
@@ -504,7 +504,7 @@ G4int G4Element::operator!=(const G4Element& right) const
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-std::ostream& operator<<(std::ostream& flux, G4Element* element)
+std::ostream& operator<<(std::ostream& flux, const G4Element* element)
 {
   std::ios::fmtflags mode = flux.flags();
   flux.setf(std::ios::fixed,std::ios::floatfield);
@@ -517,7 +517,7 @@ std::ostream& operator<<(std::ostream& flux, G4Element* element)
     << "   A = " << std::setw(6) << std::setprecision(2)
                  << (element->fAeff)/(g/mole) << " g/mole";
    
-  for (size_t i=0; i<element->fNumberOfIsotopes; i++)
+  for (G4int i=0; i<element->fNumberOfIsotopes; i++)
   flux 
     << "\n         ---> " << (*(element->theIsotopeVector))[i] 
     << "   abundance: " << std::setw(6) << std::setprecision(2) 
@@ -530,7 +530,7 @@ std::ostream& operator<<(std::ostream& flux, G4Element* element)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
- std::ostream& operator<<(std::ostream& flux, G4Element& element)
+ std::ostream& operator<<(std::ostream& flux, const G4Element& element)
 {
   flux << &element;        
   return flux;

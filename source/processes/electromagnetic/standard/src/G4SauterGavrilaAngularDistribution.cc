@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4SauterGavrilaAngularDistribution.cc 79188 2014-02-20 09:22:48Z gcosmo $
+// $Id: G4SauterGavrilaAngularDistribution.cc 78929 2014-02-04 09:00:46Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

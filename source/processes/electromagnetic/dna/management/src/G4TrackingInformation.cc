@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4TrackingInformation.cc 82326 2014-06-16 09:19:18Z gcosmo $
+// $Id: G4TrackingInformation.cc 90769 2015-06-09 10:33:41Z gcosmo $
 //
 // Author: Mathieu Karamitros (kara (AT) cenbg . in2p3 . fr) 
 //
@@ -53,6 +53,16 @@ G4TrackingInformation::G4TrackingInformation() :
 G4TrackingInformation::~G4TrackingInformation()
 {
     //dtor
+	/*
+    for(int i = 0 ; i < (int) fProcessState.size() - 1 ; i++)
+    {
+        if(fProcessState[i])
+        {
+            delete fProcessState[i];
+            fProcessState[i] = 0;
+        }
+    }
+    */
     fProcessState.clear();
     if(fpStepProcessorState) delete fpStepProcessorState;
     fpStepProcessorState = 0;
@@ -79,8 +89,22 @@ G4TrackingInformation& G4TrackingInformation::operator=(const G4TrackingInformat
     //assignment operator
     return *this;
 }
+//
+//G4ProcessState_Lock* G4TrackingInformation::GetProcessState(size_t index)
+//{
+//    if(index> G4VITProcess::GetMaxProcessIndex())
+//    {
+//        G4ExceptionDescription exceptionDescription ;
+//        exceptionDescription << "G4TrackingInformation::GetProcInfo : Wrong process subType : " ;
+//        exceptionDescription << index ;
+//        G4Exception("G4TrackingInformation::GetProcessState","G4TrackingInformation003",
+//                    FatalErrorInArgument,exceptionDescription);
+//    }
+//
+//    return fProcessState[index];
+//}
 
-G4::shared_ptr<G4ProcessState_Lock> G4TrackingInformation::GetProcessState(size_t index)
+G4shared_ptr<G4ProcessState_Lock> G4TrackingInformation::GetProcessState(size_t index)
 {
     if(index> G4VITProcess::GetMaxProcessIndex())
     {

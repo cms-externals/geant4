@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4Trap.cc 81636 2014-06-04 09:06:08Z gcosmo $
+// $Id: G4Trap.cc 83851 2014-09-19 10:12:12Z gcosmo $
 //
 // class G4Trap
 //
@@ -48,6 +48,9 @@
 //////////////////////////////////////////////////////////////////////////////////// 
 
 #include "G4Trap.hh"
+
+#if !defined(G4GEOM_USE_UTRAP)
+
 #include "globals.hh"
 
 #include "G4VoxelLimits.hh"
@@ -560,7 +563,6 @@ G4Trap::G4Trap(const G4Trap& rhs)
     fPlanes[i].c = rhs.fPlanes[i].c;
     fPlanes[i].d = rhs.fPlanes[i].d;
   }
-  fpPolyhedron = GetPolyhedron();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -590,7 +592,6 @@ G4Trap& G4Trap::operator = (const G4Trap& rhs)
     fPlanes[i].c = rhs.fPlanes[i].c;
     fPlanes[i].d = rhs.fPlanes[i].d;
   }
-  fpPolyhedron = GetPolyhedron();
 
   return *this;
 }
@@ -625,7 +626,7 @@ void G4Trap::SetAllParameters ( G4double pDz,
   }
   fCubicVolume= 0.;
   fSurfaceArea= 0.;
-  delete fpPolyhedron; fpPolyhedron = 0;
+  fRebuildPolyhedron = true;
   fDz=pDz;
   fTthetaCphi=std::tan(pTheta)*std::cos(pPhi);
   fTthetaSphi=std::tan(pTheta)*std::sin(pPhi);
@@ -1968,3 +1969,5 @@ G4Polyhedron* G4Trap::CreatePolyhedron () const
                               fDy1, fDx1, fDx2, alpha1,
                               fDy2, fDx3, fDx4, alpha2);
 }
+
+#endif

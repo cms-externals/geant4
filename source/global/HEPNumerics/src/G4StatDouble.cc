@@ -58,7 +58,7 @@ void G4StatDouble::fill(G4double value, G4double weight)
 {
   m_sum_wx  += value * weight;
   m_sum_wx2 += value * value * weight;
-  m_n++;
+  if(m_n < INT_MAX) { ++m_n; }
   m_sum_w   += weight;
   m_sum_w2  += weight * weight;
 
@@ -102,7 +102,7 @@ G4double G4StatDouble::mean(G4double ext_sum_w) const
 G4double G4StatDouble::rms(G4double ssum_wx, G4double ssum_wx2,
                            G4double ssum_w, G4int nn)
 {
-  G4double vrms;
+  G4double vrms = 0.0;
   if (nn > 1)
   {
     G4double vmean = ssum_wx / ssum_w;
@@ -134,10 +134,6 @@ G4double G4StatDouble::rms(G4double ssum_wx, G4double ssum_wx2,
 //         << ((m_sum_wx2 / m_sum_w) - (mean * mean)) 
 // 	   << G4endl;
   }
-  else
-  {
-    vrms = -1.;
-  }
   return vrms * m_scale;
 }
 
@@ -162,7 +158,7 @@ G4double G4StatDouble::rms(G4double ext_sum_w, G4int ext_n)
   return rms(m_sum_wx, m_sum_wx2, ext_sum_w, ext_n);
 }
 
-void G4StatDouble::add(G4StatDouble* ptr)
+void G4StatDouble::add(const G4StatDouble* ptr)
 {
   m_n       += ptr->n();
   m_sum_w   += ptr->sum_w();

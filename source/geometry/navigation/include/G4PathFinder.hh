@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PathFinder.hh 81596 2014-06-03 14:08:49Z gcosmo $
+// $Id: G4PathFinder.hh 89289 2015-03-31 08:35:38Z gcosmo $
 // 
 // class G4PathFinder 
 //
@@ -104,11 +104,19 @@ class G4PathFinder
      //   Reset internal state
      //   Inform TransportationManager to use 'ordinary' Navigator
 
-   G4TouchableHandle CreateTouchableHandle( G4int navId ) const;
-   inline G4VPhysicalVolume* GetLocatedVolume( G4int navId ) const; 
+    G4TouchableHandle CreateTouchableHandle( G4int navId ) const;
+    inline G4VPhysicalVolume* GetLocatedVolume( G4int navId ) const;
+
+    G4bool RecheckDistanceToCurrentBoundary(
+                                          const G4ThreeVector &pGlobalPoint,
+                                          const G4ThreeVector &pDirection,
+                                          const G4double pCurrentProposedStepLength,
+                                          G4double  *prDistance,
+                                          G4double  *prNewSafety= 0)const;
+   // Trial method for checking potential displacement for MS
 
    // -----------------------------------------------------------------
-
+  
    inline G4bool   IsParticleLooping() const;
 
    inline G4double GetCurrentSafety() const;
@@ -208,7 +216,7 @@ class G4PathFinder
    G4int   fNoActiveNavigators; 
    G4bool  fNewTrack;               // Flag a new track (ensure first step)
 
-   static const G4int fMaxNav = 8;  // rename to kMaxNoNav ??
+   static const G4int fMaxNav = 16;  // rename to kMaxNoNav ??
 
    // Global state (retained during stepping for one track)
 

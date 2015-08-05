@@ -39,17 +39,20 @@
 #include "WLSSteppingAction.hh"
 #include "WLSStackingAction.hh"
 #include "WLSSteppingVerbose.hh"
+#include "G4GeneralParticleSource.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 WLSActionInitialization::WLSActionInitialization(WLSDetectorConstruction* det)
  : G4VUserActionInitialization(), fDetector(det)
-{}
+{
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 WLSActionInitialization::~WLSActionInitialization()
-{}
+{
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -79,4 +82,4 @@ void WLSActionInitialization::Build() const
 G4VSteppingVerbose* WLSActionInitialization::InitializeSteppingVerbose() const
 {
   return new WLSSteppingVerbose();
-}  
+}

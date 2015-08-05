@@ -31,6 +31,7 @@
 #include "G4RunManager.hh"
 #include "G4HumanPhantomRunAction.hh"
 #include "G4HumanPhantomEventAction.hh"
+#include "G4GeneralParticleSource.hh"
 
 G4HumanPhantomActionInitialization::G4HumanPhantomActionInitialization():
 G4VUserActionInitialization()
@@ -39,7 +40,8 @@ G4VUserActionInitialization()
 
 
 G4HumanPhantomActionInitialization::~G4HumanPhantomActionInitialization()
-{}
+{
+}
 
 void G4HumanPhantomActionInitialization::BuildForMaster() const
 {

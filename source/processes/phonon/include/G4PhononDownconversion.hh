@@ -26,7 +26,7 @@
 /// \file processes/phonon/include/G4PhononDownconversion.hh
 /// \brief Definition of the G4PhononDownconversion class
 //
-// $Id: G4PhononDownconversion.hh 81891 2014-06-06 13:26:40Z gcosmo $
+// $Id: G4PhononDownconversion.hh 79778 2014-03-13 17:24:53Z gcosmo $
 //
 #ifndef G4PhononDownconversion_h
 #define G4PhononDownconversion_h 1

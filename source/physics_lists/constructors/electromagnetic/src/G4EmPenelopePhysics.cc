@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmPenelopePhysics.cc 79157 2014-02-19 15:35:01Z gcosmo $
+// $Id: G4EmPenelopePhysics.cc 86233 2014-11-07 17:21:03Z gcosmo $
 
 #include "G4EmPenelopePhysics.hh"
 #include "G4ParticleDefinition.hh"
@@ -98,7 +98,6 @@
 #include "G4LossTableManager.hh"
 #include "G4VAtomDeexcitation.hh"
 #include "G4UAtomicDeexcitation.hh"
-#include "G4EmProcessOptions.hh"
 
 // particles
 
@@ -133,7 +132,11 @@ G4_DECLARE_PHYSCONSTR_FACTORY(G4EmPenelopePhysics);
 G4EmPenelopePhysics::G4EmPenelopePhysics(G4int ver)
   : G4VPhysicsConstructor("G4EmPenelopePhysics"), verbose(ver)
 {
-  G4LossTableManager::Instance();
+  G4EmParameters* param = G4EmParameters::Instance();
+  param->SetVerbose(verbose);
+  param->SetMinEnergy(100*eV);
+  param->SetMaxEnergy(10*TeV);
+  param->SetNumberOfBinsPerDecade(20);
   SetPhysicsType(bElectromagnetic);
 }
 
@@ -142,7 +145,11 @@ G4EmPenelopePhysics::G4EmPenelopePhysics(G4int ver)
 G4EmPenelopePhysics::G4EmPenelopePhysics(G4int ver, const G4String&)
   : G4VPhysicsConstructor("G4EmPenelopePhysics"), verbose(ver)
 {
-  G4LossTableManager::Instance();
+  G4EmParameters* param = G4EmParameters::Instance();
+  param->SetVerbose(verbose);
+  param->SetMinEnergy(100*eV);
+  param->SetMaxEnergy(10*TeV);
+  param->SetNumberOfBinsPerDecade(20);
   SetPhysicsType(bElectromagnetic);
 }
 
@@ -204,11 +211,11 @@ void G4EmPenelopePhysics::ConstructProcess()
   // muon & hadron multiple scattering
   G4MuMultipleScattering* mumsc = new G4MuMultipleScattering();
   mumsc->AddEmModel(0, new G4WentzelVIModel());
-  G4MuMultipleScattering* pimsc = new G4MuMultipleScattering();
+  //G4MuMultipleScattering* pimsc = new G4MuMultipleScattering();
   //pimsc->AddEmModel(0, new G4WentzelVIModel());
-  G4MuMultipleScattering* kmsc = new G4MuMultipleScattering();
+  //G4MuMultipleScattering* kmsc = new G4MuMultipleScattering();
   //kmsc->AddEmModel(0, new G4WentzelVIModel());
-  G4MuMultipleScattering* pmsc = new G4MuMultipleScattering();
+  //G4MuMultipleScattering* pmsc = new G4MuMultipleScattering();
   //pmsc->AddEmModel(0, new G4WentzelVIModel());
   G4hMultipleScattering* hmsc = new G4hMultipleScattering("ionmsc");
 
@@ -216,7 +223,6 @@ void G4EmPenelopePhysics::ConstructProcess()
   G4double highEnergyLimit = 100*MeV;
 
   // nuclear stopping
-  G4NuclearStopping* ionnuc = new G4NuclearStopping();
   G4NuclearStopping* pnuc = new G4NuclearStopping();
 
   // Add Penelope EM Processes
@@ -357,8 +363,6 @@ void G4EmPenelopePhysics::ConstructProcess()
     } else if (particleName == "mu+" ||
                particleName == "mu-"    ) {
 
-      // Identical to G4EmStandardPhysics_option3
-
       G4MuIonisation* muIoni = new G4MuIonisation();
       muIoni->SetStepFunction(0.2, 50*um);          
 
@@ -370,8 +374,6 @@ void G4EmPenelopePhysics::ConstructProcess()
 
     } else if (particleName == "alpha" ||
                particleName == "He3" ) {
-
-      // Identical to G4EmStandardPhysics_option3
       
       G4hMultipleScattering* msc = new G4hMultipleScattering();
       G4ionIonisation* ionIoni = new G4ionIonisation();
@@ -379,23 +381,22 @@ void G4EmPenelopePhysics::ConstructProcess()
 
       ph->RegisterProcess(msc, particle);
       ph->RegisterProcess(ionIoni, particle);
-      ph->RegisterProcess(ionnuc, particle);
+      ph->RegisterProcess(pnuc, particle);
 
     } else if (particleName == "GenericIon") {
 
-      // Identical to G4EmStandardPhysics_option3
-      
       G4ionIonisation* ionIoni = new G4ionIonisation();
       ionIoni->SetEmModel(new G4IonParametrisedLossModel());
       ionIoni->SetStepFunction(0.1, 1*um);
 
       ph->RegisterProcess(hmsc, particle);
       ph->RegisterProcess(ionIoni, particle);
-      ph->RegisterProcess(ionnuc, particle);
+      ph->RegisterProcess(pnuc, particle);
 
     } else if (particleName == "pi+" ||
                particleName == "pi-" ) {
 
+      G4hMultipleScattering* pimsc = new G4hMultipleScattering();
       G4hIonisation* hIoni = new G4hIonisation();
       hIoni->SetStepFunction(0.2, 50*um);
 
@@ -407,6 +408,7 @@ void G4EmPenelopePhysics::ConstructProcess()
     } else if (particleName == "kaon+" ||
                particleName == "kaon-" ) {
 
+      G4hMultipleScattering* kmsc = new G4hMultipleScattering();
       G4hIonisation* hIoni = new G4hIonisation();
       hIoni->SetStepFunction(0.2, 50*um);
 
@@ -418,6 +420,7 @@ void G4EmPenelopePhysics::ConstructProcess()
     } else if (particleName == "proton" ||
 	       particleName == "anti_proton") {
 
+      G4hMultipleScattering* pmsc = new G4hMultipleScattering();
       G4hIonisation* hIoni = new G4hIonisation();
       hIoni->SetStepFunction(0.2, 50*um);
 
@@ -457,43 +460,14 @@ void G4EmPenelopePhysics::ConstructProcess()
                particleName == "triton" ||
                particleName == "xi_c+" ||
                particleName == "xi-" ) {
-
-      // Identical to G4EmStandardPhysics_option3
       
       ph->RegisterProcess(hmsc, particle);
       ph->RegisterProcess(new G4hIonisation(), particle);
-      ph->RegisterProcess(pnuc, particle);
     }
   }
     
-  // Em options
-  //      
-  G4EmProcessOptions opt;
-  opt.SetVerbose(verbose);
-  
-  // Multiple Coulomb scattering
-  //
-  //opt.SetMscStepLimitation(fUseDistanceToBoundary);
-  //opt.SetMscRangeFactor(0.02);
-    
-  // Physics tables
-  //
-
-  opt.SetMinEnergy(100*eV);
-  opt.SetMaxEnergy(10*TeV);
-  opt.SetDEDXBinning(220);
-  opt.SetLambdaBinning(220);
-
   // Nuclear stopping
   pnuc->SetMaxKinEnergy(MeV);
-
-  //opt.SetSplineFlag(true);
-  opt.SetPolarAngleLimit(CLHEP::pi);
-    
-  // Ionization
-  //
-  //opt.SetSubCutoff(true);    
-
   
   // Deexcitation
   //

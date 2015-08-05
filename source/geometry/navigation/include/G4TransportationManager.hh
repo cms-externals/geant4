@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4TransportationManager.hh 79140 2014-02-19 13:29:40Z gcosmo $
+// $Id: G4TransportationManager.hh 83466 2014-08-25 10:31:39Z gcosmo $
 //
 // class G4TransportationManager
 //
@@ -107,6 +107,13 @@ class G4TransportationManager
      void InactivateAll();
        // Methods for handling navigators. Navigator for tracking is always the
        // first, i.e. position 0 in the collection and cannot be de-registered
+
+  public:  // without description
+
+     void ClearParallelWorlds();
+       // Clear collection of navigators and delete allocated objects
+       // associated with parallel worlds. Internal method called only
+       // by the RunManager when the entire geometry is rebuilt from scratch.
 
   protected:
 
