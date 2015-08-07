@@ -11,6 +11,9 @@
 #  Geant4_CXX_FLAGS_<CONFIG> - Recommended CXX flags for build mode CONFIG.
 #  Geant4_USE_FILE     - path to a CMake module which may be included to
 #                        help setup CMake variables
+#  Geant4_CXXSTD       - C++ Standard used to compile Geant4, e.g. c++98
+#  Geant4_TLS_MODEL    - Thread Local Storage model used. Only set if
+#                        the install provides multithreading support.
 #
 # You may supply a version number through find_package which will be checked
 # against the version of this build. Standard CMake logic is used so that
@@ -57,6 +60,8 @@
 #                     to activate multithread mode to Geant4_DEFINITIONS,
 #                     if the libraries support it.)
 #
+#  usolids           (Geant4 solids are replaced with USolids equivalents)
+#
 # Optional Components
 # -------------------
 #  gdml              (GDML support)
@@ -87,11 +92,12 @@
 # components being available.
 #
 # You can also query whether the Geant4 found uses the builtin versions
-# of CLHEP, ZLIB and Expat after calling find_package via the variables
+# of CLHEP, ZLIB, Expat and USolids after calling find_package via the variables
 #
-#  Geant4_builtin_clhep_FOUND  (TRUE if Geant4 built with internal CLHEP)
-#  Geant4_builtin_expat_FOUND  (TRUE if Geant4 built with internal Expat)
-#  Geant4_builtin_zlib_FOUND   (TRUE if Geant4 built with internal Zlib)
+#  Geant4_builtin_clhep_FOUND   (TRUE if Geant4 built with internal CLHEP)
+#  Geant4_builtin_expat_FOUND   (TRUE if Geant4 built with internal Expat)
+#  Geant4_builtin_usolids_FOUND (TRUE if Geant4 built with internal USolids)
+#  Geant4_builtin_zlib_FOUND    (TRUE if Geant4 built with internal Zlib)
 #
 # These are not used via components as they do not, in general, affect
 # the use of Geant4 in an application unless you yourself make direct
@@ -102,6 +108,12 @@
 # Geant4_LIBRARIES variables will be populated to use the builtin or
 # system APIs as required, and you should use these to ensure you compile
 # and link against the same API version.
+#
+# An additional variable is set for CLHEP when Geant4 was built using a
+# system install to indicate whether the single/granular CLHEP library/ies
+# was/were linked against
+#
+#  Geant4_system_clhep_ISGRANULAR (TRUE is Geant4 linked to granular CLHEP)
 #
 # Environment variables for, and directory paths to, physics datasets
 # used by some Geant4 physics processes may be determined from the
@@ -152,6 +164,9 @@ get_filename_component(_thisdir "${CMAKE_CURRENT_LIST_FILE}" PATH)
 # Don't mess with the actual CMAKE_CXX_FLAGS!!!
 # It's up to the user what to do with these
 @GEANT4_COMPILER_FLAG_HINTS@
+
+# - Provide variable indicating C++ Standard we were compiled against
+set(Geant4_CXXSTD "@GEANT4_BUILD_CXXSTD@")
 
 #-----------------------------------------------------------------------
 # Set the base compile definitions required to use Geant4 if the variable
@@ -253,14 +268,28 @@ unset(Geant4_DATASET_DESCRIPTIONS)
 #
 # Builtin/External packages
 set(Geant4_builtin_clhep_FOUND @GEANT4_USE_BUILTIN_CLHEP@)
+if(NOT Geant4_builtin_clhep_FOUND)
+  set(Geant4_system_clhep_ISGRANULAR @GEANT4_USE_SYSTEM_CLHEP_GRANULAR@)
+endif()
+
 set(Geant4_builtin_expat_FOUND @GEANT4_USE_BUILTIN_EXPAT@)
 set(Geant4_builtin_zlib_FOUND @GEANT4_USE_BUILTIN_ZLIB@)
+set(Geant4_builtin_usolids_FOUND @GEANT4_USE_BUILTIN_USOLIDS@)
+
+# - Usolids replacement
+set(Geant4_usolids_FOUND @GEANT4_USE_USOLIDS@)
+if(Geant4_usolids_FOUND)
+  list(REMOVE_ITEM Geant4_FIND_COMPONENTS usolids)
+endif()
 
 # - Multithreading
 set(Geant4_multithreaded_FOUND @GEANT4_BUILD_MULTITHREADED@)
 if(Geant4_multithreaded_FOUND)
   list(REMOVE_ITEM Geant4_FIND_COMPONENTS multithreaded)
   list(APPEND Geant4_DEFINITIONS -DG4MULTITHREADED)
+
+  # - Define variable to indicate TLS model used
+  set(Geant4_TLS_MODEL "@GEANT4_BUILD_TLS_MODEL@")
 endif()
 
 # - GDML
@@ -338,18 +367,20 @@ endif()
 set(Geant4_qt_FOUND @GEANT4_USE_QT@)
 set(Geant4_USES_QT5 @Qt5Core_FOUND@)
 if(Geant4_qt_FOUND)
-  if(Geant4_FIND_REQUIRED_qt OR Geant4_FIND_REQUIRED_ui_all OR
-      Geant4_FIND_REQUIRED_vis_all)
+  # Must always refind Qt5 to recreate imported targets. Because these
+  # are in the public interface, always need linking.
+  if(Geant4_USES_QT5)
+    find_package(Qt5Core REQUIRED PATHS "@Qt5Core_DIR@")
+    find_package(Qt5Gui REQUIRED PATHS "@Qt5Gui_DIR@")
+    find_package(Qt5Widgets REQUIRED PATHS "@Qt5Widgets_DIR@")
+    find_package(Qt5OpenGL REQUIRED PATHS "@Qt5OpenGL_DIR@")
+    find_package(Qt5PrintSupport REQUIRED PATHS "@Qt5PrintSupport_DIR@")
+  endif()
+
+  if(Geant4_FIND_REQUIRED_qt OR Geant4_FIND_REQUIRED_ui_all OR Geant4_FIND_REQUIRED_vis_all)
     # If we have Qt5, we need to refind the components because they use
     # imported targets, so linking will not work unless we recreate
     # them
-    if(Geant4_USES_QT5)
-      find_package(Qt5Core REQUIRED PATHS "@Qt5Core_DIR@")
-      find_package(Qt5Gui REQUIRED PATHS "@Qt5Gui_DIR@")
-      find_package(Qt5Widgets REQUIRED PATHS "@Qt5Widgets_DIR@")
-      find_package(Qt5OpenGL REQUIRED PATHS "@Qt5OpenGL_DIR@")
-      find_package(Qt5PrintSupport REQUIRED PATHS "@Qt5PrintSupport_DIR@")
-    endif()
 
     list(APPEND
       Geant4_DEFINITIONS

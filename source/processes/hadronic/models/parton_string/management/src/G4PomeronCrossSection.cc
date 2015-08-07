@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4PomeronCrossSection.cc 81886 2014-06-06 13:09:06Z gcosmo $
+// $Id: G4PomeronCrossSection.cc 79761 2014-03-13 15:14:37Z gcosmo $
 //
 
 #include "G4PomeronCrossSection.hh"

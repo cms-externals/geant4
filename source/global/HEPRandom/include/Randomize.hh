@@ -24,14 +24,22 @@
 // ********************************************************************
 //
 //
-// $Id: Randomize.hh 68844 2013-04-08 07:21:18Z gcosmo $
+// $Id: Randomize.hh 90717 2015-06-08 14:19:29Z gcosmo $
 //
 #ifndef randomize_h
 #define randomize_h 1
 
 #include <CLHEP/Random/Randomize.h>
 
-#ifdef G4MULTITHREADED
+#if __clang__
+  #if ((defined(G4MULTITHREADED) && !defined(G4USE_STD11)) || \
+      !__has_feature(cxx_thread_local))
+    #define CLANG_NOSTDTLS
+  #endif
+#endif
+
+#if (defined(G4MULTITHREADED) && \
+    (!defined(G4USE_STD11) || (defined(CLANG_NOSTDTLS))))
 
 // MT needs special Random Number distribution classes
 //
@@ -57,13 +65,11 @@
 
 #define G4UniformRand() G4MTHepRandom::getTheEngine()->flat()
 
-// Currently not be used in G4 source
-//
 #define G4RandFlatArray G4MTRandFlat::shootArray
 #define G4RandFlatInt G4MTRandFlat::shootInt
 #define G4RandGeneralTmp G4MTRandGeneral
 
-#else // Sequential mode
+#else // Sequential mode or supporting C++11 standard
 
 // Distributions used ...
 //

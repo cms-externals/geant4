@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4MuonMinusBoundDecay.cc 69573 2013-05-08 13:35:53Z gcosmo $
+// $Id: G4MuonMinusBoundDecay.cc 88993 2015-03-17 11:17:13Z gcosmo $
 //
 //-----------------------------------------------------------------------------
 //
@@ -39,8 +39,8 @@
 // 04/23/2013  K.Genser     Fixed a constant in computation of lambda
 //                          as suggested by J P Miller/Y Oksuzian;
 //                          Optimized and corrected lambda calculation/lookup
-// 04/30/2013  K.Genser     Improved GetMuonCaptureRate
-//                            extended data and lookup to take both Z & A into account
+// 04/30/2013  K.Genser     Improved GetMuonCaptureRate extended data and lookup 
+//                          to take both Z & A into account
 //                          Improved GetMuonDecayRate by using Zeff instead of Z
 //                          Extracted Zeff into GetMuonZeff
 //                          
@@ -86,9 +86,11 @@ G4MuonMinusBoundDecay::ApplyYourself(const G4HadProjectile& projectile,
   G4double lambda   = lambdac + lambdad;
 
   // ===  sample capture  time and change time of projectile
+  // ===  this is needed for the case when bound decay is not happen
+  // ===  but muon is capruted by the nucleus with some delay
 
-  G4double time = -std::log(G4UniformRand()) / lambda;
   G4HadProjectile* p = const_cast<G4HadProjectile*>(&projectile);
+  G4double time = p->GetGlobalTime() - std::log(G4UniformRand())/lambda;
   p->SetGlobalTime(time);
     
   //G4cout << "lambda= " << lambda << " lambdac= " << lambdac 
@@ -119,6 +121,7 @@ G4MuonMinusBoundDecay::ApplyYourself(const G4HadProjectile& projectile,
     G4double Eelect, Pelect, x, ecm;
     G4LorentzVector EL, NN;
     // Calculate electron energy
+    // these do/while loops are safe
     do {
       do {
         x = xmin + (xmax-xmin)*G4UniformRand();

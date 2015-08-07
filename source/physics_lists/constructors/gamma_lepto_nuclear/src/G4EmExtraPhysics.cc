@@ -35,6 +35,8 @@
 // 10.11.2005 V.Ivanchenko edit to provide a standard
 // 19.06.2006 V.Ivanchenko add mu-nuclear process
 // 16.10.2012 A.Ribon: renamed G4EmExtraBertiniPhysics as G4EmExtraPhysics
+// 10.04.2014 A.Dotti: Add MT functionality for messenger
+// 24.04.2014 A.Ribon: switched on muon-nuclear by default
 //
 //----------------------------------------------------------------------------
 //
@@ -51,22 +53,28 @@
 #include "G4Positron.hh"
 #include "G4MuonPlus.hh"
 #include "G4MuonMinus.hh"
-#include "G4ProcessManager.hh"
-#include "G4BuilderType.hh"
 
+#include "G4SynchrotronRadiation.hh"
+#include "G4BertiniElectroNuclearBuilder.hh"
+#include "G4MuonNuclearProcess.hh"
+#include "G4MuonVDNuclearModel.hh"
+
+#include "G4PhysicsListHelper.hh"
+#include "G4BuilderType.hh"
+#include "G4AutoDelete.hh"
+ 
 // factory
 #include "G4PhysicsConstructorFactory.hh"
 //
 G4_DECLARE_PHYSCONSTR_FACTORY(G4EmExtraPhysics);
 
-G4ThreadLocal G4bool G4EmExtraPhysics::wasBuilt     = false;
-G4ThreadLocal G4bool G4EmExtraPhysics::munActivated = false;
-G4ThreadLocal G4bool G4EmExtraPhysics::gnActivated  = false;
-G4ThreadLocal G4bool G4EmExtraPhysics::synActivated = false;
-G4ThreadLocal G4bool G4EmExtraPhysics::synchOn      = false;
-G4ThreadLocal G4bool G4EmExtraPhysics::gammNucOn    = true;
-G4ThreadLocal G4bool G4EmExtraPhysics::muNucOn      = false;
+G4bool G4EmExtraPhysics::gnActivated  = true;
+G4bool G4EmExtraPhysics::munActivated = true;
+G4bool G4EmExtraPhysics::synActivated = false;
+G4bool G4EmExtraPhysics::synActivatedForAll = false;
 
+G4ThreadLocal G4BertiniElectroNuclearBuilder* G4EmExtraPhysics::theGNPhysics=0;
+G4ThreadLocal G4SynchrotronRadiation* G4EmExtraPhysics::theSynchRad=0;
 
 G4EmExtraPhysics::G4EmExtraPhysics(G4int ver): 
   G4VPhysicsConstructor("G4GammaLeptoNuclearPhys"),
@@ -89,30 +97,28 @@ G4EmExtraPhysics::G4EmExtraPhysics(const G4String&):
 G4EmExtraPhysics::~G4EmExtraPhysics()
 {
   delete theMessenger;
+  theMessenger = 0;
 }
 
-void G4EmExtraPhysics::Synch(G4String & newState)
+void G4EmExtraPhysics::Synch(G4bool val)
 {
-  if(newState == "on" || newState == "ON") {
-    synchOn = true;
-    if(wasBuilt) BuildSynch();
-  } else synchOn = false;
+  synActivated = val;
 }
 
-void G4EmExtraPhysics::GammaNuclear(G4String & newState)
+void G4EmExtraPhysics::SynchAll(G4bool val)
 {
-  if(newState == "on" || newState == "ON") {
-    gammNucOn = true;
-    if(wasBuilt) BuildGammaNuclear();
-  } else  gammNucOn = false;
+  synActivatedForAll = val;
+  if(synActivatedForAll) { synActivated = true; }
 }
 
-void G4EmExtraPhysics::MuonNuclear(G4String & newState)
+void G4EmExtraPhysics::GammaNuclear(G4bool val)
 {
-  if(newState == "on" || newState == "ON") {
-    muNucOn = true;
-    if(wasBuilt) BuildMuonNuclear();
-  } else muNucOn = false;
+  gnActivated = val;
+}
+
+void G4EmExtraPhysics::MuonNuclear(G4bool val)
+{
+  munActivated = val;
 }
 
 void G4EmExtraPhysics::ConstructParticle()
@@ -126,51 +132,44 @@ void G4EmExtraPhysics::ConstructParticle()
 
 void G4EmExtraPhysics::ConstructProcess()
 {
-  if(wasBuilt) return;
-  wasBuilt = true;
+  G4ParticleDefinition* electron = G4Electron::Electron();
+  G4ParticleDefinition* positron = G4Positron::Positron();
+  G4ParticleDefinition* muonplus = G4MuonPlus::MuonPlus();
+  G4ParticleDefinition* muonminus = G4MuonMinus::MuonMinus();
 
-  if (synchOn)   BuildSynch();
-  if (gammNucOn) BuildGammaNuclear();
-  if (muNucOn)   BuildMuonNuclear();
+  G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
+  if(gnActivated) {
+    theGNPhysics = new G4BertiniElectroNuclearBuilder();
+    theGNPhysics->Build();
+    G4AutoDelete::Register(theGNPhysics);
+  }
+  if(munActivated) {
+    G4MuonNuclearProcess* muNucProcess = new G4MuonNuclearProcess();
+    G4MuonVDNuclearModel* muNucModel = new G4MuonVDNuclearModel();
+    muNucProcess->RegisterMe(muNucModel);
+    ph->RegisterProcess( muNucProcess, muonplus);
+    ph->RegisterProcess( muNucProcess, muonminus);
+  }
+  if(synActivated) {
+    theSynchRad = new G4SynchrotronRadiation();
+    ph->RegisterProcess( theSynchRad, electron);
+    ph->RegisterProcess( theSynchRad, positron);
+    G4AutoDelete::Register(theSynchRad);
+    if(synActivatedForAll) {
+      aParticleIterator->reset();
+      G4ParticleDefinition* particle=0;
+
+      while( (*aParticleIterator)() ) {
+	particle = aParticleIterator->value();
+	if( particle->GetPDGStable() && particle->GetPDGCharge() != 0.0) { 
+	  if(verbose > 1) {
+	    G4cout << "### G4SynchrotronRadiation for " 
+		   << particle->GetParticleName() << G4endl;
+	  }
+	  ph->RegisterProcess( theSynchRad, particle);
+	}
+      }
+    }
+  }
 }
 
-void G4EmExtraPhysics::BuildMuonNuclear()
-{
-  if(munActivated) return;
-  munActivated = true;
-  G4ProcessManager * pManager = 0;
-
-  G4MuonNuclearProcess* muNucProcess = new G4MuonNuclearProcess();
-  G4MuonVDNuclearModel* muNucModel = new G4MuonVDNuclearModel();
-  muNucProcess->RegisterMe(muNucModel);
-
-  pManager = G4MuonPlus::MuonPlus()->GetProcessManager();
-  pManager->AddDiscreteProcess(muNucProcess);
-
-  pManager = G4MuonMinus::MuonMinus()->GetProcessManager();
-  pManager->AddDiscreteProcess(muNucProcess);
-}
-
-void G4EmExtraPhysics::BuildGammaNuclear()
-{
-  if(gnActivated) return;
-  gnActivated = true;
-
-  G4BertiniElectroNuclearBuilder* theGNPhysics = new G4BertiniElectroNuclearBuilder();
-  theGNPhysics->Build();
-}
-
-void G4EmExtraPhysics::BuildSynch()
-{
-  if(synActivated) return;
-  synActivated = true;
-  G4ProcessManager * pManager = 0;
-
-  pManager = G4Electron::Electron()->GetProcessManager();
-  G4SynchrotronRadiation* theElectronSynch = new G4SynchrotronRadiation();
-  pManager->AddDiscreteProcess(theElectronSynch);
-
-  pManager = G4Positron::Positron()->GetProcessManager();
-  G4SynchrotronRadiation* thePositronSynch = new G4SynchrotronRadiation();
-  pManager->AddDiscreteProcess(thePositronSynch);
-}

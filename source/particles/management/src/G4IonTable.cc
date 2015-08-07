@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4IonTable.cc 79333 2014-02-24 10:36:17Z gcosmo $
+// $Id: G4IonTable.cc 86833 2014-11-19 08:24:49Z gcosmo $
 //
 // 
 // --------------------------------------------------------------
@@ -43,7 +43,6 @@
 //      New design using G4VIsotopeTable          5 Oct. 99 H.Kurashige
 //      Modified Element Name for Z>103  06 Apr. 01 H.Kurashige
 //      Remove test of cuts in SetCuts   16 Jan  03 V.Ivanchenko
-//      Add G4IsomerTable                        5 May. 2013  H.Kurashige
 
 #include <iostream>               
 #include <iomanip>               
@@ -64,7 +63,6 @@
 
 #include "G4IsotopeProperty.hh"
 #include "G4VIsotopeTable.hh"
-#include "G4IsomerTable.hh"
 #include "G4NuclideTable.hh"
 
 // It is very important for multithreaded Geant4 to keep only one copy of the
@@ -118,7 +116,7 @@ G4Mutex G4IonTable::ionTableMutex = G4MUTEX_INITIALIZER;
 
 ////////////////////
 G4IonTable::G4IonTable()
-  : pIsomerTable(0),pNuclideTable(0),
+  : pNuclideTable(0),
     isIsomerCreated(false),
     n_error(0)
 {
@@ -139,6 +137,9 @@ G4IonTable::G4IonTable()
   {
     fIsotopeTableListShadow = fIsotopeTableList;
   }    
+
+  PrepareNuclideTable();
+  RegisterIsotopeTable(pNuclideTable);
 }
 
 // This method is used by each worker thread to copy the content
@@ -958,16 +959,18 @@ G4bool G4IonTable::GetNucleusByEncoding(G4int encoding,
   return true;
 }
 
+#include "G4AutoDelete.hh"
 /////////////////
 const G4String& G4IonTable::GetIonName(G4int Z, G4int A, G4double E) const 
 {
   static G4ThreadLocal G4String *pname = 0;
-  if (!pname)  { pname = new G4String(""); }
+  if (!pname)  { pname = new G4String(""); G4AutoDelete::Register(pname); }
   G4String &name = *pname;
 
   static G4ThreadLocal std::ostringstream* os = 0;
   if ( ! os ) {
     os = new std::ostringstream();
+    G4AutoDelete::Register(os); 
     os->setf(std::ios::fixed);
     os->precision(3);
   }
@@ -991,7 +994,7 @@ const G4String& G4IonTable::GetIonName(G4int Z, G4int A, G4int L, G4double E) co
 {
   if (L==0) return GetIonName(Z, A, E); 
   static G4ThreadLocal G4String *pname = 0;
-  if (!pname)  { pname = new G4String(""); }
+  if (!pname)  { pname = new G4String(""); G4AutoDelete::Register(pname); }
   G4String &name = *pname;
   name = "";
   for (int i =0; i<L; i++){
@@ -1005,12 +1008,13 @@ const G4String& G4IonTable::GetIonName(G4int Z, G4int A, G4int L, G4double E) co
 const G4String& G4IonTable::GetIonName(G4int Z, G4int A, G4int lvl) const 
 {
   static G4ThreadLocal G4String *pname = 0;
-  if (!pname)  { pname = new G4String(""); }
+  if (!pname)  { pname = new G4String(""); G4AutoDelete::Register(pname); }
   G4String &name = *pname;
 
   static G4ThreadLocal std::ostringstream* os = 0;
   if ( ! os ) {
     os = new std::ostringstream();
+    G4AutoDelete::Register(os);
     os->setf(std::ios::fixed);
   }
 
@@ -1043,7 +1047,7 @@ const G4String& G4IonTable::GetIonName(G4int Z, G4int A, G4int L, G4int lvl) con
 {
   if (L==0) return GetIonName(Z, A, lvl); 
   static G4ThreadLocal G4String *pname = 0;
-  if (!pname)  { pname = new G4String(""); }
+  if (!pname)  { pname = new G4String(""); G4AutoDelete::Register(pname); }
   G4String &name = *pname;
   for (int i =0; i<L; i++){
     name +="L";
@@ -1523,17 +1527,18 @@ void G4IonTable::CreateAllIsomer()
   PreloadNuclide();
 }
 
+////////////////////
+void G4IonTable::PrepareNuclideTable()
+{
+  if(pNuclideTable==0) pNuclideTable = G4NuclideTable::GetNuclideTable();
+}
 
 ////////////////////
 void G4IonTable::PreloadNuclide()
 {
-  if (isIsomerCreated) return;
+  if ( isIsomerCreated || !G4Threading::IsMultithreadedApplication() ) return;
 
-  if (pNuclideTable==0) {
-    pNuclideTable = G4NuclideTable::GetNuclideTable();
-    pNuclideTable->GenerateNuclide();
-    RegisterIsotopeTable(pNuclideTable);
-  }
+  pNuclideTable->GenerateNuclide();
 
   for ( size_t i = 0 ; i != pNuclideTable->entries() ; i++ ) {
      const G4IsotopeProperty*  fProperty = pNuclideTable->GetIsotopeByIndex( i );

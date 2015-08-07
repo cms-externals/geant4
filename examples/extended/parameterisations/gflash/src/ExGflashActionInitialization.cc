@@ -37,12 +37,14 @@
 
 ExGflashActionInitialization::ExGflashActionInitialization()
  : G4VUserActionInitialization()
-{}
+{
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ExGflashActionInitialization::~ExGflashActionInitialization()
-{;}
+{
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

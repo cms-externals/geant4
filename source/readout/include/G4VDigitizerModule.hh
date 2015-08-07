@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4VDigitizerModule.hh 81895 2014-06-06 13:39:01Z gcosmo $
+// $Id: G4VDigitizerModule.hh 80987 2014-05-19 10:50:22Z gcosmo $
 //
 
 #ifndef G4VDigitizerModule_H

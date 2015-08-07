@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4LogicalVolume.cc 78050 2013-12-03 08:17:33Z gcosmo $
+// $Id: G4LogicalVolume.cc 90701 2015-06-08 09:43:16Z gcosmo $
 //
 // 
 // class G4LogicalVolume Implementation
@@ -144,7 +144,7 @@ G4LogicalVolume::G4LogicalVolume( G4VSolid* pSolid,
                                   G4bool optimise )
  : fDaughters(0,(G4VPhysicalVolume*)0), 
    fVoxel(0), fOptimise(optimise), fRootRegion(false), fLock(false),
-   fSmartless(2.), fVisAttributes(0), fRegion(0)
+   fSmartless(2.), fVisAttributes(0), fRegion(0), fBiasWeight(1.)
 {
   // Initialize 'Shadow'/master pointers - for use in copying to workers
   fSolid = pSolid;
@@ -178,19 +178,15 @@ G4LogicalVolume::G4LogicalVolume( __void__& )
  : fDaughters(0,(G4VPhysicalVolume*)0),
    fName(""), fUserLimits(0),
    fVoxel(0), fOptimise(true), fRootRegion(false), fLock(false),
-   fSmartless(2.), fVisAttributes(0), fRegion(0), fBiasWeight(0.),
+   fSmartless(2.), fVisAttributes(0), fRegion(0), fBiasWeight(1.),
    fSolid(0), fSensitiveDetector(0), fFieldManager(0)
 {
   instanceID = subInstanceManager.CreateSubInstance();
   
-  // G4MT_solid = 0, 
-  SetSolid(0); 
   SetSensitiveDetector(0);    // G4MT_sdetector = 0;
   SetFieldManager(0, false);  // G4MT_fmanager = 0;
-  SetMaterial(0);   // G4MT_material = 0;
-  // this->SetMass(0);       //
+
   G4MT_mass = 0.;
-  // this->SetCutsCouple(0);
   G4MT_ccouple = 0;
   
   // Add to store

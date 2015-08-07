@@ -34,6 +34,7 @@
 #include "AnalysisManager.hh"
 
 class AnalysisManager;
+class G4GeneralParticleSource;
 
 class ActionInitialization: public G4VUserActionInitialization
 {

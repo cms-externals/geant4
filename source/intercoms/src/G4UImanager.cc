@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4UImanager.cc 81670 2014-06-04 12:14:22Z gcosmo $
+// $Id: G4UImanager.cc 85249 2014-10-27 08:28:57Z gcosmo $
 //
 //
 // ---------------------------------------------------------------------
@@ -369,7 +369,7 @@ void G4UImanager::Foreach(const char * macroFile,const char * variableName,
     vl += " ";
     vl += cd;
     SetAlias(vl);
-    ExecuteMacroFile(macroFile);
+    ExecuteMacroFile(FindMacroPath(macroFile));
   }
 }
 
@@ -718,6 +718,16 @@ void G4UImanager::SetUpForAThread(G4int tId)
   threadCout->SetIgnoreCout(igThreadID);
 }
 
+void G4UImanager::SetUpForSpecialThread(G4String pref)
+{
+    threadID = G4Threading::GENERICTHREAD_ID;
+    G4Threading::G4SetThreadId(threadID);
+    G4iosInitialization();
+    threadCout = new G4MTcoutDestination(threadID);
+    threadCout->SetPrefixString(pref);
+    threadCout->SetIgnoreCout(igThreadID);
+}
+
 void G4UImanager::SetCoutFileName(const G4String& fileN, G4bool ifAppend)
 {
   // for sequential mode, ignore this method.
@@ -772,3 +782,11 @@ void G4UImanager::SetThreadIgnore(G4int tid)
   }
   threadCout->SetIgnoreCout(tid);
 }
+
+void G4UImanager::SetThreadIgnoreInit(G4bool flg)
+{
+  // for sequential mode, ignore this method.
+  if(threadID<0) { return; }
+  threadCout->SetIgnoreInit(flg);
+}
+

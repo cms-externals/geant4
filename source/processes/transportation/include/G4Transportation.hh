@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4Transportation.hh 68048 2013-03-13 14:34:07Z gcosmo $
+// $Id: G4Transportation.hh 90840 2015-06-10 09:51:07Z gcosmo $
 //
 // 
 // ------------------------------------------------------------
@@ -54,6 +54,7 @@
 #include "G4Step.hh"
 #include "G4ParticleChangeForTransport.hh"
 class G4SafetyHelper; 
+class G4CoupledTransportation;
 
 class G4Transportation : public G4VProcess 
 {
@@ -91,6 +92,8 @@ class G4Transportation : public G4VProcess
        // Forces the PostStepDoIt action to be called, 
        // but does not limit the step.
 
+     G4bool FieldExertedForce() { return fFieldExertedForce; }
+   
      G4PropagatorInField* GetPropagatorInField();
      void SetPropagatorInField( G4PropagatorInField* pFieldPropagator);
        // Access/set the assistant class that Propagate in a Field.
@@ -121,7 +124,7 @@ class G4Transportation : public G4VProcess
      inline void EnableShortStepOptimisation(G4bool optimise=true); 
      // Whether short steps < safety will avoid to call Navigator (if field=0)
 
-     inline G4bool EnableUseMagneticMoment(G4bool useMoment=true); 
+     static G4bool EnableUseMagneticMoment(G4bool useMoment=true); 
      // Whether to deflect particles with force due to magnetic moment
 
   public:  // without description
@@ -165,17 +168,16 @@ class G4Transportation : public G4VProcess
        // The particle's state after this Step, Store for DoIt
 
      G4bool               fParticleIsLooping;
+     G4bool               fNewTrack;            // Flag from StartTracking 
+     G4bool               fFirstStepInVolume;
+     G4bool               fLastStepInVolume;     // Last step - almost same as next flag
+                                                 //             (temporary redundancy for checking) 
+     G4bool               fGeometryLimitedStep;  // Flag to determine whether a boundary was reached.
+
+     G4bool               fFieldExertedForce;   // During current step
 
      G4TouchableHandle    fCurrentTouchableHandle;
      
-     // G4bool         fFieldExists;
-       // Whether a magnetic field exists ...
-       // A data member for this is problematic: it is useful only if it
-       // can be initialised and updated -- and a scheme is not yet possible.
-
-     G4bool fGeometryLimitedStep;
-       // Flag to determine whether a boundary was reached.
-
      G4ThreeVector  fPreviousSftOrigin;
      G4double       fPreviousSafety; 
        // Remember last safety origin & value.
@@ -204,15 +206,19 @@ class G4Transportation : public G4VProcess
   //   If using it, the safety estimate for endpoint will likely be smaller.
      G4bool   fShortStepOptimisation; 
 
-  // Whether to track state change from magnetic moment in a B-field
-     G4bool   fUseMagneticMoment; 
-
      G4SafetyHelper* fpSafetyHelper;  // To pass it the safety value obtained
 
   // Verbosity 
      G4int    fVerboseLevel;
        // Verbosity level for warnings
        // eg about energy non-conservation in magnetic field.
+
+  // Whether to track state change from magnetic moment in a B-field
+
+  private:
+     friend class G4CoupledTransportation;
+     static G4bool fUseMagneticMoment; 
+
 };
 
 #include "G4Transportation.icc"

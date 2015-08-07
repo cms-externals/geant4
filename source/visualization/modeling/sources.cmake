@@ -11,12 +11,13 @@
 #
 # Generated on : 24/9/2010
 #
-# $Id: sources.cmake 73344 2013-08-26 07:07:06Z gcosmo $
+# $Id: sources.cmake 89001 2015-03-17 11:47:01Z gcosmo $
 #
 #------------------------------------------------------------------------------
 
 # List external includes needed.
 include_directories(${CLHEP_INCLUDE_DIRS})
+include_directories(${USOLIDS_INCLUDE_DIRS})
 
 # List internal includes needed.
 include_directories(${CMAKE_SOURCE_DIR}/source/digits_hits/detector/include)
@@ -24,6 +25,7 @@ include_directories(${CMAKE_SOURCE_DIR}/source/digits_hits/digits/include)
 include_directories(${CMAKE_SOURCE_DIR}/source/digits_hits/hits/include)
 include_directories(${CMAKE_SOURCE_DIR}/source/digits_hits/utils/include)
 include_directories(${CMAKE_SOURCE_DIR}/source/event/include)
+include_directories(${CMAKE_SOURCE_DIR}/source/run/include)
 include_directories(${CMAKE_SOURCE_DIR}/source/geometry/management/include)
 include_directories(${CMAKE_SOURCE_DIR}/source/geometry/navigation/include)
 include_directories(${CMAKE_SOURCE_DIR}/source/geometry/magneticfield/include)
@@ -73,9 +75,10 @@ GEANT4_DEFINE_MODULE(NAME G4modeling
         G4PhysicalVolumeMassScene.hh
         G4PhysicalVolumeModel.hh
         G4PhysicalVolumeSearchScene.hh
-        G4PhysicalVolumeSearchScene.icc
+        G4PseudoScene.hh
         G4ScaleModel.hh
         G4TextModel.hh
+        G4TouchableDumpScene.hh
         G4TrajectoriesModel.hh
         G4TrajectoryChargeFilter.hh
         G4TrajectoryDrawByAttribute.hh
@@ -115,6 +118,7 @@ GEANT4_DEFINE_MODULE(NAME G4modeling
         G4PhysicalVolumeSearchScene.cc
         G4ScaleModel.cc
         G4TextModel.cc
+        G4TouchableDumpScene.cc
         G4TrajectoriesModel.cc
         G4TrajectoryChargeFilter.cc
         G4TrajectoryDrawByAttribute.cc
@@ -135,6 +139,7 @@ GEANT4_DEFINE_MODULE(NAME G4modeling
         G4detector
         G4detutils
         G4digits
+        G4run
         G4event
         G4geomBoolean
         G4geometrymng
@@ -152,6 +157,7 @@ GEANT4_DEFINE_MODULE(NAME G4modeling
         G4volumes
     GLOBAL_DEPENDENCIES
         G4digits_hits
+        G4run
         G4event
         G4geometry
         G4global

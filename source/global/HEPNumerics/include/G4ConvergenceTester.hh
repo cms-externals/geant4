@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4ConvergenceTester.hh 79149 2014-02-19 15:08:06Z gcosmo $
+// $Id: G4ConvergenceTester.hh 79002 2014-02-10 15:03:47Z gcosmo $
 //
 // Class description:
 //

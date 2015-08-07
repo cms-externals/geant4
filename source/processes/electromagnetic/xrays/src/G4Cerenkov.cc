@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4Cerenkov.cc 79190 2014-02-20 09:34:52Z gcosmo $
+// $Id: G4Cerenkov.cc 85355 2014-10-28 09:58:59Z gcosmo $
 //
 ////////////////////////////////////////////////////////////////////////
 // Cerenkov Radiation Class Implementation
@@ -81,9 +81,9 @@
         // static data members
         //////////////////////
 
-G4bool G4Cerenkov::fTrackSecondariesFirst = false;
-G4double G4Cerenkov::fMaxBetaChange = 0.;
-G4int G4Cerenkov::fMaxPhotons = 0;
+//G4bool G4Cerenkov::fTrackSecondariesFirst = false;
+//G4double G4Cerenkov::fMaxBetaChange = 0.;
+//G4int G4Cerenkov::fMaxPhotons = 0;
 
         //////////////
         // Operators
@@ -98,7 +98,10 @@ G4int G4Cerenkov::fMaxPhotons = 0;
         /////////////////
 
 G4Cerenkov::G4Cerenkov(const G4String& processName, G4ProcessType type)
-           : G4VProcess(processName, type)
+           : G4VProcess(processName, type) ,
+            fTrackSecondariesFirst(false),
+            fMaxBetaChange(0),
+            fMaxPhotons(0)
 {
         SetProcessSubType(fCerenkov);
 

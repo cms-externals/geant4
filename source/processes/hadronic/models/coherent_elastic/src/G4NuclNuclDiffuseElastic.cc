@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4NuclNuclDiffuseElastic.cc 81874 2014-06-06 12:04:10Z gcosmo $
+// $Id: G4NuclNuclDiffuseElastic.cc 88985 2015-03-17 10:30:14Z gcosmo $
 //
 //
 // Physics model class G4NuclNuclDiffuseElastic 
@@ -55,6 +55,7 @@
 
 #include "G4Element.hh"
 #include "G4ElementTable.hh"
+#include "G4NistManager.hh"
 #include "G4PhysicsTable.hh"
 #include "G4PhysicsLogVector.hh"
 #include "G4PhysicsFreeVector.hh"
@@ -112,12 +113,13 @@ G4NuclNuclDiffuseElastic::G4NuclNuclDiffuseElastic()
   fCofDelta  = 0.04;
   fCofAlpha  = 0.095;
 
-  fNuclearRadius1 = fNuclearRadius2 = fNuclearRadiusSquare = fNuclearRadiusCof 
+  fNuclearRadius1 = fNuclearRadius2 = fNuclearRadiusSquare 
     = fRutherfordRatio = fCoulombPhase0 = fHalfRutThetaTg = fHalfRutThetaTg2 
     = fRutherfordTheta = fProfileLambda = fCofPhase = fCofFar = fCofAlphaMax 
     = fCofAlphaCoulomb = fSumSigma = fEtaRatio = fReZ = 0.0;
   fMaxL = 0;
 
+  fNuclearRadiusCof = 1.0;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -126,13 +128,18 @@ G4NuclNuclDiffuseElastic::G4NuclNuclDiffuseElastic()
 
 G4NuclNuclDiffuseElastic::~G4NuclNuclDiffuseElastic()
 {
-  if(fEnergyVector) delete fEnergyVector;
-
-  if( fAngleTable )
-  {
-      fAngleTable->clearAndDestroy();
-      delete fAngleTable ;
+  if ( fEnergyVector ) {
+    delete fEnergyVector;
+    fEnergyVector = 0;
   }
+
+  for ( std::vector<G4PhysicsTable*>::iterator it = fAngleBank.begin();
+        it != fAngleBank.end(); ++it ) {
+    if ( (*it) ) (*it)->clearAndDestroy();
+    delete *it;
+    *it = 0;
+  }
+  fAngleTable = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -155,7 +162,7 @@ void G4NuclNuclDiffuseElastic::Initialise()
   for(jEl = 0 ; jEl < numOfEl; ++jEl) // application element loop
   {
     fAtomicNumber = (*theElementTable)[jEl]->GetZ();     // atomic number
-    fAtomicWeight = (*theElementTable)[jEl]->GetN();     // number of nucleons
+    fAtomicWeight = G4NistManager::Instance()->GetAtomicMassAmu( static_cast< G4int >( fAtomicNumber ) );
 
     fNuclearRadius = CalculateNuclearRad(fAtomicWeight);
     fNuclearRadius += R1;
@@ -929,7 +936,7 @@ G4NuclNuclDiffuseElastic::SampleTableThetaCMS(const G4ParticleDefinition* partic
 void G4NuclNuclDiffuseElastic::InitialiseOnFly(G4double Z, G4double A) 
 {
   fAtomicNumber  = Z;     // atomic number
-  fAtomicWeight  = A;     // number of nucleons
+  fAtomicWeight  = G4NistManager::Instance()->GetAtomicMassAmu( static_cast< G4int >( Z ) );
 
   G4double A1 = G4double( fParticle->GetBaryonNumber() );
   G4double R1 = CalculateNuclearRad(A1);
@@ -982,6 +989,7 @@ void G4NuclNuclDiffuseElastic::BuildAngleTable()
 
     if(alphaMax > pi) alphaMax = pi;
 
+    alphaMax = pi2;
 
     alphaCoulomb = fRutherfordTheta*fCofAlphaCoulomb;
 

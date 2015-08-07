@@ -31,18 +31,27 @@
 #include "GammaKnifeActionInitialization.hh"
 #include "GammaKnifePrimaryGeneratorAction.hh"
 #include "GammaKnifeRunAction.hh"
-
+#include "G4GeneralParticleSource.hh"
+#include "G4ParticleTable.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GammaKnifeActionInitialization::GammaKnifeActionInitialization()
  : G4VUserActionInitialization()
-{}
+{
+  //Defatults are set once by master
+    masterGPS = new G4GeneralParticleSource();
+    G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+    G4ParticleDefinition* particle = particleTable->FindParticle("gamma");
+    masterGPS->SetParticleDefinition(particle);
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GammaKnifeActionInitialization::~GammaKnifeActionInitialization()
-{}
+{
+  delete masterGPS;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

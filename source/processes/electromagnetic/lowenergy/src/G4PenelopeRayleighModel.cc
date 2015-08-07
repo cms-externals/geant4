@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PenelopeRayleighModel.cc 79186 2014-02-20 09:20:02Z gcosmo $
+// $Id: G4PenelopeRayleighModel.cc 83584 2014-09-02 08:45:37Z gcosmo $
 //
 // Author: Luciano Pandola
 //
@@ -97,23 +97,19 @@ G4PenelopeRayleighModel::~G4PenelopeRayleighModel()
 {
   if (IsMaster() || fLocalTable)
     {
-      //std::map <G4int,G4PhysicsFreeVector*>::iterator i;
+      std::map <G4int,G4PhysicsFreeVector*>::iterator i;
       if (logAtomicCrossSection)
 	{
-	  /*
-	    for (i=logAtomicCrossSection->begin();i != logAtomicCrossSection->end();i++)
+	  for (i=logAtomicCrossSection->begin();i != logAtomicCrossSection->end();i++)
 	    if (i->second) delete i->second;
-	  */
+	  
 	  delete logAtomicCrossSection;
 	  logAtomicCrossSection = 0;
 	}    
-      //std::map <G4int,G4PhysicsFreeVector*>::iterator i;
       if (atomicFormFactor)
-	{
-	  /*
-	    for (i=atomicFormFactor->begin();i != atomicFormFactor->end();i++)
-	    if (i->second) delete i->second;
-	  */
+	{	  
+	  for (i=atomicFormFactor->begin();i != atomicFormFactor->end();i++)
+	    if (i->second) delete i->second;	  
 	  delete atomicFormFactor;
 	  atomicFormFactor = 0;
 	}
@@ -132,24 +128,20 @@ void G4PenelopeRayleighModel::ClearTables()
 		"em0100",FatalException,"Worker thread in this method");    
   */
 
-  //std::map <const G4Material*,G4PhysicsFreeVector*>::iterator i;
- 
+  std::map <const G4Material*,G4PhysicsFreeVector*>::iterator i;  
+
    if (logFormFactorTable)
-     {
-       /*
+     {       
        for (i=logFormFactorTable->begin(); i != logFormFactorTable->end(); i++)
-	 if (i->second) delete i->second;
-       */
+	 if (i->second) delete i->second;       
        delete logFormFactorTable;
        logFormFactorTable = 0; //zero explicitely
      }
 
    if (pMaxTable)
-     {
-       /*
+     {       
        for (i=pMaxTable->begin(); i != pMaxTable->end(); i++)
-	 if (i->second) delete i->second;
-       */
+	 if (i->second) delete i->second;       
        delete pMaxTable;
        pMaxTable = 0; //zero explicitely
      }
@@ -181,6 +173,9 @@ void G4PenelopeRayleighModel::Initialise(const G4ParticleDefinition* part,
     {
       //clear tables depending on materials, not the atomic ones
       ClearTables();
+
+      if (verboseLevel > 3)
+	G4cout << "Calling G4PenelopeRayleighModel::Initialise() [master]" << G4endl;
   
       //create new tables
       //
@@ -226,7 +221,7 @@ void G4PenelopeRayleighModel::Initialise(const G4ParticleDefinition* part,
 
 	  //3) retrieve or build the pMax data
 	  if (!pMaxTable->count(material))
-	    GetPMaxTable(material);
+	    GetPMaxTable(material);	  
 
 	}
   
@@ -523,9 +518,7 @@ void G4PenelopeRayleighModel::SampleSecondaries(std::vector<G4DynamicParticle*>*
 
   //Ok, restart the job
   
-  G4PenelopeSamplingData* theDataTable = samplingTable->find(theMat)->second;
-  
- 
+  G4PenelopeSamplingData* theDataTable = samplingTable->find(theMat)->second;  
   G4PhysicsFreeVector* thePMax = pMaxTable->find(theMat)->second;
 
   G4double cosTheta = 1.0;
@@ -1228,9 +1221,17 @@ void G4PenelopeRayleighModel::GetPMaxTable(const G4Material* mat)
       return;
     }
 
+  //This should not be: the sampling table is built before the p-table
   if (!samplingTable->count(mat))
-    InitializeSamplingAlgorithm(mat);      
-  
+    {
+       G4ExceptionDescription ed;
+       ed << "Sampling table for material " << mat->GetName() << " not found";
+       G4Exception("G4PenelopeRayleighModel::GetPMaxTable()",
+                  "em2052",FatalException,
+                  ed);
+       return;
+    }
+
   G4PenelopeSamplingData *theTable = samplingTable->find(mat)->second;
   size_t tablePoints = theTable->GetNumberOfStoredPoints();
 

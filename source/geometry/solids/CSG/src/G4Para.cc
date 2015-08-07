@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4Para.cc 81636 2014-06-04 09:06:08Z gcosmo $
+// $Id: G4Para.cc 90706 2015-06-08 09:54:31Z gcosmo $
 //
 // class G4Para
 //
@@ -90,7 +90,6 @@ void G4Para::SetAllParameters( G4double pDx, G4double pDy, G4double pDz,
   }
   fCubicVolume = 0.;
   fSurfaceArea = 0.;
-  fpPolyhedron = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -145,7 +144,6 @@ G4Para::G4Para( const G4String& pName,
   fTthetaSphi = ((pt[4]).y()+fDy)/fDz ;
   fCubicVolume = 0.;
   fSurfaceArea = 0.;
-  fpPolyhedron = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -175,7 +173,6 @@ G4Para::G4Para(const G4Para& rhs)
     fTalpha(rhs.fTalpha), fTthetaCphi(rhs.fTthetaCphi),
     fTthetaSphi(rhs.fTthetaSphi)
 {
-   fpPolyhedron = GetPolyhedron();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -197,7 +194,6 @@ G4Para& G4Para::operator = (const G4Para& rhs)
    fDx = rhs.fDx; fDy = rhs.fDy; fDz = rhs.fDz;
    fTalpha = rhs.fTalpha; fTthetaCphi = rhs.fTthetaCphi;
    fTthetaSphi = rhs.fTthetaSphi;
-   fpPolyhedron = GetPolyhedron();
 
    return *this;
 }
@@ -493,8 +489,7 @@ G4ThreeVector G4Para::SurfaceNormal( const G4ThreeVector& p ) const
   newpy  = p.y()-fTthetaSphi*p.z();
 
   calpha = 1/std::sqrt(1+fTalpha*fTalpha);
-  if (fTalpha) {salpha = -calpha*fTalpha;} // NOTE: using MINUS std::sin(alpha)
-  else         {salpha = 0.;}
+  salpha = -calpha*fTalpha; // NOTE: using MINUS std::sin(alpha)
   
   //  xshift = newpx*calpha+newpy*salpha;
   xshift = newpx - newpy*fTalpha;
@@ -566,15 +561,8 @@ G4ThreeVector G4Para::ApproxSurfaceNormal( const G4ThreeVector& p ) const
   newpy=p.y()-fTthetaSphi*p.z();
 
   calpha=1/std::sqrt(1+fTalpha*fTalpha);
-  if (fTalpha)
-  {
-    salpha=-calpha/fTalpha;  // NOTE: actually use MINUS std::sin(alpha)
-  }
-  else
-  {
-    salpha=0;
-  }
-
+  salpha=-calpha*fTalpha;  // NOTE: actually use MINUS std::sin(alpha)
+  
   xshift=newpx*calpha+newpy*salpha;
 
   distx=std::fabs(std::fabs(xshift)-fDx*calpha);
@@ -1004,14 +992,7 @@ G4double G4Para::DistanceToOut(const G4ThreeVector& p, const G4ThreeVector& v,
       {
         *validNorm=true; // Leaving via plus X
         calpha=1/std::sqrt(1+fTalpha*fTalpha);
-        if (fTalpha)
-        {
-          salpha=-calpha/fTalpha;  // NOTE: actually use MINUS std::sin(alpha)
-        }
-        else
-        {
-          salpha=0;
-        }
+        salpha=-calpha*fTalpha;  // NOTE: actually use MINUS std::sin(alpha)
         tntheta=fTthetaCphi*calpha+fTthetaSphi*salpha;
         cosntheta=1/std::sqrt(1+tntheta*tntheta);
         *n=G4ThreeVector(calpha*cosntheta,salpha*cosntheta,-tntheta*cosntheta);
@@ -1037,14 +1018,7 @@ G4double G4Para::DistanceToOut(const G4ThreeVector& p, const G4ThreeVector& v,
       {
         *validNorm=true; // Leaving via minus X
         calpha=1/std::sqrt(1+fTalpha*fTalpha);
-        if (fTalpha)
-        {
-          salpha=-calpha/fTalpha;  // NOTE: actually use MINUS std::sin(alpha)
-        }
-        else
-        {
-          salpha=0;
-        }
+        salpha=-calpha*fTalpha;  // NOTE: actually use MINUS std::sin(alpha)
         tntheta=fTthetaCphi*calpha+fTthetaSphi*salpha;
         cosntheta=-1/std::sqrt(1+tntheta*tntheta);
         *n=G4ThreeVector(calpha*cosntheta,salpha*cosntheta,-tntheta*cosntheta);
@@ -1074,28 +1048,14 @@ G4double G4Para::DistanceToOut(const G4ThreeVector& p, const G4ThreeVector& v,
         break;        
       case kMX:
         calpha=1/std::sqrt(1+fTalpha*fTalpha);
-        if (fTalpha)
-        {
-          salpha=-calpha/fTalpha;  // NOTE: actually use MINUS std::sin(alpha)
-        }
-        else
-        {
-          salpha=0;
-        }
+        salpha=-calpha*fTalpha;  // NOTE: actually use MINUS std::sin(alpha)
         tntheta=fTthetaCphi*calpha+fTthetaSphi*salpha;
         cosntheta=-1/std::sqrt(1+tntheta*tntheta);
         *n=G4ThreeVector(calpha*cosntheta,salpha*cosntheta,-tntheta*cosntheta);
         break;
       case kPX:
         calpha=1/std::sqrt(1+fTalpha*fTalpha);
-        if (fTalpha)
-        {
-          salpha=-calpha/fTalpha;  // NOTE: actually use MINUS std::sin(alpha)
-        }
-        else
-        {
-          salpha=0;
-        }
+        salpha=-calpha*fTalpha;  // NOTE: actually use MINUS std::sin(alpha)
         tntheta=fTthetaCphi*calpha+fTthetaSphi*salpha;
         cosntheta=1/std::sqrt(1+tntheta*tntheta);
         *n=G4ThreeVector(calpha*cosntheta,salpha*cosntheta,-tntheta*cosntheta);

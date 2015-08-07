@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G3VolTableEntry.cc 81583 2014-06-03 10:44:39Z gcosmo $
+// $Id: G3VolTableEntry.cc 79777 2014-03-13 17:23:18Z gcosmo $
 //
 // modified by I.Hrivnacova, 13.10.99
 

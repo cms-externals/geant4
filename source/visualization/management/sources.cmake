@@ -11,12 +11,13 @@
 #
 # Generated on : 24/9/2010
 #
-# $Id: sources.cmake 66870 2013-01-14 23:38:59Z adotti $
+# $Id: sources.cmake 89001 2015-03-17 11:47:01Z gcosmo $
 #
 #------------------------------------------------------------------------------
 
 # List external includes needed.
 include_directories(${CLHEP_INCLUDE_DIRS})
+include_directories(${USOLIDS_INCLUDE_DIRS})
 
 # List internal includes needed.
 include_directories(${CMAKE_SOURCE_DIR}/source/digits_hits/digits/include)
@@ -77,16 +78,13 @@ GEANT4_DEFINE_MODULE(NAME G4vis_management
         G4VisCommandsScene.hh
         G4VisCommandsSceneAdd.hh
         G4VisCommandsSceneHandler.hh
+        G4VisCommandsTouchable.hh
         G4VisCommandsTouchableSet.hh
         G4VisCommandsViewer.hh
         G4VisCommandsViewerDefault.hh
         G4VisCommandsViewerSet.hh
         G4VisExecutive.hh
         G4VisExecutive.icc
-        G4VisFeaturesOfDAWNFILE.hh
-        G4VisFeaturesOfFukuiRenderer.hh
-        G4VisFeaturesOfOpenGL.hh
-        G4VisFeaturesOfOpenInventor.hh
         G4VisFilterManager.hh
         G4VisListManager.hh
         G4VisManager.hh
@@ -112,14 +110,11 @@ GEANT4_DEFINE_MODULE(NAME G4vis_management
         G4VisCommandsScene.cc
         G4VisCommandsSceneAdd.cc
         G4VisCommandsSceneHandler.cc
+        G4VisCommandsTouchable.cc
         G4VisCommandsTouchableSet.cc
         G4VisCommandsViewer.cc
         G4VisCommandsViewerDefault.cc
         G4VisCommandsViewerSet.cc
-        G4VisFeaturesOfDAWNFILE.cc
-        G4VisFeaturesOfFukuiRenderer.cc
-        G4VisFeaturesOfOpenGL.cc
-        G4VisFeaturesOfOpenInventor.cc
         G4VisManager.cc
         G4VisStateDependent.cc
     GRANULAR_DEPENDENCIES

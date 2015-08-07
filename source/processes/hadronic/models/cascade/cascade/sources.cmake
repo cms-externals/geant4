@@ -185,7 +185,11 @@ GEANT4_DEFINE_MODULE(NAME G4hadronic_bert_cascade
         G4ParamExpTwoBodyAngDst.icc
         G4ParticleLargerBeta.hh
         G4ParticleLargerEkin.hh
+        G4Pi0P2Pi0PAngDst.hh
         G4PiNInelasticAngDst.hh
+        G4PimP2Pi0NAngDst.hh
+        G4PimP2PimPAngDst.hh
+        G4PipP2PipPAngDst.hh
         G4PionNucSampler.hh
 	G4PP2PPAngDst.hh
         G4PreCompoundDeexcitation.hh
@@ -286,7 +290,11 @@ GEANT4_DEFINE_MODULE(NAME G4hadronic_bert_cascade
         G4NuclNuclAngDst.cc
         G4NuclWatcher.cc
         G4NucleiModel.cc
+        G4Pi0P2Pi0PAngDst.cc
         G4PiNInelasticAngDst.cc
+        G4PimP2Pi0NAngDst.cc
+        G4PimP2PimPAngDst.cc
+        G4PipP2PipPAngDst.cc
         G4PionNucSampler.cc
 	G4PP2PPAngDst.cc
         G4PreCompoundDeexcitation.cc

@@ -4,17 +4,17 @@
         ############################################
 
 *************************************************************
- Geant4 version Name: geant4-10-00-patch-02    (13-June-2014)
+ Geant4 version Name: geant4-10-01-patch-02    (19-June-2015)
                       Copyright : Geant4 Collaboration
                       Reference : NIM A 506 (2003), 250-303
                             WWW : http://cern.ch/geant4
 *************************************************************
 
 
-***** Table : Nb of materials = 19 *****
+***** Table : Nb of materials = 20 *****
 
  Material:      Air    density:  1.290 mg/cm3  RadL: 285.161 m    Nucl.Int.Length: 662.680 m  
-                       Imean:  85.703 eV   temperature: 273.15 K  pressure:   1.00 atm
+                       Imean:  85.703 eV   temperature: 293.15 K  pressure:   1.00 atm
 
    --->  Element: Nitrogen (N)   Z =  7.0   N =  14.0   A =  14.01 g/mole
          --->  Isotope:   N14   Z =  7   N =  14   A =  14.00 g/mole   abundance:  99.63 %
@@ -53,7 +53,7 @@
 
 
  Material:      CO2    density:  0.001 kg/m3   RadL: 361.873 km   Nucl.Int.Length: 858.384 km 
-                       Imean:  90.958 eV   temperature: 273.15 K  pressure:   1.00 atm
+                       Imean:  90.958 eV   temperature: 293.15 K  pressure:   1.00 atm
 
    --->  Element: Hydrogen (C)   Z =  6.0   N =  12.0   A =  12.00 g/mole
          --->  Isotope:   C12   Z =  6   N =  12   A =  12.00 g/mole   abundance:  98.93 %
@@ -67,12 +67,11 @@
           ElmMassFraction:  72.73 %  ElmAbundance  66.67 % 
 
 
- Material:   D2_gas    density:  0.036 kg/m3   RadL:  13.184 km   Nucl.Int.Length:  12.278 km 
-                       Imean:  41.800 eV   temperature: 273.15 K  pressure:   1.00 atm
+ Material:   D2_gas    density:  0.036 kg/m3   RadL:  34.993 km   Nucl.Int.Length:   9.791 km 
+                       Imean:  19.200 eV   temperature: 293.15 K  pressure:   1.00 atm
 
-   --->  Element: He (He)   Z =  2.0   N =   2.0   A =   2.01 g/mole
-         --->  Isotope:   He3   Z =  2   N =   3   A =   3.02 g/mole   abundance:   0.00 %
-         --->  Isotope:   He4   Z =  2   N =   4   A =   4.00 g/mole   abundance: 100.00 %
+   --->  Element: Heavy-Hydrogen (D)   Z =  1.0   N =   2.0   A =   2.01 g/mole
+         --->  Isotope:     d   Z =  1   N =   2   A =   2.01 g/mole   abundance: 100.00 %
           ElmMassFraction: 100.00 %  ElmAbundance 100.00 % 
 
 
@@ -245,8 +244,33 @@
           ElmMassFraction:   5.22 %  ElmAbundance  57.49 % 
 
 
+ Material:  Lu2SiO5    density:  7.400 g/cm3   RadL:   1.143 cm   Nucl.Int.Length:  20.916 cm 
+                       Imean: 418.807 eV 
 
-/run/verbose 2
+   --->  Element: Lu (Lu)   Z = 71.0   N = 175.0   A = 174.97 g/mole
+         --->  Isotope: Lu175   Z = 71   N = 175   A = 174.94 g/mole   abundance:  97.41 %
+         --->  Isotope: Lu176   Z = 71   N = 176   A = 175.94 g/mole   abundance:   2.59 %
+          ElmMassFraction:  76.40 %  ElmAbundance  25.00 % 
+
+   --->  Element: Si (Si)   Z = 14.0   N =  28.1   A =  28.09 g/mole
+         --->  Isotope:  Si28   Z = 14   N =  28   A =  27.98 g/mole   abundance:  92.23 %
+         --->  Isotope:  Si29   Z = 14   N =  29   A =  28.98 g/mole   abundance:   4.68 %
+         --->  Isotope:  Si30   Z = 14   N =  30   A =  29.97 g/mole   abundance:   3.09 %
+          ElmMassFraction:   6.13 %  ElmAbundance  12.50 % 
+
+   --->  Element: Oxygen (O)   Z =  8.0   N =  16.0   A =  16.00 g/mole
+         --->  Isotope:   O16   Z =  8   N =  16   A =  15.99 g/mole   abundance:  99.76 %
+         --->  Isotope:   O17   Z =  8   N =  17   A =  17.00 g/mole   abundance:   0.04 %
+         --->  Isotope:   O18   Z =  8   N =  18   A =  18.00 g/mole   abundance:   0.20 %
+          ElmMassFraction:  17.47 %  ElmAbundance  62.50 % 
+
+
+
+/control/cout/ignoreThreadsExcept 0
+/run/numberOfThreads 2
+*** /run/numberOfThreads command is issued in sequential mode.
+Command is ignored.
+/run/verbose 1
 #
 /testem/det/setMat Aluminium
 /testem/det/setSize 10 m
@@ -254,39 +278,21 @@
 #
 /testem/phys/addPhysics emstandard_opt0
 ###/testem/phys/addPhysics  local
-/testem/phys/setCuts 1 mm
+/run/setCut 1 mm
 #
 /run/initialize
-userDetector->Construct() start.
 
  The Box is 10 m   of Aluminium
-Aluminium is registered to the default region.
-physicsList->Construct() start.
-physicsList->CheckParticleList() start.
-physicsList->setCut() start.
-PhysicsList::SetCuts:CutLength : 1 mm 
 ##/globalField/setValue 0 0 5 tesla
 #
 /testem/gun/setDefault
 /gun/particle e-
 /gun/energy 100 MeV
 #
+/run/verbose 1
 /run/printProgress 200
 #
 /run/beamOn 2000
-
-Region <DefaultRegionForTheWorld> --  -- appears in <Aluminium> world volume
- This region is in the mass world.
- Root logical volume(s) : Aluminium 
- Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
- Materials : Aluminium 
- Production cuts :   gamma 1 mm      e- 1 mm      e+ 1 mm  proton 1 mm 
-
-Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
- Root logical volume(s) : 
- Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
- Materials : 
- Production cuts :   gamma 1 mm      e- 1 mm      e+ 1 mm  proton 1 mm 
 
 ========= Table of registered couples ==============================
 
@@ -299,11 +305,6 @@ Index : 0     used in the geometry : Yes
 
 ====================================================================
 
-Start closing geometry.
-G4GeometryManager::ReportVoxelStats -- Voxel Statistics
-
-    Total memory consumed for geometry optimisation:   0 kByte
-    Total CPU time elapsed for geometry optimisation: 0 seconds
 ### Run 0 starts.
 
 --------- Ranecu engine status ---------
@@ -320,55 +321,44 @@ G4GeometryManager::ReportVoxelStats -- Voxel Statistics
 --> Event 1400 starts.
 --> Event 1600 starts.
 --> Event 1800 starts.
-Run terminated.
+ Run terminated.
 Run Summary
   Number of events processed : 2000
-  User=5.06s Real=11.9s Sys=0s
+  User=2.71s Real=2.87s Sys=0s
 
  ======================== run summary ======================
 
- The run was: 2000 e- of 100 MeV through 10 m   of Aluminium (density: 2.7 g/cm3 )
+ The run is: 2000 e- of 100 MeV through 10 m   of Aluminium (density: 2.7 g/cm3 )
 
- ============================================================
+ total energy deposit: 99.784 MeV
 
- total energy deposit: 99.796 MeV
+ nb tracks/event   neutral:  25.214   charged:  136.41
+ nb  steps/event   neutral:  129.74   charged:  202.58
 
- nb tracks/event   neutral:  25.509   charged:  139.36
- nb  steps/event   neutral:  132.31   charged:  205.56
+ Process calls frequency :
+          CoulombScat=      1        Transportation=   1910               annihil=   2883
+                compt= 209048                  conv=   2865                 eBrem=  45701
+                eIoni= 355780                   msc=    790                  phot=  45663
 
- nb of process calls per event: 
-    CoulombScatTransportation     annihil       compt        conv       eBrem       eIoni         msc        phot
-         0.0005      0.9365       1.404       106.8       1.404      23.201      180.52      0.4275       23.17
 
 ---------------------------------------------------------
  Primary particle : 
- true Range = 11.247 cm    rms = 3.7754 cm 
- proj Range = 9.7636 cm    rms = 3.4827 cm 
- proj/true  = 0.86811
- transverse dispersion at end = 1.6843 cm 
-      mass true Range from simulation = 30.367 g/cm2 
+ true Range = 10.968 cm    rms = 3.8693 cm 
+ proj Range = 9.5071 cm    rms = 3.5715 cm 
+ proj/true  = 0.86677
+ transverse dispersion at end = 1.5883 cm 
+      mass true Range from simulation = 29.615 g/cm2 
        from PhysicsTable (csda range) = 32.099 g/cm2 
 ---------------------------------------------------------
 
 
 --------- Ranecu engine status ---------
  Initial seed (index) = 0
- Current couple of seeds = 1048097207, 167829987
+ Current couple of seeds = 1724451476, 2015559535
 ----------------------------------------
 G4 kernel has come to Quit state.
-UserDetectorConstruction deleted.
-UserPhysicsList deleted.
-UserActionInitialization deleted.
-UserRunAction deleted.
-UserPrimaryGenerator deleted.
-RunManager is deleting RunManagerKernel.
-EventManager deleted.
-Units table cleared.
 ================== Deleting memory pools ===================
-Number of memory pools allocated: 10 of which, static: 0
-Dynamic pools deleted: 10 / Total memory freed: 0.18 Mb
+Number of memory pools allocated: 9 of which, static: 0
+Dynamic pools deleted: 9 / Total memory freed: 0.06 Mb
 ============================================================
-G4Allocator objects are deleted.
-UImanager deleted.
-StateManager deleted.
 RunManagerKernel is deleted. Good bye :)

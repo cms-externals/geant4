@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GoudsmitSaundersonMscModel.cc 79188 2014-02-20 09:22:48Z gcosmo $
+// $Id: G4GoudsmitSaundersonMscModel.cc 88979 2015-03-17 10:10:21Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -115,6 +115,9 @@ G4GoudsmitSaundersonMscModel::G4GoudsmitSaundersonMscModel(const G4String& nam)
   samplez=false;
   firstStep = true; 
 
+  currentCouple = 0;
+  fParticleChange = 0;
+
   GSTable = new G4GoudsmitSaundersonTable();
 
   if(ener[0] < 0.0){ 
@@ -154,7 +157,8 @@ G4GoudsmitSaundersonMscModel::ComputeCrossSectionPerAtom(const G4ParticleDefinit
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 G4ThreeVector& 
-G4GoudsmitSaundersonMscModel::SampleScattering(const G4ThreeVector& oldDirection, G4double)
+G4GoudsmitSaundersonMscModel::SampleScattering(const G4ThreeVector& oldDirection, 
+					       G4double)
 {
   fDisplacement.set(0.0,0.0,0.0);
   G4double kineticEnergy = currentKinEnergy;
@@ -266,18 +270,21 @@ G4GoudsmitSaundersonMscModel::SampleScattering(const G4ThreeVector& oldDirection
       sinPhi2 = sin(phi2);
 
       // Overall scattering direction
-      us = sinTheta2*(cosTheta1*cosPhi1*cosPhi2 - sinPhi1*sinPhi2) + cosTheta2*sinTheta1*cosPhi1;
-      vs = sinTheta2*(cosTheta1*sinPhi1*cosPhi2 + cosPhi1*sinPhi2) + cosTheta2*sinTheta1*sinPhi1;
+      us = sinTheta2*(cosTheta1*cosPhi1*cosPhi2 - sinPhi1*sinPhi2) 
+	+ cosTheta2*sinTheta1*cosPhi1;
+      vs = sinTheta2*(cosTheta1*sinPhi1*cosPhi2 + cosPhi1*sinPhi2) 
+	+ cosTheta2*sinTheta1*sinPhi1;
       ws = cosTheta1*cosTheta2 - sinTheta1*sinTheta2*cosPhi2; 
-      G4double sqrtA=sqrt(scrA);
-      if(acos(ws)<sqrtA)//small angle approximation for theta less than screening angle
+
+      //small angle approximation for theta less than screening angle
+      if(1. - ws < 0.5*scrA) 
       {
 	G4int i=0;
 	do{i++;
 	  ws=1.+Qn12*G4Log(G4UniformRand());
 	}while((fabs(ws)>1.)&&(i<20));//i<20 to avoid time consuming during the run
-	if(i>=19)ws=cos(sqrtA);
-	wss=std::sqrt((1.-ws*ws));      
+	if(i>=19)ws=cos(sqrt(scrA));
+	wss=std::sqrt((1. - ws)*(1. + ws));      
 	us=wss*std::cos(phi1);
 	vs=wss*std::sin(phi1);
       }
@@ -310,7 +317,7 @@ G4GoudsmitSaundersonMscModel::SampleScattering(const G4ThreeVector& oldDirection
   fDisplacement.rotateUz(oldDirection);
 
   return fDisplacement;
-}     
+    }    
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -448,6 +455,7 @@ void G4GoudsmitSaundersonMscModel::StartTracking(G4Track* track)
   inside = false;
   insideskin = false;
   tlimit = geombig;
+  G4VEmModel::StartTracking(track);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

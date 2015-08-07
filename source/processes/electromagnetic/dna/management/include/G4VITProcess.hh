@@ -23,18 +23,26 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VITProcess.hh 82326 2014-06-16 09:19:18Z gcosmo $
+// $Id: G4VITProcess.hh 90769 2015-06-09 10:33:41Z gcosmo $
 //
-// Author: Mathieu Karamitros (kara (AT) cenbg . in2p3 . fr)
+// Author: Mathieu Karamitros, kara@cenbg.in2p3.fr
+
+// The code is developed in the framework of the ESA AO7146
 //
-// WARNING : This class is released as a prototype.
-// It might strongly evolve or even disapear in the next releases.
+// We would be very happy hearing from you, send us your feedback! :)
 //
-// History:
-// -----------
-// 10 Oct 2011 M.Karamitros created
+// In order for Geant4-DNA to be maintained and still open-source,
+// article citations are crucial. 
+// If you use Geant4-DNA chemistry and you publish papers about your software, 
+// in addition to the general paper on Geant4-DNA:
 //
-// -------------------------------------------------------------------
+// Int. J. Model. Simul. Sci. Comput. 1 (2010) 157–178
+//
+// we would be very happy if you could please also cite the following
+// reference papers on chemistry:
+//
+// J. Comput. Phys. 274 (2014) 841-882
+// Prog. Nucl. Sci. Tec. 2 (2011) 503-508 
 
 #ifndef G4VITProcess_H
 #define G4VITProcess_H
@@ -42,27 +50,44 @@
 #include <G4VProcess.hh>
 #include "AddClone_def.hh"
 #include "G4ReferenceCast.hh"
-#include "G4shared_ptr.hh"
+#include "G4memory.hh"
+#include <typeinfo>
 
-class G4IT ;
-class G4TrackingInformation ;
+class G4IT;
+class G4TrackingInformation;
 
-struct G4ProcessState_Lock{
-	inline virtual ~G4ProcessState_Lock(){;}
+struct G4ProcessState_Lock
+{
+  inline virtual ~G4ProcessState_Lock()
+  {
+    ;
+  }
 };
 
+/*
+ class G4ProcessStateHandle_Lock : public G4shared_ptr<G4ProcessState_Lock>
+ {
+ public:
+ G4ProcessStateHandle_Lock(G4ProcessState_Lock* plock) : G4shared_ptr<G4ProcessState_Lock>(plock)
+ {}
+ virtual ~G4ProcessStateHandle_Lock(){}
+ };
+ */
+
+#define InitProcessState(destinationType,source) \
+    reference_cast<destinationType>(source)
+
 #define DowncastProcessState(destinationType) \
-		G4::dynamic_pointer_cast<destinationType>(G4VITProcess::fpState)
+	G4dynamic_pointer_cast<destinationType>(G4VITProcess::fpState)
 
 #define UpcastProcessState(destinationType) \
-		G4::dynamic_pointer_cast<destinationType>(G4VITProcess::fpState)
+	G4dynamic_pointer_cast<destinationType>(G4VITProcess::fpState)
 
 #define DowncastState(destinationType,source) \
-		G4::dynamic_pointer_cast<destinationType>(source)
+	G4dynamic_pointer_cast<destinationType>(source)
 
 #define UpcastState(destinationType,source) \
-		G4::dynamic_pointer_cast<destinationType>(source)
-
+	G4dynamic_pointer_cast<destinationType>(source)
 
 /**
  * G4VITProcess inherits from G4VProcess.
@@ -74,161 +99,237 @@ struct G4ProcessState_Lock{
 class G4VITProcess : public G4VProcess
 {
 public:
-	//__________________________________
-	// Constructors & destructors
-	G4VITProcess(const G4String& name, G4ProcessType type = fNotDefined);
+  //__________________________________
+  // Constructors & destructors
+  G4VITProcess(const G4String& name, G4ProcessType type = fNotDefined);
 
-	virtual ~G4VITProcess();
-	G4VITProcess(const G4VITProcess& other);
-	G4VITProcess& operator=(const G4VITProcess& other);
+  virtual ~G4VITProcess();
+  G4VITProcess(const G4VITProcess& other);
+  G4VITProcess& operator=(const G4VITProcess& other);
 
-	// equal opperators
-	G4int operator==(const G4VITProcess &right) const;
-	G4int operator!=(const G4VITProcess &right) const;
+  // equal opperators
+  G4int operator==(const G4VITProcess &right) const;
+  G4int operator!=(const G4VITProcess &right) const;
 
-	G4IT_TO_BE_CLONED(G4VITProcess)
+  G4IT_TO_BE_CLONED(G4VITProcess)
 
-	size_t GetProcessID() const
-	{
-		return fProcessID;
-	}
+  size_t GetProcessID() const
+  {
+    return fProcessID;
+  }
 
-	G4::shared_ptr<G4ProcessState_Lock> GetProcessState()
-    		{
-		return UpcastProcessState(G4ProcessState_Lock);
-    		}
+//    G4ProcessState_Lock* GetProcessState()
+//    {
+//        return fpState;
+//    }
+//
+//    void SetProcessState(G4ProcessState_Lock* aProcInfo)
+//    {
+//        fpState = (G4ProcessState*) aProcInfo;
+//    }
 
-	void SetProcessState(G4::shared_ptr<G4ProcessState_Lock> aProcInfo)
-	{
-		fpState = DowncastState(G4ProcessState,aProcInfo);
-	}
+  G4shared_ptr<G4ProcessState_Lock> GetProcessState()
+  {
+    return UpcastProcessState(G4ProcessState_Lock);
+  }
 
-	void ResetProcessState()
-	{
-		fpState.reset();
-	}
+  void SetProcessState(G4shared_ptr<G4ProcessState_Lock> aProcInfo)
+  {
+    fpState = DowncastState(G4ProcessState, aProcInfo);
+  }
 
+  void ResetProcessState()
+  {
+    fpState.reset();
+  }
 
-	//__________________________________
-	// Initialize and Save process info
+  //__________________________________
+  // Initialize and Save process info
 
-	virtual void StartTracking(G4Track*);
+  virtual void StartTracking(G4Track*);
 
-	virtual void BuildPhysicsTable(const G4ParticleDefinition&){}
+  virtual void BuildPhysicsTable(const G4ParticleDefinition&)
+  {
+  }
 
-	inline G4double GetInteractionTimeLeft();
+  inline G4double GetInteractionTimeLeft();
 
-	/** WARNING : Redefine the method of G4VProcess
-	 * reset (determine the value of)NumberOfInteractionLengthLeft
-	 */
-	virtual void  ResetNumberOfInteractionLengthLeft();
+  /** WARNING : Redefine the method of G4VProcess
+   * reset (determine the value of)NumberOfInteractionLengthLeft
+   */
+  virtual void ResetNumberOfInteractionLengthLeft();
 
-	inline G4bool ProposesTimeStep() const;
+  inline G4bool ProposesTimeStep() const;
 
-	inline static const size_t& GetMaxProcessIndex();
+  inline static const size_t& GetMaxProcessIndex();
 
-protected:  // with description
+protected:
+  // with description
 
-	void RetrieveProcessInfo();
-	void CreateInfo();
+  void RetrieveProcessInfo();
+  void CreateInfo();
 
-	//__________________________________
-	// Process info
-	// friend class G4TrackingInformation ;
+  //__________________________________
+  // Process info
+  // friend class G4TrackingInformation ;
 
-	struct G4ProcessState : public G4ProcessState_Lock
-	{
-	public:
-		G4ProcessState();
-		virtual ~G4ProcessState();
+  struct G4ProcessState : public G4ProcessState_Lock
+  {
+  public:
+    G4ProcessState();
+    virtual ~G4ProcessState();
 
-		G4double          theNumberOfInteractionLengthLeft;
-		// The flight length left for the current tracking particle
-		// in unit of "Interaction length".
+    virtual G4String GetType()
+    {
+      return "G4ProcessState";
+    }
 
-		G4double          theInteractionTimeLeft;
-		// Time left before the interaction : for at rest processes
+    G4double theNumberOfInteractionLengthLeft;
+    // The flight length left for the current tracking particle
+    // in unit of "Interaction length".
 
-		G4double          currentInteractionLength;
-		// The InteractionLength in the current material
+    G4double theInteractionTimeLeft;
+    // Time left before the interaction : for at rest processes
 
-		template<typename T> T* GetState()
-		{
-			return dynamic_cast<T*>(this);
-		}
-	};
+    G4double currentInteractionLength;
+    // The InteractionLength in the current material
 
-	G4::shared_ptr<G4ProcessState> fpState;
+    template<typename T>
+      T* GetState()
+      {
+        return dynamic_cast<T*>(this);
+      }
+  };
 
-	template<typename T> T* GetState()
-	{
-		return fpState->GetState<T>();
-	}
+  template<typename T>
+    class G4ProcessStateBase : public G4ProcessState
+    {
+    public:
+      G4ProcessStateBase() :
+          G4ProcessState()
+      {
+      }
+      virtual ~G4ProcessStateBase()
+      {
+      }
 
-	inline virtual void ClearInteractionTimeLeft();
+      virtual G4String GetType()
+      {
+        return typeid(T).name();
+      }
+    };
 
-	inline virtual void      ClearNumberOfInteractionLengthLeft();
-	// clear NumberOfInteractionLengthLeft
-	// !!! This method should be at the end of PostStepDoIt()
-	// !!! and AtRestDoIt
-	//_________________________________________________
+  template<typename T>
+    T* GetState()
+    {
+      return fpState->GetState<T>();
+    }
 
+  G4shared_ptr<G4ProcessState> fpState;
 
-	void SetInstantiateProcessState(G4bool flag)
-	{ fInstantiateProcessState = flag; }
+  void virtual SubtractNumberOfInteractionLengthLeft(G4double previousStepSize);
 
-	G4bool InstantiateProcessState() { return fInstantiateProcessState; }
+  inline virtual void ClearInteractionTimeLeft();
 
-	G4bool fProposesTimeStep;
+  inline virtual void ClearNumberOfInteractionLengthLeft();
+  // clear NumberOfInteractionLengthLeft
+  // !!! This method should be at the end of PostStepDoIt()
+  // !!! and AtRestDoIt
+  //_________________________________________________
 
-	private :
+  void SetInstantiateProcessState(G4bool flag)
+  {
+    fInstantiateProcessState = flag;
+  }
 
-	size_t fProcessID;
-	// During all the simulation will identify a process, so if two identical
-	// processes are created using a copy constructor they will have the same
-	// fProcessID. NOTE: due to MT, this cannot be "const".
+  G4bool InstantiateProcessState()
+  {
+    return fInstantiateProcessState;
+  }
 
-	static /*G4ThreadLocal*/ size_t *fNbProcess;
+  G4bool fProposesTimeStep;
 
-	G4bool fInstantiateProcessState;
-	//_________________________________________________
-	// Redefine needed members and method of G4VProcess
-	G4double*          theNumberOfInteractionLengthLeft;
-	G4double*          currentInteractionLength;
-	G4double*          theInteractionTimeLeft;
+private:
+
+  size_t fProcessID;
+  // During all the simulation will identify a process, so if two identical
+  // processes are created using a copy constructor they will have the same
+  // fProcessID. NOTE: due to MT, this cannot be "const".
+
+  static/*G4ThreadLocal*/size_t *fNbProcess;
+
+  G4bool fInstantiateProcessState;
+  //_________________________________________________
+  // Redefine needed members and method of G4VProcess
+  G4double* theNumberOfInteractionLengthLeft;
+  G4double* currentInteractionLength;
+  G4double* theInteractionTimeLeft;
 };
 
 inline void G4VITProcess::ClearInteractionTimeLeft()
 {
-	fpState->theInteractionTimeLeft = -1.0;
+  fpState->theInteractionTimeLeft = -1.0;
 }
 
 inline void G4VITProcess::ClearNumberOfInteractionLengthLeft()
 {
-	fpState->theNumberOfInteractionLengthLeft =  -1.0;
+  fpState->theNumberOfInteractionLengthLeft = -1.0;
 }
 
 inline void G4VITProcess::ResetNumberOfInteractionLengthLeft()
 {
-	fpState->theNumberOfInteractionLengthLeft =  -std::log( G4UniformRand() );
+  fpState->theNumberOfInteractionLengthLeft = -std::log( G4UniformRand());
 }
 
 inline G4double G4VITProcess::GetInteractionTimeLeft()
 {
-	if(fpState)
-		return fpState->theInteractionTimeLeft ;
+  if (fpState) return fpState->theInteractionTimeLeft;
 
-	return -1 ;
+  return -1;
 }
 
 inline G4bool G4VITProcess::ProposesTimeStep() const
 {
-	return fProposesTimeStep;
+  return fProposesTimeStep;
 }
 
 inline const size_t& G4VITProcess::GetMaxProcessIndex()
 {
-	if (!fNbProcess) fNbProcess = new size_t ( 0);
-	return *fNbProcess ;
+  if (!fNbProcess) fNbProcess = new size_t(0);
+  return *fNbProcess;
+}
+
+inline
+void G4VITProcess::SubtractNumberOfInteractionLengthLeft(G4double previousStepSize)
+{
+  if (fpState->currentInteractionLength > 0.0)
+  {
+    fpState->theNumberOfInteractionLengthLeft -= previousStepSize
+        / fpState->currentInteractionLength;
+    if (fpState->theNumberOfInteractionLengthLeft < 0.)
+    {
+      fpState->theNumberOfInteractionLengthLeft = CLHEP::perMillion;
+    }
+
+  }
+  else
+  {
+#ifdef G4VERBOSE
+    if (verboseLevel > 0)
+    {
+      G4cerr << "G4VITProcess::SubtractNumberOfInteractionLengthLeft()";
+      G4cerr << " [" << theProcessName << "]" << G4endl;
+      G4cerr << " currentInteractionLength = "
+             << fpState->currentInteractionLength << " [mm]";
+      G4cerr << " previousStepSize = " << previousStepSize << " [mm]";
+      G4cerr << G4endl;
+    }
+#endif
+             G4String msg = "Negative currentInteractionLength for ";
+             msg += theProcessName;
+             G4Exception("G4VITProcess::SubtractNumberOfInteractionLengthLeft()",
+                "ProcMan201",EventMustBeAborted,
+                msg);
+  }
 }
 #endif // G4VITProcess_H

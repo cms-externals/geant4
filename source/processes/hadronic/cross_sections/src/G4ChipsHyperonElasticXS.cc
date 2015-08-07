@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4ChipsHyperonElasticXS.cc 70680 2013-06-04 07:51:03Z gcosmo $
+// $Id: G4ChipsHyperonElasticXS.cc 88983 2015-03-17 10:24:43Z gcosmo $
 //
 //
 // G4 Physics class: G4ChipsHyperonElasticXS for pA elastic cross sections
@@ -136,40 +136,11 @@ G4ChipsHyperonElasticXS::~G4ChipsHyperonElasticXS()
   B4T.clear();
 }
 
-G4bool G4ChipsHyperonElasticXS::IsIsoApplicable(const G4DynamicParticle* Pt, G4int, G4int,    
+G4bool G4ChipsHyperonElasticXS::IsIsoApplicable(const G4DynamicParticle*, G4int, G4int,    
 				 const G4Element*,
 				 const G4Material*)
 {
-  G4ParticleDefinition* particle = Pt->GetDefinition();
-  if (particle == G4Lambda::Lambda()) 
-    {
-      return true;
-    }
-  else if(particle == G4SigmaPlus::SigmaPlus())
-    {
-    return true;
-    }
-  else if(particle == G4SigmaMinus::SigmaMinus())
-    {
-    return true;
-    }
-  else if(particle == G4SigmaZero::SigmaZero())
-    {
-      return true;
-    }
-  else if(particle == G4XiMinus::XiMinus())
-    {
-      return true;
-    }
-  else if(particle == G4XiZero::XiZero())
-    {
-      return true;
-    }
-  else if(particle == G4OmegaMinus::OmegaMinus())
-    {
-      return true;
-    }
-  return false;
+  return true;
 }
 
 // The main member function giving the collision cross section (P is in IU, CS is in mb)
@@ -188,12 +159,6 @@ G4double G4ChipsHyperonElasticXS::GetIsoCrossSection(const G4DynamicParticle* Pt
 
 G4double G4ChipsHyperonElasticXS::GetChipsCrossSection(G4double pMom, G4int tgZ, G4int tgN, G4int pPDG)
 {
-  static G4ThreadLocal std::vector <G4int>    *colN_G4MT_TLS_ = 0 ; if (!colN_G4MT_TLS_) colN_G4MT_TLS_ = new  std::vector <G4int>     ;  std::vector <G4int>    &colN = *colN_G4MT_TLS_;  // Vector of N for calculated nuclei (isotops)
-  static G4ThreadLocal std::vector <G4int>    *colZ_G4MT_TLS_ = 0 ; if (!colZ_G4MT_TLS_) colZ_G4MT_TLS_ = new  std::vector <G4int>     ;  std::vector <G4int>    &colZ = *colZ_G4MT_TLS_;  // Vector of Z for calculated nuclei (isotops)
-  static G4ThreadLocal std::vector <G4double> *colP_G4MT_TLS_ = 0 ; if (!colP_G4MT_TLS_) colP_G4MT_TLS_ = new  std::vector <G4double>  ;  std::vector <G4double> &colP = *colP_G4MT_TLS_;  // Vector of last momenta for the reaction
-  static G4ThreadLocal std::vector <G4double> *colTH_G4MT_TLS_ = 0 ; if (!colTH_G4MT_TLS_) colTH_G4MT_TLS_ = new  std::vector <G4double>  ;  std::vector <G4double> &colTH = *colTH_G4MT_TLS_; // Vector of energy thresholds for the reaction
-  static G4ThreadLocal std::vector <G4double> *colCS_G4MT_TLS_ = 0 ; if (!colCS_G4MT_TLS_) colCS_G4MT_TLS_ = new  std::vector <G4double>  ;  std::vector <G4double> &colCS = *colCS_G4MT_TLS_; // Vector of last cross sections for the reaction
-  // ***---*** End of the mandatory Static Definitions of the Associative Memory ***---***
 
   G4bool fCS = false;
   G4double pEn=pMom;
@@ -265,9 +230,6 @@ G4double G4ChipsHyperonElasticXS::GetChipsCrossSection(G4double pMom, G4int tgZ,
 G4double G4ChipsHyperonElasticXS::CalculateCrossSection(G4bool CS,G4int F,G4int I,
                                              G4int PDG, G4int tgZ, G4int tgN, G4double pIU)
 {
-  // *** Begin of Associative Memory DB for acceleration of the cross section calculations
-  static G4ThreadLocal std::vector <G4double>  *PIN_G4MT_TLS_ = 0 ; if (!PIN_G4MT_TLS_) PIN_G4MT_TLS_ = new  std::vector <G4double>   ;  std::vector <G4double>  &PIN = *PIN_G4MT_TLS_;   // Vector of max initialized log(P) in the table
-  // *** End of Static Definitions (Associative Memory Data Base) ***
   G4double pMom=pIU/GeV;                // All calculations are in GeV
   onlyCS=CS;                            // Flag to calculate only CS (not Si/Bi)
   lastLP=std::log(pMom);                // Make a logarithm of the momentum for calculation
@@ -401,7 +363,8 @@ G4double G4ChipsHyperonElasticXS::GetPTables(G4double LP, G4double ILP, G4int PD
                             1.e10,8.5e8,1.e10,1.1,3.4e6,6.8e6,0.};
   //                        -15--16- -17- -18- -19-  -20- -21- -22- -23-  -24-   -25-
   //                         -26-  -27- -28-  -29- -30- -31- -32-
-  if(PDG!=3222 && PDG>3000 && PDG<3335)
+  //AR-04Jun2014  if(PDG!=3222 && PDG>3000 && PDG<3335)
+  if(PDG>3000 && PDG<3335)
   {
     // -- Total pp elastic cross section cs & s1/b1 (main), s2/b2 (tail1), s3/b3 (tail2) --
     //p2=p*p;p3=p2*p;sp=sqrt(p);p2s=p2*sp;lp=log(p);dl1=lp-(3.=par(3));p4=p2*p2; p=|3-mom|
@@ -637,8 +600,9 @@ G4double G4ChipsHyperonElasticXS::GetExchangeT(G4int tgZ, G4int tgN, G4int PDG)
   static const G4double GeVSQ=gigaelectronvolt*gigaelectronvolt;
   static const G4double third=1./3.;
   static const G4double fifth=1./5.;
-  static const G4double sevth=1./7.;
-  if(PDG==3222 || PDG<3000 || PDG>3334)G4cout<<"*Warning*G4QHyElCS::GET:PDG="<<PDG<<G4endl;
+  static const G4double sevth=1./7.;  
+  //AR-04Jun2014  if(PDG==3222 || PDG<3000 || PDG>3334)G4cout<<"*Warning*G4QHyElCS::GET:PDG="<<PDG<<G4endl;
+  if(PDG<3000 || PDG>3334)G4cout<<"*Warning*G4QHyElCS::GET:PDG="<<PDG<<G4endl;
   if(onlyCS)G4cout<<"*Warning*G4ChipsHyperonElasticXS::GetExchanT: onlyCS=1"<<G4endl;
   if(lastLP<-4.3) return lastTM*GeVSQ*G4UniformRand();// S-wave for p<14 MeV/c (kinE<.1MeV)
   G4double q2=0.;
@@ -745,7 +709,8 @@ G4double G4ChipsHyperonElasticXS::GetSlope(G4int tgZ, G4int tgN, G4int PDG)
   static const G4double GeVSQ=gigaelectronvolt*gigaelectronvolt;
   if(onlyCS)G4cout<<"*Warning*G4ChipsHyperonElasticXS::GetSlope: onlCS=true"<<G4endl;
   if(lastLP<-4.3) return 0.;          // S-wave for p<14 MeV/c (kinE<.1MeV)
-  if(PDG==3222 || PDG<3000 || PDG>3334)
+  //AR-04Jun2014  if(PDG==3222 || PDG<3000 || PDG>3334)
+  if(PDG<3000 || PDG>3334)
   {
     // G4cout<<"*Error*G4ChipsHyperonElasticXS::GetSlope: PDG="<<PDG<<", Z="<<tgZ
     //       <<", N="<<tgN<<", while it is defined only for Hyperons"<<G4endl;
@@ -772,7 +737,8 @@ G4double G4ChipsHyperonElasticXS::GetHMaxT()
 G4double G4ChipsHyperonElasticXS::GetTabValues(G4double lp, G4int PDG, G4int tgZ,
                                                     G4int tgN)
 {
-  if(PDG==3222 || PDG<3000 || PDG>3334) G4cout<<"*Warning*G4QHypElCS::GTV:P="<<PDG<<G4endl;
+  //AR-04Jun2014  if(PDG==3222 || PDG<3000 || PDG>3334) G4cout<<"*Warning*G4QHypElCS::GTV:P="<<PDG<<G4endl;
+  if(PDG<3000 || PDG>3334) G4cout<<"*Warning*G4QHypElCS::GTV:P="<<PDG<<G4endl;
   if(tgZ<0 || tgZ>92)
   {
     G4cout<<"*Warning*G4QHyperonElastCS::GetTabValue:(1-92) NoIsotopesFor Z="<<tgZ<<G4endl;

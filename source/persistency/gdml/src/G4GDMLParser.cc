@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4GDMLParser.cc 81843 2014-06-06 09:11:11Z gcosmo $
+// $Id: G4GDMLParser.cc 80934 2014-05-16 14:06:39Z gcosmo $
 //
 //
 // class G4GDMLParser Implementation

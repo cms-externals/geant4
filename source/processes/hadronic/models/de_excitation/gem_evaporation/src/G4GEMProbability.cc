@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GEMProbability.cc 74869 2013-10-23 09:26:17Z gcosmo $
+// $Id: G4GEMProbability.cc 88987 2015-03-17 10:39:50Z gcosmo $
 //
 //---------------------------------------------------------------------
 //
@@ -51,14 +51,15 @@
 
 #include "G4GEMProbability.hh"
 #include "G4PairingCorrection.hh"
+#include "G4NucleiProperties.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4Log.hh"
 #include "G4Exp.hh"
 
 G4GEMProbability:: G4GEMProbability(G4int anA, G4int aZ, G4double aSpin) : 
-  theA(anA), theZ(aZ), Spin(aSpin), theCoulombBarrierPtr(0), 
-  Normalization(1.0)
+  theA(anA), theZ(aZ), Spin(aSpin), theCoulombBarrierPtr(0)
+  //  Normalization(1.0)
 {
   theEvapLDPptr = new G4EvaporationLevelDensityParameter;
   fG4pow = G4Pow::GetInstance(); 
@@ -104,10 +105,9 @@ G4double G4GEMProbability::EmissionProbability(const G4Fragment & fragment,
       Spin = SavedSpin;
     }
   }
-  Normalization = probability;
+  //  Normalization = probability;
   return probability;
 }
-
 
 G4double G4GEMProbability::CalcProbability(const G4Fragment & fragment, 
                                            G4double MaximalKineticEnergy,
@@ -141,7 +141,6 @@ G4double G4GEMProbability::CalcProbability(const G4Fragment & fragment,
   G4double E0 = Ex - T*(G4Log(T/MeV) - G4Log(a*MeV)/4.0 
 	- 1.25*G4Log(Ux/MeV) + 2.0*std::sqrt(a*Ux));
   //                      ***end RESIDUAL ***
-  
   //                       ***PARENT***
   //JMQ (September 2009) the following quantities refer to the PARENT:
      
@@ -169,11 +168,15 @@ G4double G4GEMProbability::CalcProbability(const G4Fragment & fragment,
     G4double tx = Ex/T;
     G4double s0 = 2.0*std::sqrt(a*(MaximalKineticEnergy-delta0));
     G4double sx = 2.0*std::sqrt(a*(Ex-delta0));
+    // VI: protection against FPE exception
+    if(s0 > 350.) { s0 = 350.; }
     Width = I1(t,tx)*T/expE0T + I3(s0,sx)*G4Exp(s0)/(sqrt2*a);
+
+    // VI this cannot happen!
     // For charged particles (Beta+V) = 0 beacuse Beta = -V
-    if (theZ == 0) {
-      Width += (Beta+V)*(I0(tx)/expE0T + 2.0*sqrt2*I2(s0,sx)*G4Exp(s0));
-    }
+    //if (theZ == 0) {
+    //  Width += (Beta+V)*(I0(tx)/expE0T + 2.0*sqrt2*I2(s0,sx)*G4Exp(s0));
+    //}
   }
   
   //JMQ 14/07/2009 BIG BUG : NuclearMass is in MeV => hbarc instead of hbar_planck must be used
@@ -214,9 +217,10 @@ G4double G4GEMProbability::CalcProbability(const G4Fragment & fragment,
     {
       //JMQ fixed bug in units
       //VI moved the computation here
-      G4double E0CN = ExCN - TCN*(G4Log(TCN/MeV) - G4Log(aCN*MeV)/4.0 
+      G4double E0CN = ExCN - TCN*(G4Log(TCN/MeV) - 0.25*G4Log(aCN*MeV) 
 				  - 1.25*G4Log(UxCN/MeV) 
 				  + 2.0*std::sqrt(aCN*UxCN));
+
       InitialLevelDensity = (pi/12.0)*G4Exp((U-E0CN)/TCN)/TCN;
     } 
   else 
@@ -224,6 +228,7 @@ G4double G4GEMProbability::CalcProbability(const G4Fragment & fragment,
       //VI speedup
       G4double x  = U-deltaCN;
       G4double x1 = std::sqrt(aCN*x);
+
       InitialLevelDensity = (pi/12.0)*G4Exp(2*x1)/(x*std::sqrt(x1));
     }
 
@@ -254,4 +259,27 @@ G4double G4GEMProbability::I3(G4double s0, G4double sx)
   p2 *= G4Exp(sx-s0);
   
   return p1-p2; 
+}
+
+void G4GEMProbability::Dump() const
+{
+  G4double mass = G4NucleiProperties::GetNuclearMass(theA, theZ);
+  G4double efermi = 0.0;
+  if(theA > 1) { 
+    efermi = G4NucleiProperties::GetNuclearMass(theA-1, theZ)
+      + neutron_mass_c2 - mass;
+  }
+  G4int nlev = ExcitEnergies.size();
+  G4cout << "GEM: List of Excited States for Isotope Z= " 
+	 << theZ << " A= " << theA << " Nlevels= " << nlev 
+	 << " Efermi(MeV)= " << efermi
+	 << G4endl;
+  for(G4int i=0; i< nlev; ++i) {
+    G4cout << "Z= " << theZ << " A= " << theA 
+	   << " Mass(GeV)= " << mass/GeV
+	   << " Eexc(MeV)= " << ExcitEnergies[i]
+	   << " Time(ns)= " <<  ExcitLifetimes[i]/ns 
+	   << G4endl;
+  }
+  G4cout << G4endl;
 }

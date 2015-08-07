@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VAdjointReverseReaction.hh 81856 2014-06-06 10:06:15Z gcosmo $
+// $Id: G4VAdjointReverseReaction.hh 80314 2014-04-10 12:23:52Z gcosmo $
 //
 /////////////////////////////////////////////////////////////////////////////////
 //      Module:		G4VAdjointReverseReaction

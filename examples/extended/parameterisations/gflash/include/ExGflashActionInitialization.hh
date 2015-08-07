@@ -33,6 +33,8 @@
 
 #include "G4VUserActionInitialization.hh"
 
+class G4GeneralParticleSource;
+
 /// Action initialization class.
 ///
 

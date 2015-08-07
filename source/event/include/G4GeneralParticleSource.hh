@@ -55,7 +55,11 @@
 //     - Split the task into smaller classes
 //
 //     - old commonds have been retained for backward compatibility, but will 
-//       be removed in the future. 
+//       be removed in the future.
+//
+//  25/03/2014, Andrew Green
+//      Various changes to use the new G4GeneralParticleSourceData class, mostly
+//      just transparent wrappers around the thread safe object.
 //
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -148,75 +152,111 @@
 //
 #include "G4GeneralParticleSourceMessenger.hh"
 
+#include "G4GeneralParticleSourceData.hh"
+
+class G4SingleParticleSource;
+
+/** Andrea Dotti Feb 2015
+ * GPS messenger design requires some explanation for what distributions
+ * parameters are concerned : Each thread has its own GPS
+ * since primary generation is a user action.
+ * However to save memory the underlying structures that provide the
+ * GPS functionalities ( the G4SPS*Distribution classes and the
+ * G4SPSRandomGenerator class)
+ * are shared among threads. This implies that modifying parameters of sources
+ * requires some attention:
+ * 1- Only one thread should change source parameters.
+ * 2- Changing of parameters can happen only between runs, when is guaranteed
+ *    that no thread is accessing them
+ * 2- UI commands require that even if messenger is instantiated in a thread
+ *    the commands are executed in the master (this is possible since V10.1)
+ * The simplest solution is to use UI commands to change GPS parameters and
+ * avoid C++ APIs. If this is inevitable a simple solution is to instantiate
+ * an instance of G4GeneralParticleSource explicitly in the master thread
+ * (for example in G4VUserActionInitialization::BuildForMaster() and set the
+ * defaults parameter there).
+ */
 class G4GeneralParticleSource : public G4VPrimaryGenerator
 {
-  //
-public:
+    //
+    public:
 
-  G4GeneralParticleSource();
-  ~G4GeneralParticleSource();
+        G4GeneralParticleSource();
+        ~G4GeneralParticleSource();
 
-  void GeneratePrimaryVertex(G4Event*);
+        void GeneratePrimaryVertex(G4Event*);
 
-  G4int GetNumberofSource() { return G4int(sourceVector.size()); };
-  void ListSource();
-  void SetCurrentSourceto(G4int) ;
-  void SetCurrentSourceIntensity(G4double);
-  G4SingleParticleSource* GetCurrentSource() {return currentSource;};
-  G4int GetCurrentSourceIndex() { return currentSourceIdx; };
-  G4double GetCurrentSourceIntensity() { return sourceIntensity[currentSourceIdx]; };
-  void ClearAll();
-  void AddaSource (G4double);
-  void DeleteaSource(G4int);
+        G4int GetNumberofSource() { return GPSData->GetSourceVectorSize(); };
+        void ListSource();
+        void SetCurrentSourceto(G4int) ;
+        void SetCurrentSourceIntensity(G4double);
+        G4SingleParticleSource* GetCurrentSource() const
+          {return GPSData->GetCurrentSource();}
+        G4int GetCurrentSourceIndex() const
+          { return GPSData->GetCurrentSourceIdx(); }
+        G4double GetCurrentSourceIntensity() const
+          { return GPSData->GetIntensity(GetCurrentSourceIndex()); }
+        void ClearAll();
+        void AddaSource (G4double);
+        void DeleteaSource(G4int);
 
-  // Set the verbosity level.
-  void SetVerbosity(G4int i) {currentSource->SetVerbosity(i);} ;
+        // Set the verbosity level.
+        void SetVerbosity(G4int i) {GPSData->SetVerbosityAllSources(i);} ;
 
-  // Set if multiple vertex per event.
-  void SetMultipleVertex(G4bool av) {multiple_vertex = av;} ;
+        // Set if multiple vertex per event.
+        void SetMultipleVertex(G4bool av) { GPSData->SetMultipleVertex(av);} ;
 
-  // set if flat_sampling is applied in multiple source case
+        // set if flat_sampling is applied in multiple source case
 
-  void SetFlatSampling(G4bool av) {flat_sampling = av; normalised = false;} ;
+        void SetFlatSampling(G4bool av) { GPSData->SetFlatSampling(av); normalised = false;} ;
 
-  // Set the particle species
-  void SetParticleDefinition (G4ParticleDefinition * aParticleDefinition) 
-    {currentSource->SetParticleDefinition(aParticleDefinition); } ;
+        // Set the particle species
+        void SetParticleDefinition (G4ParticleDefinition * aParticleDefinition) 
+          {GPSData->GetCurrentSource()->SetParticleDefinition(aParticleDefinition); } ;
 
-  G4ParticleDefinition * GetParticleDefinition () { return currentSource->GetParticleDefinition();} ;
+        G4ParticleDefinition * GetParticleDefinition () const
+          { return GPSData->GetCurrentSource()->GetParticleDefinition();} ;
 
-  void SetParticleCharge(G4double aCharge) { currentSource->SetParticleCharge(aCharge); } ;
+        void SetParticleCharge(G4double aCharge)
+          { GPSData->GetCurrentSource()->SetParticleCharge(aCharge); } ;
 
-  // Set polarization
-  void SetParticlePolarization (G4ThreeVector aVal) {currentSource->SetParticlePolarization(aVal);};
-  G4ThreeVector GetParticlePolarization ()  {return currentSource->GetParticlePolarization();};
+        // Set polarization
+        void SetParticlePolarization (G4ThreeVector aVal)
+          {GPSData->GetCurrentSource()->SetParticlePolarization(aVal);};
+        G4ThreeVector GetParticlePolarization () const
+          {return GPSData->GetCurrentSource()->GetParticlePolarization();};
 
-  // Set Time.
-  void SetParticleTime(G4double aTime)  { currentSource->SetParticleTime(aTime); };
-  G4double GetParticleTime()  { return currentSource->GetParticleTime(); };
+        // Set Time.
+        void SetParticleTime(G4double aTime)
+          { GPSData->GetCurrentSource()->SetParticleTime(aTime); };
+        G4double GetParticleTime() const
+          { return GPSData->GetCurrentSource()->GetParticleTime(); };
 
-  void SetNumberOfParticles(G4int i)  { currentSource->SetNumberOfParticles(i); };
-  //
-  G4int GetNumberOfParticles() { return currentSource->GetNumberOfParticles(); };
-  G4ThreeVector GetParticlePosition()  { return currentSource->GetParticlePosition();};
-  G4ThreeVector GetParticleMomentumDirection()  { return currentSource->GetParticleMomentumDirection();};
-  G4double GetParticleEnergy()  {return currentSource->GetParticleEnergy();};
+        void SetNumberOfParticles(G4int i)
+          { GPSData->GetCurrentSource()->SetNumberOfParticles(i); };
+        //
+        G4int GetNumberOfParticles() const
+          { return GPSData->GetCurrentSource()->GetNumberOfParticles(); };
+        G4ThreeVector GetParticlePosition() const
+          { return GPSData->GetCurrentSource()->GetParticlePosition();};
+        G4ThreeVector GetParticleMomentumDirection() const
+          { return GPSData->GetCurrentSource()->GetParticleMomentumDirection();};
+        G4double GetParticleEnergy() const
+          {return GPSData->GetCurrentSource()->GetParticleEnergy();};
 
 private:
 
   void IntensityNormalization();
 
 private:
-  G4bool multiple_vertex;
-  G4bool flat_sampling;
+  //Helper boolean, used to reduce number of locks
+  //at run time (see GeneratePrimaryVertex)
   G4bool normalised;
-  G4int currentSourceIdx;
-  G4SingleParticleSource* currentSource;
-  std::vector <G4SingleParticleSource*> sourceVector;
-  std::vector <G4double> sourceIntensity;
-  std::vector <G4double>sourceProbability;
 
+  //Note this is a shared resource among MT workers
   G4GeneralParticleSourceMessenger* theMessenger;
+  //Note this is a shared resource among MT workers
+  G4GeneralParticleSourceData* GPSData;
   
 };
 

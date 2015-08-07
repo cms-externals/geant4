@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmModelManager.cc 81864 2014-06-06 11:30:54Z gcosmo $
+// $Id: G4EmModelManager.cc 84398 2014-10-15 07:20:18Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -660,8 +660,10 @@ void G4EmModelManager::FillLambdaVector(G4PhysicsVector* aVector,
            << " in " << couple->GetMaterial()->GetName()
 	   << " Emin(MeV)= " << aVector->Energy(0)
 	   << " Emax(MeV)= " << aVector->GetMaxEnergy()
+	   << " cut= " << cut
 	   << " Type " << tType   
 	   << " nmod= " << nmod
+           << " theSubCuts " << theSubCuts
            << G4endl;
   }
 

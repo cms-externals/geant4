@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4CrossSectionDataStore.cc 79192 2014-02-20 10:07:18Z gcosmo $
+// $Id: G4CrossSectionDataStore.cc 78442 2013-12-18 15:04:33Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

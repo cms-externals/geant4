@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4ExtrudedSolid.cc 69584 2013-05-08 14:12:37Z gcosmo $
+// $Id: G4ExtrudedSolid.cc 88948 2015-03-16 16:26:50Z gcosmo $
 //
 //
 // --------------------------------------------------------------------
@@ -35,12 +35,15 @@
 // Author: Ivana Hrivnacova, IPN Orsay
 // --------------------------------------------------------------------
 
+#include "G4ExtrudedSolid.hh"
+
+#if !defined(G4GEOM_USE_UEXTRUDEDSOLID)
+
 #include <set>
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
 
-#include "G4ExtrudedSolid.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4VFacet.hh"
@@ -549,16 +552,20 @@ G4bool G4ExtrudedSolid::AddGeneralPolygonFacets()
   {
 
     // G4cout << "Looking at triangle : "
-    //        << c1->second << "  " << c2->second
+    //         << c1->second << "  " << c2->second
     //        << "  " << c3->second << G4endl;  
+    //G4cout << "Looking at triangle : "
+    //        << c1->first << "  " << c2->first
+    //        << "  " << c3->first << G4endl;  
 
     // skip concave vertices
     //
     G4double angle = GetAngle(c2->first, c3->first, c1->first);
+   
     //G4cout << "angle " << angle  << G4endl;
 
     G4int counter = 0;
-    while ( angle > pi )
+    while ( angle >= pi )
     {
       // G4cout << "Skipping concave vertex " << c2->second << G4endl;
 
@@ -569,9 +576,9 @@ G4bool G4ExtrudedSolid::AddGeneralPolygonFacets()
       ++c3; 
       if ( c3 == verticesToBeDone.end() ) { c3 = verticesToBeDone.begin(); }
 
-      // G4cout << "Looking at triangle : "
-      //        << c1->second << "  " << c2->second
-      //        << "  " << c3->second << G4endl; 
+      //G4cout << "Looking at triangle : "
+      //      << c1->first << "  " << c2->first
+      //        << "  " << c3->first << G4endl; 
       
       angle = GetAngle(c2->first, c3->first, c1->first); 
       //G4cout << "angle " << angle  << G4endl;
@@ -906,3 +913,5 @@ std::ostream& G4ExtrudedSolid::StreamInfo(std::ostream &os) const
 
   return os;
 }  
+
+#endif

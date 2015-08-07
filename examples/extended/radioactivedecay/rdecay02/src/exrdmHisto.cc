@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: exrdmHisto.cc 79266 2014-02-20 16:41:56Z gcosmo $
+// $Id: exrdmHisto.cc 78592 2014-01-08 10:30:37Z gcosmo $
 //
 /// \file radioactivedecay/rdecay02/src/exrdmHisto.cc
 /// \brief Implementation of the exrdmHisto class

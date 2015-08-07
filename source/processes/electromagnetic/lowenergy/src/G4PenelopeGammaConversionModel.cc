@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PenelopeGammaConversionModel.cc 79186 2014-02-20 09:20:02Z gcosmo $
+// $Id: G4PenelopeGammaConversionModel.cc 83584 2014-09-02 08:45:37Z gcosmo $
 //
 // Author: Luciano Pandola
 //
@@ -89,12 +89,10 @@ G4PenelopeGammaConversionModel::~G4PenelopeGammaConversionModel()
   if (IsMaster() || fLocalTable)
     {      
       if (logAtomicCrossSection)
-	{
-	  /*
-	    std::map <G4int,G4PhysicsFreeVector*>::iterator i;
-	    for (i=logAtomicCrossSection->begin();i != logAtomicCrossSection->end();i++)
-	    if (i->second) delete i->second;
-	  */
+	{	  
+	  std::map <G4int,G4PhysicsFreeVector*>::iterator i;
+	  for (i=logAtomicCrossSection->begin();i != logAtomicCrossSection->end();i++)
+	    if (i->second) delete i->second;	  
 	  delete logAtomicCrossSection;
 	}
       if (fEffectiveCharge)

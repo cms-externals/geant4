@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4Material.hh 68070 2013-03-13 15:03:06Z gcosmo $
+// $Id: G4Material.hh 88957 2015-03-16 16:46:05Z gcosmo $
 //
 
 //---------------------------------------------------------------------------
@@ -113,6 +113,8 @@
 
 enum G4State { kStateUndefined = 0, kStateSolid, kStateLiquid, kStateGas };
 
+static const G4double NTP_Temperature = 293.15;
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4Material
@@ -126,7 +128,7 @@ public:  // with description
                    G4double  a,					//mass of mole
                    G4double  density, 				//density
                    G4State   state    = kStateUndefined,	//solid,gas
-                   G4double  temp     = CLHEP::STP_Temperature,	//temperature
+                   G4double  temp     = NTP_Temperature,	//temperature
                    G4double  pressure = CLHEP::STP_Pressure);	//pressure
 
   //
@@ -137,7 +139,7 @@ public:  // with description
                    G4double  density, 				//density
                    G4int     nComponents,			//nbOfComponents
                    G4State   state    = kStateUndefined,	//solid,gas
-                   G4double  temp     = CLHEP::STP_Temperature,	//temperature
+                   G4double  temp     = NTP_Temperature,	//temperature
                    G4double  pressure = CLHEP::STP_Pressure);	//pressure
 
   //
@@ -147,7 +149,7 @@ public:  // with description
                    G4double  density, 				//density
              const G4Material* baseMaterial,			//base material
                    G4State   state    = kStateUndefined,	//solid,gas
-                   G4double  temp     = CLHEP::STP_Temperature,	//temperature
+                   G4double  temp     = NTP_Temperature,	//temperature
                    G4double  pressure = CLHEP::STP_Pressure);	//pressure
 
   //
@@ -217,7 +219,7 @@ public:  // with description
   // Radiation length:     
   inline G4double  GetRadlen()          const {return fRadlen;}
     
-  // Nuclear interaction length:     
+  // Nuclear interaction length     
   inline G4double GetNuclearInterLength() const {return fNuclInterLen;}
         
   // ionisation parameters:
@@ -265,12 +267,11 @@ public:  // with description
   //
   //printing methods
   //
-  friend std::ostream& operator<<(std::ostream&, G4Material*);    
-  friend std::ostream& operator<<(std::ostream&, G4Material&);    
+  friend std::ostream& operator<<(std::ostream&, const G4Material*);    
+  friend std::ostream& operator<<(std::ostream&, const G4Material&);    
   friend std::ostream& operator<<(std::ostream&, G4MaterialTable);
     
-public:  // without description 
-       
+  // operators       
   G4int operator==(const G4Material&) const;
   G4int operator!=(const G4Material&) const;
   G4Material(__void__&);
@@ -315,9 +316,9 @@ private:
 
   G4int            maxNbComponents;       // totalNbOfComponentsInTheMaterial 
   G4int            fArrayLength;          // the length of fAtomsVector 
-  size_t           fNumberOfComponents;   // Nb of components declared so far
+  G4int            fNumberOfComponents;   // Nb of components declared so far
 
-  size_t           fNumberOfElements;     // Nb of Elements in the material
+  G4int            fNumberOfElements;     // Nb of Elements in the material
   G4ElementVector* theElementVector;      // vector of constituent Elements
   G4bool           fImplicitElement;      // implicit Element created by this?
   G4double*        fMassFractionVector;   // composition by fractional mass

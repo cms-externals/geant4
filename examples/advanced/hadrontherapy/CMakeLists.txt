@@ -60,11 +60,9 @@ endif()
 # relies on these scripts being in the current working directory.
 #
 set(EXAMPLEhadrontherapy_SCRIPTS
-  batch.mac
   clean.sh
-  defaultMacro.mac
-  defaultMacroWithReferencePhysicsList.mac
-  macro/GUIPersonalisation.mac
+ batch.mac
+ macro/GUIPersonalisation.mac
   macro/carbon_beamline.mac
   macro/detectorGeometry.mac
   macro/hadron_therapy.mac
@@ -75,6 +73,24 @@ set(EXAMPLEhadrontherapy_SCRIPTS
   macro/stoppingPowers.mac
   macro/visualisationMacro.mac
   macro/voxellizedPhantom.mac
+  macro/laserDrivenBeamline.mac
+  macro/defaultMacroWithReferencePhysicsList.mac
+  macro/defaultMacro.mac
+  macro/Taranis.mac
+  macro/inputFC.mac
+
+ field/ESSMagneticField.TABLE
+
+# Faraday Cup
+ field/ElectricFieldFC-600V.TABLE
+
+#QUADRUPOLE 40mm
+ field/Quad40MagneticField.TABLE
+
+
+#QUADRUPOLE 80mm
+ field/Quad80MagneticField.TABLE
+
   )
 
 foreach(_script ${EXAMPLEhadrontherapy_SCRIPTS})

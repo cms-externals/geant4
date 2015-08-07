@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PAIModel.cc 73607 2013-09-02 10:04:03Z gcosmo $
+// $Id: G4PAIModel.cc 90583 2015-06-04 11:16:41Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -54,14 +54,9 @@
 #include "G4SystemOfUnits.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4Region.hh"
-#include "G4PhysicsLogVector.hh"
-#include "G4PhysicsFreeVector.hh"
-#include "G4PhysicsTable.hh"
-#include "G4ProductionCutsTable.hh"
 #include "G4MaterialCutsCouple.hh"
 #include "G4MaterialTable.hh"
-#include "G4SandiaTable.hh"
-#include "G4OrderedTable.hh"
+#include "G4RegionStore.hh"
 
 #include "Randomize.hh"
 #include "G4Electron.hh"
@@ -95,8 +90,6 @@ G4PAIModel::G4PAIModel(const G4ParticleDefinition* p, const G4String& nam)
 
   // default generator
   SetAngularDistribution(new G4DeltaAngle());
-
-  isInitialised = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -114,69 +107,95 @@ void G4PAIModel::Initialise(const G4ParticleDefinition* p,
   if(fVerbose > 0) {
     G4cout<<"G4PAIModel::Initialise for "<<p->GetParticleName()<<G4endl;
   }
-
-  if(isInitialised) { return; }
-  isInitialised = true;
-
   SetParticle(p);
   fParticleChange = GetParticleChangeForLoss();
 
   if(IsMaster()) { 
 
-    InitialiseElementSelectors(p, cuts);
-
-    if(!fModelData) {
-
-      G4double tmin = LowEnergyLimit()*fRatio;
-      G4double tmax = HighEnergyLimit()*fRatio;
-      fModelData = new G4PAIModelData(tmin, tmax, fVerbose);
-    }
+    delete fModelData;      
+    fMaterialCutsCoupleVector.clear(); 
+    if(fVerbose > 0) {
+      G4cout << "G4PAIModel instantiates data for  " << p->GetParticleName()
+	     << G4endl;
+    }  
+    G4double tmin = LowEnergyLimit()*fRatio;
+    G4double tmax = HighEnergyLimit()*fRatio;
+    fModelData = new G4PAIModelData(tmin, tmax, fVerbose);
+  
     // Prepare initialization
     const G4MaterialTable* theMaterialTable = G4Material::GetMaterialTable();
     size_t numOfMat   = G4Material::GetNumberOfMaterials();
     size_t numRegions = fPAIRegionVector.size();
 
-    for(size_t iReg = 0; iReg < numRegions; ++iReg) {
+    // protect for unit tests
+    if(0 == numRegions) {
+      G4Exception("G4PAIModel::Initialise()","em0106",JustWarning,
+                  "no G4Regions are registered for the PAI model - World is used");
+      fPAIRegionVector.push_back(G4RegionStore::GetInstance()
+				 ->GetRegion("DefaultRegionForTheWorld", false));
+      numRegions = 1;
+    }
+
+    if(fVerbose > 0) {
+      G4cout << "G4PAIModel is defined for " << numRegions << " regions "   
+	     << G4endl;
+      G4cout << "           total number of materials " << numOfMat << G4endl;
+    } 
+    for(size_t iReg = 0; iReg<numRegions; ++iReg) {
       const G4Region* curReg = fPAIRegionVector[iReg];
       G4Region* reg = const_cast<G4Region*>(curReg);
 
-      for(size_t jMat = 0; jMat < numOfMat; ++jMat) {
+      for(size_t jMat = 0; jMat<numOfMat; ++jMat) {
 	G4Material* mat = (*theMaterialTable)[jMat];
 	const G4MaterialCutsCouple* cutCouple = reg->FindCouple(mat);
-	//G4cout << "Couple <" << fCutCouple << G4endl;
+	size_t n = fMaterialCutsCoupleVector.size();
+	/*
+	G4cout << "Region: " << reg->GetName() << "  " << reg
+	       << " Couple " << cutCouple 
+	       << " PAI defined for " << n << " couples"
+	       << " jMat= " << jMat << "  " << mat->GetName()
+	       << G4endl;
+	*/
 	if(cutCouple) {
-	  /*
-	    G4cout << "Reg <" <<curReg->GetName() << ">  mat <" 
-	    << fMaterial->GetName() << ">  fCouple= " 
-	    << fCutCouple << " idx= " << fCutCouple->GetIndex()
-	    <<"  " << p->GetParticleName() <<G4endl;
-	    // G4cout << cuts.size() << G4endl;
-	    */
+	  if(fVerbose > 0) {
+	    G4cout << "Region <" << curReg->GetName() << ">  mat <" 
+		   << mat->GetName() << ">  CoupleIndex= " 
+		   << cutCouple->GetIndex()
+		   << "  " << p->GetParticleName()
+		   << " cutsize= " << cuts.size() << G4endl;
+	  }
 	  // check if this couple is not already initialized
-	  size_t n = fMaterialCutsCoupleVector.size();
+	  G4bool isnew = true;
 	  if(0 < n) {
-	    for(size_t i=0; i<fMaterialCutsCoupleVector.size(); ++i) {
+	    for(size_t i=0; i<n; ++i) {
 	      if(cutCouple == fMaterialCutsCoupleVector[i]) {
+		isnew = false;
 		break;
 	      }
 	    }
 	  }
 	  // initialise data banks
-	  fMaterialCutsCoupleVector.push_back(cutCouple);
-	  G4double deltaCutInKinEnergy = cuts[cutCouple->GetIndex()];
-	  fModelData->Initialise(cutCouple, deltaCutInKinEnergy, this);
+	  //G4cout << "   isNew: " << isnew << "  " << cutCouple << G4endl;
+	  if(isnew) { 
+	    fMaterialCutsCoupleVector.push_back(cutCouple); 
+	    fModelData->Initialise(cutCouple, this);
+	  }
 	}
       }
     }
+    InitialiseElementSelectors(p, cuts);
   }
 }
 
 /////////////////////////////////////////////////////////////////////////
 
-void G4PAIModel::InitialiseLocal(const G4ParticleDefinition*, 
+void G4PAIModel::InitialiseLocal(const G4ParticleDefinition* p, 
 				 G4VEmModel* masterModel)
 {
+  SetParticle(p);
   fModelData = static_cast<G4PAIModel*>(masterModel)->GetPAIModelData();
+  fMaterialCutsCoupleVector = 
+    static_cast<G4PAIModel*>(masterModel)->GetVectorOfCouples();
   SetElementSelectors(masterModel->GetElementSelectors());
 }
 
@@ -186,15 +205,21 @@ G4double G4PAIModel::ComputeDEDXPerVolume(const G4Material*,
 					  const G4ParticleDefinition* p,
 					  G4double kineticEnergy,
 					  G4double cutEnergy)
-{
+{  
+  //G4cout << "===1=== " << CurrentCouple() 
+  //	 << "  idx= " << CurrentCouple()->GetIndex()
+  //	 << "   " <<  fMaterialCutsCoupleVector[0]
+  //	 << G4endl; 
   G4int coupleIndex = FindCoupleIndex(CurrentCouple());
+  //G4cout << "===2=== " << coupleIndex << G4endl;
   if(0 > coupleIndex) { return 0.0; }
 
   G4double cut = std::min(MaxSecondaryEnergy(p, kineticEnergy), cutEnergy);
 
   G4double scaledTkin = kineticEnergy*fRatio;
  
-  return fChargeSquare*fModelData->DEDXPerVolume(coupleIndex, scaledTkin, cut);
+  return fChargeSquare*fModelData->DEDXPerVolume(coupleIndex, scaledTkin, 
+						 cut);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -205,7 +230,12 @@ G4double G4PAIModel::CrossSectionPerVolume( const G4Material*,
 					    G4double cutEnergy,
 					    G4double maxEnergy  ) 
 {
+  //G4cout << "===3=== " << CurrentCouple() 
+  //	 << "  idx= " << CurrentCouple()->GetIndex()
+  //	 << "   " <<  fMaterialCutsCoupleVector[0]
+  //	 << G4endl; 
   G4int coupleIndex = FindCoupleIndex(CurrentCouple());
+  //G4cout << "===4=== " << coupleIndex << G4endl;
   if(0 > coupleIndex) { return 0.0; }
 
   G4double tmax = std::min(MaxSecondaryEnergy(p, kineticEnergy), maxEnergy);
@@ -215,7 +245,8 @@ G4double G4PAIModel::CrossSectionPerVolume( const G4Material*,
 
   return fChargeSquare*fModelData->CrossSectionPerVolume(coupleIndex, 
 							 scaledTkin, 
-							 cutEnergy, tmax);
+							 cutEnergy, 
+							 tmax);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -230,6 +261,8 @@ void G4PAIModel::SampleSecondaries(std::vector<G4DynamicParticle*>* vdp,
 				   G4double maxEnergy)
 {
   G4int coupleIndex = FindCoupleIndex(matCC);
+
+  //G4cout << "G4PAIModel::SampleSecondaries: coupleIndex= "<<coupleIndex<<G4endl;
   if(0 > coupleIndex) { return; }
 
   SetParticle(dp->GetDefinition());
@@ -245,14 +278,15 @@ void G4PAIModel::SampleSecondaries(std::vector<G4DynamicParticle*>* vdp,
   G4double totalMomentum = sqrt(kineticEnergy*(totalEnergy+fMass));
 
   G4double deltaTkin = 
-    fModelData->SamplePostStepTransfer(coupleIndex, scaledTkin);
+    fModelData->SamplePostStepTransfer(coupleIndex, scaledTkin, tmin, tmax);
 
-  // G4cout<<"G4PAIModel::SampleSecondaries; deltaKIn = "<<deltaTkin/keV
-  // <<" keV "<<G4endl;
+  //G4cout<<"G4PAIModel::SampleSecondaries; deltaKIn = "<<deltaTkin/keV
+  //	<<" keV "<< " Escaled(MeV)= " << scaledTkin << G4endl;
 
-  if( deltaTkin <= 0. && fVerbose > 0) 
-  {
-    G4cout<<"G4PAIModel::SampleSecondary e- deltaTkin = "<<deltaTkin<<G4endl;
+  if( !(deltaTkin <= 0.) && !(deltaTkin > 0)) {
+    G4cout<<"G4PAIModel::SampleSecondaries; deltaKIn = "<<deltaTkin/keV
+	  <<" keV "<< " Escaled(MeV)= " << scaledTkin << G4endl;
+    return;
   }
   if( deltaTkin <= 0.) { return; }
 
@@ -280,7 +314,7 @@ void G4PAIModel::SampleSecondaries(std::vector<G4DynamicParticle*>* vdp,
 
 G4double G4PAIModel::SampleFluctuations( const G4MaterialCutsCouple* matCC,
                                          const G4DynamicParticle* aParticle,
-					 G4double, G4double step,
+					 G4double tmax, G4double step,
 					 G4double eloss)
 {
   G4int coupleIndex = FindCoupleIndex(matCC);
@@ -298,7 +332,7 @@ G4double G4PAIModel::SampleFluctuations( const G4MaterialCutsCouple* matCC,
   G4double scaledTkin = Tkin*fRatio;
 
   G4double loss = fModelData->SampleAlongStepTransfer(coupleIndex, Tkin,
-						      scaledTkin,
+						      scaledTkin, tmax,
 						      step*fChargeSquare);
   
   // G4cout<<"PAIModel AlongStepLoss = "<<loss/keV<<" keV, on step = "
@@ -328,18 +362,6 @@ G4double G4PAIModel::Dispersion( const G4Material* material,
                  * electronDensity * q * q;
 
   return siga;
-  /*
-  G4double loss, sumLoss=0., sumLoss2=0., sigma2, meanLoss=0.;
-  for(G4int i = 0; i < fMeanNumber; i++)
-  {
-    loss      = SampleFluctuations(material,aParticle,tmax,step,meanLoss);
-    sumLoss  += loss;
-    sumLoss2 += loss*loss;
-  }
-  meanLoss = sumLoss/fMeanNumber;
-  sigma2   = meanLoss*meanLoss + (sumLoss2-2*sumLoss*meanLoss)/fMeanNumber;
-  return sigma2;
-  */
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -366,6 +388,5 @@ void G4PAIModel::DefineForRegion(const G4Region* r)
   fPAIRegionVector.push_back(r);
 }
 
-//
-//
-/////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+

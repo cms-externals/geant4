@@ -32,6 +32,7 @@
 #include "G4HumanPhantomAnalysisManager.hh"
 
 class G4HumanPhantomAnalysisManager;
+class G4GeneralParticleSource;
 
 class G4HumanPhantomActionInitialization: public G4VUserActionInitialization
 {

@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4AntiSigmabZero.cc 79334 2014-02-24 10:53:32Z gcosmo $
+// $Id: G4AntiSigmabZero.cc 67971 2013-03-13 10:13:24Z gcosmo $
 //
 // 
 // ----------------------------------------------------------------------
@@ -75,7 +75,7 @@ G4AntiSigmabZero* G4AntiSigmabZero::Definition()
                     2,               0,             0,
              "baryon",               0,            -1,       -5212,
                 false,          0.0*ns,          NULL,
-                false,       "anti_sigma_b");
+                false,       "sigma_b");
 
  //create Decay Table
   G4DecayTable* table = new G4DecayTable();

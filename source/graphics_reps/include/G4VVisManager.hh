@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4VVisManager.hh 79152 2014-02-19 15:22:08Z gcosmo $
+// $Id: G4VVisManager.hh 78306 2013-12-11 10:53:30Z gcosmo $
 // John Allison 19/Oct/1996.
 // 
 // Class Description:
