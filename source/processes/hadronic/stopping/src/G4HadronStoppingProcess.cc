@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4HadronStoppingProcess.cc 66367 2012-12-18 09:18:08Z gcosmo $
+// $Id: G4HadronStoppingProcess.cc 88553 2015-02-26 10:12:11Z gcosmo $
 //
 //---------------------------------------------------------------------
 //
@@ -44,6 +44,7 @@
 //  20120914  M. Kelsey -- Pass subType in base ctor, remove enable flags
 //  20121004  K. Genser -- use G4HadronicProcessType in the constructor
 //  20121016  K. Genser -- Reverting to use one argument c'tor
+//  20140818  K. Genser -- Labeled tracks using G4PhysicsModelCatalog
 //
 //------------------------------------------------------------------------
 
@@ -57,19 +58,20 @@
 #include "G4HadSecondary.hh"
 #include "G4Material.hh"
 #include "G4Element.hh"
+#include "G4RandomDirection.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 G4HadronStoppingProcess::G4HadronStoppingProcess(const G4String& name)
-  : G4HadronicProcess(name, fHadronAtRest)
+    : G4HadronicProcess(name, fHadronAtRest),
+      fElementSelector(new G4ElementSelector()),
+      fEmCascade(new G4EmCaptureCascade()),  // Owned by InteractionRegistry
+      fBoundDecay(0)
 {
   // Modify G4VProcess flags to emulate G4VRest instead of G4VDiscrete
   enableAtRestDoIt = true;
   enablePostStepDoIt = false;
 
-  fElementSelector = new G4ElementSelector();
-  fEmCascade = new G4EmCaptureCascade();	// Owned by InteractionRegistry
-  fBoundDecay = 0;
   G4HadronicProcessStore::Instance()->RegisterExtraProcess(this);
 }
 
@@ -91,9 +93,10 @@ G4bool G4HadronStoppingProcess::IsApplicable(const G4ParticleDefinition& p)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-void G4HadronStoppingProcess::PreparePhysicsTable(const G4ParticleDefinition& p)
+void 
+G4HadronStoppingProcess::PreparePhysicsTable(const G4ParticleDefinition& p)
 {
-  G4HadronicProcessStore::Instance()->RegisterParticleForExtraProcess(this, &p);
+  G4HadronicProcessStore::Instance()->RegisterParticleForExtraProcess(this,&p);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -134,6 +137,7 @@ G4VParticleChange* G4HadronStoppingProcess::AtRestDoIt(const G4Track& track,
 
   G4HadFinalState* result = 0;
   thePro.Initialise(track);
+  thePro.SetGlobalTime(0.0);
   G4double time0 = track.GetGlobalTime();
   G4bool nuclearCapture = true;
 
@@ -145,6 +149,7 @@ G4VParticleChange* G4HadronStoppingProcess::AtRestDoIt(const G4Track& track,
   G4double ebound = result->GetLocalEnergyDeposit(); 
   G4double edep = 0.0; 
   G4int nSecondaries = result->GetNumberOfSecondaries();
+  //G4int nEmCascadeSec = nSecondaries;
 
   // Try decay from bound level 
   // For mu- the time of projectile should be changed.
@@ -168,6 +173,10 @@ G4VParticleChange* G4HadronStoppingProcess::AtRestDoIt(const G4Track& track,
 
   if(nuclearCapture) {
 
+    // delay of capture
+    G4double capTime = thePro.GetGlobalTime();
+    thePro.SetGlobalTime(0.0);
+ 
     // select model
     G4HadronicInteraction* model = 0;
     try {
@@ -224,7 +233,22 @@ G4VParticleChange* G4HadronStoppingProcess::AtRestDoIt(const G4Track& track,
     while(!resultNuc);
 
     edep = resultNuc->GetLocalEnergyDeposit();
-    nSecondaries += resultNuc->GetNumberOfSecondaries();
+    size_t nnuc = resultNuc->GetNumberOfSecondaries();
+
+    // add delay time of capture
+    if(0 < nnuc) {
+      G4ThreeVector dir0 = G4RandomDirection();
+      for(size_t i=0; i<nnuc; ++i) { 
+	G4HadSecondary* sec = resultNuc->GetSecondary(i);
+        G4DynamicParticle* dp = sec->GetParticle();
+        G4ThreeVector dir = dp->GetMomentumDirection();
+        dir.rotateUz(dir0);
+        dp->SetMomentumDirection(dir);
+	sec->SetTime(capTime + sec->GetTime());
+      }
+    }
+
+    nSecondaries += nnuc;
     result->AddSecondaries(resultNuc); 
     resultNuc->Clear();
   }
@@ -249,6 +273,7 @@ G4VParticleChange* G4HadronStoppingProcess::AtRestDoIt(const G4Track& track,
 			     time, 
 			     track.GetPosition());
     t->SetWeight(w*sec->GetWeight());
+
     t->SetTouchableHandle(track.GetTouchableHandle());
     theTotalResult->AddSecondary(t);
   }
