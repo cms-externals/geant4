@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4FTFModel.cc 94688 2015-12-02 17:15:08Z gunter $
+// $Id: G4FTFModel.cc 97243 2016-05-30 13:26:49Z ribon $
 // GEANT4 tag $Name:  $
 //
 
@@ -1101,10 +1101,11 @@ G4bool G4FTFModel::AdjustNucleons( G4VSplitableHadron* SelectedAntiBaryon,
     G4int TResidualMassNumber = TargetResidualMassNumber - 1;
     G4int TResidualCharge = TargetResidualCharge - 
                             G4int( TargetNucleon->GetDefinition()->GetPDGCharge() );
-//Uzhi    G4double TResidualExcitationEnergy = TargetResidualExcitationEnergy + 
-//                                         ExcitationEnergyPerWoundedNucleon;
-    G4double TResidualExcitationEnergy = TargetResidualExcitationEnergy -        // Uzhi April 2015
-                                         ExcitationEnergyPerWoundedNucleon*G4Log( G4UniformRand());
+    //AR-30May2016 : brought back residual excitation energy as it was in G4 10.1
+    G4double TResidualExcitationEnergy = TargetResidualExcitationEnergy + 
+                                         ExcitationEnergyPerWoundedNucleon;
+    //AR-30May2016  G4double TResidualExcitationEnergy = TargetResidualExcitationEnergy -        // Uzhi April 2015
+    //AR-30May2016                                       ExcitationEnergyPerWoundedNucleon*G4Log( G4UniformRand());
     if ( TResidualMassNumber <= 1 ) {
       TResidualExcitationEnergy = 0.0;
     }
