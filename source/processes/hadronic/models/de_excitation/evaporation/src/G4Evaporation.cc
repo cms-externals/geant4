@@ -73,7 +73,7 @@ G4Evaporation::G4Evaporation()
   else     { gammaEvap = new G4PhotonEvaporation(); }
   SetPhotonEvaporation(gammaEvap);
 
-  theChannelFactory = new G4EvaporationDefaultGEMFactory(thePhotonEvaporation);
+  theChannelFactory = new G4EvaporationFactory(thePhotonEvaporation);
   SetParameters();
   InitialiseEvaporation();
   theTableOfIons = G4ParticleTable::GetParticleTable()->GetIonTable();
@@ -86,7 +86,7 @@ G4Evaporation::G4Evaporation(G4VEvaporationChannel* photoEvaporation)
   else                 { SetPhotonEvaporation(new G4PhotonEvaporation()); }
 
   thePool = G4FermiFragmentsPool::Instance();
-  theChannelFactory = new G4EvaporationDefaultGEMFactory(thePhotonEvaporation);
+  theChannelFactory = new G4EvaporationFactory(thePhotonEvaporation);
   SetParameters();
   InitialiseEvaporation();
   theTableOfIons = G4ParticleTable::GetParticleTable()->GetIonTable();

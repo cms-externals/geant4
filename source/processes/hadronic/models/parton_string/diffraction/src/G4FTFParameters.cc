@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4FTFParameters.cc 91775 2015-08-05 14:42:39Z gcosmo $
+// $Id: G4FTFParameters.cc 98293 2016-07-05 09:16:06Z vnivanch $
 // GEANT4 tag $Name:  $
 //
 
@@ -670,24 +670,26 @@ G4FTFParameters::G4FTFParameters( const G4ParticleDefinition* particle,
  // Set parameters of nuclear destruction
  if ( ProjectileabsPDGcode < 1000 ) {  // Meson projectile
    SetMaxNumberOfCollisions( Plab, 2.0 );  //  3.0 )
-   SetCofNuclearDestruction( 0.00481*G4double(NumberOfTargetNucleons)*             // Uzhi 3.05.2015
+   //AR-18May2016  SetCofNuclearDestruction( 0.00481*G4double(NumberOfTargetNucleons)*             // Uzhi 3.05.2015
+   SetCofNuclearDestruction( 1.0*                                                                  // AR-18May2016
            G4Exp( 4.0*(Ylab - 2.1) )/( 1.0 + G4Exp( 4.0*(Ylab - 2.1) ) ) );
    SetR2ofNuclearDestruction( 1.5*fermi*fermi );
    SetDofNuclearDestruction( 0.3 );
    SetPt2ofNuclearDestruction( ( 0.035 + 0.04*G4Exp( 4.0*(Ylab - 2.5) )/
                                          ( 1.0 + G4Exp( 4.0*(Ylab - 2.5) ) ) )*GeV*GeV );
    SetMaxPt2ofNuclearDestruction( 1.0*GeV*GeV );
-   SetExcitationEnergyPerWoundedNucleon( 40.0*MeV ); // Uzhi March 2015: 100 -> 40
+   SetExcitationEnergyPerWoundedNucleon( 100.0*MeV );  //AR-30May2016 : Set back 100.0 (instead of 40.0)
  } else if ( ProjectilePDGcode < -1000 ) {  // for anti-baryon projectile
    SetMaxNumberOfCollisions( Plab, 2.0 );  // 3.0 )
-   SetCofNuclearDestruction( 0.00481*G4double(NumberOfTargetNucleons)*             // Uzhi 3.05.2015
+   //AR-18May2016  SetCofNuclearDestruction( 0.00481*G4double(NumberOfTargetNucleons)*             // Uzhi 3.05.2015
+   SetCofNuclearDestruction( 1.0*                                                                  // AR-18May2016
            G4Exp( 4.0*(Ylab - 2.1) )/( 1.0 + G4Exp( 4.0*(Ylab - 2.1) ) ) );
    SetR2ofNuclearDestruction( 1.5*fermi*fermi );
    SetDofNuclearDestruction( 0.3 );
    SetPt2ofNuclearDestruction( ( 0.035 + 0.04*G4Exp( 4.0*(Ylab - 2.5) )/
                                          ( 1.0 + G4Exp( 4.0*(Ylab - 2.5) ) ) )*GeV*GeV );
    SetMaxPt2ofNuclearDestruction( 1.0*GeV*GeV );
-   SetExcitationEnergyPerWoundedNucleon( 40.0*MeV ); // Uzhi March 2015: 100 -> 20
+   SetExcitationEnergyPerWoundedNucleon( 100.0*MeV );  //AR-30May2016 : Set back 100.0 (instead of 40.0)
    if ( Plab < 2.0 ) {  // 2 GeV/c
      // For slow anti-baryon we have to garanty putting on mass-shell
      SetCofNuclearDestruction( 0.0 );
@@ -699,16 +701,18 @@ G4FTFParameters::G4FTFParameters( const G4ParticleDefinition* particle,
    }
  } else {  // Projectile baryon assumed
    SetMaxNumberOfCollisions( Plab, 2.0 ); // 3.0 )
-   SetCofNuclearDestructionPr( 0.00481*G4double(AbsProjectileBaryonNumber)*           // Uzhi 3.05.2015
+   //AR-18May2016  SetCofNuclearDestructionPr( 0.00481*G4double(AbsProjectileBaryonNumber)*           // Uzhi 3.05.2015
+   SetCofNuclearDestructionPr( 1.0*                                                                   // AR-18May2016  
            G4Exp( 4.0*(Ylab - 2.1) )/( 1.0 + G4Exp( 4.0*(Ylab - 2.1) ) ) );
-   SetCofNuclearDestruction(   0.00481*G4double(NumberOfTargetNucleons)*             // Uzhi 3.05.2015
+   //AR-18May2016  SetCofNuclearDestruction(   0.00481*G4double(NumberOfTargetNucleons)*             // Uzhi 3.05.2015
+   SetCofNuclearDestruction(   1.0*                                                                  // AR-18May2016
            G4Exp( 4.0*(Ylab - 2.1) )/( 1.0 + G4Exp( 4.0*(Ylab - 2.1) ) ) );
    SetR2ofNuclearDestruction( 1.5*fermi*fermi );
    SetDofNuclearDestruction( 0.3 );
    SetPt2ofNuclearDestruction( ( 0.035 + 0.04*G4Exp( 4.0*(Ylab - 2.5) )/
                                          ( 1.0 + G4Exp( 4.0*(Ylab - 2.5) ) ) )*GeV*GeV );
    SetMaxPt2ofNuclearDestruction( 1.0*GeV*GeV );
-   SetExcitationEnergyPerWoundedNucleon( 40.0*MeV ); // Uzhi March 2015: 100 -> 40
+   SetExcitationEnergyPerWoundedNucleon( 100.0*MeV );  //AR-30May2016 : Set back 100.0 (instead of 40.0)
  }
 
  //SetCofNuclearDestruction( 0.47*G4Exp( 2.0*(Ylab - 2.5) )/( 1.0 + G4Exp( 2.0*(Ylab - 2.5) ) ) ); 
