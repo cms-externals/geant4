@@ -13,7 +13,7 @@
     #include <atomic>
     #define CLHEP_ATOMIC_INT_TYPE std::atomic<int>
   #elif __clang__
-    #if __has_feature(c_atomic)
+    #if __has_include(<atomic>)
       #include <atomic>
       #define CLHEP_ATOMIC_INT_TYPE std::atomic<int>
     #else
