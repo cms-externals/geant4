@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4FTFModel.cc 98293 2016-07-05 09:16:06Z vnivanch $
+// $Id: G4FTFModel.cc 97243 2016-05-30 13:26:49Z ribon $
 // GEANT4 tag $Name:  $
 //
 
@@ -246,7 +246,6 @@ void G4FTFModel::Init( const G4Nucleus& aNucleus, const G4DynamicParticle& aProj
 
   // Init target nucleus
   theParticipants.Init( aNucleus.GetA_asInt(), aNucleus.GetZ_asInt() );
-//theParticipants.Init( aNucleus.GetA_asInt(), 0 ); //For h+neutron // Uzhi March 2016
 
   if ( theParameters != 0 ) delete theParameters;
   theParameters = new G4FTFParameters( theProjectile.GetDefinition(), aNucleus.GetA_asInt(),
@@ -262,8 +261,8 @@ void G4FTFModel::Init( const G4Nucleus& aNucleus, const G4DynamicParticle& aProj
   G4cout << "FTF end of Init" << G4endl << G4endl;
   #endif
 
-//  if ( (std::abs( theProjectile.GetDefinition()->GetBaryonNumber() ) <= 1 ) &&        // Uzhi 29.05.2015
-//       (aNucleus.GetA_asInt() < 2) ) theParameters->SetProbabilityOfElasticScatt(0.);
+  if ( (std::abs( theProjectile.GetDefinition()->GetBaryonNumber() ) <= 1 ) &&        // Uzhi 29.05.2015
+       (aNucleus.GetA_asInt() < 2) ) theParameters->SetProbabilityOfElasticScatt(0.);
 
 }
 
@@ -426,6 +425,8 @@ void G4FTFModel::StoreInvolvedNucleon() {
 void G4FTFModel::ReggeonCascade() { 
   // Implementation of the reggeon theory inspired model
 
+//  G4double ExcitationE = theParameters->GetExcitationEnergyPerWoundedNucleon(); // Uzhi May 2015
+
   #ifdef debugReggeonCascade
   G4cout << "G4FTFModel::ReggeonCascade -----------" << G4endl
          << "theProjectile.GetTotalMomentum() " << theProjectile.GetTotalMomentum() << G4endl
@@ -438,6 +439,7 @@ void G4FTFModel::ReggeonCascade() {
   // Reggeon cascading in target nucleus
   for ( G4int InvTN = 0; InvTN < InitNINt; InvTN++ ) { 
     G4Nucleon* aTargetNucleon = TheInvolvedNucleonsOfTarget[ InvTN ];
+//    aTargetNucleon->SetBindingEnergy( ExcitationE ); // Uzhi April 2015
 
     G4double CreationTime = aTargetNucleon->GetSplitableHadron()->GetTimeOfCreation();
 
@@ -484,6 +486,7 @@ void G4FTFModel::ReggeonCascade() {
 //  for ( G4int InvPN = 0; InvPN < NumberOfInvolvedNucleonsOfProjectile; InvPN++ ) { 
   for ( G4int InvPN = 0; InvPN < InitNINp; InvPN++ ) { 
     G4Nucleon* aProjectileNucleon = TheInvolvedNucleonsOfProjectile[ InvPN ];
+//    aProjectileNucleon->SetBindingEnergy( ExcitationE );                   // Uzhi May 2015
 
     G4double CreationTime = aProjectileNucleon->GetSplitableHadron()->GetTimeOfCreation();
 
@@ -499,7 +502,7 @@ void G4FTFModel::ReggeonCascade() {
         G4double impact2= sqr( XofWoundedNucleon - Neighbour->GetPosition().x() ) +
                           sqr( YofWoundedNucleon - Neighbour->GetPosition().y() );
 
-        if ( G4UniformRand() < theParameters->GetCofNuclearDestructionPr() * 
+        if ( G4UniformRand() < theParameters->GetCofNuclearDestructionPr() *         // Uzhi May 2015
                                G4Exp( -impact2 / theParameters->GetR2ofNuclearDestruction() )
            ) {
           // The neighbour nucleon is involved in the reggeon cascade
@@ -511,7 +514,7 @@ void G4FTFModel::ReggeonCascade() {
 
           Neighbour->Hit( projectileSplitable );
           projectileSplitable->SetTimeOfCreation( CreationTime );
-          projectileSplitable->SetStatus( 3 );
+          projectileSplitable->SetStatus( 3 );                   // 2->3  Uzhi Oct 2014
         }
       }
     }
@@ -905,7 +908,6 @@ G4bool G4FTFModel::ExciteParticipants() {
           if ( ! Result ) continue;
         } 
         if ( G4UniformRand() < 
-             ( 1.0 - target->GetSoftCollisionCount()     / MaxNumOfInelCollisions )  *  // Uzhi March 2015
              ( 1.0 - projectile->GetSoftCollisionCount() / MaxNumOfInelCollisions ) ) {
           //if ( ! HighEnergyInter ) {
           //  G4bool Annihilation = false;
@@ -953,7 +955,7 @@ G4bool G4FTFModel::ExciteParticipants() {
         #ifdef debugBuildString
         G4cout << "Annihilation" << G4endl;
         #endif
-// //  Uzhi March 2016       
+       
         // Skipping possible interactions of the annihilated nucleons 
         while ( theParticipants.Next() ) {   /* Loop checking, 10.08.2015, A.Ribon */  
           G4InteractionContent& acollision = theParticipants.GetInteraction();
@@ -963,7 +965,7 @@ G4bool G4FTFModel::ExciteParticipants() {
             acollision.SetStatus( 0 );
           }
         }
-// // Uzhi March 2016
+
         // Return to the annihilation
         theParticipants.StartLoop(); 
         for ( G4int I = 0; I < CurrentInteraction; I++ ) theParticipants.Next();
@@ -987,19 +989,6 @@ G4bool G4FTFModel::ExciteParticipants() {
           #endif
 
           if ( AdditionalString != 0 ) theAdditionalString.push_back( AdditionalString );
-/* Uzhi March 2016
-if(target->GetStatus() == 4){
-        // Skipping possible interactions of the annihilated nucleons 
-        while ( theParticipants.Next() ) {    
-          G4InteractionContent& acollision = theParticipants.GetInteraction();
-          G4VSplitableHadron* NextProjectileNucleon = acollision.GetProjectile();
-          G4VSplitableHadron* NextTargetNucleon = acollision.GetTarget();
-          if ( target == NextTargetNucleon ) {acollision.SetStatus( 0 );}
-        }
-}
-        theParticipants.StartLoop(); 
-        for ( G4int I = 0; I < CurrentInteraction; I++ ) theParticipants.Next();
-*/ //Uzhi March 2016
         }
       } 
     }
@@ -1112,13 +1101,11 @@ G4bool G4FTFModel::AdjustNucleons( G4VSplitableHadron* SelectedAntiBaryon,
     G4int TResidualMassNumber = TargetResidualMassNumber - 1;
     G4int TResidualCharge = TargetResidualCharge - 
                             G4int( TargetNucleon->GetDefinition()->GetPDGCharge() );
-
     //AR-30May2016 : brought back residual excitation energy as it was in G4 10.1
     G4double TResidualExcitationEnergy = TargetResidualExcitationEnergy + 
                                          ExcitationEnergyPerWoundedNucleon;
-    //AR-30May2016  G4double TResidualExcitationEnergy = TargetResidualExcitationEnergy - 
-    //AR-30May2016   ExcitationEnergyPerWoundedNucleon*G4Log( G4UniformRand());
-
+    //AR-30May2016  G4double TResidualExcitationEnergy = TargetResidualExcitationEnergy -        // Uzhi April 2015
+    //AR-30May2016                                       ExcitationEnergyPerWoundedNucleon*G4Log( G4UniformRand());
     if ( TResidualMassNumber <= 1 ) {
       TResidualExcitationEnergy = 0.0;
     }
@@ -2957,8 +2944,9 @@ ComputeNucleusProperties( G4V3DNucleus* nucleus,               // input paramete
                               +  aNucleon->Get4Momentum().perp2() );                     
       sumMasses += 20.0*MeV;  // Separation energy for a nucleon
 
+//      residualExcitationEnergy += ExcitationEnergyPerWoundedNucleon;                   // Uzhi April 2015
       residualExcitationEnergy += -ExcitationEnergyPerWoundedNucleon*
-                                   G4Log( G4UniformRand());
+                                   G4Log( G4UniformRand());                           // Uzhi April 2015
       residualMassNumber--;
       // The absolute value below is needed only in the case of anti-nucleus.
       residualCharge -= std::abs( G4int( aNucleon->GetDefinition()->GetPDGCharge() ) );
@@ -2983,7 +2971,6 @@ ComputeNucleusProperties( G4V3DNucleus* nucleus,               // input paramete
     if ( residualMassNumber == 1 ) {
       residualExcitationEnergy = 0.0;
     }
-    residualMass += residualExcitationEnergy;       // Uzhi March 2016 ????
   }
   sumMasses += std::sqrt( sqr( residualMass ) + residualMomentum.perp2() );
   return true;
@@ -3016,7 +3003,7 @@ GenerateDeltaIsobar( const G4double sqrtS,                  // input parameter
 
   //const G4double ProbDeltaIsobar = 0.05;  // Uzhi 6.07.2012
   //const G4double ProbDeltaIsobar = 0.25;  // Uzhi 13.06.2013 
-  const G4double probDeltaIsobar = 0.05;  // A.R. 07.08.2013 0.10 -> 0.05 Uzhi March 2016
+  const G4double probDeltaIsobar = 0.10;  // A.R. 07.08.2013
 
   G4int maxNumberOfDeltas = G4int( (sqrtS - sumMasses)/(400.0*MeV) );
   G4int numberOfDeltas = 0;
@@ -3046,7 +3033,7 @@ GenerateDeltaIsobar( const G4double sqrtS,                  // input parameter
         splitableHadron->SetDefinition( old_def );
         break;
       } else {  // Change is accepted
-        sumMasses += ( massDelta - massNuc );        // Uzhi March 2016 ???
+        sumMasses += ( massDelta - massNuc );
       }
     } 
   }
@@ -3090,67 +3077,35 @@ SamplingNucleonKinematics( G4double averagePt2,                   // input param
   G4bool success = true;                            
 
   G4double SumMasses = residualMass; 
-/*                                                         // Uzhi March 2016 ???
   for ( G4int i = 0; i < numberOfInvolvedNucleons; i++ ) {
     G4Nucleon* aNucleon = involvedNucleons[i];
     if ( ! aNucleon ) continue;
     SumMasses += aNucleon->GetSplitableHadron()->GetDefinition()->GetPDGMass();
   }
-*/
+
   const G4int maxNumberOfLoops = 1000;
   G4int loopCounter = 0;
   do {  // while ( ! success )
 
     success = true;
-//======================================= Sampling of nucleon Pt ===============
     G4ThreeVector ptSum( 0.0, 0.0, 0.0 );
+    G4double xSum = 0.0;
 
     for ( G4int i = 0; i < numberOfInvolvedNucleons; i++ ) {
       G4Nucleon* aNucleon = involvedNucleons[i];
       if ( ! aNucleon ) continue;
       G4ThreeVector tmpPt = GaussianPt( averagePt2, maxPt2 );
       ptSum += tmpPt;
-// Uzhi 2016
-      G4LorentzVector tmp( tmpPt.x(), tmpPt.y(), 0., 0.);
-      aNucleon->SetMomentum( tmp );
-    }
-
-    G4double deltaPx = ( ptSum.x() - pResidual.x() ) / numberOfInvolvedNucleons;
-    G4double deltaPy = ( ptSum.y() - pResidual.y() ) / numberOfInvolvedNucleons;
-
-    SumMasses = residualMass;
-    for ( G4int i = 0; i < numberOfInvolvedNucleons; i++ ) {
-      G4Nucleon* aNucleon = involvedNucleons[i];
-      if ( ! aNucleon ) continue;
-      G4double px = aNucleon->Get4Momentum().px() - deltaPx;
-      G4double py = aNucleon->Get4Momentum().py() - deltaPy;
-      G4double MtN = std::sqrt( sqr( aNucleon->GetSplitableHadron()->GetDefinition()->GetPDGMass() )
-                              + sqr( px ) + sqr( py ) );
-      SumMasses += MtN;
-      G4LorentzVector tmp( px, py, 0., MtN);
-      aNucleon->SetMomentum( tmp );
-    }
-//======================================== Sampling X of nucleon ===============
-    G4double xSum = 0.0;
-
-    for ( G4int i = 0; i < numberOfInvolvedNucleons; i++ ) {
-      G4Nucleon* aNucleon = involvedNucleons[i];
-      if ( ! aNucleon ) continue;
-
-// Uzhi 2016
       G4ThreeVector tmpX = GaussianPt( dCor*dCor, 1.0 );
-//      G4double x = tmpX.x() +                                 // Uzhi 2016
-//                   aNucleon->GetSplitableHadron()->GetDefinition()->GetPDGMass()/SumMasses;
-      G4double x = tmpX.x() + aNucleon->Get4Momentum().e()/SumMasses;
+      G4double x = tmpX.x() +
+                   aNucleon->GetSplitableHadron()->GetDefinition()->GetPDGMass()/SumMasses;
       if ( x < 0.0  ||  x > 1.0 ) { 
         success = false; 
         break;
       }
       xSum += x;
       //AR The energy is in the lab (instead of cms) frame but it will not be used.
-//      G4LorentzVector tmp( tmpPt.x(), tmpPt.y(), x, aNucleon->Get4Momentum().e() ); // Uzhi
-      G4LorentzVector tmp( aNucleon->Get4Momentum().x(), aNucleon->Get4Momentum().y(), 
-                                    x, aNucleon->Get4Momentum().e() );
+      G4LorentzVector tmp( tmpPt.x(), tmpPt.y(), x, aNucleon->Get4Momentum().e() );
       aNucleon->SetMomentum( tmp );
     }
 
@@ -3158,8 +3113,8 @@ SamplingNucleonKinematics( G4double averagePt2,                   // input param
 
     if ( ! success ) continue;
 
-//    G4double deltaPx = ( ptSum.x() - pResidual.x() ) / numberOfInvolvedNucleons;  // Uzhi 2016
-//    G4double deltaPy = ( ptSum.y() - pResidual.y() ) / numberOfInvolvedNucleons;
+    G4double deltaPx = ( ptSum.x() - pResidual.x() ) / numberOfInvolvedNucleons;
+    G4double deltaPy = ( ptSum.y() - pResidual.y() ) / numberOfInvolvedNucleons;
     G4double delta = 0.0;
     if ( residualMassNumber == 0 ) {
       delta = ( xSum - 1.0 ) / numberOfInvolvedNucleons;
@@ -3185,23 +3140,16 @@ SamplingNucleonKinematics( G4double averagePt2,                   // input param
           break;
         }
       }                                          
-/*                                                            // Uzhi 2016
       G4double px = aNucleon->Get4Momentum().px() - deltaPx;
       G4double py = aNucleon->Get4Momentum().py() - deltaPy;
       mass2 += ( sqr( aNucleon->GetSplitableHadron()->GetDefinition()->GetPDGMass() )
                     + sqr( px ) + sqr( py ) ) / x;
       G4LorentzVector tmp( px, py, x, aNucleon->Get4Momentum().e() );
-*/
-      mass2 += sqr( aNucleon->Get4Momentum().e() ) / x;
-      G4LorentzVector tmp( aNucleon->Get4Momentum().px(), aNucleon->Get4Momentum().py(), 
-                                 x, aNucleon->Get4Momentum().e() );
       aNucleon->SetMomentum( tmp );
     }
-    if ( ! success ) continue;
-//=======================================================
+
     if ( success  &&  residualMassNumber != 0 ) {
-//      mass2 += ( sqr( residualMass ) + pResidual.perp2() ) / xSum;      // Uzhi 2016
-      mass2 += sqr( residualMass ) / xSum;
+      mass2 += ( sqr( residualMass ) + pResidual.perp2() ) / xSum;
     }
 
     #ifdef debugPutOnMassShell
