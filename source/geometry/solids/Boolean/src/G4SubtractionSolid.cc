@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4SubtractionSolid.cc 95422 2016-02-10 14:35:47Z gcosmo $
+// $Id: G4SubtractionSolid.cc 98913 2016-08-17 15:16:56Z gcosmo $
 //
 // Implementation of methods for the class G4IntersectionSolid
 //
@@ -259,7 +259,7 @@ G4double
 G4SubtractionSolid::DistanceToIn(  const G4ThreeVector& p,
                                    const G4ThreeVector& v  ) const 
 {
-  G4double dist = 0.0,disTmp = 0.0 ;
+  G4double dist = 0.0, dist2 = 0.0, disTmp = 0.0;
     
 #ifdef G4BOOLDEBUG
   if( Inside(p) == kInside )
@@ -297,8 +297,10 @@ G4SubtractionSolid::DistanceToIn(  const G4ThreeVector& p,
 
           if( Inside(p+dist*v) == kOutside )
           {
-            disTmp = fPtrSolidB->DistanceToOut(p+dist*v,v) ; 
-            dist += disTmp ;
+            disTmp = fPtrSolidB->DistanceToOut(p+dist*v,v) ;
+            dist2 = dist+disTmp;
+            if (dist == dist2)  { return dist; }   // no progress
+            dist = dist2 ;
             count1++;
             if( count1 > 1000 )  // Infinite loop detected
             {
@@ -352,7 +354,9 @@ G4SubtractionSolid::DistanceToIn(  const G4ThreeVector& p,
             {  
               return kInfinity ;
             }                 
-            dist += disTmp ;
+            dist2 = dist+disTmp;
+            if (dist == dist2)  { return dist; }   // no progress
+            dist = dist2 ;
             count2++;
             if( count2 > 1000 )  // Infinite loop detected
             {
