@@ -121,6 +121,7 @@ G4CutTubs::G4CutTubs( const G4String &pName,
 
   // Check Intersection of Cutted planes. They MUST NOT Intersect
   //
+  /*
   if(IsCrossingCutPlanes())
   {
     std::ostringstream message;
@@ -131,6 +132,7 @@ G4CutTubs::G4CutTubs( const G4String &pName,
     G4Exception("G4CutTubs::G4CutTubs()", "GeomSolids0002",
                 FatalException, message);
   }
+  */
 }
 
 ///////////////////////////////////////////////////////////////////////
