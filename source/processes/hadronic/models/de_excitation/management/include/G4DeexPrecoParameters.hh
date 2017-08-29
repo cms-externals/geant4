@@ -41,7 +41,8 @@ enum G4DeexChannelType
 {
   fEvaporation = 0,
   fGEM,
-  fCombined
+  fCombined,
+  fDummy
 };
 
 class G4StateManager;
@@ -102,9 +103,11 @@ public:
 
   inline G4bool UseAngularGen() const;
 
-  inline G4bool UseFilesNEW() const;
+  inline G4bool PrecoDummy() const;
 
   inline G4bool CorrelatedGamma() const;
+
+  inline G4bool GetInternalConversionFlag() const;
 
   inline G4bool StoreAllLevels() const;
 
@@ -152,20 +155,25 @@ public:
 
   void SetUseAngularGen(G4bool);
 
-  void SetUseFilesNEW(G4bool);
+  void SetPrecoDummy(G4bool);
 
   void SetCorrelatedGamma(G4bool);
 
   void SetStoreAllLevels(G4bool);
 
+  void SetInternalConversionFlag(G4bool);
+
   void SetDeexChannelsType(G4DeexChannelType);
+
+  inline void SetUseFilesNEW(G4bool) {};
 
 private:
 
   G4bool IsLocked() const;
 
   G4DeexPrecoParameters(const G4DeexPrecoParameters & right) = delete;  
-  const G4DeexPrecoParameters& operator=(const G4DeexPrecoParameters &right) = delete;
+  const G4DeexPrecoParameters& operator=
+  (const G4DeexPrecoParameters &right) = delete;
   G4bool operator==(const G4DeexPrecoParameters &right) const = delete;
   G4bool operator!=(const G4DeexPrecoParameters &right) const = delete;
 
@@ -214,11 +222,12 @@ private:
   G4bool fUseGNASH;
   G4bool fUseHETC;
   G4bool fUseAngularGen;
+  G4bool fPrecoDummy;
 
   // Deex flags
-  G4bool fUseLongFiles;
   G4bool fCorrelatedGamma;
   G4bool fStoreAllLevels;
+  G4bool fInternalConversion;
 
   // type of a set of e-exitation channels
   G4DeexChannelType fDeexChannelType;   
@@ -328,9 +337,9 @@ inline G4bool G4DeexPrecoParameters::UseAngularGen() const
   return fUseAngularGen;
 }
 
-inline G4bool G4DeexPrecoParameters::UseFilesNEW() const
+inline G4bool G4DeexPrecoParameters::PrecoDummy() const
 {
-  return fUseLongFiles;
+  return fPrecoDummy;
 }
 
 inline G4bool G4DeexPrecoParameters::CorrelatedGamma() const
@@ -341,6 +350,11 @@ inline G4bool G4DeexPrecoParameters::CorrelatedGamma() const
 inline G4bool G4DeexPrecoParameters::StoreAllLevels() const
 {
   return fStoreAllLevels;
+}
+
+inline G4bool G4DeexPrecoParameters::GetInternalConversionFlag() const
+{
+  return fInternalConversion;
 }
 
 inline G4DeexChannelType G4DeexPrecoParameters::GetDeexChannelsType() const

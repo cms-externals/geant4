@@ -101,29 +101,28 @@ void G4RootNtupleManager::SetCreateMode()
 }
 
 //_____________________________________________________________________________
-void G4RootNtupleManager::CreateTNtuple(
-  G4TNtupleDescription<tools::wroot::ntuple>* ntupleDescription,
-  const G4String& name, const G4String& title)
+void  G4RootNtupleManager::CreateTNtuple(
+  G4TNtupleDescription<tools::wroot::ntuple>* ntupleDescription)
 {
-  // Set create mode if not yet defined
-  SetCreateMode();
-
-  if ( fCreateMode == G4NtupleCreateMode::kNoMergeAfterOpen ) {
-    if ( ! fNtupleDirectory ) {
-      G4String inFunction = "G4RootNtupleManager::::CreateTNtuple";
-      G4ExceptionDescription description;
-      description << "      " 
-        << "Cannot create ntuple. Ntuple directory does not exist." << G4endl;
-      G4Exception(inFunction, "Analysis_W002", JustWarning, description);
-      return;
-    }
-
-    ntupleDescription->fNtuple
-      = new tools::wroot::ntuple(*fNtupleDirectory, name, title);
-    ntupleDescription->fIsNtupleOwner = false;  
-           // ntuple object is deleted automatically when closing a file
-    fNtupleVector.push_back(ntupleDescription->fNtuple);       
+  if ( ! fNtupleDirectory ) {
+    G4String inFunction = "G4RootNtupleManager::::CreateTNtuple";
+    G4ExceptionDescription description;
+    description << "      " 
+      << "Cannot create ntuple. Ntuple directory does not exist." << G4endl;
+    G4Exception(inFunction, "Analysis_W002", JustWarning, description);
+    return;
   }
+  
+  ntupleDescription->fNtuple
+    = new tools::wroot::ntuple(
+            *fNtupleDirectory, ntupleDescription->fNtupleBooking);
+  
+  auto basketSize = fFileManager->GetBasketSize();
+  ntupleDescription->fNtuple->set_basket_size(basketSize);
+  
+  ntupleDescription->fIsNtupleOwner = false;  
+         // ntuple object is deleted automatically when closing a file
+  fNtupleVector.push_back(ntupleDescription->fNtuple);
 }
 
 //_____________________________________________________________________________
@@ -131,28 +130,10 @@ void G4RootNtupleManager::CreateTNtupleFromBooking(
   G4TNtupleDescription<tools::wroot::ntuple>* ntupleDescription)
 {
   if ( fCreateMode == G4NtupleCreateMode::kNoMergeBeforeOpen ) {
-
-    if ( ! fNtupleDirectory ) {
-      G4String inFunction = "G4RootNtupleManager::::CreateTNtuple";
-      G4ExceptionDescription description;
-      description << "      " 
-        << "Cannot create ntuple. Ntuple directory does not exist." << G4endl;
-      G4Exception(inFunction, "Analysis_W002", JustWarning, description);
-      return;
-    }
-    
-    ntupleDescription->fNtuple
-      = new tools::wroot::ntuple(
-              *fNtupleDirectory, ntupleDescription->fNtupleBooking);
-
-    auto basketSize = fFileManager->GetBasketSize();
-    ntupleDescription->fNtuple->set_basket_size(basketSize);
- 
-    ntupleDescription->fIsNtupleOwner = false;  
-           // ntuple object is deleted automatically when closing a file
-    fNtupleVector.push_back(ntupleDescription->fNtuple);
+  
+    CreateTNtuple(ntupleDescription);
   }
-
+  
   if ( fCreateMode == G4NtupleCreateMode::kMainBeforeOpen ) {
     auto counter = 0;
     for ( auto manager : fMainNtupleManagers ) {
@@ -172,6 +153,15 @@ void G4RootNtupleManager::FinishTNtuple(
 {
 // Create main ntuples
 
+  // Set create mode if not yet defined
+  SetCreateMode();
+
+  // Create ntuple if file is open
+  if ( fCreateMode == G4NtupleCreateMode::kNoMergeAfterOpen ) {
+    CreateTNtuple(ntupleDescription);
+  }
+
+  // Create main ntuples if file is open
   if ( fCreateMode == G4NtupleCreateMode::kMainAfterOpen ) {
     auto counter = 0;
     for ( auto manager : fMainNtupleManagers ) {

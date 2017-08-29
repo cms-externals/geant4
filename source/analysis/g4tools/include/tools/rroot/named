@@ -23,9 +23,7 @@ inline bool Object_stream(buffer& a_buffer,uint32& a_id,uint32& a_bits) {
   return true;
 }
 
-inline bool Named_stream(buffer& a_buffer,
-                         std::string& a_name,
-                         std::string& a_title) {
+inline bool Named_stream(buffer& a_buffer,std::string& a_name,std::string& a_title) {
   short v;
   unsigned int s, c;
   if(!a_buffer.read_version(v,s,c)) return false;
@@ -37,10 +35,7 @@ inline bool Named_stream(buffer& a_buffer,
   return true;
 }
 
-inline bool AttLine_stream(buffer& a_buffer,
-                           short& a_color,
-                           short& a_style,
-                           short& a_width){
+inline bool AttLine_stream(buffer& a_buffer,short& a_color,short& a_style,short& a_width){
   short v;
   unsigned int s, c;
   if(!a_buffer.read_version(v,s,c)) return false;
@@ -51,9 +46,7 @@ inline bool AttLine_stream(buffer& a_buffer,
   return true;
 }
 
-inline bool AttFill_stream(buffer& a_buffer,
-                           short& a_color,
-                           short& a_style){
+inline bool AttFill_stream(buffer& a_buffer,short& a_color,short& a_style){
   short v;
   unsigned int s, c;
   if(!a_buffer.read_version(v,s,c)) return false;
@@ -135,6 +128,61 @@ inline bool fixed_array_stream(buffer& a_buffer,int a_n,T*& a_v){
   }
   return true;
 }
+
+class Named : public virtual iro {
+  static const std::string& s_store_class() {
+    static const std::string s_v("TNamed");
+    return s_v;
+  }
+public:
+  static const std::string& s_class() {
+    static const std::string s_v("tools::rroot::Named");
+    return s_v;
+  }
+public: //iro
+  virtual void* cast(const std::string& a_class) const {
+    if(void* p = cmp_cast<Named>(this,a_class)) return p;
+    return 0;
+  }
+  virtual const std::string& s_cls() const {return s_class();}
+public:
+  static cid id_class() {return Named_cid();}
+  virtual void* cast(cid a_class) const {
+    if(void* p = cmp_cast<Named>(this,a_class)) {return p;}
+    else return 0;
+  }
+  //virtual void* cast(cid) const {return Named_cid();}
+public:
+  virtual iro* copy() const {return new Named(*this);}
+  virtual bool stream(buffer& a_buffer) {
+    return Named_stream(a_buffer,m_name,m_title);
+  }
+public:
+  Named() {
+#ifdef TOOLS_MEM
+    mem::increment(s_class().c_str());
+#endif
+  }
+  virtual ~Named() {
+#ifdef TOOLS_MEM
+    mem::decrement(s_class().c_str());
+#endif
+  }
+protected:
+  Named(const Named& a_from):iro(a_from),m_name(a_from.m_name),m_title(a_from.m_title) {
+#ifdef TOOLS_MEM
+    mem::increment(s_class().c_str());
+#endif
+  }
+  Named& operator=(const Named& a_from){
+    m_name = a_from.m_name;
+    m_title = a_from.m_title;
+    return *this;
+  }
+protected:
+  std::string m_name;
+  std::string m_title;
+};
 
 class iros : public virtual iro,public std::vector<iro*> {
   static const std::string& s_store_class() {
@@ -266,7 +314,7 @@ public:
 protected:
   void _clear() {
     if(m_owner) {
-      tools::clear<iro>(*this);
+      safe_clear<iro>(*this);
     } else {
       std::vector<iro*>::clear();
     }
@@ -439,7 +487,7 @@ public:
 protected:
   void _clear() {
     if(m_owner) {
-      tools::clear<T>(*this);
+      safe_clear<T>(*this);
     } else {
       std::vector<T*>::clear();
     }
@@ -548,7 +596,7 @@ protected:
 protected:
   void _clear() {
     if(m_owner) {
-      tools::clear<iro>(*this);
+      safe_clear<iro>(*this);
     } else {
       std::vector<iro*>::clear();
     }
@@ -649,7 +697,7 @@ inline bool pointer_stream(buffer& a_buffer,
 template <class T>
 inline bool pointer_stream(buffer& a_buffer,
                            ifac& a_fac,ifac::args& a_args,
-                           tools::cid a_T_class,
+                           cid a_T_class,
                            T*& a_obj){
   iro* obj;
   if(!a_buffer.read_object(a_fac,a_args,obj)) {

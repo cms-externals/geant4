@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEnergyLossProcess.hh 104349 2017-05-26 07:18:59Z gcosmo $
+// $Id: G4VEnergyLossProcess.hh 105275 2017-07-18 13:21:04Z gcosmo $
 // GEANT4 tag $Name:
 //
 // -------------------------------------------------------------------
@@ -143,7 +143,7 @@ public:
   
   virtual void PrintInfo() = 0;
 
-  virtual void ProcessDescription(std::ostream& outFile) const; // = 0;
+  virtual void ProcessDescription(std::ostream& outFile) const override;
 
 protected:
 

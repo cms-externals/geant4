@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VMultipleScattering.hh 97432 2016-06-03 07:23:39Z gcosmo $
+// $Id: G4VMultipleScattering.hh 105275 2017-07-18 13:21:04Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -106,7 +106,7 @@ public:
 
   virtual void PrintInfo() = 0;
 
-  virtual void ProcessDescription(std::ostream& outFile) const; // = 0;
+  virtual void ProcessDescription(std::ostream& outFile) const override;
 
 protected:
 

@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4VisCommands.hh 66373 2012-12-18 09:41:34Z gcosmo $
+// $Id: G4VisCommands.hh 105349 2017-07-21 12:23:24Z gcosmo $
 
 // /vis/ top level commands - John Allison  5th February 2001
 
@@ -46,6 +46,18 @@ public:
 private:
   G4VisCommandAbortReviewKeptEvents (const G4VisCommandAbortReviewKeptEvents&);
   G4VisCommandAbortReviewKeptEvents& operator = (const G4VisCommandAbortReviewKeptEvents&);
+  G4UIcmdWithABool* fpCommand;
+};
+
+class G4VisCommandDrawOnlyKeptEvents: public G4VVisCommand {
+public:
+  G4VisCommandDrawOnlyKeptEvents ();
+  virtual ~G4VisCommandDrawOnlyKeptEvents ();
+  G4String GetCurrentValue (G4UIcommand* command);
+  void SetNewValue (G4UIcommand* command, G4String newValue);
+private:
+  G4VisCommandDrawOnlyKeptEvents (const G4VisCommandDrawOnlyKeptEvents&);
+  G4VisCommandDrawOnlyKeptEvents& operator = (const G4VisCommandDrawOnlyKeptEvents&);
   G4UIcmdWithABool* fpCommand;
 };
 

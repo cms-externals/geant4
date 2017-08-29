@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PhotonEvaporation.hh 103899 2017-05-03 08:26:53Z gcosmo $
+// $Id: G4PhotonEvaporation.hh 104984 2017-07-03 15:13:37Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -54,11 +54,13 @@
 #include "G4NuclearLevelData.hh"
 #include "G4LevelManager.hh"
 #include "G4Fragment.hh"
+#include "G4Threading.hh"
 
 const G4int MAXDEPOINT = 10;
 const G4int MAXGRDATA  = 300;
 
 class G4GammaTransition;
+class G4NuclearPolarizationStore;
 
 class G4PhotonEvaporation : public G4VEvaporationChannel {
 
@@ -102,6 +104,8 @@ public:
  
 private:
 
+  void InitialiseGRData();
+
   G4Fragment* GenerateGamma(G4Fragment* nucleus);
 
   inline void InitialiseLevelManager(G4int Z, G4int A);
@@ -112,6 +116,11 @@ private:
   G4NuclearLevelData*   fNuclearLevelData;
   const G4LevelManager* fLevelManager;
   G4GammaTransition*    fTransition;
+  G4NuclearPolarizationStore* fNucPStore;
+
+  // fPolarization stores polarization tensor for consecutive
+  // decays of a nucleus 
+  G4NuclearPolarization* fPolarization;
 
   G4int    fVerbose;
   G4int    theZ;
@@ -138,7 +147,12 @@ private:
   G4bool   fICM;
   G4bool   fRDM;
   G4bool   fSampleTime;
+  G4bool   fCorrelatedGamma;
   G4bool   isInitialised;
+
+#ifdef G4MULTITHREADED
+  static G4Mutex PhotonEvaporationMutex;
+#endif
 };
 
 inline void G4PhotonEvaporation::SetVerboseLevel(G4int verbose)

@@ -50,10 +50,6 @@ G4RootMainNtupleManager::~G4RootMainNtupleManager()
 }
 
 //
-// private functions
-//
-
-//
 // protected functions
 //
 

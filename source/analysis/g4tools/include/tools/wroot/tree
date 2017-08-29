@@ -9,6 +9,7 @@
 #include "idir"
 
 #include "branch_element"
+#include "branch_object"
 
 namespace tools {
 namespace wroot {
@@ -82,7 +83,7 @@ public: //itree
   virtual idir& dir() {return m_dir;}
   virtual const idir& dir() const {return m_dir;}
 public:
-  tree(idir& a_dir,const std::string& a_name,const std::string& a_title)
+  tree(idir& a_dir,const std::string& a_name,const std::string& a_title,bool a_managed = true)
   :m_dir(a_dir)
   ,m_out(a_dir.file().out())
   ,m_name(a_name)
@@ -94,7 +95,7 @@ public:
 #ifdef TOOLS_MEM
     mem::increment(s_class().c_str());
 #endif
-    a_dir.append_object(this); //a_dir takes ownership of tree.
+    if(a_managed) a_dir.append_object(this); //a_dir takes ownership of tree.
   }
   virtual ~tree(){
 #ifdef TOOLS_MEM
@@ -131,6 +132,21 @@ public:
     return br;
   }
 
+  template <class TYPE>
+  leaf<TYPE>* create_leaf(const std::string& a_name){
+    branch* br = create_branch(a_name);
+    if(!br) return 0;
+    return br->create_leaf<TYPE>(a_name,a_name);
+  }
+
+  leaf_object* create_leaf(const std::string& a_name,const iobject& a_obj){
+    const ifile& _file = m_dir.file();
+    branch_object* br = new branch_object(m_out,_file.byte_swap(),_file.compression(),
+                                          m_dir.seek_directory(),a_name,m_name,_file.verbose());
+    m_branches.push_back(br);
+    return br->create_leaf(a_name,a_obj);
+  }
+
   bool fill(uint32& a_nbytes) {
     // Fill all branches of a Tree :
     //   This function loops on all the branches of this tree.
@@ -157,6 +173,16 @@ public:
     return true;
   }
 
+  void reset() {
+    // Reset buffers and entries count in all branches/leaves
+    m_entries       = 0;
+    m_tot_bytes     = 0;
+    m_zip_bytes     = 0;
+  //fSavedBytes     = 0;
+  //fTotalBuffers   = 0;
+  //fChainOffset    = 0;
+   {tools_vforcit(branch*,m_branches,it) (*it)->reset();}
+  }
 protected:
   idir& m_dir;
   std::ostream& m_out;

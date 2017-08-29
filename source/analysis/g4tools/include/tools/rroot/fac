@@ -7,6 +7,7 @@
 #include "../sout"
 
 #include "branch_element"
+#include "branch_object"
 #include "leaf"
 #include "basket"
 #include "tree_index"
@@ -31,6 +32,8 @@ public: //ifac
       return new branch(m_out,*this);
     } else if(a_class=="TBranchElement") {
       return new branch_element(m_out,*this);
+    } else if(a_class=="TBranchObject") {
+      return new branch_object(m_out,*this);
 
     } else if(a_class=="TLeafB") {
       return new leaf<char>(m_out,*this);
@@ -56,6 +59,9 @@ public: //ifac
     } else if(a_class=="TLeafElement") {
       return new leaf_element(m_out,*this);
 
+    } else if(a_class=="TLeafObject") {
+      return new leaf_object(m_out,*this);
+
     } else if(a_class=="TBasket") {
       return new basket(m_out);
 
@@ -65,6 +71,8 @@ public: //ifac
 
     } else if(a_class=="TList") {
       return new List(*this,true);
+    } else if(a_class=="TNamed") {
+      return new Named();
 
     } else if(a_class=="vector<unsigned short>") {
       return new stl_vector<unsigned short>();

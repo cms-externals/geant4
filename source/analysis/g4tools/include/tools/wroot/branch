@@ -152,8 +152,7 @@ public:
       fBasketEntry[i] = 0;
       fBasketSeek[i] = 0;
     }}
-    m_baskets[m_write_basket] = new basket(m_out,m_byte_swap,a_seek_directory,
-                                           m_name,m_title,"TBasket",m_basket_size,m_verbose);
+    m_baskets[m_write_basket] = new basket(m_out,m_byte_swap,a_seek_directory,m_name,m_title,"TBasket",m_basket_size,m_verbose);
     fBasketEntry[m_write_basket] = (uint32)m_entry_number;
   }
   virtual ~branch(){
@@ -180,6 +179,9 @@ protected:
   {}
   branch& operator=(const branch&){return *this;}
 public:
+  const std::string& name() const {return m_name;}
+  const std::string& title() const {return m_title;}
+  
   uint64 entries() const {return m_entries;}
 
   uint64 tot_bytes() const {return m_tot_bytes;}
@@ -206,6 +208,39 @@ public:
 
   const std::vector<base_leaf*>& leaves() const {return m_leaves;}
 
+  void reset() {
+    m_baskets.clear_objs();  
+    delete [] fBasketBytes;
+    delete [] fBasketEntry;
+    delete [] fBasketSeek;
+    fBasketBytes = 0;
+    fBasketEntry = 0;
+    fBasketSeek = 0;
+    
+    m_max_baskets = 10;
+
+    m_write_basket = 0;
+    m_entry_number = 0;
+    m_entries = 0;
+    m_tot_bytes = 0;
+    m_zip_bytes = 0;
+  
+    m_baskets.resize(m_max_baskets,0);
+    fBasketBytes = new uint32[m_max_baskets];
+    fBasketEntry = new uint32[m_max_baskets];
+    fBasketSeek = new seek[m_max_baskets];
+   {for(uint32 i=0;i<m_max_baskets;i++) {
+      m_baskets[i] = 0;
+      fBasketBytes[i] = 0;
+      fBasketEntry[i] = 0;
+      fBasketSeek[i] = 0;
+    }}
+    fBasketEntry[m_write_basket] = (uint32)m_entry_number;
+    m_baskets[m_write_basket] = new basket(m_out,m_byte_swap,m_seek_directory,m_name,m_title,"TBasket",m_basket_size,m_verbose);
+
+   {tools_vforit(branch*,m_branches,it) (*it)->reset();}
+  }
+
   bool fill(ifile& a_file,uint32& a_nbytes,uint32& a_add_bytes,uint32& a_nout) {
     a_nbytes = 0;
     a_add_bytes = 0;
@@ -222,15 +257,22 @@ public:
     }
 
     buffer& buf = bk->datbuf();
-    
+
+    buf.reset_objs_map();
+
     uint32 lold = buf.length();
   
     bk->update(bk->key_length()+lold);
     m_entries++;
     m_entry_number++;
   
-    if(!fill_leaves(buf)) return false;
-  
+    if(!fill_leaves(buf)) {
+      m_out << "tools::wroot::branch::fill :"
+            << " fill_leaves() failed."
+            << std::endl;
+      return false;
+    }
+    
     uint32 lnew   = buf.length();
     uint32 nbytes = lnew - lold;
     uint32 nsize  = 0;
@@ -347,7 +389,12 @@ public:
     //m_entries++;      //not used by parallel branches.
     //m_entry_number++; //idem.
 
-    if(!fill_leaves(buf)) return false;
+    if(!fill_leaves(buf)) {
+      m_out << "tools::wroot::branch::parallel_fill :"
+            << " fill_leaves() failed."
+            << std::endl;
+      return false;
+    }
   
     uint32 lnew   = buf.length();
     uint32 nbytes = lnew - lold;
@@ -467,7 +514,9 @@ protected:
   std::string m_title;
 
   bool fAutoDelete;
+private: //be sure that sub branches are not used for the moment.
   ObjArray<branch> m_branches;
+protected:
   ObjArray<base_leaf> m_leaves;
   uint32 fCompress;      //  Compression level and algorithm
   uint32 m_basket_size;  //  Initial Size of Basket Buffer

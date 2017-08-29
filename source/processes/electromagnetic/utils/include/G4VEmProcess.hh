@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEmProcess.hh 95657 2016-02-17 13:03:36Z gcosmo $
+// $Id: G4VEmProcess.hh 105275 2017-07-18 13:21:04Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -107,7 +107,7 @@ public:
 
   virtual void PrintInfo() = 0;
 
-  virtual void ProcessDescription(std::ostream& outFile) const; // = 0;
+  virtual void ProcessDescription(std::ostream& outFile) const override;
 
 protected:
 

@@ -66,13 +66,13 @@ G4DNAEmfietzoglouIonisationModel::G4DNAEmfietzoglouIonisationModel(const G4Parti
     G4cout << "Emfietzoglou ionisation model is constructed " << G4endl;
   }
 
-  //Mark this model as "applicable" for atomic deexcitation
+  // Mark this model as "applicable" for atomic deexcitation
   SetDeexcitationFlag(true);
   fAtomDeexcitation = 0;
   fParticleChangeForGamma = 0;
   fpMolWaterDensity = 0;
 
-  // define default angular generator
+  // Define default angular generator
   SetAngularDistribution(new G4DNABornAngle());
 
   SetLowEnergyLimit(10. * eV);
@@ -227,11 +227,13 @@ void G4DNAEmfietzoglouIonisationModel::Initialise(const G4ParticleDefinition* pa
   }
 
   // Initialize water density pointer
+  
   fpMolWaterDensity =
       G4DNAMolecularMaterial::Instance()->
         GetNumMolPerVolTableFor(G4Material::GetMaterial("G4_WATER"));
 
-  //
+  // AD
+  
   fAtomDeexcitation = G4LossTableManager::Instance()->AtomDeexcitation();
 
   if (isInitialised)
@@ -370,13 +372,6 @@ SampleSecondaries(std::vector<G4DynamicParticle*>* fvect,
 
     ionizationShell = RandomSelect(k,particleName);
 
-    // AM: sample deexcitation
-    // here we assume that H_{2}O electronic levels are the same as Oxygen.
-    // this can be considered true with a rough 10% error in energy on K-shell,
-
-    G4int secNumberInit = 0;// need to know at a certain point the energy of secondaries
-    G4int secNumberFinal = 0;// So I'll make the diference and then sum the energies
-
     G4double bindingEnergy = 0;
     bindingEnergy = waterStructure.IonisationEnergy(ionizationShell);
 
@@ -384,7 +379,50 @@ SampleSecondaries(std::vector<G4DynamicParticle*>* fvect,
     if (k<bindingEnergy) return;
     //
 
+    G4double secondaryKinetic=-1000*eV;
+
+    if (!fasterCode) secondaryKinetic = RandomizeEjectedElectronEnergy(particle->GetDefinition(),k,ionizationShell);
+
+    if (fasterCode)
+    secondaryKinetic = RandomizeEjectedElectronEnergyFromCumulatedDcs(particle->GetDefinition(),k,ionizationShell);
+
+    // SI - For atom. deexc. tagging - 23/05/2017
+
     G4int Z = 8;
+
+    G4ThreeVector deltaDirection =
+    GetAngularDistribution()->SampleDirectionForShell(particle, secondaryKinetic,
+        Z, ionizationShell,
+        couple->GetMaterial());
+
+    if (secondaryKinetic>0)
+    {
+      G4DynamicParticle* dp = new G4DynamicParticle (G4Electron::Electron(),deltaDirection,secondaryKinetic);
+      fvect->push_back(dp);
+    }
+    
+    G4double deltaTotalMomentum = std::sqrt(secondaryKinetic*(secondaryKinetic + 2.*electron_mass_c2 ));
+
+    G4double finalPx = totalMomentum*primaryDirection.x() - deltaTotalMomentum*deltaDirection.x();
+    G4double finalPy = totalMomentum*primaryDirection.y() - deltaTotalMomentum*deltaDirection.y();
+    G4double finalPz = totalMomentum*primaryDirection.z() - deltaTotalMomentum*deltaDirection.z();
+    G4double finalMomentum = std::sqrt(finalPx*finalPx + finalPy*finalPy + finalPz*finalPz);
+    finalPx /= finalMomentum;
+    finalPy /= finalMomentum;
+    finalPz /= finalMomentum;
+
+    G4ThreeVector direction;
+    direction.set(finalPx,finalPy,finalPz);
+
+    fParticleChangeForGamma->ProposeMomentumDirection(direction.unit());
+
+    // AM: sample deexcitation
+    // here we assume that H_{2}O electronic levels are the same as Oxygen.
+    // this can be considered true with a rough 10% error in energy on K-shell,
+
+    G4int secNumberInit = 0;// need to know at a certain point the energy of secondaries
+    G4int secNumberFinal = 0;// So I'll make the diference and then sum the energies
+
     if(fAtomDeexcitation)
     {
       G4AtomicShellEnumerator as = fKShell;
@@ -413,36 +451,8 @@ SampleSecondaries(std::vector<G4DynamicParticle*>* fvect,
       secNumberFinal = fvect->size();
     }
 
-    G4double secondaryKinetic=-1000*eV;
+    // Note that secondaryKinetic is the energy of the delta ray, not of all secondaries.
 
-    if (!fasterCode) secondaryKinetic = RandomizeEjectedElectronEnergy(particle->GetDefinition(),k,ionizationShell);
-
-    // SI - 01/04/2014
-    if (fasterCode)
-    secondaryKinetic = RandomizeEjectedElectronEnergyFromCumulatedDcs(particle->GetDefinition(),k,ionizationShell);
-    //
-
-    G4ThreeVector deltaDirection =
-    GetAngularDistribution()->SampleDirectionForShell(particle, secondaryKinetic,
-        Z, ionizationShell,
-        couple->GetMaterial());
-
-    G4double deltaTotalMomentum = std::sqrt(secondaryKinetic*(secondaryKinetic + 2.*electron_mass_c2 ));
-
-    G4double finalPx = totalMomentum*primaryDirection.x() - deltaTotalMomentum*deltaDirection.x();
-    G4double finalPy = totalMomentum*primaryDirection.y() - deltaTotalMomentum*deltaDirection.y();
-    G4double finalPz = totalMomentum*primaryDirection.z() - deltaTotalMomentum*deltaDirection.z();
-    G4double finalMomentum = std::sqrt(finalPx*finalPx + finalPy*finalPy + finalPz*finalPz);
-    finalPx /= finalMomentum;
-    finalPy /= finalMomentum;
-    finalPz /= finalMomentum;
-
-    G4ThreeVector direction;
-    direction.set(finalPx,finalPy,finalPz);
-
-    fParticleChangeForGamma->ProposeMomentumDirection(direction.unit());
-
-    // note that secondaryKinetic is the energy of the delta ray, not of all secondaries.
     G4double scatteredEnergy = k-bindingEnergy-secondaryKinetic;
     G4double deexSecEnergy = 0;
     for (G4int j=secNumberInit; j < secNumberFinal; j++)
@@ -461,13 +471,12 @@ SampleSecondaries(std::vector<G4DynamicParticle*>* fvect,
       fParticleChangeForGamma->ProposeLocalEnergyDeposit(k-scatteredEnergy);
     }
 
-    // SI - 01/04/2014
-    if (secondaryKinetic>0)
-    {
-      G4DynamicParticle* dp = new G4DynamicParticle (G4Electron::Electron(),deltaDirection,secondaryKinetic);
-      fvect->push_back(dp);
-    }
-    //
+    // TEST //////////////////////////
+    // if (secondaryKinetic<0) abort();
+    // if (scatteredEnergy<0) abort();
+    // if (k-scatteredEnergy-secondaryKinetic-deexSecEnergy<0) abort();
+    // if (k-scatteredEnergy<0) abort();     
+    /////////////////////////////////
 
     const G4Track * theIncomingTrack = fParticleChangeForGamma->GetCurrentTrack();
     G4DNAChemistryManager::Instance()->CreateWaterMolecule(eIonizedMolecule,
@@ -504,7 +513,7 @@ RandomizeEjectedElectronEnergy(G4ParticleDefinition* particleDefinition,
      G4double differentialCrossSection = DifferentialCrossSection(particleDefinition, k/eV, value/eV, shell);
      if(differentialCrossSection >= crossSectionMaximum) crossSectionMaximum = differentialCrossSection;
      }
-     */
+    */
 
     // SI : alternative method
     G4double crossSectionMaximum = 0.;
@@ -717,7 +726,7 @@ G4double G4DNAEmfietzoglouIonisationModel::Interpolate(G4double e1,
    G4double d2 = xs2;
    value = (d1 + (d2 - d1)*(e - e1)/ (e2 - e1));
    }
-   */
+  */
 
   // Switch to log-lin interpolation for faster code
   if((e2 - e1) != 0 && xs1 != 0 && xs2 != 0 && fasterCode)
@@ -746,7 +755,7 @@ G4double G4DNAEmfietzoglouIonisationModel::Interpolate(G4double e1,
    << xs2 << " "
    << value
    << G4endl;
-   */
+  */
 
   return value;
 }
@@ -853,9 +862,7 @@ G4double G4DNAEmfietzoglouIonisationModel::RandomizeEjectedElectronEnergyFromCum
                                    - waterStructure.IonisationEnergy(shell);
 
   //G4cout << RandomTransferedEnergy(particleDefinition, k/eV, shell) << G4endl;
-  // SI - 01/04/2014
   if(secondaryElectronKineticEnergy < 0.) return 0.;
-  //
 
   return secondaryElectronKineticEnergy;
 }

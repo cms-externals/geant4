@@ -179,6 +179,9 @@ G4RadioactiveDecay::G4RadioactiveDecay(const G4String& processName)
   photonEvaporation->RDMForced(true);
   photonEvaporation->SetICM(true);
 
+  G4DeexPrecoParameters* deex = G4NuclearLevelData::GetInstance()->GetParameters();
+  deex->SetCorrelatedGamma(true);
+  
   // Reset the list of user defined data files
   theUserRadioactiveDataFiles.clear();
 
@@ -728,25 +731,6 @@ void G4RadioactiveDecay::BuildPhysicsTable(const G4ParticleDefinition&)
 {
   if (!isInitialised) {
     isInitialised = true;
-    G4LossTableManager* theManager = G4LossTableManager::Instance();
-    G4VAtomDeexcitation* p = theManager->AtomDeexcitation();
-    if (!p) {
-      G4ExceptionDescription ed;
-      ed << " Atomic deexcitation is not defined."; 
-      G4Exception("G4RadioactiveDecay::BuildPhysicsTable", "HAD_RDM_001",
-                  FatalException, ed);
-      /*
-      p = new G4UAtomicDeexcitation();
-      p->SetFluo(true);
-      p->SetAuger(true);
-      p->InitialiseAtomicDeexcitation();
-      theManager->SetAtomDeexcitation(p);
-      */
-    }
-
-    G4DeexPrecoParameters* param = G4NuclearLevelData::GetInstance()->GetParameters();
-    param->SetUseFilesNEW(true);
-    param->SetCorrelatedGamma(true);
   }
 }
 

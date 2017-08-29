@@ -14,6 +14,34 @@ code and to keep track of all tags.
      * Please list in reverse chronological order (last date on top)
      ---------------------------------------------------------------
 
+07 June 2017 Vladimir Ivanchenko (hadr-deex-V10-03-43)
+- G4DeexPrecoParameters - restore Get/SetInternalConversionFlag, 
+    true by default
+- G4PhotonEvaporation - use flag for internal conversion,
+    for radioactive decay do not sample transition if no transition 
+    information is available
+
+04 June 2017 Vladimir Ivanchenko (hadr-deex-V10-03-42)
+- G4PhotonEvaporation, G4GammaTransition, G4PolarizationTransition -
+    improved debug printout, cleanup creation and deletion of 
+    G4NuclearPolarization objects
+
+03 June 2017 Vladimir Ivanchenko (hadr-deex-V10-03-41)
+- G4DeexPrecoParameters - added fDummy variant of de-excitation when
+    excitation energy transformed to kinetic energy of a fragment
+    and no secondaries are produced; added also SetPrecoDummy(..) 
+    method, which disable both precompound and de-excitation sampling
+- G4ExcitationHandler - implement fDummy variant of de-excitation
+- G4PhotonEvaporation - added handling of nuclear polarization for
+    simulation of correlated gamma emission; for BreakUpChain(..)
+    this is working for all consumer code; for EmittedFragmnet(..) 
+    interface - only if radioactive decay flag is ON; fixed data race
+- G4PolarizationTransition - added new public interface 
+    SampleGammaTransition(..), which replaced 4 old public interfaces,
+    code become more clear, sampling cosTheta and phi now performed 
+    by private methods
+- G4GammaTransition - use this new SampleGammaTransition(..) method 
+
 19 June 2017 Vladimir Ivanchenko (hadr-deex-V10-03-40)
 - G4WilsonAblationModel - C. Mancini Terracciano fixed crash at 
     initialisation

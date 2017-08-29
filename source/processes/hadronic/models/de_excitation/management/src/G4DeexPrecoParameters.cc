@@ -71,9 +71,10 @@ void G4DeexPrecoParameters::SetDefaults()
   fUseGNASH = false;
   fUseHETC = false;
   fUseAngularGen = false;
-  fUseLongFiles = true;
+  fPrecoDummy = false;
   fCorrelatedGamma = false;
   fStoreAllLevels = false;
+  fInternalConversion = true;
   fDeexChannelType = fEvaporation;
   fInternalConversionID = 
     G4PhysicsModelCatalog::Register("e-InternalConvertion");
@@ -196,8 +197,12 @@ void G4DeexPrecoParameters::SetUseAngularGen(G4bool val)
   fUseAngularGen = val;
 }
 
-void G4DeexPrecoParameters::SetUseFilesNEW(G4bool)
-{}
+void G4DeexPrecoParameters::SetPrecoDummy(G4bool val)
+{
+  if(IsLocked()) { return; }
+  fPrecoDummy = val;
+  fDeexChannelType = fDummy;  
+}
 
 void G4DeexPrecoParameters::SetCorrelatedGamma(G4bool val)
 {
@@ -211,6 +216,12 @@ void G4DeexPrecoParameters::SetStoreAllLevels(G4bool val)
   fStoreAllLevels = val;
 }
 
+void G4DeexPrecoParameters::SetInternalConversionFlag(G4bool val)
+{
+  if(IsLocked()) { return; }
+  fInternalConversion = val;
+}
+
 void G4DeexPrecoParameters::SetDeexChannelsType(G4DeexChannelType val)
 {
   if(IsLocked()) { return; }
@@ -219,22 +230,35 @@ void G4DeexPrecoParameters::SetDeexChannelsType(G4DeexChannelType val)
 
 std::ostream& G4DeexPrecoParameters::StreamInfo(std::ostream& os) const
 {
+  static const G4String namm[4] = {"Evaporation","GEM","Evaporation+GEM","Dummy"};
+  static const G4int nmm[4] = {8, 68, 68, 0};
+  size_t idx = (size_t)fDeexChannelType;
+
   G4int prec = os.precision(5);
   os << "=======================================================================" << "\n";
   os << "======       Pre-compound/De-excitation Physics Parameters     ========" << "\n";
   os << "=======================================================================" << "\n";
   os << "Type of pre-compound inverse x-section              " << fPrecoType << "\n";
+  os << "Pre-compound model active                           " << (!fPrecoDummy) << "\n";
+  os << "Pre-compound low energy (MeV)                       " 
+     << fPrecoLowEnergy/CLHEP::MeV << "\n";
   os << "Type of de-excitation inverse x-section             " << fDeexType << "\n";
+  os << "Type of de-excitation factory                       " << namm[idx] << "\n";
+  os << "Number of de-excitation channels                    " << nmm[idx] << "\n";
   os << "Min excitation energy (keV)                         " 
      << fMinExcitation/CLHEP::keV << "\n";
+  os << "Min energy per nucleon for multifragmentation (MeV) " 
+     << fMinExPerNucleounForMF/CLHEP::MeV << "\n";
   os << "Level density (1/MeV)                               " 
      << fLevelDensity*CLHEP::MeV << "\n";
   os << "Time limit for long lived isomeres (ns)             " 
      << fMaxLifeTime/CLHEP::ns << "\n";
-  os << "Use new data files                                  " << fUseLongFiles << "\n";
-  os << "Use complete data files                             " << fStoreAllLevels << "\n";
+  os << "Store full level data                               " << fStoreAllLevels << "\n";
   os << "Correlated gamma emission flag                      " << fCorrelatedGamma << "\n";
-  os << "Electron internal conversion ID                     " << fInternalConversionID << "\n";
+  os << "Correlated gamma emission flag                      " 
+     << fInternalConversion << "\n";
+  os << "Electron internal conversion ID                     " 
+     << fInternalConversionID << "\n";
   os << "=======================================================================" << "\n";
   os.precision(prec);
   return os;

@@ -154,55 +154,38 @@ G4GammaTransition::SampleTransition(G4Fragment* nucleus,
 void G4GammaTransition::SampleDirection(G4Fragment* nuc, G4double ratio, 
 					G4int twoJ1, G4int twoJ2, G4int mp)
 {
-  // PhotonEvaporation dataset:
-  // The multipolarity number with 1,2,3,4,5,6,7 representing E0,E1,M1,E2,M2,E3,M3
-  // monopole transition and 100*Nx+Ny representing multipolarity transition with
-  // Ny and Ny taking the value 1,2,3,4,5,6,7 referring to E0,E1,M1,E2,M2,E3,M3,..
-  // For example a M1+E2 transition would be written 304.
-  // M1 is the primary transition (L) and E2 is the secondary (L')
-
-  G4double mpRatio = ratio;
-
-  G4int L0 = 0, Lp = 0;
-  if (mp > 99) {
-    L0 = mp/200;
-    Lp = (mp%100)/2;
-  } else {
-    L0 = mp/2;
-    Lp = 0;
-    mpRatio = 0.;
-  } 
-
-  fPolTrans.SetGammaTransitionData(twoJ1, twoJ2, L0, mpRatio, Lp);
-
-  //AR-13Jun2017: Temporary workaround to avoid very long computations.
-  G4NuclearPolarization* np = nuc->GetNuclearPolarization();
   G4double cosTheta, phi;
-
-  if(np && twoJ1 > 6) { 
-    np->Unpolarize(); 
-    cosTheta = 2*G4UniformRand() - 1.0;
-    phi = CLHEP::twopi*G4UniformRand();
-
-  } else if(!np) {
-    // initial state is non-polarized - create polarization
-    np = new G4NuclearPolarization();
-    nuc->SetNuclearPolarization(np);
+  G4NuclearPolarization* np = nuc->GetNuclearPolarization(); 
+  if(nullptr == np) {
     cosTheta = 2*G4UniformRand() - 1.0;
     phi = CLHEP::twopi*G4UniformRand();
 
   } else {
+    // PhotonEvaporation dataset:
+    // The multipolarity number with 1,2,3,4,5,6,7 representing E0,E1,M1,E2,M2,E3,M3
+    // monopole transition and 100*Nx+Ny representing multipolarity transition with
+    // Ny and Ny taking the value 1,2,3,4,5,6,7 referring to E0,E1,M1,E2,M2,E3,M3,..
+    // For example a M1+E2 transition would be written 304.
+    // M1 is the primary transition (L) and E2 is the secondary (L')
 
-    // initial state is polarized - generate correlation
-    cosTheta = fPolTrans.GenerateGammaCosTheta(np->GetPolarization());
-    phi = fPolTrans.GenerateGammaPhi(cosTheta, np->GetPolarization());
+    G4double mpRatio = ratio;
+
+    G4int L0 = 0, Lp = 0;
+    if (mp > 99) {
+      L0 = mp/200;
+      Lp = (mp%100)/2;
+    } else {
+      L0 = mp/2;
+      Lp = 0;
+      mpRatio = 0.;
+    } 
+    fPolTrans.SampleGammaTransition(np, twoJ1, twoJ2, L0, Lp, mpRatio, cosTheta, phi);
   }
-  fPolTrans.UpdatePolarizationToFinalState(cosTheta, phi, nuc);
 
   G4double sinTheta = std::sqrt((1.-cosTheta)*(1.+cosTheta));
   fDirection.set(sinTheta*std::cos(phi),sinTheta*std::sin(phi),cosTheta);
   if(fVerbose > 1) {
-    G4cout << "G4GammaTransition::SampleDirection : " << fDirection << G4endl;
-    G4cout << "Polarisation : " << *np << G4endl;
+    G4cout << "G4GammaTransition::SampleDirection done: " << fDirection << G4endl;
+    if(np) { G4cout << *np << G4endl; }
   }
 }

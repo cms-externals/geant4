@@ -121,15 +121,16 @@ G4WilsonAbrasionModel::G4WilsonAbrasionModel(G4bool useAblation1)
   // Set the default verbose level to 0 - no output.
   verboseLevel = 0;
   useAblation  = useAblation1;
+  theAblation  = nullptr;
 
   // No de-excitation handler has been supplied - define the default handler.
 
-  theExcitationHandler  = new G4ExcitationHandler();
+  theExcitationHandler = new G4ExcitationHandler();
   if (useAblation)
   {
     theAblation = new G4WilsonAblationModel;
     theAblation->SetVerboseLevel(verboseLevel);
-    theExcitationHandler->SetEvaporation(theAblation);
+    theExcitationHandler->SetEvaporation(theAblation, true);
   }
 
   // Set the minimum and maximum range for the model (despite nomanclature,
@@ -173,15 +174,15 @@ G4WilsonAbrasionModel::G4WilsonAbrasionModel(G4ExcitationHandler* aExcitationHan
 
   verboseLevel = 0;
 
-  theAblation = NULL;   //A.R. 26-Jul-2012 Coverity fix.
-  useAblation = false;  //A.R. 14-Aug-2012 Coverity fix.
+  theAblation = nullptr;   //A.R. 26-Jul-2012 Coverity fix.
+  useAblation = false;     //A.R. 14-Aug-2012 Coverity fix.
                       
 //
 // The user is able to provide the excitation handler as well as an argument
 // which is provided in this instantiation is used to determine
 // whether the spectators of the interaction are free following the abrasion.
 //
-  theExcitationHandler             = aExcitationHandler;
+  theExcitationHandler = aExcitationHandler;
 //
 //
 // Set the minimum and maximum range for the model (despite nomanclature, this
@@ -205,9 +206,9 @@ G4WilsonAbrasionModel::G4WilsonAbrasionModel(G4ExcitationHandler* aExcitationHan
 }
 ////////////////////////////////////////////////////////////////////////////////
 //
-G4WilsonAbrasionModel::~G4WilsonAbrasionModel ()
+G4WilsonAbrasionModel::~G4WilsonAbrasionModel()
 {
-  if (theExcitationHandler)  delete theExcitationHandler;
+  delete theExcitationHandler;
 }
 ////////////////////////////////////////////////////////////////////////////////
 //

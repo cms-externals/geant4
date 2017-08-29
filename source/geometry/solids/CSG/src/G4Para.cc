@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4Para.cc 104452 2017-05-31 15:41:24Z gcosmo $
+// $Id: G4Para.cc 105075 2017-07-11 14:22:53Z gcosmo $
 //
 // class G4Para
 //
@@ -47,6 +47,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "G4Para.hh"
+
+#if !defined(G4GEOM_USE_UPARA)
 
 #include "G4VoxelLimits.hh"
 #include "G4AffineTransform.hh"
@@ -427,10 +429,10 @@ G4bool G4Para::CalculateExtent( const EAxis pAxis,
 EInside G4Para::Inside( const G4ThreeVector& p ) const
 {
   G4double xx = fPlanes[2].a*p.x()+fPlanes[2].b*p.y()+fPlanes[2].c*p.z();
-  G4double dx = std::max(xx,-xx) + fPlanes[2].d;
+  G4double dx = std::abs(xx) + fPlanes[2].d;
 
   G4double yy = fPlanes[0].b*p.y()+fPlanes[0].c*p.z();
-  G4double dy = std::max(yy,-yy) + fPlanes[0].d;
+  G4double dy = std::abs(yy) + fPlanes[0].d;
   G4double dxy = std::max(dx,dy);
 
   G4double dz = std::abs(p.z())-fDz;
@@ -633,10 +635,10 @@ G4double G4Para::DistanceToIn(const G4ThreeVector& p,
 G4double G4Para::DistanceToIn( const G4ThreeVector& p ) const
 {
   G4double xx = fPlanes[2].a*p.x()+fPlanes[2].b*p.y()+fPlanes[2].c*p.z();
-  G4double dx = std::max(xx,-xx) + fPlanes[2].d;
+  G4double dx = std::abs(xx) + fPlanes[2].d;
 
   G4double yy = fPlanes[0].b*p.y()+fPlanes[0].c*p.z();
-  G4double dy = std::max(yy,-yy) + fPlanes[0].d;
+  G4double dy = std::abs(yy) + fPlanes[0].d;
   G4double dxy = std::max(dx,dy);
 
   G4double dz = std::abs(p.z())-fDz;
@@ -779,10 +781,10 @@ G4double G4Para::DistanceToOut( const G4ThreeVector& p ) const
     }
 #endif
   G4double xx = fPlanes[2].a*p.x()+fPlanes[2].b*p.y()+fPlanes[2].c*p.z();
-  G4double dx = std::max(xx,-xx) + fPlanes[2].d;
+  G4double dx = std::abs(xx) + fPlanes[2].d;
 
   G4double yy = fPlanes[0].b*p.y()+fPlanes[0].c*p.z();
-  G4double dy = std::max(yy,-yy) + fPlanes[0].d;
+  G4double dy = std::abs(yy) + fPlanes[0].d;
   G4double dxy = std::max(dx,dy);
 
   G4double dz = std::abs(p.z())-fDz;
@@ -910,3 +912,4 @@ G4Polyhedron* G4Para::CreatePolyhedron () const
     
   return new G4PolyhedronPara(fDx, fDy, fDz, alpha, theta, phi);
 }
+#endif

@@ -4,17 +4,12 @@
 #ifndef tools_mpi_wrmpi
 #define tools_mpi_wrmpi
 
-#ifdef TOOLS_USE_NATIVE_MPI
-#include <mpi.h>
-#else
-#include "dummy_mpi.h"
-#endif
+#include "wait_buffer"
 
 #include <tools/impi>
 #include <tools/vdata>
 #include <tools/realloc>
 #include <tools/mnmx>
-#include <ostream>
 
 #ifdef TOOLS_MEM
 #include <tools/mem>
@@ -330,6 +325,28 @@ public: //inlib::mpi::impi
     }
     return true;
   }
+
+  virtual bool wait_buffer(int a_rank,int a_src,int a_tag,int& a_probe_src,bool a_verbose = false) {
+    int buffer_size = 0;
+    char* _buffer = 0;
+    if (!mpi::wait_buffer(m_out,a_rank,a_src,a_tag,m_comm,buffer_size,_buffer,a_probe_src,a_verbose)) {
+      m_out << "tools::mpi::wrmpi::wait_buffer : failed for rank " << a_rank << " and source " << a_src <<"." << std::endl;
+      return false;
+    }
+    // we take ownership of buffer :
+    delete [] m_buffer;
+    m_size = buffer_size;
+    m_buffer = _buffer;
+    m_max = m_buffer+m_size;
+    m_pos = m_buffer;
+    m_ipos = 0; //IMPORTANT
+    return true; 
+  }
+
+  virtual bool wait_buffer(int a_rank,int a_tag,int& a_probe_src,bool a_verbose = false) {
+    return wait_buffer(a_rank,MPI_ANY_SOURCE,a_tag,a_probe_src,a_verbose);
+  }
+  
 public:
   wrmpi(std::ostream& a_out,const MPI_Comm& a_comm,tools::uint32 a_size = 128) // we expect a_size!=0
   :m_out(a_out)

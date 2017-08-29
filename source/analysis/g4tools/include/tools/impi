@@ -39,9 +39,11 @@ public:
   virtual bool unpack(uint32&,char*&) = 0;
   virtual bool unpack(uint32&,int*&) = 0;
 
-  // for tools::mpi::pntuple :
   virtual void pack_reset() = 0;
   virtual bool send_buffer(int,int) = 0;
+
+  virtual bool wait_buffer(int rank,int src,int tag,int& probe_src,bool verbose = false) = 0;
+  virtual bool wait_buffer(int rank,int tag,int& probe_src,bool verbose = false) = 0; //MPI_ANY_SOURCE.
 };
 
 }
