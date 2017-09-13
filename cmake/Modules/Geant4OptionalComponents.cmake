@@ -199,10 +199,12 @@ endif()
 set(GEANT4_USOLIDS_SHAPES
   BOX
   CONS
+  CTUBS
   EXTRUDEDSOLID
   GENERICPOLYCONE
   GENERICTRAP
   ORB
+  PARA
   PARABOLOID
   POLYCONE
   POLYHEDRA
@@ -278,4 +280,29 @@ if(GEANT4_USE_FREETYPE)
 endif()
 
 GEANT4_ADD_FEATURE(GEANT4_USE_FREETYPE "Building Geant4 analysis library with Freetype support")
+
+#-----------------------------------------------------------------------
+# Optional support for HDF5 - Requires external HDF5 install
+#
+option(GEANT4_USE_HDF5 "Build Geant4 analysis library with HDF5 support" OFF)
+mark_as_advanced(GEANT4_USE_HDF5)
+
+if(GEANT4_USE_HDF5)
+  find_package(HDF5 REQUIRED)
+
+  # As FindHDF5 does not yet supply imported targets, we
+  # create an internal INTERFACE target to wrap these.
+  # This still hard-codes include/library paths, but limits it
+  # to one place. Later, we'll create proper imported targets
+  # with re-finds but for now this is the best minimally invasive proceedure
+  add_library(G4HDF5 INTERFACE)
+  target_include_directories(G4HDF5 INTERFACE ${HDF5_INCLUDE_DIRS})
+  target_link_libraries(G4HDF5 INTERFACE ${HDF5_LIBRARIES})
+  install(TARGETS G4HDF5 EXPORT Geant4LibraryDepends)
+
+  # Override HDF5_LIBRARIES for back compatibility
+  set(HDF5_LIBRARIES G4HDF5)
+endif()
+
+GEANT4_ADD_FEATURE(GEANT4_USE_HDF5 "Building Geant4 analysis library with HDF5 support")
 

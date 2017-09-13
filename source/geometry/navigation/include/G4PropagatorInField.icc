@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4PropagatorInField.icc 90009 2015-05-08 07:42:39Z gcosmo $
+// $Id: G4PropagatorInField.icc 105904 2017-08-28 07:36:13Z gcosmo $
 //
 // 
 // ------------------------------------------------------------------------
@@ -307,29 +307,16 @@ G4bool G4PropagatorInField::IntersectChord( const G4ThreeVector&  StartPointA,
 
 inline G4EquationOfMotion*   G4PropagatorInField::GetCurrentEquationOfMotion()
 {
-  G4EquationOfMotion*    equationOfMotion = 0; 
+  G4EquationOfMotion*    equationOfMotion = nullptr; 
 
-  // equationOfMotion = 
-  //     (fFieldPropagator->GetChordFinder()->GetIntegrationDriver()->GetStepper())
-  //      ->GetEquationOfMotion();
-  
-  // Consolidate into auxiliary method G4EquationOfMotion* GetEquationOfMotion() 
-  G4MagIntegratorStepper*  pStepper= 0;
-  
   G4ChordFinder*    pChordFinder= this->GetChordFinder();
   if( pChordFinder ) 
   {
-     G4MagInt_Driver*  pIntDriver= 0; 
-     
-     pIntDriver= pChordFinder->GetIntegrationDriver(); 
+     auto pIntDriver= pChordFinder->GetIntegrationDriver(); 
      if( pIntDriver )
      {
-        pStepper= pIntDriver->GetStepper(); 
-     }
-     if( pStepper )
-     {
-        equationOfMotion= pStepper->GetEquationOfMotion();
-     }
+        equationOfMotion= pIntDriver->GetEquationOfMotion();
+     }     
   }
   return equationOfMotion;
 }

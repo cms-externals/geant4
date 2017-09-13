@@ -88,7 +88,7 @@ protected:
       leaf_string* _pleafs = _pleaf?id_cast<base_leaf,leaf_string>(*_pleaf):0;
 
       base_leaf* _mleaf = *((*mit)->leaves().begin());
-      leaf_string* _mleafs = _mleaf?tools::id_cast<base_leaf,leaf_string>(*_mleaf):0;
+      leaf_string* _mleafs = _mleaf?id_cast<base_leaf,leaf_string>(*_mleaf):0;
 
       pit++; //WARNING.
 
@@ -100,12 +100,12 @@ protected:
       if(_mleafs && _pleafs) {
         //m_file.out() << "tools::wroot::pntuple::end_leaves : merge string leaves ok." << std::endl;
 
-        tools::uint32 _length = _pleafs->length();
+        uint32 _length = _pleafs->length();
         int _mx = _pleafs->get_max();
 
         a_mutex.lock(); //do it here (and not outside loop) because of upper m_out.
-        _mleafs->set_length(tools::mx(_length,_mleafs->length())); 
-        _mleafs->set_max(tools::mx(_mx,_mleafs->get_max())); 
+        _mleafs->set_length(max_of(_length,_mleafs->length())); 
+        _mleafs->set_max(max_of(_mx,_mleafs->get_max())); 
         a_mutex.unlock();    
       }      
     }

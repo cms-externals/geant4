@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmConfigurator.cc 97432 2016-06-03 07:23:39Z gcosmo $
+// $Id: G4EmConfigurator.cc 105745 2017-08-16 13:14:37Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -95,15 +95,15 @@ void G4EmConfigurator::SetExtraEmModel(const G4String& particleName,
 
   models.push_back(mod);
   flucModels.push_back(fm);
-  emin = std::max(emin, mod->LowEnergyLimit());
-  emax = std::min(emax, mod->HighEnergyLimit());
-  mod->SetActivationHighEnergyLimit(emax);
+  G4double emin0 = std::max(emin, mod->LowEnergyLimit());
+  G4double emax0 = std::min(emax, mod->HighEnergyLimit());
+  mod->SetActivationHighEnergyLimit(emax0);
 
   particles.push_back(particleName);
   processes.push_back(processName);
   regions.push_back(regionName);
-  lowEnergy.push_back(emin);
-  highEnergy.push_back(emax);
+  lowEnergy.push_back(emin0);
+  highEnergy.push_back(emax0);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -189,25 +189,21 @@ void G4EmConfigurator::SetModelForRegion(G4VEmModel* mod,
       }
       // classify process
       G4int ii = proc->GetProcessSubType();
-      if(10 == ii && mod) {
+      if(10 == ii) {
         G4VMultipleScattering* p = static_cast<G4VMultipleScattering*>(proc);
-        p->AddEmModel(index,mod,reg);
-        if(1 < verbose) {
-          G4cout << "### Added msc model order= " << index << " for " 
-                 << particleName << " and " << processName << G4endl;
-        }
+	p->AddEmModel(index,mod,reg);
+	if(1 < verbose) {
+	  G4cout << "### Added msc model order= " << index << " for " 
+		 << particleName << " and " << processName << G4endl;
+	}
       } else if(2 <= ii && 4 >= ii) {
         G4VEnergyLossProcess* p = static_cast<G4VEnergyLossProcess*>(proc);
-        if(!mod && fm) {
-          p->SetFluctModel(fm);
-        } else { 
-          p->AddEmModel(index,mod,fm,reg);
-          if(1 < verbose) {
-            G4cout << "### Added eloss model order= " << index << " for " 
-                   << particleName << " and " << processName << G4endl;
-          }
+	p->AddEmModel(index,mod,fm,reg);
+	if(1 < verbose) {
+	  G4cout << "### Added eloss model order= " << index << " for " 
+		 << particleName << " and " << processName << G4endl;
         }
-      } else if(mod) {
+      } else {
         G4VEmProcess* p = static_cast<G4VEmProcess*>(proc);
         p->AddEmModel(index,mod,reg);
         if(1 < verbose) {

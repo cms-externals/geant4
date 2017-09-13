@@ -101,6 +101,10 @@ private:
   G4UIcmdWithABool*          IntegCmd;
   G4UIcmdWithABool*          mottCmd;
   G4UIcmdWithABool*          birksCmd;
+  G4UIcmdWithABool*          dnafCmd;
+  G4UIcmdWithABool*          dnasCmd;
+  G4UIcmdWithABool*          dnamscCmd;
+  G4UIcmdWithABool*          sharkCmd;
 
   G4UIcmdWithADouble*        minSubSecCmd;
   G4UIcmdWithADoubleAndUnit* minEnCmd;

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4MagIntegratorStepper.hh 97387 2016-06-02 10:03:42Z gcosmo $
+// $Id: G4MagIntegratorStepper.hh 105015 2017-07-04 11:44:23Z gcosmo $
 //
 //
 // class G4MagIntegratorStepper
@@ -113,7 +113,7 @@ class G4MagIntegratorStepper
      inline void ResetfNORHSCalls(){ fNoRHSCalls = 0; }
        // Count number of calls to RHS method(s)
 
-     bool IsFSAL() { return fIsFSAL; }
+     bool IsFSAL() const { return fIsFSAL; }
    
   protected:
      void SetIntegrationOrder(int order) { fIntegrationOrder= order; }

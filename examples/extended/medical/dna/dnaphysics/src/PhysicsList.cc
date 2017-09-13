@@ -1,3 +1,4 @@
+
 //
 // ********************************************************************
 // * License and Disclaimer                                           *
@@ -36,6 +37,7 @@
 
 #include "PhysicsList.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4EmParameters.hh"
 
 #include "G4EmDNAPhysics.hh"
 #include "G4EmDNAPhysics_option1.hh"
@@ -89,6 +91,9 @@ PhysicsList::PhysicsList()
 
   G4ProductionCutsTable::GetProductionCutsTable()->
       SetEnergyRange(100*eV, 1*GeV);
+  G4EmParameters* param = G4EmParameters::Instance();
+  param->SetMinEnergy(100*eV);
+  param->SetMaxEnergy(1*GeV);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

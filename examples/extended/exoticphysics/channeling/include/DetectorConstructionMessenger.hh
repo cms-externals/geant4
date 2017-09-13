@@ -70,5 +70,3 @@ class DetectorConstructionMessenger: public G4UImessenger
 };
 
 #endif
-
-

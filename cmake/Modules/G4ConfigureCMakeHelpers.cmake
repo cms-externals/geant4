@@ -160,12 +160,9 @@ set(CMAKE_MODULE_PATH \${CMAKE_MODULE_PATH} ${CMAKE_MODULE_PATH})
 # Geant4 data used in build tree
 geant4_export_datasets(BUILD GEANT4_DATASET_DESCRIPTIONS)
 
-# Export targets from the build tree. We rely on the GEANT4_EXPORTED_TARGETS
-# global property to list these for us.
-#
-get_property(__geant4_exported_targets GLOBAL PROPERTY GEANT4_EXPORTED_TARGETS)
-
-export(TARGETS ${__geant4_exported_targets}
+# Export targets in the Geant4LibraryDepends export set from the build tree
+# No longer need GEANT4_EXPORTED_TARGETS global property to list these for us.
+export(EXPORT Geant4LibraryDepends
   FILE ${PROJECT_BINARY_DIR}/Geant4LibraryDepends.cmake
   )
 

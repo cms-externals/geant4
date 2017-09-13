@@ -55,16 +55,13 @@ private:
 			  G4bool emsc, G4double elowest, G4double elimel);
  
   void AddProtonModels0(const G4String& region, G4bool pmsc, 
-			G4double elimel, G4double pminbb, 
-			G4double pmin, G4double pmax);
+			G4double elimel, G4double pminbb, G4double pmax);
 
   void AddHeliumModels0(const G4String& region, G4bool a1msc, G4bool a2msc, 
-			G4double elimel, G4double pminbb, 
-			G4double pmin, G4double pmax);
+			G4double elimel, G4double pminbb, G4double pmax);
 
   void AddGenericIonModels0(const G4String& region, G4bool imsc, 
-			    G4double elimel, G4double pminbb, 
-			    G4double pmin);
+			    G4double elimel, G4double pminbb);
  
   G4bool HasMsc(G4ProcessManager*) const;
 

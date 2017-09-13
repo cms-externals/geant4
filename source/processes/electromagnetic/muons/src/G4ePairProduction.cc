@@ -101,7 +101,7 @@ void G4ePairProduction::InitialiseEnergyLossProcess(
     theParticle = part;
 
     G4MuPairProductionModel* mod = new G4MuPairProductionModel(part); 
-    SetEmModel(mod, 1);
+    SetEmModel(mod);
 
     lowestKinEnergy = std::max(lowestKinEnergy, part->GetPDGMass()*8.0);
     mod->SetLowestKineticEnergy(lowestKinEnergy);
@@ -118,7 +118,7 @@ void G4ePairProduction::InitialiseEnergyLossProcess(
 
 void G4ePairProduction::PrintInfo()
 {
-  G4ElementData* ed = EmModel(1)->GetElementData();
+  G4ElementData* ed = EmModel(0)->GetElementData();
   if(ed) {
     for(G4int Z=1; Z<93; ++Z) {
       G4Physics2DVector* pv = ed->GetElement2DData(Z);

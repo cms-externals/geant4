@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4eeToHadrons.cc 97391 2016-06-02 10:08:45Z gcosmo $
+// $Id: G4eeToHadrons.cc 105752 2017-08-16 13:45:11Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -93,6 +93,7 @@ void G4eeToHadrons::InitialiseProcess(const G4ParticleDefinition*)
 
     multimodel = new G4eeToHadronsMultiModel(verboseLevel);
     if(csFactor > 1.0) multimodel->SetCrossSecFactor(csFactor);
+    SetEmModel(multimodel);
     AddEmModel(1, multimodel);
   }
 }

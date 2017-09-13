@@ -76,9 +76,9 @@ G4GEMChannelVI::G4GEMChannelVI(G4int theA, G4int theZ)
   A13 = fG4pow->Z13(A);
 
   cBarrier = new G4CoulombBarrier(A, Z);
-  pairingCorrection = G4PairingCorrection::GetInstance();
 
   nData = G4NuclearLevelData::GetInstance();
+  pairingCorrection = nData->GetPairingCorrection();
   levelManager = nData->GetLevelManager(Z, A);
   maxLevelE = levelManager->MaxLevelEnergy();
 

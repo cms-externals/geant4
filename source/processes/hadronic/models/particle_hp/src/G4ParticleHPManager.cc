@@ -99,6 +99,7 @@ void G4ParticleHPManager::CloseReactionWhiteBoard()
 #include <fstream>
 void G4ParticleHPManager::GetDataStream( G4String filename , std::istringstream& iss ) 
 {
+   //if ( getenv( "TEST04" ) && filename != "INVALID" ) G4cout << "Reading " << filename << G4endl;
    G4String* data=NULL;
    G4String compfilename(filename);
    compfilename += ".z";

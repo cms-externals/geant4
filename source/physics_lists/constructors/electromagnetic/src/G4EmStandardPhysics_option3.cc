@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmStandardPhysics_option3.cc 104571 2017-06-06 13:45:47Z gcosmo $
+// $Id: G4EmStandardPhysics_option3.cc 105735 2017-08-16 12:59:43Z gcosmo $
 //
 //---------------------------------------------------------------------------
 //
@@ -88,6 +88,7 @@
 #include "G4IonParametrisedLossModel.hh"
 #include "G4NuclearStopping.hh"
 
+#include "G4ParticleTable.hh"
 #include "G4Gamma.hh"
 #include "G4Electron.hh"
 #include "G4Positron.hh"
@@ -189,34 +190,23 @@ void G4EmStandardPhysics_option3::ConstructProcess()
   G4hPairProduction* pp = new G4hPairProduction();
   G4ePairProduction* ee = new G4ePairProduction();
 
-  // muon & hadron multiple scattering
-  // G4MuMultipleScattering* mumsc = new G4MuMultipleScattering();
-  // mumsc->AddEmModel(0, new G4WentzelVIModel());
-  // G4hMultipleScattering* pimsc = new G4hMultipleScattering();
-  // pimsc->AddEmModel(0, new G4WentzelVIModel());
-  // G4hMultipleScattering* kmsc = new G4hMultipleScattering();
-  // kmsc->AddEmModel(0, new G4WentzelVIModel());
-  //G4hMultipleScattering* pmsc = new G4hMultipleScattering();
-  //pmsc->AddEmModel(0, new G4WentzelVIModel());
   G4hMultipleScattering* hmsc = new G4hMultipleScattering("ionmsc");
 
   // nuclear stopping
   G4NuclearStopping* pnuc = new G4NuclearStopping();
 
   // Add standard EM Processes
-  auto myParticleIterator=GetParticleIterator();
-  myParticleIterator->reset();
-  while( (*myParticleIterator)() ){
-    G4ParticleDefinition* particle = myParticleIterator->value();
-    G4String particleName = particle->GetParticleName();
-
+  G4ParticleTable* table = G4ParticleTable::GetParticleTable();
+  for(const auto& particleName : partList.PartNames()) {
+    G4ParticleDefinition* particle = table->FindParticle(particleName);
+    if (!particle) { continue; }
     if (particleName == "gamma") {
 
       G4ComptonScattering* cs = new G4ComptonScattering;
-      cs->SetEmModel(new G4KleinNishinaModel(), 1);
+      cs->SetEmModel(new G4KleinNishinaModel());
 
       G4PhotoElectricEffect* pee = new G4PhotoElectricEffect();
-      pee->SetEmModel(new G4LivermorePhotoElectricModel(), 1);
+      pee->SetEmModel(new G4LivermorePhotoElectricModel());
 
       ph->RegisterProcess(pee, particle);
       ph->RegisterProcess(cs,  particle);
@@ -236,8 +226,8 @@ void G4EmStandardPhysics_option3::ConstructProcess()
       G4eBremsstrahlungRelModel* br2 = new G4eBremsstrahlungRelModel();
       br1->SetAngularDistribution(new G4Generator2BS());
       br2->SetAngularDistribution(new G4Generator2BS());
-      brem->SetEmModel(br1,1);
-      brem->SetEmModel(br2,2);
+      brem->SetEmModel(br1);
+      brem->SetEmModel(br2);
       br2->SetLowEnergyLimit(GeV);
 
       // register processes
@@ -259,8 +249,8 @@ void G4EmStandardPhysics_option3::ConstructProcess()
       G4eBremsstrahlungRelModel* br2 = new G4eBremsstrahlungRelModel();
       br1->SetAngularDistribution(new G4Generator2BS());
       br2->SetAngularDistribution(new G4Generator2BS());
-      brem->SetEmModel(br1,1);
-      brem->SetEmModel(br2,2);
+      brem->SetEmModel(br1);
+      brem->SetEmModel(br2);
       br2->SetLowEnergyLimit(GeV);
 
       // register processes
@@ -281,7 +271,6 @@ void G4EmStandardPhysics_option3::ConstructProcess()
       ph->RegisterProcess(muIoni, particle);
       ph->RegisterProcess(mub, particle);
       ph->RegisterProcess(mup, particle);
-      //ph->RegisterProcess(new G4CoulombScattering(), particle);
 
     } else if (particleName == "alpha" ||
                particleName == "He3") {

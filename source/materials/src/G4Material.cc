@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4Material.cc 102843 2017-02-27 13:02:28Z gcosmo $
+// $Id: G4Material.cc 105910 2017-08-28 07:50:23Z gcosmo $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //
@@ -330,6 +330,8 @@ void G4Material::CopyPointersOfBaseMaterial()
   G4double factor = fDensity/fBaseMaterial->GetDensity();
   TotNbOfAtomsPerVolume = factor*fBaseMaterial->GetTotNbOfAtomsPerVolume();
   TotNbOfElectPerVolume = factor*fBaseMaterial->GetTotNbOfElectPerVolume();
+
+  if(fState == kStateUndefined) { fState = fBaseMaterial->GetState(); }
 
   theElementVector = 
     const_cast<G4ElementVector*>(fBaseMaterial->GetElementVector());

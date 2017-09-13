@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4LossTableManager.cc 99151 2016-09-07 08:03:17Z gcosmo $
+// $Id: G4LossTableManager.cc 105801 2017-08-21 07:37:34Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -191,6 +191,7 @@ G4LossTableManager::G4LossTableManager()
   emElectronIonPair = nullptr;
   atomDeexcitation = nullptr;
   subcutProducer = nullptr;
+  gammaShark = nullptr;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....

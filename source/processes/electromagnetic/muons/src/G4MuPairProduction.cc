@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4MuPairProduction.cc 97392 2016-06-02 10:10:32Z gcosmo $
+// $Id: G4MuPairProduction.cc 105750 2017-08-16 13:42:26Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -125,7 +125,7 @@ void G4MuPairProduction::InitialiseEnergyLossProcess(
     theParticle = part;
 
     G4MuPairProductionModel* mod = new G4MuPairProductionModel(part); 
-    SetEmModel(mod, 1);
+    SetEmModel(mod);
 
     lowestKinEnergy = std::max(lowestKinEnergy, part->GetPDGMass()*8.0);
     mod->SetLowestKineticEnergy(lowestKinEnergy);

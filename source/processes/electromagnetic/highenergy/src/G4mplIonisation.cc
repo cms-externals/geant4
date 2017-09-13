@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4mplIonisation.cc 85013 2014-10-23 09:45:07Z gcosmo $
+// $Id: G4mplIonisation.cc 105752 2017-08-16 13:45:11Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -107,6 +107,7 @@ void G4mplIonisation::InitialiseEnergyLossProcess(const G4ParticleDefinition* p,
   SetMaxKinEnergy(emax);
   SetDEDXBinning(bin);
 
+  SetEmModel(ion);
   AddEmModel(1,ion,ion);
 
   isInitialised = true;

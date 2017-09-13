@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PhotoElectricEffect.cc 84598 2014-10-17 07:39:15Z gcosmo $
+// $Id: G4PhotoElectricEffect.cc 105734 2017-08-16 12:58:28Z gcosmo $
 //
 //
 //------------------ G4PhotoElectricEffect physics process ---------------------
@@ -105,11 +105,11 @@ void G4PhotoElectricEffect::InitialiseProcess(const G4ParticleDefinition*)
 {
   if(!isInitialised) {
     isInitialised = true;
-    if(!EmModel(1)) { SetEmModel(new G4PEEffectFluoModel(),1); }
+    if(!EmModel()) { SetEmModel(new G4PEEffectFluoModel()); }
     G4EmParameters* param = G4EmParameters::Instance();
-    EmModel(1)->SetLowEnergyLimit(param->MinKinEnergy());
-    EmModel(1)->SetHighEnergyLimit(param->MaxKinEnergy());
-    AddEmModel(1, EmModel(1));
+    EmModel()->SetLowEnergyLimit(param->MinKinEnergy());
+    EmModel()->SetHighEnergyLimit(param->MaxKinEnergy());
+    AddEmModel(1, EmModel());
   }
 }
 

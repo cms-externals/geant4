@@ -221,6 +221,14 @@ G4LevelReader::MakeLevelManager(G4int Z, G4int A, const G4String& filename)
 {
   fFile = filename;
   std::ifstream infile(filename, std::ios::in);
+  if (!infile.is_open()) {
+    G4ExceptionDescription ed;
+    ed << "User file for Z= " << Z << " A= " << A  
+       << " <" << fFile << "> is not opened!"; 
+    G4Exception("G4LevelReader::MakeLevelManager(..)","had014",
+		FatalException, ed, "");
+    return nullptr;
+  }
   return LevelManager(Z, A, 0, infile);
 }
 

@@ -309,7 +309,7 @@ public:
               << " for std::vector column " << sout((*it).name())
               << ", the user vector pointer is null."
               << std::endl;
-          tools::clear<icol>(m_cols);
+          safe_clear<icol>(m_cols);
           return;
         }
       } else if((*it).cls_id()==_cid_std_vector<short>()) {
@@ -321,7 +321,7 @@ public:
               << " for std::vector column " << sout((*it).name())
               << ", the user vector pointer is null."
               << std::endl;
-          tools::clear<icol>(m_cols);
+          safe_clear<icol>(m_cols);
           return;
         }
       } else if((*it).cls_id()==_cid_std_vector<int>()) {
@@ -333,7 +333,7 @@ public:
               << " for std::vector column " << sout((*it).name())
               << ", the user vector pointer is null."
               << std::endl;
-          tools::clear<icol>(m_cols);
+          safe_clear<icol>(m_cols);
           return;
         }
       } else if((*it).cls_id()==_cid_std_vector<float>()) {
@@ -345,7 +345,7 @@ public:
               << " for std::vector column " << sout((*it).name())
               << ", the user vector pointer is null."
               << std::endl;
-          tools::clear<icol>(m_cols);
+          safe_clear<icol>(m_cols);
           return;
         }
       } else if((*it).cls_id()==_cid_std_vector<double>()) {
@@ -357,7 +357,7 @@ public:
               << " for std::vector column " << sout((*it).name())
               << ", the user vector pointer is null."
               << std::endl;
-          tools::clear<icol>(m_cols);
+          safe_clear<icol>(m_cols);
           return;
         }
 
@@ -369,14 +369,14 @@ public:
             << ", type with cid " << (*it).cls_id() << " not yet handled."
             << std::endl;
         //throw
-        tools::clear<icol>(m_cols);
+        safe_clear<icol>(m_cols);
         return;
       }      
     }
   }
 
   virtual ~base_pntuple() {
-    tools::clear<icol>(m_cols);
+    safe_clear<icol>(m_cols);
   }
 protected:
   base_pntuple(const base_pntuple& a_from)

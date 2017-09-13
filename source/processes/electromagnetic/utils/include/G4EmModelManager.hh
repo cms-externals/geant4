@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmModelManager.hh 95657 2016-02-17 13:03:36Z gcosmo $
+// $Id: G4EmModelManager.hh 105745 2017-08-16 13:14:37Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -162,7 +162,7 @@ public:
                         G4bool startFromNull = true, 
                         G4EmTableType t = fRestricted);
 
-  void AddEmModel(G4int, G4VEmModel*, G4VEmFluctuationModel*, const G4Region*);  
+  void AddEmModel(G4int, G4VEmModel*, G4VEmFluctuationModel*, const G4Region*); 
 
   void UpdateEmModel(const G4String& model_name, G4double emin, G4double emax);
 

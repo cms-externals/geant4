@@ -185,6 +185,36 @@ G4EmParametersMessenger::G4EmParametersMessenger(G4EmParameters* ptr)
   birksCmd->SetDefaultValue(false);
   birksCmd->AvailableForStates(G4State_PreInit);
 
+  dnafCmd = new G4UIcmdWithABool("/process/em/UseDNAFast",this);
+  dnafCmd->SetGuidance("Enable usage of fast sampling for DNA models");
+  dnafCmd->SetParameterName("dnaf",true);
+  dnafCmd->SetDefaultValue(false);
+  dnafCmd->AvailableForStates(G4State_PreInit);
+
+  dnasCmd = new G4UIcmdWithABool("/process/em/UseDNAStationary",this);
+  dnasCmd->SetGuidance("Enable usage of Stationary option for DNA models");
+  dnasCmd->SetParameterName("dnas",true);
+  dnasCmd->SetDefaultValue(false);
+  dnasCmd->AvailableForStates(G4State_PreInit);
+
+  dnamscCmd = new G4UIcmdWithABool("/process/em/UseDNAElectronMsc",this);
+  dnamscCmd->SetGuidance("Enable usage of e- msc for DNA");
+  dnamscCmd->SetParameterName("dnamsc",true);
+  dnamscCmd->SetDefaultValue(false);
+  dnamscCmd->AvailableForStates(G4State_PreInit);
+
+  sharkCmd = new G4UIcmdWithABool("/process/em/UseGammaShark",this);
+  sharkCmd->SetGuidance("Enable gamma super-process");
+  sharkCmd->SetParameterName("shark",true);
+  sharkCmd->SetDefaultValue(false);
+  sharkCmd->AvailableForStates(G4State_PreInit);
+
+  dnafCmd = new G4UIcmdWithABool("/process/em/UseDNAFast",this);
+  dnafCmd->SetGuidance("Enable usage of fast sampling for DNA models");
+  dnafCmd->SetParameterName("dnaf",true);
+  dnafCmd->SetDefaultValue(false);
+  dnafCmd->AvailableForStates(G4State_PreInit);
+
   minSubSecCmd = new G4UIcmdWithADouble("/process/eLoss/minsubsec",this);
   minSubSecCmd->SetGuidance("Set the ratio subcut/cut ");
   minSubSecCmd->SetParameterName("rcmin",true);
@@ -554,6 +584,10 @@ G4EmParametersMessenger::~G4EmParametersMessenger()
   delete IntegCmd;
   delete mottCmd;
   delete birksCmd;
+  delete dnafCmd;
+  delete dnasCmd;
+  delete dnamscCmd;
+  delete sharkCmd;
 
   delete minSubSecCmd;
   delete minEnCmd;
@@ -659,6 +693,14 @@ void G4EmParametersMessenger::SetNewValue(G4UIcommand* command,
     theParameters->SetUseMottCorrection(mottCmd->GetNewBoolValue(newValue));
   } else if (command == birksCmd) {
     theParameters->SetBirksActive(birksCmd->GetNewBoolValue(newValue));
+  } else if (command == dnafCmd) {
+    theParameters->SetDNAFast(dnafCmd->GetNewBoolValue(newValue));
+  } else if (command == dnasCmd) {
+    theParameters->SetDNAStationary(dnasCmd->GetNewBoolValue(newValue));
+  } else if (command == dnamscCmd) {
+    theParameters->SetBirksActive(dnamscCmd->GetNewBoolValue(newValue));
+  } else if (command == sharkCmd) {
+    theParameters->SetGammaSharkActive(sharkCmd->GetNewBoolValue(newValue));
 
   } else if (command == minSubSecCmd) {
     theParameters->SetMinSubRange(minSubSecCmd->GetNewDoubleValue(newValue));

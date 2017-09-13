@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VisManager.cc 103926 2017-05-03 13:43:27Z gcosmo $
+// $Id: G4VisManager.cc 105349 2017-07-21 12:23:24Z gcosmo $
 //
 // 
 // GEANT4 Visualization Manager - John Allison 02/Jan/1996.
@@ -111,6 +111,7 @@ G4VisManager::G4VisManager (const G4String& verbosityString):
   fNKeepRequests            (0),
   fEventKeepingSuspended    (false),
   fKeptLastEvent            (false),
+  fDrawEventOnlyIfToBeKept  (false),
   fpRequestedEvent          (0),
   fAbortReviewKeptEvents    (false),
   fIsDrawGroup              (false),
@@ -372,6 +373,7 @@ void G4VisManager::RegisterMessengers () {
   
   // Other top level commands...
   RegisterMessenger(new G4VisCommandAbortReviewKeptEvents);
+  RegisterMessenger(new G4VisCommandDrawOnlyKeptEvents);
   RegisterMessenger(new G4VisCommandEnable);
   RegisterMessenger(new G4VisCommandList);
   RegisterMessenger(new G4VisCommandReviewKeptEvents);
@@ -1869,6 +1871,12 @@ void G4VisManager::EndOfEvent ()
   G4EventManager* eventManager = G4EventManager::GetEventManager();
   const G4Event* currentEvent = eventManager->GetConstCurrentEvent();
   if (!currentEvent) return;
+
+  // Discard event if fDrawEventOnlyIfToBeKept flag is set unless the
+  // user has requested the event to be kept.
+  if (fDrawEventOnlyIfToBeKept) {
+    if (!currentEvent->ToBeKept()) return;
+  }
 
   if (G4Threading::IsMultithreadedApplication()) {
 

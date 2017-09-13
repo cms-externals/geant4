@@ -51,14 +51,14 @@ class buffer : public rbuf {
   typedef std::map<uint32,iro*> obj_map;
 #endif
 #ifdef TOOLS_RROOT_OBJ_MAP_OMAP
-  typedef inlib::omap<uint32,iro*> obj_map;
+  typedef omap<uint32,iro*> obj_map;
 #endif
 #ifdef TOOLS_RROOT_OBJ_MAP_HASH_TABLE
-  class obj_map : public inlib::hash_table<uint32,iro*> {
-    typedef inlib::hash_table<uint32,iro*> parent;
+  class obj_map : public hash_table<uint32,iro*> {
+    typedef hash_table<uint32,iro*> parent;
   protected:
     virtual unsigned int hash(const uint32& a_key) {
-      return inlib::hash(&a_key,sizeof(uint32));
+      return hash(&a_key,sizeof(uint32));
     }
     virtual bool cmp(const uint32& a_key1,const uint32& a_key2) {
       return a_key1==a_key2?true:false;

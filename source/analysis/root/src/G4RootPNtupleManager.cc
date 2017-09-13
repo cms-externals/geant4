@@ -44,7 +44,7 @@ namespace {
 //_____________________________________________________________________________
 G4RootPNtupleManager::G4RootPNtupleManager(G4RootMainNtupleManager* main,
                                            const G4AnalysisManagerState& state)
- : G4VNtupleManager(state),
+ : G4BaseNtupleManager(state),
    fCreateMode(G4PNtupleCreateMode::kUndefined),
    fMainNtupleManager(main),
    fNtupleVector()
@@ -177,22 +177,38 @@ void G4RootPNtupleManager::CreateNtuplesFromMain()
 // Create ntuple from booking (if not yet done) and main ntuple 
 // This function is called from G4AnalysisManager::OpenFile.
 
+    G4cout << "In PNM: Going to create slave ntuples from main" << G4endl;
+    G4cout << "fNtupleDescriptionVector.size(): " << fNtupleDescriptionVector.size() << G4endl;
+    G4cout << "fCreateMode: " << G4endl;
+    if ( fCreateMode == G4PNtupleCreateMode::kUndefined ) {
+      G4cout << "kUndefined" << G4endl;
+    } else if ( fCreateMode == G4PNtupleCreateMode::kSlaveBeforeOpen ) {
+      G4cout << "kSBO" << G4endl;
+    } else if ( fCreateMode == G4PNtupleCreateMode::kSlaveBeforeOpen ) {
+      G4cout << "kSAO" << G4endl;
+    }
+
+
   if ( fCreateMode == G4PNtupleCreateMode::kUndefined ) {
     if ( fNtupleDescriptionVector.size() ) {
       fCreateMode = G4PNtupleCreateMode::kSlaveBeforeOpen;
+      G4cout << "Create mode: kSlaveBeforeOpen" <<  G4endl;
     } else {
       fCreateMode = G4PNtupleCreateMode::kSlaveAfterOpen;
+      G4cout << "Create mode: kSlaveAfterOpen" <<  G4endl;
     }
   }
 
   if ( fCreateMode == G4PNtupleCreateMode::kSlaveAfterOpen ) {
     // ntuples are not yet booked
+    G4cout << "Ntuples are not yet booked ?" <<  G4endl;
     return;
   }
 
   auto& mainNtupleVector
      = fMainNtupleManager->GetNtupleVector();
 
+  G4cout << "mainNtupleVector size " << mainNtupleVector.size() << G4endl;
   G4int lcounter = 0;
   for ( auto mainNtuple : mainNtupleVector ) {
     
@@ -246,41 +262,6 @@ G4int G4RootPNtupleManager::CreateNtuple(
 
 //_____________________________________________________________________________
 G4int G4RootPNtupleManager::CreateNtupleIColumn(
-  const G4String& name, std::vector<int>* vector)
-{
-  return CreateNtupleTColumn<int>(name, vector);
-}  
-
-//_____________________________________________________________________________
-G4int G4RootPNtupleManager::CreateNtupleFColumn(
-  const G4String& name, std::vector<float>* vector)
-{
-  return CreateNtupleTColumn<float>(name, vector);
-}  
-
-//_____________________________________________________________________________
-G4int G4RootPNtupleManager::CreateNtupleDColumn(
-  const G4String& name, std::vector<double>* vector)
-{
-  return CreateNtupleTColumn<double>(name, vector);
-}  
-
-//_____________________________________________________________________________
-G4int G4RootPNtupleManager::CreateNtupleSColumn(
-  const G4String& name)
-{
-  return CreateNtupleTColumn<std::string>(name, nullptr);
-}  
-
-//_____________________________________________________________________________
-void G4RootPNtupleManager::FinishNtuple()
-{ 
-  auto ntupleId = fNtupleDescriptionVector.size() + fFirstId - 1;
-  FinishNtuple(ntupleId);
-}
-
-//_____________________________________________________________________________
-G4int G4RootPNtupleManager::CreateNtupleIColumn(
   G4int ntupleId, const G4String& name, std::vector<int>* vector)
 {
   return CreateNtupleTColumn<int>(ntupleId, name, vector);
@@ -325,40 +306,6 @@ void G4RootPNtupleManager::FinishNtuple(G4int ntupleId)
     CreateNtuple(ntupleDescription, mainNtuple);
   }
 }
-
-//_____________________________________________________________________________
-G4bool G4RootPNtupleManager::FillNtupleIColumn(
-  G4int columnId, G4int value)
-{
-  return FillNtupleTColumn<int>(columnId, value);
-}                                         
-
-//_____________________________________________________________________________
-G4bool G4RootPNtupleManager::FillNtupleFColumn(
-  G4int columnId, G4float value)
-{
-  return FillNtupleTColumn<float>(columnId, value);
-}                                         
-
-//_____________________________________________________________________________
-G4bool G4RootPNtupleManager::FillNtupleDColumn(
-  G4int columnId, G4double value)
-{
-  return FillNtupleTColumn<double>(columnId, value);
-}                                         
-
-//_____________________________________________________________________________
-G4bool G4RootPNtupleManager::FillNtupleSColumn(
-  G4int columnId, const G4String& value)
-{
-  return FillNtupleTColumn<std::string>(columnId, value);
-}  
-
-//_____________________________________________________________________________
-G4bool G4RootPNtupleManager::AddNtupleRow()
-{ 
-  return AddNtupleRow(fFirstId);
-}  
 
 //_____________________________________________________________________________
 G4bool G4RootPNtupleManager::FillNtupleIColumn(
@@ -525,6 +472,12 @@ G4bool  G4RootPNtupleManager::GetActivation(
 G4int G4RootPNtupleManager::GetNofNtuples() const
 {
   return fNtupleVector.size();
+}
+
+//_____________________________________________________________________________
+G4int G4RootPNtupleManager::GetNofNtupleBookings() const
+{
+  return fNtupleDescriptionVector.size();
 }
 
 //_____________________________________________________________________________

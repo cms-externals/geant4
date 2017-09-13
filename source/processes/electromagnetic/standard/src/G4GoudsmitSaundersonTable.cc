@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GoudsmitSaundersonTable.cc 103884 2017-05-03 08:04:50Z gcosmo $
+// $Id: G4GoudsmitSaundersonTable.cc 105900 2017-08-28 07:27:51Z gcosmo $
 //
 // -----------------------------------------------------------------------------
 //
@@ -63,7 +63,11 @@
 //            compared to the earlier version (G4GoudsmitSaundersonMscModel class
 //            that use these data has been also completely replaced)
 // 28.04.2017 M. Novak: New representation of the angular distribution data with
-//            significantly reduced data size.  
+//            significantly reduced data size.
+// 23.08.2017 M. Novak: Added funtionality to handle Mott-correction to the 
+//            base GS angular distributions and some other factors (screening  
+//            parameter, first and second moments) when Mott-correction is 
+//            activated in the GS-MSC model. 
 //
 // References:
 //   [1] A.F.Bielajew, NIMB, 111 (1996) 195-208
@@ -73,19 +77,22 @@
 
 #include "G4GoudsmitSaundersonTable.hh"
 
+
+#include "G4PhysicalConstants.hh"
+#include "Randomize.hh"
+#include "G4Log.hh"
+#include "G4Exp.hh"
+
+#include "G4GSMottCorrection.hh"
+#include "G4MaterialTable.hh"
+#include "G4Material.hh"
+
 #include <fstream>
 #include <cstdlib>
 #include <cmath>
 
 #include <iostream>
 #include <iomanip>
-
-#include "Randomize.hh"
-#include "G4PhysicalConstants.hh"
-#include "G4MaterialTable.hh"
-#include "G4Material.hh"
-#include "G4Log.hh"
-#include "G4Exp.hh"
 
 
 
@@ -263,63 +270,109 @@ const G4double G4GoudsmitSaundersonTable::gScrBValues2[] = {
   0.00000000000000e+00
 };
 
-bool G4GoudsmitSaundersonTable::gIsInitialised = false;
+// perecomputed GS angular distributions, based on the Screened-Rutherford DCS are the sample for e- and e+
+// so make sure we load them only onece
+G4bool G4GoudsmitSaundersonTable::gIsInitialised = false;
+//
+std::vector<G4GoudsmitSaundersonTable::GSMSCAngularDtr*> G4GoudsmitSaundersonTable::gGSMSCAngularDistributions1;
+std::vector<G4GoudsmitSaundersonTable::GSMSCAngularDtr*> G4GoudsmitSaundersonTable::gGSMSCAngularDistributions2;
+//
+std::vector<double> G4GoudsmitSaundersonTable::gMoliereBc;
+std::vector<double> G4GoudsmitSaundersonTable::gMoliereXc2;
 
-std::vector<G4double>* G4GoudsmitSaundersonTable::fgMoliereBc  = 0;
-std::vector<G4double>* G4GoudsmitSaundersonTable::fgMoliereXc2 = 0;
 
-G4GoudsmitSaundersonTable::G4GoudsmitSaundersonTable() {}
+G4GoudsmitSaundersonTable::G4GoudsmitSaundersonTable(G4bool iselectron) {
+  fIsElectron         = iselectron;
+  // set initial values: final values will be set in the Initialize method
+  fLogLambda0         = 0.;
+  fLogDeltaLambda     = 0.;
+  fInvLogDeltaLambda  = 0.;
+  fInvDeltaQ1         = 0.;
+  fDeltaQ2            = 0.;
+  fInvDeltaQ2         = 0.;
+  fLogG1FuncMin1      = 0.;
+  fInvLogDeltaG1Func1 = 0.;
+  fLogG1FuncMin2      = 0.;
+  fInvLogDeltaG1Func2 = 0.;
+  //
+  fIsMottCorrection   = true; // set it to be true by default now for the testing
+  fMottCorrection     = nullptr;
+}
 
 G4GoudsmitSaundersonTable::~G4GoudsmitSaundersonTable() {
-  for (size_t i=0; i<fGSMSCAngularDistributions1.size(); ++i) {
-    if (fGSMSCAngularDistributions1[i]) {
-      delete [] fGSMSCAngularDistributions1[i]->fUValues;
-      delete [] fGSMSCAngularDistributions1[i]->fParamA;
-      delete [] fGSMSCAngularDistributions1[i]->fParamB;
-      delete fGSMSCAngularDistributions1[i];
-    }  
-  }
-  fGSMSCAngularDistributions2.clear();
-  for (size_t i=0; i<fGSMSCAngularDistributions2.size(); ++i) {
-    if (fGSMSCAngularDistributions2[i]) {
-      delete [] fGSMSCAngularDistributions2[i]->fUValues;
-      delete [] fGSMSCAngularDistributions2[i]->fParamA;
-      delete [] fGSMSCAngularDistributions2[i]->fParamB;
-      delete fGSMSCAngularDistributions2[i];
+  for (size_t i=0; i<gGSMSCAngularDistributions1.size(); ++i) {
+    if (gGSMSCAngularDistributions1[i]) {
+      delete [] gGSMSCAngularDistributions1[i]->fUValues;
+      delete [] gGSMSCAngularDistributions1[i]->fParamA;
+      delete [] gGSMSCAngularDistributions1[i]->fParamB;
+      delete gGSMSCAngularDistributions1[i];
     }
   }
-  fGSMSCAngularDistributions2.clear();
+  gGSMSCAngularDistributions1.clear();
+  for (size_t i=0; i<gGSMSCAngularDistributions2.size(); ++i) {
+    if (gGSMSCAngularDistributions2[i]) {
+      delete [] gGSMSCAngularDistributions2[i]->fUValues;
+      delete [] gGSMSCAngularDistributions2[i]->fParamA;
+      delete [] gGSMSCAngularDistributions2[i]->fParamB;
+      delete gGSMSCAngularDistributions2[i];
+    }
+  }
+  gGSMSCAngularDistributions2.clear();
+  if (fMottCorrection) {
+    delete fMottCorrection;
+    fMottCorrection = nullptr;
+  }
   gIsInitialised = false;
 }
 
 void G4GoudsmitSaundersonTable::Initialise() {
+  G4double lLambdaMin = G4Log(gLAMBMIN);
+  G4double lLambdaMax = G4Log(gLAMBMAX);
+  fLogLambda0         = lLambdaMin;
+  fLogDeltaLambda     = (lLambdaMax-lLambdaMin)/(gLAMBNUM-1.);
+  fInvLogDeltaLambda  = 1./fLogDeltaLambda;
+  fInvDeltaQ1         = 1./((gQMAX1-gQMIN1)/(gQNUM1-1.));
+  fDeltaQ2            = (gQMAX2-gQMIN2)/(gQNUM2-1.);
+  fInvDeltaQ2         = 1./fDeltaQ2;
+  // for the A(G1) function
+  fLogG1FuncMin1      = G4Log(gG1Values1[0]);
+  fInvLogDeltaG1Func1 = 1./((G4Log(gG1Values1[gNUMSCR1-1]/gG1Values1[0]))/(gNUMSCR1-1.));
+  fLogG1FuncMin2      = G4Log(gG1Values2[0]);
+  fInvLogDeltaG1Func2 = 1./((G4Log(gG1Values2[gNUMSCR2-1]/gG1Values2[0]))/(gNUMSCR2-1.));
   // load precomputed angular distributions and set up several values used during the sampling
+  // these are particle independet => they go to static container: load them only onece
   if (!gIsInitialised) {
-    G4double lLambdaMin  = G4Log(gLAMBMIN);
-    G4double lLambdaMax  = G4Log(gLAMBMAX);
-    fLogLambda0        = lLambdaMin;
-    fLogDeltaLambda    = (lLambdaMax-lLambdaMin)/(gLAMBNUM-1.);
-    fInvLogDeltaLambda = 1./fLogDeltaLambda;
-    fInvDeltaQ1        = 1./((gQMAX1-gQMIN1)/(gQNUM1-1.));
-    fDeltaQ2           = (gQMAX2-gQMIN2)/(gQNUM2-1.);
-    fInvDeltaQ2        = 1./fDeltaQ2;
-    // for the A(G1) function
-    fLogG1FuncMin1      = G4Log(gG1Values1[0]);
-    fInvLogDeltaG1Func1 = 1./((G4Log(gG1Values1[gNUMSCR1-1]/gG1Values1[0]))/(gNUMSCR1-1.));
-    fLogG1FuncMin2      = G4Log(gG1Values2[0]);
-    fInvLogDeltaG1Func2 = 1./((G4Log(gG1Values2[gNUMSCR2-1]/gG1Values2[0]))/(gNUMSCR2-1.));
+    // load pre-computed GS angular distributions (computed based on Screened-Rutherford DCS)
     LoadMSCData();
+    gIsInitialised = true;
   }
   InitMoliereMSCParams();
+  // Mott-correction: particle dependet so init them 
+  if (fIsMottCorrection) {
+    if (!fMottCorrection) {
+      fMottCorrection = new G4GSMottCorrection(fIsElectron);
+    }
+    fMottCorrection->Initialise();
+  }
 }
 
 
 // samplig multiple scattering angles cos(theta) and sin(thata)
-// including no-scattering, single, "few" scattering cases as well
+//  - including no-scattering, single, "few" scattering cases as well
+//  - Mott-correction will be included if it was requested by the user (i.e. if fIsMottCorrection=true)
 // lambdaval : s/lambda_el
 // qval      : s/lambda_el G1
 // scra      : screening parameter
-void G4GoudsmitSaundersonTable::Sampling(G4double lambdaval, G4double qval, G4double scra, G4double &cost, G4double &sint){
+// cost      : will be the smapled cos(theta)
+// sint      : will be the smapled sin(theta)
+// lekin     : logarithm of the current kinetic energy
+// beta2     : the corresponding beta square
+// matindx   : index of the current material
+// returns true if it was msc
+G4bool G4GoudsmitSaundersonTable::Sampling(G4double lambdaval, G4double qval, G4double scra, G4double &cost,
+                                           G4double &sint, G4double lekin, G4double beta2, G4int matindx,
+                                           GSMSCAngularDtr **gsDtr, G4int &mcekini, G4int &mcdelti,
+                                           G4double &transfPar, G4bool isfirst) {
   G4double rand0 = G4UniformRand();
   G4double expn  = G4Exp(-lambdaval);
   //
@@ -327,25 +380,21 @@ void G4GoudsmitSaundersonTable::Sampling(G4double lambdaval, G4double qval, G4do
   if (rand0<expn) {
     cost = 1.0;
     sint = 0.0;
-    return;
+    return false;
   }
   //
   // single scattering case : sample from the single scattering PDF
+  // - Mott-correction will be included if it was requested by the user (i.e. if fIsMottCorrection=true)
   if (rand0<(1.+lambdaval)*expn) {
-    G4double rand1 = G4UniformRand();
-    // sampling 1-cos(theta)
-    G4double dum0  = 2.0*scra*rand1/(1.0-rand1+scra);
+    // cost is sampled in SingleScattering()
+    cost = SingleScattering(lambdaval, scra, lekin, beta2, matindx);
     // add protections
-    if (dum0 < 0.0) {
-      dum0 = 0.0;
-    }
-    if (dum0>2.0) {
-      dum0 = 2.0;
-    }
-    // compute cos(theta) and sin(theta) from the sampled 1-cos(theta)
-    cost = 1.0-dum0;
+    if (cost<-1.0) cost = -1.0;
+    if (cost>1.0)  cost =  1.0;
+    // compute sin(theta) from the sampled cos(theta)
+    G4double dum0 = 1.-cost;
     sint = std::sqrt(dum0*(2.0-dum0));
-    return;
+    return false;
   }
   //
   // handle this case:
@@ -373,14 +422,11 @@ void G4GoudsmitSaundersonTable::Sampling(G4double lambdaval, G4double qval, G4do
       prob    *= lambdaval/(G4double)iel;
       cumprob += prob;
       //
-      //sample cos(theta) from the singe scattering pdf
-      //
-      G4double rand1 = G4UniformRand();
-      // sampling 1-cos(theta)
-      G4double dum0  = 2.0*scra*rand1/(1.0-rand1+scra);
-      // compute cos(theta) and sin(theta) from the sampled 1-cos(theta)
-      curcost = 1.0-dum0;        // cos(theta)
-      cursint = dum0*(2.0-dum0); // sin^2(theta)
+      //sample cos(theta) from the singe scattering pdf:
+      // - Mott-correction will be included if it was requested by the user (i.e. if fIsMottCorrection=true)
+      curcost       = SingleScattering(lambdaval, scra, lekin, beta2, matindx);
+      G4double dum0 = 1.-cost;
+      cursint       = dum0*(2.0-dum0); // sin^2(theta)
       //
       // if we got current deflection that is not too small
       // then update cos(theta) sin(theta)
@@ -393,156 +439,160 @@ void G4GoudsmitSaundersonTable::Sampling(G4double lambdaval, G4double qval, G4do
       //
       // check if we have done enough scattering i.e. sampling from the Poisson
       if (rand0<cumprob) {
-        return;
+        return false;
       }
     }
     // if reached the max iter i.e. 10
-    return;
+    return false;
   }
   //
   // multiple scattering case with lambdavalue >= 1:
   //   - use the precomputed and transformed Goudsmit-Saunderson angular
-  //     distributions to sample 1.-cos(theta)
-  G4double vrand[3];
-  G4Random::getTheEngine()->flatArray(3,vrand);
-  //double dum0 = SampleCosTheta(lambdaval, qval, scra, r1, r2, r3);
-  double dum0 = SampleCosTheta(lambdaval, qval, scra, vrand[0], vrand[1], vrand[2]);
+  //     distributions to sample cos(theta)
+  //   - Mott-correction will be included if it was requested by the user (i.e. if fIsMottCorrection=true)
+  cost = SampleCosTheta(lambdaval, qval, scra, lekin, beta2, matindx, gsDtr, mcekini, mcdelti, transfPar, isfirst);
   // add protections
-  if (dum0<0.0) dum0 = 0.0;
-  if (dum0>2.0) dum0 = 2.0;
+  if (cost<-1.0)  cost = -1.0;
+  if (cost> 1.0)  cost =  1.0;
   // compute cos(theta) and sin(theta) from the sampled 1-cos(theta)
-  cost = 1.0-dum0;
+  G4double dum0 = 1.0-cost;
   sint = std::sqrt(dum0*(2.0-dum0));
+  // return true if it was msc
+  return true;
 }
 
 
-G4double G4GoudsmitSaundersonTable::SampleCosTheta(G4double lambdaval, G4double qval, G4double scra, G4double rndm1, G4double rndm2, G4double rndm3) {
-  // make sure that lambda = s/lambda_el is in [gLAMBMIN,gLAMBMAX)
-  // : note that lambda<gLAMBMIN=1 is already handeled before so lambda>= gLAMBMIN for sure
-  if (lambdaval>=gLAMBMAX) {
-    lambdaval = gLAMBMAX-1.e-8;
+G4double G4GoudsmitSaundersonTable::SampleCosTheta(G4double lambdaval, G4double qval, G4double scra,
+                                                   G4double lekin, G4double beta2, G4int matindx,
+                                                   GSMSCAngularDtr **gsDtr, G4int &mcekini,G4int &mcdelti,
+                                                   G4double &transfPar, G4bool isfirst) {
+  G4double cost = 1.;
+  // determine the base GS angular distribution if it is the first call (when sub-step sampling is used)
+  if (isfirst) {
+    *gsDtr = GetGSAngularDtr(scra, lambdaval, qval, transfPar);
   }
-  // if we need the second grid
-  if (qval>=gQMIN2) {
-    return SampleCosTheta2(lambdaval, qval, scra, rndm1, rndm2, rndm3);
-  } else {
-    return SampleCosTheta1(lambdaval, qval, scra, rndm1, rndm2, rndm3);
+  // sample cost from the GS angular distribution (computed based on Screened-Rutherford DCS)
+  cost = SampleGSSRCosTheta(*gsDtr, transfPar);
+  // Mott-correction if it was requested by the user
+  if (fIsMottCorrection && *gsDtr) {     // no Mott-correction in case of izotropic theta
+    static const G4int nlooplim = 1000;
+    G4int    nloop    =  0 ; // rejection loop counter
+//    G4int    ekindx   = -1; // evaluate only in the first call
+//    G4int    deltindx = -1 ; // evaluate only in the first call
+    G4double val      = fMottCorrection->GetMottRejectionValue(lekin, beta2, qval, cost, matindx,
+                                                               mcekini, mcdelti);
+    while (G4UniformRand()>val && ++nloop<nlooplim) {
+      // sampling cos(theta)
+      cost = SampleGSSRCosTheta(*gsDtr, transfPar);
+      val  = fMottCorrection->GetMottRejectionValue(lekin, beta2, qval, cost, matindx,
+                                                    mcekini, mcdelti);
+    };
   }
+  return cost;
 }
 
 
-
-// for Q Grid 1
-G4double G4GoudsmitSaundersonTable::SampleCosTheta1(G4double lambdaval, G4double qval, G4double scra, G4double rndm1, G4double rndm2, G4double rndm3) {
-  // determine lower lambda index
-  // logspacing in lambdaval => L=s/lambda_el
-  G4double logLambda       = G4Log(lambdaval);
-  G4double pLambdaIndxPlus = (logLambda-fLogLambda0)*fInvLogDeltaLambda;
-  G4int    lambdaIndx      = (G4int)(pLambdaIndxPlus);    // lower index of the lambda bin
-  pLambdaIndxPlus        = pLambdaIndxPlus-lambdaIndx;    // probability of taking the higher index distribution
-  if (rndm1<pLambdaIndxPlus) {
-    ++lambdaIndx;
+// returns with cost sampled from the GS angular distribution computed based on Screened-Rutherford DCS
+G4double G4GoudsmitSaundersonTable::SampleGSSRCosTheta(const GSMSCAngularDtr *gsDtr, G4double transfpar) {
+  // check if isotropic theta (i.e. cost is uniform on [-1:1])
+  if (!gsDtr) {
+    return 1.-2.0*G4UniformRand();
   }
-  // determine lower Q index
-  // linear spacing in qval => Q=s/lambda_el G1
-  // assuming that qval is in [gQMIN1, gQMAX1) !
-  if (qval<gQMIN1) {
-    qval = gQMIN1;
-  }
-  G4double pQIndxPlus = (qval-gQMIN1)*fInvDeltaQ1;
-  G4int    qIndx      = (int)(pQIndxPlus);        // lower index of the Q bin
-  pQIndxPlus        = pQIndxPlus-qIndx;
-  if (rndm2<pQIndxPlus) {
-    ++qIndx;
-  }
-  G4int indx      = lambdaIndx*gQNUM1+qIndx;
-  GSMSCAngularDtr *gsDtr = fGSMSCAngularDistributions1[indx];
+  //
   // sampling form the selected distribution
-  G4double delta  = 1.0/(gsDtr->fNumData-1.);
+  G4double ndatm1 = gsDtr->fNumData-1.;
+  G4double delta  = 1.0/ndatm1;
   // determine lower cumulative bin inidex
-  G4int indxl     = rndm3/delta;
-  G4double  aval  = rndm3-indxl*delta;
+  G4double rndm   = G4UniformRand();
+  G4int indxl     = rndm*ndatm1;
+  G4double  aval  = rndm-indxl*delta;
   G4double  dum0  = delta*aval;
+
   G4double  dum1  = (1.0+gsDtr->fParamA[indxl]+gsDtr->fParamB[indxl])*dum0;
   G4double  dum2  = delta*delta + gsDtr->fParamA[indxl]*dum0 + gsDtr->fParamB[indxl]*aval*aval;
   G4double sample = gsDtr->fUValues[indxl] +  dum1/dum2 *(gsDtr->fUValues[indxl+1]-gsDtr->fUValues[indxl]);
   // transform back u to cos(theta) :
-  // -compute parameter value a = w2*screening_parameter
-  if (lambdaval>10.0) {
-    dum0 = 0.5*(-2.77164+logLambda*( 2.94874-logLambda*(0.1535754-logLambda*0.00552888) ));
-  } else {
-    dum0 = 0.5*(1.347+logLambda*(0.209364-logLambda*(0.45525-logLambda*(0.50142-logLambda*0.081234))));
-  }
-  G4double para = dum0*(lambdaval+4.0)*scra;
-  // this is the sampled 1-cos(theta) = (2.0*para*sample)/(1.0-sample+para)
-  return (2.0*para*sample)/(1.0-sample+para);
+  // this is the sampled cos(theta) = (2.0*para*sample)/(1.0-sample+para)
+  return 1.-(2.0*transfpar*sample)/(1.0-sample+transfpar);
 }
 
-// for Q Grid 2
-G4double G4GoudsmitSaundersonTable::SampleCosTheta2(G4double lambdaval, G4double qval, G4double scra, G4double rndm1, G4double rndm2, G4double rndm3) {
-  // determine lower lambda index
-  // logspacing in lambdaval => L=s/lambda_el
-  G4double logLambda       = G4Log(lambdaval);
-  G4double pLambdaIndxPlus = (logLambda-fLogLambda0)*fInvLogDeltaLambda;
-  G4int    lambdaIndx      = (G4int)(pLambdaIndxPlus);        // lower index of the lambda bin
-  pLambdaIndxPlus        = pLambdaIndxPlus-lambdaIndx;    // probability of taking the higher index distribution
-  // protect: lower almbda might be smaller than Q (G1=Q/L should be <1)
-  G4double lambdaScale     = 1.0;
-  G4double logQ            = G4Log(qval);
-  G4double lambdaLow       = fLogLambda0+lambdaIndx*fLogDeltaLambda;
-  if (lambdaLow<logQ) {
-    G4double min  = (logQ-lambdaLow);
-    lambdaScale = (fLogDeltaLambda-min/pLambdaIndxPlus)/(fLogDeltaLambda-min);
-  }
-  pLambdaIndxPlus *= lambdaScale;
-  // select lower or upper lambda grid point
-  if (rndm1<pLambdaIndxPlus) {
-    ++lambdaIndx;
-  }
-  // determine lower Q index
-  // linear spacing in qval => Q=s/lambda_el G1
-  // assuming that qval is in [gQMIN2, gQMAX2) !
-  GSMSCAngularDtr *gsDtr = nullptr;
+
+// determine the GS angular distribution we need to sample from: will set other things as well ...
+G4GoudsmitSaundersonTable::GSMSCAngularDtr* G4GoudsmitSaundersonTable::GetGSAngularDtr(G4double scra,
+                                                  G4double &lambdaval, G4double &qval, G4double &transfpar) {
+  GSMSCAngularDtr *dtr = nullptr;
+  G4bool first         = false;
+  // isotropic cost above gQMAX2 (i.e. dtr stays nullptr)
   if (qval<gQMAX2) {
-    G4double pQIndxPlus = (qval-gQMIN2)*fInvDeltaQ2;
-    G4int    qIndx      = (G4int)(pQIndxPlus);        // lower index of the Q bin
-    pQIndxPlus        = pQIndxPlus-qIndx;
-    G4int indx          = lambdaIndx*gQNUM2+qIndx;
-    if (fGSMSCAngularDistributions2[indx]) {
-      pQIndxPlus     *= fGSMSCAngularDistributions2[indx]->fQScale;
-      if (rndm2<pQIndxPlus) {
-        ++indx;
+    G4int    lamIndx  = -1; // lambda value index
+    G4int    qIndx    = -1; // lambda value index
+    // init to second grid Q values
+    G4int    numQVal  = gQNUM2;
+    G4double minQVal  = gQMIN2;
+    G4double invDelQ  = fInvDeltaQ2;
+    G4double pIndxH   = 0.; // probability of taking higher index
+    // check if first or second grid needs to be used
+    if (qval<gQMIN2) {  // first grid
+      first = true;
+      // protect against qval<gQMIN1
+      if (qval<gQMIN1) {
+        qval   = gQMIN1;
+        qIndx  = 0;
+        //pIndxH = 0.;
       }
-      gsDtr = fGSMSCAngularDistributions2[indx];
+      // set to first grid Q values
+      numQVal  = gQNUM1;
+      minQVal  = gQMIN1;
+      invDelQ  = fInvDeltaQ1;
     }
-  }
-  // sample from the selected distribution: nullptr means that cos(theta) is isotropic
-  if (gsDtr) {
+    // make sure that lambda = s/lambda_el is in [gLAMBMIN,gLAMBMAX)
+    // lambda<gLAMBMIN=1 is already handeled before so lambda>= gLAMBMIN for sure
+    if (lambdaval>=gLAMBMAX) {
+      lambdaval = gLAMBMAX-1.e-8;
+      lamIndx   = gLAMBNUM-1;
+    }
+    G4double lLambda  = G4Log(lambdaval);
     //
-    // sampling form the selected distribution
-    G4double delta  = 1.0/(gsDtr->fNumData-1.);
-    // determine lower cumulative bin inidex
-    G4int indxl     = rndm3/delta;
-    G4double  aval  = rndm3-indxl*delta;
-    G4double  dum0  = delta*aval;
-    G4double  dum1  = (1.0+gsDtr->fParamA[indxl]+gsDtr->fParamB[indxl])*dum0;
-    G4double  dum2  = delta*delta + gsDtr->fParamA[indxl]*dum0 + gsDtr->fParamB[indxl]*aval*aval;
-    G4double sample = gsDtr->fUValues[indxl] +  dum1/dum2 *(gsDtr->fUValues[indxl+1]-gsDtr->fUValues[indxl]);
-    // transform back u to cos(theta) :
-    // -compute parameter value a = w2*screening_parameter
-    if (lambdaval>10.0) {
-      dum0 = 0.5*(-2.77164+logLambda*( 2.94874-logLambda*(0.1535754-logLambda*0.00552888) ));
-    } else {
-      dum0 = 0.5*(1.347+logLambda*(0.209364-logLambda*(0.45525-logLambda*(0.50142-logLambda*0.081234))));
+    // determine lower lambda (=s/lambda_el) index: linear interp. on log(lambda) scale
+    if (lamIndx<0) {
+      pIndxH  = (lLambda-fLogLambda0)*fInvLogDeltaLambda;
+      lamIndx = (G4int)(pIndxH);        // lower index of the lambda bin
+      pIndxH  = pIndxH-lamIndx;       // probability of taking the higher index distribution
+      if (G4UniformRand()<pIndxH) {
+        ++lamIndx;
+      }
     }
-    G4double para = dum0*(lambdaval+4.0)*scra;
-    // this is the sampled 1-cos(theta) = (2.0*para*sample)/(1.0-sample+para)
-    // so returns with 1-cos(theta)
-    return (2.0*para*sample)/(1.0-sample+para);
-  } else {
-    // isotropic 1-cos(theta)
-    return rndm3*2.0;
+    //
+    // determine lower Q (=s/lambda_el G1) index: linear interp. on Q
+    if (qIndx<0) {
+      pIndxH  = (qval-minQVal)*invDelQ;
+      qIndx   = (G4int)(pIndxH);        // lower index of the Q bin
+      pIndxH  = pIndxH-qIndx;
+      if (G4UniformRand()<pIndxH) {
+        ++qIndx;
+      }
+    }
+    // set indx
+    G4int indx = lamIndx*numQVal+qIndx;
+    if (first) {
+      dtr = gGSMSCAngularDistributions1[indx];
+    } else {
+      dtr = gGSMSCAngularDistributions2[indx];
+    }
+    // dtr might be nullptr that indicates isotropic cot distribution because:
+    // - if the selected lamIndx, qIndx correspond to L(=s/lambda_el) and Q(=s/lambda_el G1) such that G1(=Q/L) > 1
+    //   G1 should always be < 1 and if G1 is ~1 -> the dtr is isotropic (this can only happen in case of the 2. grid)
+    //
+    // compute the transformation parameter
+    if (lambdaval>10.0) {
+      transfpar = 0.5*(-2.77164+lLambda*( 2.94874-lLambda*(0.1535754-lLambda*0.00552888) ));
+    } else {
+      transfpar = 0.5*(1.347+lLambda*(0.209364-lLambda*(0.45525-lLambda*(0.50142-lLambda*0.081234))));
+    }
+    transfpar *= (lambdaval+4.0)*scra;
   }
+  // return with the selected GS angular distribution that we need to sample cost from (if nullptr => isotropic cost)
+  return dtr;
 }
 
 
@@ -573,8 +623,8 @@ void G4GoudsmitSaundersonTable::LoadMSCData() {
 		"Environment variable G4LEDATA not defined");
     return;
   }
-  // 
-  fGSMSCAngularDistributions1.resize(gLAMBNUM*gQNUM1);
+  //
+  gGSMSCAngularDistributions1.resize(gLAMBNUM*gQNUM1,nullptr);
   for (G4int il=0; il<gLAMBNUM; ++il) {
     char fname[512];
     sprintf(fname,"%s/msc_GS/GSGrid_1/gsDistr_%d",path,il);
@@ -589,7 +639,6 @@ void G4GoudsmitSaundersonTable::LoadMSCData() {
     for (G4int iq=0; iq<gQNUM1; ++iq) {
       GSMSCAngularDtr *gsd = new GSMSCAngularDtr();
       infile >> gsd->fNumData;
-      gsd->fQScale  = 1.0;
       gsd->fUValues = new G4double[gsd->fNumData]();
       gsd->fParamA  = new G4double[gsd->fNumData]();
       gsd->fParamB  = new G4double[gsd->fNumData]();
@@ -600,15 +649,14 @@ void G4GoudsmitSaundersonTable::LoadMSCData() {
         infile >> gsd->fParamA[i];
         infile >> gsd->fParamB[i];
       }
-      fGSMSCAngularDistributions1[il*gQNUM1+iq] = gsd;
+      gGSMSCAngularDistributions1[il*gQNUM1+iq] = gsd;
     }
     infile.close();
   }
   //
   // second grid
-  fGSMSCAngularDistributions2.resize(gLAMBNUM*gQNUM2);
+  gGSMSCAngularDistributions2.resize(gLAMBNUM*gQNUM2,nullptr);
   for (G4int il=0; il<gLAMBNUM; ++il) {
-    G4double lambda = G4Exp(fLogLambda0+fLogDeltaLambda*il);
     char fname[512];
     sprintf(fname,"%s/msc_GS/GSGrid_2/gsDistr_%d",path,il);
     std::ifstream infile(fname,std::ios::in);
@@ -620,22 +668,11 @@ void G4GoudsmitSaundersonTable::LoadMSCData() {
       return;
     }
     for (G4int iq=0; iq<gQNUM2; ++iq) {
-      G4double qDelta = fDeltaQ2; // indicates that = fDeltaQ2
       G4int numData;
       infile >> numData;
       if (numData>0) {
-        G4double qval   = gQMIN2+iq*fDeltaQ2;
-        if (iq<gQNUM2-1) {
-          G4double qvalPlus = qval+fDeltaQ2;
-          G4double g1   = qvalPlus/lambda; // it's G1 that should be <1.0
-          if (g1>1.0) {
-            qvalPlus = 1.0*lambda;
-            qDelta   = qvalPlus-qval;
-          }
-        }
         GSMSCAngularDtr *gsd = new GSMSCAngularDtr();
         gsd->fNumData = numData;
-        gsd->fQScale  = fDeltaQ2/qDelta;  // fDeltaQ2/qDelta : remain* this => probOfUpper bin
         gsd->fUValues = new G4double[gsd->fNumData]();
         gsd->fParamA  = new G4double[gsd->fNumData]();
         gsd->fParamB  = new G4double[gsd->fNumData]();
@@ -646,67 +683,109 @@ void G4GoudsmitSaundersonTable::LoadMSCData() {
           infile >> gsd->fParamA[i];
           infile >> gsd->fParamB[i];
         }
-        fGSMSCAngularDistributions2[il*gQNUM2+iq] = gsd;
+        gGSMSCAngularDistributions2[il*gQNUM2+iq] = gsd;
       } else {
-        fGSMSCAngularDistributions2[il*gQNUM2+iq] = nullptr;
+        gGSMSCAngularDistributions2[il*gQNUM2+iq] = nullptr;
       }
     }
     infile.close();
   }
 }
 
+// samples cost in single scattering based on Screened-Rutherford DCS
+// (with Mott-correction if it was requested)
+G4double G4GoudsmitSaundersonTable::SingleScattering(G4double /*lambdaval*/, G4double scra,
+                                                     G4double lekin, G4double beta2,
+                                                     G4int matindx) {
+  G4double rand1 = G4UniformRand();
+  // sample cost from the Screened-Rutherford DCS
+  G4double cost  = 1.-2.0*scra*rand1/(1.0-rand1+scra);
+  // Mott-correction if it was requested by the user
+  if (fIsMottCorrection) {
+    static const G4int nlooplim = 1000;  // rejection loop limit
+    G4int    nloop    =  0 ; // loop counter
+    G4int    ekindx   = -1 ; // evaluate only in the first call
+    G4int    deltindx =  0 ; // single scattering case
+    G4double q1       =  0.; // not used when deltindx = 0;
+    // computing Mott rejection function value
+    G4double val      = fMottCorrection->GetMottRejectionValue(lekin, beta2, q1, cost,
+                                                               matindx, ekindx, deltindx);
+    while (G4UniformRand()>val && ++nloop<nlooplim) {
+      // sampling cos(theta) from the Screened-Rutherford DCS
+      rand1 = G4UniformRand();
+      cost  = 1.-2.0*scra*rand1/(1.0-rand1+scra);
+      // computing Mott rejection function value
+      val   = fMottCorrection->GetMottRejectionValue(lekin, beta2, q1, cost, matindx,
+                                                     ekindx, deltindx);
+    };
+  }
+  return cost;
+}
 
-////////////////////////////////////////////////////////////////////////////////
+
+void  G4GoudsmitSaundersonTable::GetMottCorrectionFactors(G4double logekin, G4double beta2,
+                                                          G4int matindx, G4double &mcToScr,
+                                                          G4double &mcToQ1, G4double &mcToG2PerG1) {
+  if (fIsMottCorrection) {
+    fMottCorrection->GetMottCorrectionFactors(logekin, beta2, matindx, mcToScr, mcToQ1, mcToG2PerG1);
+  }
+}
+
+
 // compute material dependent Moliere MSC parameters at initialisation
 void G4GoudsmitSaundersonTable::InitMoliereMSCParams() {
    const G4double const1   = 7821.6;      // [cm2/g]
    const G4double const2   = 0.1569;      // [cm2 MeV2 / g]
    const G4double finstrc2 = 5.325135453E-5; // fine-structure const. square
 
-   G4MaterialTable *theMaterialTable = G4Material::GetMaterialTable();
+   G4MaterialTable* theMaterialTable = G4Material::GetMaterialTable();
    // get number of materials in the table
-   unsigned int numMaterials = theMaterialTable->size();
+   size_t numMaterials = theMaterialTable->size();
    // make sure that we have long enough vectors
-   if(!fgMoliereBc) {
-     fgMoliereBc  = new std::vector<G4double>(numMaterials);
-     fgMoliereXc2 = new std::vector<G4double>(numMaterials);
-   } else {
-     fgMoliereBc->resize(numMaterials);
-     fgMoliereXc2->resize(numMaterials);
+   if(gMoliereBc.size()<numMaterials) {
+     gMoliereBc.resize(numMaterials);
+     gMoliereXc2.resize(numMaterials);
    }
-
-   const G4double xims = 0.0; // use xi_MS = 0.0 value now. We will see later on.
-   for(unsigned int imat = 0; imat < numMaterials; ++imat) {
-     const G4Material      *theMaterial  = (*theMaterialTable)[imat];
-     const G4ElementVector *theElemVect  = theMaterial->GetElementVector();
-
-     const G4int     numelems        = theMaterial->GetNumberOfElements();
-     const G4double* theFractionVect = theMaterial->GetFractionVector();
+   //
+   G4double xi   = 0.0;
+   G4int    maxZ = 200;
+   if (fIsMottCorrection) {
+     xi   = 1.0;
+     maxZ = G4GSMottCorrection::GetMaxZet();
+   }
+   //
+   for (size_t imat=0; imat<numMaterials; ++imat) {
+     const G4Material*      theMaterial     = (*theMaterialTable)[imat];
+     const G4ElementVector* theElemVect     = theMaterial->GetElementVector();
+     const G4int            numelems        = theMaterial->GetNumberOfElements();
+     //
+     const G4double*        theNbAtomsPerVolVect  = theMaterial->GetVecNbOfAtomsPerVolume();
+     G4double               theTotNbAtomsPerVol   = theMaterial->GetTotNbOfAtomsPerVolume();
+     //
      G4double zs = 0.0;
      G4double zx = 0.0;
      G4double ze = 0.0;
-
+     G4double sa = 0.0;
+     //
      for(G4int ielem = 0; ielem < numelems; ielem++) {
-       G4double izet = (*theElemVect)[ielem]->GetZ();
+       G4double zet = (*theElemVect)[ielem]->GetZ();
+       if (zet>maxZ) {
+         zet = (G4double)maxZ;
+       }
        G4double iwa  = (*theElemVect)[ielem]->GetN();
-//       G4int ipz     = theAtomsVect[ielem];
-       G4double ipz  = theFractionVect[ielem];
-
-       G4double dum  = ipz/iwa*izet*(izet+xims);
-       zs += dum;
-       ze += dum*(-2.0/3.0)*G4Log(izet);
-       zx += dum*G4Log(1.0+3.34*finstrc2*izet*izet);
-//       wa += ipz*iwa;
+       G4double ipz  = theNbAtomsPerVolVect[ielem]/theTotNbAtomsPerVol;
+       G4double dum  = ipz*zet*(zet+xi);
+       zs           += dum;
+       ze           += dum*(-2.0/3.0)*G4Log(zet);
+       zx           += dum*G4Log(1.0+3.34*finstrc2*zet*zet);
+       sa           += ipz*iwa;
      }
      G4double density = theMaterial->GetDensity()*CLHEP::cm3/CLHEP::g; // [g/cm3]
-
-     (*fgMoliereBc)[theMaterial->GetIndex()]  = const1*density*zs*G4Exp(ze/zs)/G4Exp(zx/zs);  //[1/cm]
-     (*fgMoliereXc2)[theMaterial->GetIndex()] = const2*density*zs;  // [MeV2/cm]
-
+     //
+     gMoliereBc[theMaterial->GetIndex()]  = const1*density*zs/sa*G4Exp(ze/zs)/G4Exp(zx/zs);  //[1/cm]
+     gMoliereXc2[theMaterial->GetIndex()] = const2*density*zs/sa;  // [MeV2/cm]
      // change to Geant4 internal units of 1/length and energ2/length
-     (*fgMoliereBc)[theMaterial->GetIndex()]  *= 1.0/CLHEP::cm;
-     (*fgMoliereXc2)[theMaterial->GetIndex()] *= CLHEP::MeV*CLHEP::MeV/CLHEP::cm;
+     gMoliereBc[theMaterial->GetIndex()]  *= 1.0/CLHEP::cm;
+     gMoliereXc2[theMaterial->GetIndex()] *= CLHEP::MeV*CLHEP::MeV/CLHEP::cm;
    }
-
 }
-

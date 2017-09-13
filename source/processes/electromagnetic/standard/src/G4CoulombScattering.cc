@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4CoulombScattering.cc 85246 2014-10-27 08:26:11Z gcosmo $
+// $Id: G4CoulombScattering.cc 105734 2017-08-16 12:58:28Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -125,11 +125,11 @@ void G4CoulombScattering::InitialiseProcess(const G4ParticleDefinition* p)
        name != "kaon+" && name != "proton" ) { SetVerboseLevel(0); }
   }
 
-  if(!EmModel(1)) { 
-    if(yes) { SetEmModel(new G4eCoulombScatteringModel(), 1); } 
-    else    { SetEmModel(new G4IonCoulombScatteringModel(), 1); }
+  if(!EmModel(0)) { 
+    if(yes) { SetEmModel(new G4eCoulombScatteringModel()); } 
+    else    { SetEmModel(new G4IonCoulombScatteringModel()); }
   }
-  G4VEmModel* model = EmModel(1);
+  G4VEmModel* model = EmModel(0);
   G4double emin = std::max(param->MinKinEnergy(),model->LowEnergyLimit());
   G4double emax = std::min(param->MaxKinEnergy(),model->HighEnergyLimit());
   model->SetPolarAngleLimit(theta);

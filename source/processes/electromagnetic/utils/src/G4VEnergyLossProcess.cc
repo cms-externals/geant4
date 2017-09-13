@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEnergyLossProcess.cc 104349 2017-05-26 07:18:59Z gcosmo $
+// $Id: G4VEnergyLossProcess.cc 105942 2017-09-01 07:37:29Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -406,20 +406,17 @@ void G4VEnergyLossProcess::UpdateEmModel(const G4String& nam,
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-void G4VEnergyLossProcess::SetEmModel(G4VEmModel* p, G4int index)
+void G4VEnergyLossProcess::SetEmModel(G4VEmModel* ptr, G4int)
 {
-  G4int n = emModels.size();
-  if(index >= n) { for(G4int i=n; i<=index; ++i) {emModels.push_back(0);} }
-  emModels[index] = p;
+  for(auto & em : emModels) { if(em == ptr) { return; } }
+  emModels.push_back(ptr);  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-G4VEmModel* G4VEnergyLossProcess::EmModel(G4int index) const
+G4VEmModel* G4VEnergyLossProcess::EmModel(size_t index) const
 {
-  G4VEmModel* p = nullptr;
-  if(index >= 0 && index <  G4int(emModels.size())) { p = emModels[index]; }
-  return p;
+  return (index < emModels.size()) ? emModels[index] : nullptr; 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -446,10 +443,7 @@ G4VEnergyLossProcess::PreparePhysicsTable(const G4ParticleDefinition& part)
            << GetProcessName() << " for " << part.GetParticleName() 
            << "  " << this << G4endl;
   }
-
-  const G4VEnergyLossProcess* masterProcess = 
-    static_cast<const G4VEnergyLossProcess*>(GetMasterProcess());
-  if(masterProcess && masterProcess != this) { isMaster = false; }
+  isMaster = lManager->IsMaster();
 
   currentCouple = nullptr;
   preStepLambda = 0.0;
@@ -696,8 +690,7 @@ G4VEnergyLossProcess::PreparePhysicsTable(const G4ParticleDefinition& part)
 
 void G4VEnergyLossProcess::BuildPhysicsTable(const G4ParticleDefinition& part)
 {
-  if(1 < verboseLevel) {
-  
+  if(1 < verboseLevel) {  
     G4cout << "### G4VEnergyLossProcess::BuildPhysicsTable() for "
            << GetProcessName()
            << " and particle " << part.GetParticleName()
@@ -1122,16 +1115,17 @@ G4double G4VEnergyLossProcess::AlongStepGetPhysicalInteractionLength(
   *selection = aGPILSelection;
   if(isIonisation && currentModel->IsActive(preStepScaledEnergy)) {
     fRange = GetScaledRangeForScaledEnergy(preStepScaledEnergy)*reduceFactor;
-    x = fRange;
-    G4double finR = finalRange;
-    if(rndmStepFlag) { 
-      finR = std::min(finR,
-                      currentCouple->GetProductionCuts()->GetProductionCut(1));
+
+    // smeared range
+    if(rndmStepFlag && fRange < finalRange) {
+      G4VEmFluctuationModel* fluc = currentModel->GetModelOfFluctuations();
+      if(fluc) { fRange = fluc->RangeSmeared(currentMaterial, particle,
+					     preStepKinEnergy, fRange); }
+      x = fRange;
+    } else {
+      x = (fRange > finalRange) ? fRange*dRoverRange + 
+	finalRange*(1.0 - dRoverRange)*(2.0 - finalRange/fRange) : fRange; 
     }
-    if(fRange > finR) { 
-      x = fRange*dRoverRange + finR*(1.0 - dRoverRange)*(2.0 - finR/fRange); 
-    }
-    
    // if(particle->GetPDGMass() > 0.9*GeV)
     /*
     G4cout<<GetProcessName()<<": e= "<<preStepKinEnergy
@@ -1186,11 +1180,9 @@ G4double G4VEnergyLossProcess::PostStepGetPhysicalInteractionLength(
 
   // forced biasing only for primary particles
   if(biasManager) {
-    if(0 == track.GetParentID()) {
-      if(biasFlag && 
-         biasManager->ForcedInteractionRegion(currentCoupleIndex)) {
-        return biasManager->GetStepLimit(currentCoupleIndex, previousStepSize);
-      }
+    if(0 == track.GetParentID() && biasFlag && 
+       biasManager->ForcedInteractionRegion(currentCoupleIndex)) {
+      return biasManager->GetStepLimit(currentCoupleIndex, previousStepSize);
     }
   }
 

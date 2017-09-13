@@ -497,6 +497,7 @@ void G4QGSParticipants::GetList( const G4ReactionProduct& thePrimary ) {
 	G4InteractionContent* anInteraction = *i;
         G4Nucleon * pNucleon = anInteraction->GetTargetNucleon(); pNucleon->Hit(nullptr);
 
+        delete anInteraction->GetTarget();
 	delete *i;
 	i=theInteractions.erase(i);
 	i--;
@@ -514,6 +515,7 @@ void G4QGSParticipants::GetList( const G4ReactionProduct& thePrimary ) {
          G4Nucleon*        aTargetNucleon = anInteraction->GetTargetNucleon();
 	 aTargetNucleon->Hit(nullptr);
 
+         delete anInteraction->GetTarget();
 	 delete *i;
 	 i=theInteractions.erase(i);
         }

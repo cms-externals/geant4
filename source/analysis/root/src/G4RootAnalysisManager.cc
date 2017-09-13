@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4RootAnalysisManager.cc 103532 2017-04-13 14:00:35Z gcosmo $
+// $Id: G4RootAnalysisManager.cc 105338 2017-07-21 09:14:27Z gcosmo $
 
 // Author: Ivana Hrivnacova, 18/06/2013  (ivana@ipno.in2p3.fr)
 
@@ -539,6 +539,7 @@ G4bool G4RootAnalysisManager::OpenFileImpl(const G4String& fileName)
   }
 
   if ( fNtupleMergeMode == G4NtupleMergeMode::kSlave )  {
+    G4cout << "Going to create slave ntuples from main" << G4endl;
     // No file is open by Slave manager
     fSlaveNtupleManager->CreateNtuplesFromMain();
   }

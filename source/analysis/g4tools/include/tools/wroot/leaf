@@ -39,6 +39,10 @@ inline const std::string& leaf_element_store_class() {
   static const std::string s_v("TLeafElement");
   return s_v;
 }
+inline const std::string& leaf_object_store_class() {
+  static const std::string s_v("TLeafObject");
+  return s_v;
+}
 
 template <class T>
 class leaf : public base_leaf {
@@ -180,6 +184,60 @@ protected:
 protected:
   int fID;   //element serial number in fInfo
   int fType; //leaf type
+};
+
+}}
+
+#include "iobject"
+
+namespace tools {
+namespace wroot {
+
+class leaf_object : public base_leaf {
+  typedef base_leaf parent;
+public:
+  static cid id_class() {return leaf_object_cid();}
+  virtual void* cast(cid a_class) const {
+    if(void* p = cmp_cast<leaf_object>(this,a_class)) {return p;}
+    return base_leaf::cast(a_class);
+  }
+public:
+  virtual const std::string& store_cls() const {return leaf_object_store_class();}
+  virtual bool stream(buffer& a_buffer) const {
+    unsigned int c;
+    if(!a_buffer.write_version(4,c)) return false;
+    if(!parent::stream(a_buffer)) return false;
+    if(!a_buffer.write(fVirtual)) return false;
+    if(!a_buffer.set_byte_count(c)) return false;
+    return true;
+  }
+public: //base_leaf
+  virtual bool fill_buffer(buffer& a_buffer) const {
+    if(fVirtual) {
+      const std::string& _class = m_obj.store_class_name();
+      if(_class.size()>255) return false;
+      unsigned char n = _class.size();
+      if(!a_buffer.write(n)) return false;
+      if(!a_buffer.write_fast_array(_class.c_str(),n+1)) return false;
+    }
+    return m_obj.stream(a_buffer);
+  }
+public:
+  leaf_object(std::ostream& a_out,const std::string& a_name,const iobject& a_obj)
+  :parent(a_out,a_name,a_obj.store_class_name()) //CERN-ROOT/TLeafObject::Streamer() wants store class name on m_title.
+  ,m_obj(a_obj)
+  ,fVirtual(true)
+  {}
+  virtual ~leaf_object(){}
+protected:
+  leaf_object(const leaf_object& a_from):ibo(a_from),parent(a_from),m_obj(a_from.m_obj),fVirtual(true){}
+  leaf_object& operator=(const leaf_object& a_from){
+    parent::operator=(a_from);
+    return *this;
+  }
+protected:
+  const iobject& m_obj;
+  bool fVirtual; // Support for Virtuality
 };
 
 }}

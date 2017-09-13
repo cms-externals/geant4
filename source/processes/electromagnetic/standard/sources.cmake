@@ -11,7 +11,7 @@
 #
 # Generated on : 24/9/2010
 #
-# $Id: sources.cmake 104353 2017-05-26 07:24:51Z gcosmo $
+# $Id: sources.cmake 105900 2017-08-28 07:27:51Z gcosmo $
 #
 #------------------------------------------------------------------------------
 
@@ -59,6 +59,7 @@ GEANT4_DEFINE_MODULE(NAME G4emstandard
         G4DeltaAngleFreeScat.hh
         G4DipBustGenerator.hh
         G4ESTARStopping.hh
+        G4GSMottCorrection.hh
         G4GammaConversion.hh
         G4GoudsmitSaundersonMscModel.hh
         G4GoudsmitSaundersonTable.hh
@@ -124,6 +125,7 @@ GEANT4_DEFINE_MODULE(NAME G4emstandard
         G4BraggModel.cc
         G4ComptonScattering.cc
         G4CoulombScattering.cc
+        G4GSMottCorrection.cc
         G4GammaConversion.cc
         G4DeltaAngle.cc
         G4DeltaAngleFreeScat.cc

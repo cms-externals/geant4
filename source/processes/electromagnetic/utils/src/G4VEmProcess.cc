@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEmProcess.cc 104349 2017-05-26 07:18:59Z gcosmo $
+// $Id: G4VEmProcess.cc 105801 2017-08-21 07:37:34Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -218,22 +218,17 @@ void G4VEmProcess::AddEmModel(G4int order, G4VEmModel* p,
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-void G4VEmProcess::SetEmModel(G4VEmModel* p, G4int index) 
+void G4VEmProcess::SetEmModel(G4VEmModel* ptr, G4int) 
 {
-  G4int n = emModels.size();
-  if(index >= n) { 
-    for(G4int i=n; i<=index; ++i) {emModels.push_back(nullptr);} 
-  }
-  emModels[index] = p;
+  for(auto & em : emModels) { if(em == ptr) { return; } }
+  emModels.push_back(ptr);  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-G4VEmModel* G4VEmProcess::EmModel(G4int index) const
+G4VEmModel* G4VEmProcess::EmModel(size_t index) const
 {
-  G4VEmModel* p = nullptr;
-  if(index >= 0 && index <  G4int(emModels.size())) { p = emModels[index]; }
-  return p;
+  return (index < emModels.size()) ? emModels[index] : nullptr; 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -276,10 +271,7 @@ G4VEmModel* G4VEmProcess::GetModelByIndex(G4int idx, G4bool ver) const
 
 void G4VEmProcess::PreparePhysicsTable(const G4ParticleDefinition& part)
 {
-  G4bool isMaster = true;
-  const G4VEmProcess* masterProcess = 
-    static_cast<const G4VEmProcess*>(GetMasterProcess());
-  if(masterProcess && masterProcess != this) { isMaster = false; }
+  G4bool isMaster = lManager->IsMaster();
 
   if(!particle) { SetParticle(&part); }
 
@@ -384,10 +376,9 @@ void G4VEmProcess::PreparePhysicsTable(const G4ParticleDefinition& part)
 
 void G4VEmProcess::BuildPhysicsTable(const G4ParticleDefinition& part)
 {
-  G4bool isMaster = true;
+  G4bool isMaster = lManager->IsMaster();
   const G4VEmProcess* masterProc = 
     static_cast<const G4VEmProcess*>(GetMasterProcess());
-  if(masterProc && masterProc != this) { isMaster = false; }
 
   G4String num = part.GetParticleName();
   if(1 < verboseLevel) {

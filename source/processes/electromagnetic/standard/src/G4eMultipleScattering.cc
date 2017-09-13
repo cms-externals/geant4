@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4eMultipleScattering.cc 97741 2016-06-08 09:24:21Z gcosmo $
+// $Id: G4eMultipleScattering.cc 105734 2017-08-16 12:58:28Z gcosmo $
 //
 // -----------------------------------------------------------------------------
 //
@@ -75,8 +75,9 @@ G4bool G4eMultipleScattering::IsApplicable (const G4ParticleDefinition& p)
 void G4eMultipleScattering::InitialiseProcess(const G4ParticleDefinition*)
 {
   if(isInitialized) { return; }
-  if(!EmModel(1)) { SetEmModel(new G4UrbanMscModel(), 1); }
-  AddEmModel(1, EmModel(1));
+  if(!EmModel(0)) { SetEmModel(new G4UrbanMscModel()); }
+  AddEmModel(1, EmModel(0));
+  if(EmModel(1))  { AddEmModel(1, EmModel(1)); }
   isInitialized = true;
 }
 

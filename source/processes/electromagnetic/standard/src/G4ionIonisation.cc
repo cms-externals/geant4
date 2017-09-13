@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4ionIonisation.cc 96934 2016-05-18 09:10:41Z gcosmo $
+// $Id: G4ionIonisation.cc 105734 2017-08-16 12:58:28Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -138,31 +138,31 @@ void G4ionIonisation::InitialiseEnergyLossProcess(
 
     SetBaseParticle(theBaseParticle);
 
-    if (!EmModel(1)) { SetEmModel(new G4BraggIonModel(), 1); }
+    if (!EmModel(0)) { SetEmModel(new G4BraggIonModel()); }
 
     G4EmParameters* param = G4EmParameters::Instance();
-    EmModel(1)->SetLowEnergyLimit(param->MinKinEnergy());
+    EmModel(0)->SetLowEnergyLimit(param->MinKinEnergy());
 
     // model limit defined for protons
-    eth = (EmModel(1)->HighEnergyLimit())*part->GetPDGMass()/proton_mass_c2;
-    EmModel(1)->SetHighEnergyLimit(eth);
+    eth = (EmModel(0)->HighEnergyLimit())*part->GetPDGMass()/proton_mass_c2;
+    EmModel(0)->SetHighEnergyLimit(eth);
 
     if (!FluctModel()) { SetFluctModel(new G4IonFluctuations()); }
-    AddEmModel(1, EmModel(1), FluctModel());
+    AddEmModel(1, EmModel(0), FluctModel());
 
     G4double emax = param->MaxKinEnergy();
     if(eth < emax) {
-      if (!EmModel(2)) { SetEmModel(new G4BetheBlochModel(),2); }  
-      EmModel(2)->SetLowEnergyLimit(eth);
-      EmModel(2)->SetHighEnergyLimit(emax);
-      AddEmModel(2, EmModel(2), FluctModel());    
+      if (!EmModel(1)) { SetEmModel(new G4BetheBlochModel()); }  
+      EmModel(1)->SetLowEnergyLimit(eth);
+      EmModel(1)->SetHighEnergyLimit(emax);
+      AddEmModel(2, EmModel(1), FluctModel());    
 
       // Add ion stoping tables for Generic Ion if the default 
       // model is used (with eth ~= 2 MeV)
       if(part == ion) {
 	stopDataActive = true;
 	G4WaterStopping  ws(corr);
-	corr->SetIonisationModels(EmModel(1),EmModel(2));
+	corr->SetIonisationModels(EmModel(0),EmModel(1));
       }
     }
     isInitialised = true;

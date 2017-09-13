@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4hhIonisation.cc 97391 2016-06-02 10:08:45Z gcosmo $
+// $Id: G4hhIonisation.cc 105752 2017-08-16 13:45:11Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -140,6 +140,7 @@ void G4hhIonisation::InitialiseEnergyLossProcess(
   em = new G4BetheBlochNoDeltaModel();
   em->SetLowEnergyLimit(eth);
   em->SetHighEnergyLimit(emax);
+  SetEmModel(em);
   AddEmModel(1, em, flucModel);
 
   if(verboseLevel>1) {

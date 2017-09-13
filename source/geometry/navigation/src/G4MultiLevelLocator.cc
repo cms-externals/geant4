@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4MultiLevelLocator.cc 99915 2016-10-11 09:24:43Z gcosmo $
+// $Id: G4MultiLevelLocator.cc 105904 2017-08-28 07:36:13Z gcosmo $
 //
 // Class G4MultiLevelLocator implementation
 //
@@ -560,7 +560,7 @@ G4bool G4MultiLevelLocator::EstimateIntersectionPoint(
 
         G4double Sub_len = (all_len-did_len)/(2.);
         G4FieldTrack midPoint = CurrentA_PointVelocity;
-        G4MagInt_Driver* integrDriver
+        auto integrDriver
                        = GetChordFinderFor()->GetIntegrationDriver();
         G4bool fullAdvance=              
            integrDriver->AccurateAdvance(midPoint, Sub_len, fiEpsilonStep);

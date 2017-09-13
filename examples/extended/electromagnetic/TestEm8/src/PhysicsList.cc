@@ -26,7 +26,7 @@
 /// \file electromagnetic/TestEm8/src/PhysicsList.cc
 /// \brief Implementation of the PhysicsList class
 //
-// $Id: PhysicsList.cc 100283 2016-10-17 08:40:17Z gcosmo $
+// $Id: PhysicsList.cc 105916 2017-08-28 11:57:56Z gcosmo $
 //
 //---------------------------------------------------------------------------
 //
@@ -79,14 +79,14 @@
 #include "G4ParticleTypes.hh"
 #include "G4ParticleTable.hh"
 
-G4ThreadLocal StepMax* PhysicsList::fStepMaxProcess = 0;
+G4ThreadLocal StepMax* PhysicsList::fStepMaxProcess = nullptr;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 PhysicsList::PhysicsList() : G4VModularPhysicsList(),
-  fEmPhysicsList(0),
-  fDecayPhysicsList(0),
-  fMessenger(0)
+  fEmPhysicsList(nullptr),
+  fDecayPhysicsList(nullptr),
+  fMessenger(nullptr)
 {
   // set verbosity for zero to avoid double printout 
   // on physics verbosity should be restored to 1 when cuts
@@ -192,6 +192,12 @@ void PhysicsList::AddPhysicsList(const G4String& name)
     delete fEmPhysicsList;
     fEmPhysicsList = new G4EmStandardPhysicsGS(0);
 
+  } else if (name == "pai") {
+    G4EmParameters::Instance()->AddPAIModel("all","world","pai");
+
+  } else if (name == "pai_photon") {
+    G4EmParameters::Instance()->AddPAIModel("all","world","pai_photon");
+
   } else if (name == "emlivermore") {
 
     fEmName = name;
@@ -243,7 +249,7 @@ void PhysicsList::AddStepMax()
 
 void PhysicsList::SetCuts()
 {
-  G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(100.*eV,1e5);
+  G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(25.*eV,1e5);
   if ( verboseLevel > 0 ) { DumpCutValuesTable(); }
 }
 

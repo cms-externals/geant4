@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4FTFModel.cc 102029 2016-12-16 14:53:08Z gcosmo $
+// $Id: G4FTFModel.cc 105741 2017-08-16 13:09:53Z gcosmo $
 // GEANT4 tag $Name:  $
 //
 
@@ -76,7 +76,9 @@ G4FTFModel::G4FTFModel( const G4String& modelName ) :
   theAnnihilation( new G4FTFAnnihilation() )
 {
   G4VPartonStringModel::SetThisPointer( this );
-  theParameters = 0;
+  // ---> JVY theParameters = 0;
+  theParameters = new G4FTFParameters();
+  //
   NumberOfInvolvedNucleonsOfTarget = 0;
   NumberOfInvolvedNucleonsOfProjectile= 0;
   for ( G4int i = 0; i < 250; i++ ) {
@@ -113,8 +115,12 @@ struct DeleteVSplitableHadron { void operator()( G4VSplitableHadron* aH ) { dele
 
 G4FTFModel::~G4FTFModel() {
    // Because FTF model can be called for various particles
+   //
+   // ---> NOTE (JVY): This statement below is no longer true !!! 
    // theParameters must be erased at the end of each call.
    // Thus the delete is also in G4FTFModel::GetStrings() method.
+   // ---> JVY
+   //
    if ( theParameters   != 0 ) delete theParameters; 
    if ( theExcitation   != 0 ) delete theExcitation;
    if ( theElastic      != 0 ) delete theElastic; 
@@ -248,10 +254,17 @@ void G4FTFModel::Init( const G4Nucleus& aNucleus, const G4DynamicParticle& aProj
   theParticipants.Init( aNucleus.GetA_asInt(), aNucleus.GetZ_asInt() );
 //theParticipants.Init( aNucleus.GetA_asInt(), 0 ); //For h+neutron // Uzhi March 2016
 
+/*
   if ( theParameters != 0 ) delete theParameters;
   theParameters = new G4FTFParameters( theProjectile.GetDefinition(), aNucleus.GetA_asInt(),
                                        aNucleus.GetZ_asInt(), PlabPerParticle );
-
+*/
+  
+  // reset/recalculate everything for the new interaction
+  //
+  theParameters->InitForInteraction( theProjectile.GetDefinition(), aNucleus.GetA_asInt(),
+                                     aNucleus.GetZ_asInt(), PlabPerParticle ); 
+  
   if ( theAdditionalString.size() != 0 ) {
     std::for_each( theAdditionalString.begin(), theAdditionalString.end(), 
                    DeleteVSplitableHadron() );
@@ -322,10 +335,13 @@ G4ExcitedStringVector* G4FTFModel::GetStrings() {
 
     GetResiduals();
 
+/*
     if ( theParameters != 0 ) {
       delete theParameters;
       theParameters = 0;
     }
+*/
+    
   } else if ( ! GetProjectileNucleus() ) {
     // Erase the hadron projectile
     std::vector< G4VSplitableHadron* > primaries;
@@ -366,7 +382,7 @@ G4ExcitedStringVector* G4FTFModel::GetStrings() {
   #endif
 
   theParticipants.Clean();
-
+  
   return theStrings;
 }
 

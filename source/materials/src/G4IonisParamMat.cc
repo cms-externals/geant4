@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4IonisParamMat.cc 97248 2016-05-30 15:00:11Z gcosmo $
+// $Id: G4IonisParamMat.cc 105910 2017-08-28 07:50:23Z gcosmo $
 //
 // 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.... ....oooOO0OOooo....
@@ -269,12 +269,10 @@ void G4IonisParamMat::ComputeDensityEffect()
       if (1 == nelm && 1 == Z0) {
          fX0density = 0.425; fX1density = 2.0; fMdensity = 5.949;
       }
-    }
-    //
-    // gases
-    //
-    if (State == kStateGas) { 
-
+    } else {
+      //
+      // gases
+      //
       fMdensity = 3.;
       fX1density = 4.0;
       //static const G4double ClimiG[] = {10.,10.5,11.,11.5,12.25,13.804};

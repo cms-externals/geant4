@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEmProcess.hh 95657 2016-02-17 13:03:36Z gcosmo $
+// $Id: G4VEmProcess.hh 105745 2017-08-16 13:14:37Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -107,7 +107,7 @@ public:
 
   virtual void PrintInfo() = 0;
 
-  virtual void ProcessDescription(std::ostream& outFile) const; // = 0;
+  virtual void ProcessDescription(std::ostream& outFile) const override;
 
 protected:
 
@@ -223,12 +223,13 @@ public:
   // model will be selected for a given energy interval  
   void AddEmModel(G4int, G4VEmModel*, const G4Region* region = nullptr);
 
-  // return the assigned model
-  G4VEmModel* EmModel(G4int index = 1) const;
-
-  // Assign a model to a process
-  void SetEmModel(G4VEmModel*, G4int index = 1);
+  // Assign a model to a process local list, to enable the list in run time 
+  // the derived process should execute AddEmModel(..) for all such models
+  void SetEmModel(G4VEmModel*, G4int index = 0);
       
+  // return a model from the local list
+  G4VEmModel* EmModel(size_t index = 0) const;
+
   // Define new energy range for the model identified by the name
   void UpdateEmModel(const G4String&, G4double, G4double);
 

@@ -26,7 +26,7 @@
 /// \file PhysicsList.cc
 /// \brief Implementation of the PhysicsList class
 //
-// $Id: PhysicsList.cc 103467 2017-04-11 07:26:58Z gcosmo $
+// $Id: PhysicsList.cc 105733 2017-08-16 12:56:18Z gcosmo $
 // 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -60,15 +60,21 @@ PhysicsList::PhysicsList()
   new G4UnitDefinition("hour",   "h",   "Time", hour);
   new G4UnitDefinition("day",    "d",   "Time", day);
   new G4UnitDefinition("year",   "y",   "Time", year);
+
+  // mandatory for G4NuclideTable
+  //
+  G4NuclideTable::GetInstance()->SetThresholdOfHalfLife(0.1*picosecond);
+  G4NuclideTable::GetInstance()->SetLevelTolerance(1.0*eV);
   
-  //read new PhotonEvaporation data set (4.3)
+  //read new PhotonEvaporation data set 
   //
   G4DeexPrecoParameters* deex = 
     G4NuclearLevelData::GetInstance()->GetParameters();
-  deex->SetUseFilesNEW(true);
+  deex->SetCorrelatedGamma(true);
   deex->SetStoreAllLevels(true);
   deex->SetMaxLifeTime(G4NuclideTable::GetInstance()->GetThresholdOfHalfLife()
                   /std::log(2.));
+  
   //in case of SetARM true
   //
   G4EmParameters::Instance()->SetAugerCascade(true);
@@ -124,12 +130,7 @@ void PhysicsList::ConstructProcess()
      deex->InitialiseAtomicDeexcitation();
      man->SetAtomDeexcitation(deex);
   }
-  
-  // mandatory for G4NuclideTable
-  //
-  G4NuclideTable::GetInstance()->SetThresholdOfHalfLife(0.1*picosecond);
-  G4NuclideTable::GetInstance()->SetLevelTolerance(1.0*eV);
-  
+    
   // register radioactiveDecay
   //
   G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();  

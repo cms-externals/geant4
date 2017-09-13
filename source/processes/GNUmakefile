@@ -1,4 +1,4 @@
-# $Id: GNUmakefile 103669 2017-04-20 15:46:39Z gcosmo $
+# $Id: GNUmakefile 105919 2017-08-28 12:08:32Z gcosmo $
 # ----------------------------------------------------------------------
 # GNUmakefile for processes library, Gabriele Cosmo 27-Jun-1998
 # ----------------------------------------------------------------------
@@ -13,7 +13,12 @@ GLOBLIBS  = libG4digits_hits.lib
 GLOBLIBS += libG4track.lib libG4particles.lib libG4geometry.lib
 GLOBLIBS += libG4materials.lib libG4graphics_reps.lib libG4analysis.lib
 GLOBLIBS += libG4intercoms.lib libG4global.lib
-GLOBLIBS += libG4expat.lib libG4zlib.lib
+ifdef G4LIB_BUILD_EXPAT
+  GLOBLIBS += libG4expat.lib
+endif
+ifdef G4LIB_BUILD_ZLIB
+  GLOBLIBS += libG4zlib.lib
+endif
 
 include $(G4INSTALL)/config/architecture.gmk
 

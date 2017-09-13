@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4eplusAnnihilation.cc 101249 2016-11-10 08:52:15Z gcosmo $
+// $Id: G4eplusAnnihilation.cc 105734 2017-08-16 12:58:28Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -103,10 +103,10 @@ void G4eplusAnnihilation::InitialiseProcess(const G4ParticleDefinition*)
 {
   if(!isInitialised) {
     isInitialised = true;
-    if(!EmModel(1)) { SetEmModel(new G4eeToTwoGammaModel(),1); }
-    EmModel(1)->SetLowEnergyLimit(MinKinEnergy());
-    EmModel(1)->SetHighEnergyLimit(MaxKinEnergy());
-    AddEmModel(1, EmModel(1));
+    if(!EmModel(0)) { SetEmModel(new G4eeToTwoGammaModel()); }
+    EmModel(0)->SetLowEnergyLimit(MinKinEnergy());
+    EmModel(0)->SetHighEnergyLimit(MaxKinEnergy());
+    AddEmModel(1, EmModel(0));
   }
 }
 

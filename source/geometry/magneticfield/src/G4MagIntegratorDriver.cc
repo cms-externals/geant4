@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4MagIntegratorDriver.cc 101384 2016-11-16 11:03:44Z gcosmo $
+// $Id: G4MagIntegratorDriver.cc 105858 2017-08-24 07:56:26Z gcosmo $
 //
 // 
 //
@@ -76,7 +76,7 @@ G4MagInt_Driver::G4MagInt_Driver( G4double                hminimum,
     fNoVars( std::max( fNoIntegrationVariables, fMinNoVars )),
     fStatisticsVerboseLevel(statisticsVerbose),
     fNoTotalSteps(0),  fNoBadSteps(0), fNoSmallSteps(0),
-    fNoInitialSmallSteps(0), 
+    fNoInitialSmallSteps(0), fNoCalls(0),
     fDyerr_max(0.0), fDyerr_mx2(0.0), 
     fDyerrPos_smTot(0.0), fDyerrPos_lgTot(0.0), fDyerrVel_lgTot(0.0), 
     fSumH_sm(0.0), fSumH_lg(0.0),

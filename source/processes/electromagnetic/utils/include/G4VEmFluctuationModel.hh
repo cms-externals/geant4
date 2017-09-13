@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEmFluctuationModel.hh 95657 2016-02-17 13:03:36Z gcosmo $
+// $Id: G4VEmFluctuationModel.hh 105942 2017-09-01 07:37:29Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -98,18 +98,23 @@ public:
 
   virtual void SetParticleAndCharge(const G4ParticleDefinition*, G4double q2);
 
+  virtual G4double RangeSmeared(const G4Material*,
+				const G4ParticleDefinition*,
+				G4double kinEnergy,
+                                G4double range);
+
   //------------------------------------------------------------------------
   // Generic methods common to all models
   //------------------------------------------------------------------------
 
   inline const G4String& GetName() const;
 
-private:
-
   // hide assignment operator
   G4VEmFluctuationModel & 
     operator=(const  G4VEmFluctuationModel &right) = delete;
   G4VEmFluctuationModel(const  G4VEmFluctuationModel&) = delete;
+
+private:
 
   const G4String      name;
   G4LossTableManager* fManager;

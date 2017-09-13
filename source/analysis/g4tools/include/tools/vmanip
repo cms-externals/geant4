@@ -13,7 +13,7 @@ namespace tools {
 //////////////////////////////////////////////////////////
 
 template <class T>
-inline void clear(std::vector<T*>& a_vec){
+inline void safe_clear(std::vector<T*>& a_vec){
   // the below takes into account the case in
   // which "delete entry" could modify a_vec.
   typedef typename std::vector<T*>::iterator it_t;
@@ -24,6 +24,10 @@ inline void clear(std::vector<T*>& a_vec){
     delete entry;    
   }
 }
+
+#ifdef TOOLS_DEPRECATED
+template <class T> inline void clear(std::vector<T*>& a_vec){safe_clear<T>(a_vec);}
+#endif
 
 template <class T>
 inline void raw_clear(std::vector<T*>& a_vec){
@@ -40,6 +44,9 @@ inline void copy(std::vector<T*>& a_to,const std::vector<T*>& a_from){
     a_to.push_back((*it)->copy());
   }
 }
+
+template <class T>
+inline void vcopy(std::vector<T*>& a_to,const std::vector<T*>& a_from) {return copy<T>(a_to,a_from);}
 
 template <class T>
 inline void append(std::vector<T>& a_vec,const std::vector<T>& a_from) {
@@ -65,7 +72,7 @@ inline void append(std::vector<T>& a_vec,unsigned int a_num,const T* a_from) {
 }
 
 template <class T>
-inline void removep(std::vector<T*>& a_vec,T* a_elem) {
+inline void removep(std::vector<T*>& a_vec,const T* a_elem) {
   typedef typename std::vector<T*>::iterator it_t;
   it_t it;
   for(it=a_vec.begin();it!=a_vec.end();) {
@@ -108,6 +115,16 @@ inline bool remove(std::vector<T>& a_vals,const T& a_elem){
   }
   a_vals = vs;
   return found_some;
+}
+
+template <class T>
+inline void vfilter(std::vector<T>& a_vals,bool(*a_filter_func)(const T& a_elem)){
+  std::vector<T> vs;
+  typedef typename std::vector<T>::iterator it_t;
+  for(it_t it=a_vals.begin();it!=a_vals.end();++it) {
+    if(a_filter_func(*it)) vs.push_back(*it);
+  }
+  a_vals = vs;
 }
 
 template <class T>
@@ -207,6 +224,28 @@ inline bool add(std::vector<T>& a_vec,const std::vector<T>& a_v){
 }
 
 template <class T>
+inline bool vequ(const std::vector<T>& a_vec,const std::vector<T>& a_v){
+  if(a_vec.size()!=a_v.size()) return false;
+  typedef typename std::vector<T>::const_iterator it_t;
+  typedef typename std::vector<T>::const_iterator cit_t;
+  it_t it = a_vec.begin();
+  cit_t vit = a_v.begin();
+  //size_t count = 0;
+  for(;it!=a_vec.end();++it,++vit
+  //  ,count++
+  ) {
+    if((*it)!=(*vit))
+    //{::printf("debug : %lu : %d %d\n",count,(*it),(*vit));
+      return false;
+    //}
+  }
+  return true;
+}
+
+template <class T>
+inline bool vadd(std::vector<T>& a_vec,const std::vector<T>& a_v) {return add<T>(a_vec,a_v);}
+
+template <class T>
 inline bool sub(std::vector<T>& a_vec,const std::vector<T>& a_v){
   if(a_vec.size()!=a_v.size()) return false;
   typedef typename std::vector<T>::iterator it_t;
@@ -252,6 +291,8 @@ inline void mul(std::vector<T>& a_vec,const T& a_v){
   typedef typename std::vector<T>::iterator it_t;
   for(it_t it=a_vec.begin();it!=a_vec.end();++it) *it *= a_v;
 }
+template <class T>
+inline bool vmul(std::vector<T>& a_vec,const std::vector<T>& a_v) {return vmul<T>(a_vec,a_v);}
 
 template <class T>
 inline void div(std::vector<T>& a_vec,const T& a_v){

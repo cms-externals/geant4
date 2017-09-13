@@ -7,7 +7,7 @@
 
                            CORRESPONDING AUTHOR 
 
-S. Incerti, M. Karamitros (a, *)
+S. Incerti (a,*), V. Ivantchnko (b), M. Karamitros (a)
 a. Centre d'Etudes Nucleaires de Bordeaux-Gradignan 
 (CENBG), IN2P3 / CNRS / Bordeaux 1 University, 33175 Gradignan, France
 * e-mail:incerti@cenbg.in2p3.fr
@@ -61,6 +61,9 @@ below the applicability range of G4EmStandardPhysics_option4 constructor
 - how to count and save occurrences of processes
 (look at the SteppingAction.cc file)
 
+Alternatively, the direct usage of Geant4-DNA physics constructors is also shown 
+in comment in the PhysicsList.cc file.
+
 ---->5. SIMULATION OUTPUT AND RESULT ANALYSIS                                    
 
 The output results consists in a dna.root file, containing for each simulation step:
@@ -69,8 +72,13 @@ The output results consists in a dna.root file, containing for each simulation s
 - the track position of the current step (in nanometers)
 - the energy deposit along the current step (in eV)
 - the step length (in nm)
-- the total enery loss along the current step (in eV)
+- the total energy loss along the current step (in eV)
+- the kinetic energy at PreStepPoint
+- the cos of the scattering angle
 - the event ID
+- the track ID
+- the parent track ID
+- the step number
 
 This file can be easily analyzed using for example the provided ROOT macro 
 file plot.C; to do so :
@@ -106,11 +114,15 @@ e-_G4DNAExcitation			12
 e-_G4DNAIonisation			13
 e-_G4DNAAttachment			14
 e-_G4DNAVibExcitation			15
+msc					110
+eIoni                           	130
 
 proton_G4DNAElastic			21
 proton_G4DNAExcitation			22
 proton_G4DNAIonisation			23
 proton_G4DNAChargeDecrease		24
+msc					210
+hIoni					230
 
 hydrogen_G4DNAElastic			31
 hydrogen_G4DNAExcitation		32
@@ -121,6 +133,8 @@ alpha_G4DNAElastic			41
 alpha_G4DNAExcitation			42
 alpha_G4DNAIonisation			43
 alpha_G4DNAChargeDecrease		44
+msc					410
+ionIoni					430
 
 alpha+_G4DNAElastic			51
 alpha+_G4DNAExcitation			52

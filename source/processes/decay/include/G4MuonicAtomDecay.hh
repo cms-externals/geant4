@@ -50,6 +50,9 @@ class G4MuonicAtomDecay : public G4Decay
     virtual G4bool IsApplicable(const G4ParticleDefinition&) override;
     // returns "true" if the decay process can be applied to
     // the particle type. 
+
+    virtual void ProcessDescription(std::ostream& outFile) const override;
+    //
 };
 #endif
 

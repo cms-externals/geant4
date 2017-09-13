@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VMultipleScattering.hh 97432 2016-06-03 07:23:39Z gcosmo $
+// $Id: G4VMultipleScattering.hh 105745 2017-08-16 13:14:37Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -106,7 +106,7 @@ public:
 
   virtual void PrintInfo() = 0;
 
-  virtual void ProcessDescription(std::ostream& outFile) const; // = 0;
+  virtual void ProcessDescription(std::ostream& outFile) const override;
 
 protected:
 
@@ -187,14 +187,15 @@ public:
   // model will be selected for a given energy interval  
   void AddEmModel(G4int order, G4VEmModel*, const G4Region* region = nullptr);
 
-  // Assign a model to a process
-  void SetEmModel(G4VMscModel*, G4int index = 1);
+  // Assign a model to a process local list, to enable the list in run time 
+  // the derived process should execute AddEmModel(..) for all such models
+  void SetEmModel(G4VMscModel*, size_t index = 0);
   
-  // return the assigned model
-  G4VMscModel* EmModel(G4int index = 1) const;
+  // return a model from the local list
+  G4VMscModel* EmModel(size_t index = 0) const;
 
-  // Access to models by index
-  G4VEmModel* GetModelByIndex(G4int idx = 0, G4bool ver = false) const;
+  // Access to run time models by index
+  inline G4VEmModel* GetModelByIndex(G4int idx = 0, G4bool ver = false) const;
 
   //------------------------------------------------------------------------
   // Get/Set parameters for simulation of multiple scattering
@@ -212,10 +213,8 @@ public:
   inline void SetRangeFactor(G4double val);
   
   inline G4double GeomFactor() const;
-  //inline void SetGeomFactor(G4double val);
  
   inline G4double PolarAngleLimit() const;
-  // inline void SetPolarAngleLimit(G4double val);
  
   inline G4MscStepLimitType StepLimitType() const;
   inline void SetStepLimitType(G4MscStepLimitType val);
@@ -243,7 +242,7 @@ protected:
                                   G4double& currentSafety) override ;
 
   // return number of already added models
-  inline size_t NumberOfModels() const;
+  inline G4int NumberOfModels() const;
 
 private:
 
@@ -409,9 +408,17 @@ inline const G4ParticleDefinition* G4VMultipleScattering::FirstParticle() const
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-inline size_t G4VMultipleScattering::NumberOfModels() const
+inline G4int G4VMultipleScattering::NumberOfModels() const
 {
   return modelManager->NumberOfModels();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+inline G4VEmModel* 
+G4VMultipleScattering::GetModelByIndex(G4int idx, G4bool ver) const
+{
+  return modelManager->GetModel(idx, ver);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

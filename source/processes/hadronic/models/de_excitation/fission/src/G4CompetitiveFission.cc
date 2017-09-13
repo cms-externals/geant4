@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4CompetitiveFission.cc 98739 2016-08-09 12:56:55Z gcosmo $
+// $Id: G4CompetitiveFission.cc 105799 2017-08-21 07:35:55Z gcosmo $
 //
 // Hadronic Process: Nuclear De-excitations
 // by V. Lara (Oct 1998)
@@ -37,6 +37,7 @@
 #include "G4CompetitiveFission.hh"
 #include "G4PairingCorrection.hh"
 #include "G4ParticleMomentum.hh"
+#include "G4NuclearLevelData.hh"
 #include "G4Pow.hh"
 #include "G4Exp.hh"
 #include "G4PhysicalConstants.hh"
@@ -56,7 +57,7 @@ G4CompetitiveFission::G4CompetitiveFission() : G4VEvaporationChannel("fission")
   FissionBarrier = 0.0;
   FissionProbability = 0.0;
   LevelDensityParameter = 0.0;
-  pairingCorrection = G4PairingCorrection::GetInstance();
+  pairingCorrection = G4NuclearLevelData::GetInstance()->GetPairingCorrection();
 }
 
 G4CompetitiveFission::~G4CompetitiveFission()

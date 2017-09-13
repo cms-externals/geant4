@@ -164,7 +164,6 @@ class G4RadioactiveDecay : public G4VRestDiscreteProcess
     // Allow the user to replace the radio-active decay data provided in Geant4
     // by its own data file for a given isotope
 
-
     inline void  SetVerboseLevel(G4int value) {verboseLevel = value;}
     // Sets the VerboseLevel which controls duggering display
 
@@ -181,34 +180,36 @@ class G4RadioactiveDecay : public G4VRestDiscreteProcess
     // Returns theNucleusLimits which specifies the range of isotopes
     // the G4RadioactiveDecay applies
 
+    // Controls whether G4RadioactiveDecay runs in analogue mode or
+    // variance reduction mode.  SetBRBias, SetSplitNuclei and
+    // SetSourceTimeProfile all turn off analogue mode and use VR mode
     inline void SetAnalogueMonteCarlo (G4bool r ) { 
-      AnalogueMC  = r; 
+      AnalogueMC = r; 
       if (!AnalogueMC) halflifethreshold = 1e-6*CLHEP::s;
     }
-    // Controls whether G4RadioactiveDecay runs in analogue mode or
-    // variance reduction mode.
 
-    inline void SetFBeta (G4bool r ) { FBeta  = r; }
     // Controls whether G4RadioactiveDecay uses fast beta simulation mode
+    // Currently does nothing - kept for backward compatibility
+    inline void SetFBeta (G4bool r ) { FBeta  = r; }
 
-    inline G4bool IsAnalogueMonteCarlo () {return AnalogueMC;}
     // Returns true if the simulation is an analogue Monte Carlo, and false if
     // any of the biassing schemes have been selected.
+    inline G4bool IsAnalogueMonteCarlo () {return AnalogueMC;}
 
-    inline void SetBRBias (G4bool r) {
+     // Sets whether branching ration bias scheme applies.
+    inline void SetBRBias(G4bool r) {
       BRBias = r;
       SetAnalogueMonteCarlo(0);
      }
-     // Sets whether branching ration bias scheme applies.
 
-    inline void SetSplitNuclei (G4int r) {
+    // Sets the number of times a nucleus will decay when biased
+    inline void SetSplitNuclei(G4int r) {
       NSplit = r;
       SetAnalogueMonteCarlo(0);
     }
-    // Sets the N number for the Nuclei spliting bias scheme
 
+    //  Returns the nuclear splitting number
     inline G4int GetSplitNuclei () {return NSplit;}
-    //  Returns the N number used for the Nuclei spliting bias scheme
 
     inline void SetDecayDirection(const G4ThreeVector& theDir) {
       forceDecayDirection = theDir.unit();
@@ -224,14 +225,13 @@ class G4RadioactiveDecay : public G4VRestDiscreteProcess
 
     inline G4double GetDecayHalfAngle() const {return forceDecayHalfAngle;}
 
+    // Force direction (random within half-angle) for "visible" daughters
+    // (applies to electrons, positrons, gammas, neutrons, protons or alphas)
     inline void SetDecayCollimation(const G4ThreeVector& theDir,
                                     G4double halfAngle = 0.*CLHEP::deg) {
       SetDecayDirection(theDir);
       SetDecayHalfAngle(halfAngle);
     }
-
-    // Force direction (random within half-angle) for "visible" daughters
-    // (applies to electrons, positrons, gammas, neutrons, protons or alphas)
 
     void BuildPhysicsTable(const G4ParticleDefinition &);
 

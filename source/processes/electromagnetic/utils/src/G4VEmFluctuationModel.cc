@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEmFluctuationModel.cc 92921 2015-09-21 15:06:51Z gcosmo $
+// $Id: G4VEmFluctuationModel.cc 105942 2017-09-01 07:37:29Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -71,5 +71,14 @@ void G4VEmFluctuationModel::InitialiseMe(const G4ParticleDefinition*)
 void G4VEmFluctuationModel::SetParticleAndCharge(const G4ParticleDefinition*, 
                                                  G4double)
 {}
+
+G4double G4VEmFluctuationModel::RangeSmeared(const G4Material*,
+					     const G4ParticleDefinition*,
+					     G4double,
+					     G4double range)
+{
+  // default model without smearing
+  return range;
+}
 
 

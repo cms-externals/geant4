@@ -58,7 +58,6 @@
 #include "G4Region.hh"
 #include "G4ApplicationState.hh"
 #include "G4StateManager.hh"
-#include "G4Threading.hh"
 
 G4EmParameters* G4EmParameters::theInstance = nullptr;
 
@@ -70,9 +69,17 @@ G4EmParameters* G4EmParameters::theInstance = nullptr;
 
 G4EmParameters* G4EmParameters::Instance()
 {
-  if(nullptr == theInstance) {
-    static G4EmParameters manager;
-    theInstance = &manager;
+  if(nullptr == theInstance) { 
+#ifdef G4MULTITHREADED
+    G4MUTEXLOCK(&emParametersMutex);
+    if(nullptr == theInstance) {
+#endif
+      static G4EmParameters manager;
+      theInstance = &manager;
+#ifdef G4MULTITHREADED
+    }
+    G4MUTEXUNLOCK(&G4EmParameters::emParametersMutex);
+#endif
   }
   return theInstance;
 }
@@ -123,6 +130,10 @@ void G4EmParameters::Initialise()
   useMottCorrection = false;
   integral = true;
   birks = false;
+  dnaFast = false;
+  dnaStationary = false;
+  dnaMsc = false;
+  gammaShark = false;
 
   minSubRange = 1.0;
   minKinEnergy = 0.1*CLHEP::keV;
@@ -377,6 +388,50 @@ void G4EmParameters::SetBirksActive(G4bool val)
 G4bool G4EmParameters::BirksActive() const
 {
   return birks;
+}
+
+void G4EmParameters::SetDNAFast(G4bool val)
+{
+  if(IsLocked()) { return; }
+  dnaFast = val;
+}
+
+G4bool G4EmParameters::DNAFast() const
+{
+  return dnaFast;
+}
+
+void G4EmParameters::SetDNAStationary(G4bool val)
+{
+  if(IsLocked()) { return; }
+  dnaStationary = val;
+}
+
+G4bool G4EmParameters::DNAStationary() const
+{
+  return dnaStationary;
+}
+
+void G4EmParameters::SetDNAElectronMsc(G4bool val)
+{
+  if(IsLocked()) { return; }
+  dnaMsc = val;
+}
+
+G4bool G4EmParameters::DNAElectronMsc() const
+{
+  return dnaMsc;
+}
+
+void G4EmParameters::SetGammaSharkActive(G4bool val)
+{
+  if(IsLocked()) { return; }
+  gammaShark = val;
+}
+
+G4bool G4EmParameters::GammaSharkActive() const
+{
+  return gammaShark;
 }
 
 void G4EmParameters::SetEmSaturation(G4EmSaturation* ptr)
@@ -1193,14 +1248,14 @@ std::ostream& G4EmParameters::StreamInfo(std::ostream& os) const
   os << "Msc lateraral displacement beyond geometry safety  " <<latDisplacementBeyondSafety << "\n";
   os << "Enable angular generator interface                 " 
      <<useAngGeneratorForIonisation << "\n";
-  os << "Use Mott correction for e- scattering              " 
-     <<useMottCorrection << "\n";
-  os << "Use integral approach for tracking                 " 
-     <<integral << "\n";
-  os << "Use built-in Birks satuaration                     " 
-     << birks << "\n";
+  os << "Use Mott correction for e- scattering              " << useMottCorrection << "\n";
+  os << "Use integral approach for tracking                 " << integral << "\n";
+  os << "Use built-in Birks satuaration                     " << birks << "\n";
+  os << "Use fast sampling in DNA models                    " << dnaFast << "\n";
+  os << "Use Stationary option in DNA models                " << dnaStationary << "\n";
+  os << "Use DNA with multiple scattering of e-             " << dnaMsc << "\n";
 
-  os << "Factor of cut reduction for sub-cutoff method      " <<minSubRange << "\n";
+  os << "Factor of cut reduction for sub-cutoff method      " << minSubRange << "\n";
   os << "Min kinetic energy for tables                      " 
      <<G4BestUnit(minKinEnergy,"Energy") << "\n";
   os << "Max kinetic energy for tables                      " 
@@ -1261,7 +1316,7 @@ G4bool G4EmParameters::IsLocked() const
 {
   return (!G4Threading::IsMasterThread() ||
 	  (fStateManager->GetCurrentState() != G4State_PreInit &&
-	   fStateManager->GetCurrentState() != G4State_Init &&
+       	   fStateManager->GetCurrentState() != G4State_Init &&
 	   fStateManager->GetCurrentState() != G4State_Idle));
 }
 

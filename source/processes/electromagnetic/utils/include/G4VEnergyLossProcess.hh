@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEnergyLossProcess.hh 104349 2017-05-26 07:18:59Z gcosmo $
+// $Id: G4VEnergyLossProcess.hh 105778 2017-08-17 08:10:46Z gcosmo $
 // GEANT4 tag $Name:
 //
 // -------------------------------------------------------------------
@@ -143,7 +143,7 @@ public:
   
   virtual void PrintInfo() = 0;
 
-  virtual void ProcessDescription(std::ostream& outFile) const; // = 0;
+  virtual void ProcessDescription(std::ostream& outFile) const override;
 
 protected:
 
@@ -306,11 +306,12 @@ public:
   // Define new energy range for the model identified by the name
   void UpdateEmModel(const G4String&, G4double, G4double);
 
-  // Assign a model to a process
-  void SetEmModel(G4VEmModel*, G4int index=1);
+  // Assign a model to a process local list, to enable the list in run time 
+  // the derived process should execute AddEmModel(..) for all such models
+  void SetEmModel(G4VEmModel*, G4int index=0);
   
-  // return the assigned model
-  G4VEmModel* EmModel(G4int index=1) const;
+  // return a model from the local list
+  G4VEmModel* EmModel(size_t index=0) const;
   
   // Access to models
   G4VEmModel* GetModelByIndex(G4int idx = 0, G4bool ver = false) const;
@@ -318,7 +319,7 @@ public:
   G4int NumberOfModels() const;
 
   // Assign a fluctuation model to a process
-  void SetFluctModel(G4VEmFluctuationModel*);
+  inline void SetFluctModel(G4VEmFluctuationModel*);
   
   // return the assigned fluctuation model
   inline G4VEmFluctuationModel* FluctModel();

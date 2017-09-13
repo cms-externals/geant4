@@ -38,12 +38,21 @@
 // constructor
 G4MuonicAtomDecay::G4MuonicAtomDecay(const G4String& processName)
   : G4Decay(processName)
-{}
+{ 
+  // set Process Sub Type
+  SetProcessSubType(static_cast<int>(DECAY_MuonicAtomDecay));
+}
 
 G4bool 
-G4MuonicAtomDecay::IsApplicable(const G4ParticleDefinition& aParticleType)
+ G4MuonicAtomDecay::IsApplicable(const G4ParticleDefinition& aParticleType)
 {
   if (aParticleType.GetParticleName() == "GenericIon")
      return true;
    return false; 
+}
+
+void G4MuonicAtomDecay::ProcessDescription(std::ostream& outFile) const
+{
+  outFile << GetProcessName() 
+	  << ": Decay of muonic atom using DecayChannel for Muonic Atom\n";
 }

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GEMChannel.cc 98739 2016-08-09 12:56:55Z gcosmo $
+// $Id: G4GEMChannel.cc 105799 2017-08-21 07:35:55Z gcosmo $
 //
 // Hadronic Process: Nuclear De-excitations
 // by V. Lara (Oct 1998)
@@ -38,6 +38,7 @@
 #include "G4GEMChannel.hh"
 #include "G4VCoulombBarrier.hh"
 #include "G4GEMCoulombBarrier.hh"
+#include "G4NuclearLevelData.hh"
 #include "G4PairingCorrection.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
@@ -62,7 +63,8 @@ G4GEMChannel::G4GEMChannel(G4int theA, G4int theZ, const G4String & aName,
   ResidualMass = CoulombBarrier = 0.0;
   fG4pow = G4Pow::GetInstance(); 
   ResidualZ = ResidualA = 0;
-  pairingCorrection = G4PairingCorrection::GetInstance();
+  pairingCorrection = 
+    G4NuclearLevelData::GetInstance()->GetPairingCorrection();
 }
 
 G4GEMChannel::~G4GEMChannel()

@@ -129,7 +129,11 @@ public:
         if(m_user_var) *m_user_var = std::string();
         return false;
       }
-      if(m_user_var) *m_user_var = m_leaf.value();
+      if(m_user_var) {
+        const char* _cs = m_leaf.value();
+        if(!_cs) {*m_user_var = std::string();return false;}
+        *m_user_var = _cs;
+      }
       return true;
     }
   public:
@@ -244,7 +248,7 @@ public:
 #endif
   }
   virtual ~ntuple() {
-    tools::clear<read::icol>(m_cols);
+    safe_clear<read::icol>(m_cols);
 #ifdef TOOLS_MEM
     mem::decrement(s_class().c_str());
 #endif
@@ -259,7 +263,7 @@ protected:
   ntuple& operator=(const ntuple&){return *this;}
 public:
   bool initialize(std::ostream& a_out,const ntuple_binding& a_bd = ntuple_binding()) {
-    tools::clear<read::icol>(m_cols);
+    safe_clear<read::icol>(m_cols);
 
     std::vector<base_leaf*> leaves;
     m_tree.find_leaves(leaves);
@@ -270,7 +274,7 @@ public:
               << " column with name " << sout(bl->name())
               << " already exists."
               << std::endl;
-        tools::clear<read::icol>(m_cols);
+        safe_clear<read::icol>(m_cols);
         return false;
       }
       branch* _branch = m_tree.find_leaf_branch(*bl);
@@ -278,7 +282,7 @@ public:
         a_out << "tools::rroot::ntuple::initialize :"
               << " can't find branch of leaf " << sout(bl->name()) << "."
               << std::endl;
-        tools::clear<read::icol>(m_cols);
+        safe_clear<read::icol>(m_cols);
         return false;
       }
 
@@ -315,7 +319,7 @@ public:
         branch_element* be = safe_cast<branch,branch_element>(*_branch);
         if(!be) {
           a_out << "tools::rroot::ntuple::initialize : branch is not a branch_element." << std::endl;
-          tools::clear<read::icol>(m_cols);
+          safe_clear<read::icol>(m_cols);
           return false;
         }
 
@@ -415,8 +419,8 @@ public:
         } else {
           a_out << "tools::rroot::ntuple::initialize :"
                 << " WARNING : leaf element"
-                << " with name " << tools::sout(bl->name())
-                << ",title " << tools::sout(bl->title())
+                << " with name " << sout(bl->name())
+                << ",title " << sout(bl->title())
                 << " br_elem class name " << be->class_name() << "."
                 << " entries " << be->entry_number() << "."
                 << std::endl;
@@ -425,9 +429,9 @@ public:
       } else {
         a_out << "tools::rroot::ntuple::initialize :"
               << " WARNING : column type not yet handled for leaf"
-              << " with name " << tools::sout(bl->name())
-              << " and title " << tools::sout(bl->title()) << "."
-              << " s_cls() is " << tools::sout(bl->s_cls()) << "."
+              << " with name " << sout(bl->name())
+              << " and title " << sout(bl->title()) << "."
+              << " s_cls() is " << sout(bl->s_cls()) << "."
               << " Not fatal."
               << std::endl;
       }

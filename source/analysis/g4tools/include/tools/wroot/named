@@ -62,7 +62,7 @@ public: //ibo
   }
 public:
   ObjArray(){}
-  virtual ~ObjArray(){tools::clear<T>(*this);}
+  virtual ~ObjArray(){safe_clear<T>(*this);}
 public:
   ObjArray(const ObjArray& a_from): ibo(a_from),std::vector<T*>() {
     typedef typename std::vector<T*>::const_iterator it_t;
@@ -73,7 +73,7 @@ public:
   }
   ObjArray& operator=(const ObjArray& a_from){
     if(&a_from==this) return *this;
-    tools::clear<T>(*this);
+    safe_clear<T>(*this);
 
     typedef typename std::vector<T*>::const_iterator it_t;
     it_t it;
@@ -82,6 +82,8 @@ public:
     }
     return *this;
   }
+public:
+  void clear_objs() {safe_clear<T>(*this);}
 };
 
 template <class T>
@@ -113,7 +115,7 @@ public: //ibo
   }
 public:
   List(){}
-  virtual ~List(){tools::clear<T>(*this);}
+  virtual ~List(){safe_clear<T>(*this);}
 protected:
   List(const List& a_from):ibo(a_from),std::vector<T*>(){}
   List& operator=(const List&){return *this;}

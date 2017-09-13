@@ -32,27 +32,27 @@ c1->cd(1);
   ntuple->SetFillColor(2);
 
   // Excitation
-  ntuple->Draw("flagProcess","flagProcess==12||flagProcess==15||flagProcess==16||flagProcess==19||flagProcess==22||flagProcess==25||flagProcess==29","Bsame");
+  ntuple->Draw("flagProcess","flagProcess==12||flagProcess==15||flagProcess==22||flagProcess==32||flagProcess==42||flagProcess==52||flagProcess==62","Bsame");
   ntuple->SetFillStyle(1001);
   ntuple->SetFillColor(3);
 
   // Elastic
-  ntuple->Draw("flagProcess","flagProcess==11","Bsame");
+  ntuple->Draw("flagProcess","flagProcess==11||flagProcess==21||flagProcess==31||flagProcess==41||flagProcess==51||flagProcess==61||flagProcess==110||flagProcess==210||flagProcess==410","Bsame");
   ntuple->SetFillStyle(1001);
   ntuple->SetFillColor(4);
   
   // Ionisation
-  ntuple->Draw("flagProcess","flagProcess==13||flagProcess==17||flagProcess==20||flagProcess==23||flagProcess==26||flagProcess==30","Bsame");
+  ntuple->Draw("flagProcess","flagProcess==13||flagProcess==23||flagProcess==33||flagProcess==43||flagProcess==53||flagProcess==63||flagProcess==73||flagProcess==130||flagProcess==230||flagProcess==430","Bsame");
   ntuple->SetFillStyle(1001);
   ntuple->SetFillColor(5);
   
   // Charge decrease
-  //ntuple->Draw("flagProcess","flagProcess==18||flagProcess==24||flagProcess==27","Bsame");
+  //ntuple->Draw("flagProcess","flagProcess==24||flagProcess==44||flagProcess==54","Bsame");
   //ntuple->SetFillStyle(1001);
   //ntuple->SetFillColor(6);
 
   // Charge increase
-  //ntuple->Draw("flagProcess","flagProcess==21||flagProcess==28||flagProcess==31","Bsame");
+  //ntuple->Draw("flagProcess","flagProcess==35||flagProcess==55||flagProcess==65","Bsame");
   //ntuple->SetFillStyle(1001);
   //ntuple->SetFillColor(7);
   
@@ -61,7 +61,8 @@ c1->cd(1);
 c1->cd(2);
 
   ntuple->SetMarkerColor(2);
-  ntuple->Draw("x:y:z/1000","flagParticle==1");
+
+  ntuple->Draw("x:y:z","flagParticle==1");
 
   //ntuple->SetMarkerColor(4);
   //ntuple->SetMarkerSize(4);
@@ -77,7 +78,12 @@ c1->cd(3);
   Double_t totalEnergyDeposit;
   Double_t stepLength;
   Double_t kineticEnergyDifference;
-  Int_t event;
+  Int_t eventID;
+  Double_t kineticEnergy;
+  Int_t stepID;
+  Int_t trackID;
+  Int_t parentID;
+  Double_t angle;
 
   ntuple->SetBranchAddress("flagParticle",&flagParticle);
   ntuple->SetBranchAddress("flagProcess",&flagProcess);
@@ -87,7 +93,12 @@ c1->cd(3);
   ntuple->SetBranchAddress("totalEnergyDeposit",&totalEnergyDeposit);
   ntuple->SetBranchAddress("stepLength",&stepLength);
   ntuple->SetBranchAddress("kineticEnergyDifference",&kineticEnergyDifference);
-  ntuple->SetBranchAddress("event",&event);
+  ntuple->SetBranchAddress("kineticEnergy",&kineticEnergy);
+  ntuple->SetBranchAddress("cosTheta",&angle);
+  ntuple->SetBranchAddress("eventID",&eventID);
+  ntuple->SetBranchAddress("trackID",&trackID);
+  ntuple->SetBranchAddress("parentID",&parentID);
+  ntuple->SetBranchAddress("stepID",&stepID);
 
   TH1F* hsolvE = new TH1F ("hsolvE","solvE",100,0,2000);
   TH1F* helastE = new TH1F ("helastE","elastE",100,0,2000);
@@ -109,7 +120,9 @@ c1->cd(3);
 
   }
 
+  helastE->GetXaxis()->SetTitle("x (nm)");
   helastE->SetLineColor(2);
+
   hexcitE->SetLineColor(3);
   hioniE->SetLineColor(4);
   hattE->SetLineColor(5);

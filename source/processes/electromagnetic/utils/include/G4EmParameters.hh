@@ -143,6 +143,18 @@ public:
   void SetBirksActive(G4bool val);
   G4bool BirksActive() const;
 
+  void SetDNAFast(G4bool val);
+  G4bool DNAFast() const;
+
+  void SetDNAStationary(G4bool val);
+  G4bool DNAStationary() const;
+
+  void SetDNAElectronMsc(G4bool val);
+  G4bool DNAElectronMsc() const;
+
+  void SetGammaSharkActive(G4bool val);
+  G4bool GammaSharkActive() const;
+
   void SetEmSaturation(G4EmSaturation*);
   G4EmSaturation* GetEmSaturation();
 
@@ -275,10 +287,10 @@ public:
   void DefineRegParamForEM(G4VEmProcess*) const;
   void DefineRegParamForDeex(G4VAtomDeexcitation*) const;
 
-private:
-
   G4EmParameters(G4EmParameters &) = delete;
   G4EmParameters & operator=(const G4EmParameters &right) = delete;  
+
+private:
 
   G4EmParameters();
 
@@ -317,6 +329,10 @@ private:
   G4bool useMottCorrection;
   G4bool integral;
   G4bool birks;
+  G4bool dnaFast;
+  G4bool dnaStationary;
+  G4bool dnaMsc;
+  G4bool gammaShark;
 
   G4double minSubRange;
   G4double minKinEnergy;

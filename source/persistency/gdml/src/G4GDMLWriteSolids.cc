@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4GDMLWriteSolids.cc 103463 2017-04-11 07:22:55Z gcosmo $
+// $Id: G4GDMLWriteSolids.cc 105857 2017-08-24 07:52:24Z gcosmo $
 //
 // class G4GDMLWriteSolids Implementation
 //
@@ -991,12 +991,14 @@ TwistedtubsWrite(xercesc::DOMElement* solElement,
    twistedtubsElement->setAttributeNode(NewAttribute("name",name));
    twistedtubsElement->setAttributeNode(NewAttribute("twistedangle",
                        twistedtubs->GetPhiTwist()/degree));
-   twistedtubsElement->setAttributeNode(NewAttribute("endinnerrad",
+   twistedtubsElement->setAttributeNode(NewAttribute("midinnerrad",
                        twistedtubs->GetInnerRadius()/mm));
-   twistedtubsElement->setAttributeNode(NewAttribute("endouterrad",
+   twistedtubsElement->setAttributeNode(NewAttribute("midouterrad",
                        twistedtubs->GetOuterRadius()/mm));
-   twistedtubsElement->setAttributeNode(NewAttribute("zlen",
-                       2.0*twistedtubs->GetZHalfLength()/mm));
+   twistedtubsElement->setAttributeNode(NewAttribute("negativeEndz",
+                       twistedtubs->GetEndZ(0)/mm));
+   twistedtubsElement->setAttributeNode(NewAttribute("positiveEndz",
+                       twistedtubs->GetEndZ(1)/mm));
    twistedtubsElement->setAttributeNode(NewAttribute("phi",
                        twistedtubs->GetDPhi()/degree));
    twistedtubsElement->setAttributeNode(NewAttribute("aunit","deg"));
