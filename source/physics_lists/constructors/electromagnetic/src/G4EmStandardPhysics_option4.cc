@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmStandardPhysics_option4.cc 105735 2017-08-16 12:59:43Z gcosmo $
+// $Id: G4EmStandardPhysics_option4.cc 106234 2017-09-22 21:36:55Z gcosmo $
 //
 //---------------------------------------------------------------------------
 //
@@ -32,6 +32,10 @@
 // Author:      V.Ivanchenko 28.09.2012 from Option3 physics constructor
 //
 // Modified:
+//
+// 22.09.17  M.Novak: change msc model for e-/e+ below 100 MeV from Urban+
+//           UseDistanceToBoundary stepping to GS + Mott-correction + error
+//           -free stepping.  
 //
 //----------------------------------------------------------------------------
 //
@@ -58,6 +62,7 @@
 #include "G4hMultipleScattering.hh"
 #include "G4MscStepLimitType.hh"
 #include "G4UrbanMscModel.hh"
+#include "G4GoudsmitSaundersonMscModel.hh"
 #include "G4DummyModel.hh"
 #include "G4WentzelVIModel.hh"
 #include "G4CoulombScattering.hh"
@@ -132,8 +137,11 @@ G4EmStandardPhysics_option4::G4EmStandardPhysics_option4(G4int ver,
   param->SetLowestElectronEnergy(100*eV);
   param->SetNumberOfBinsPerDecade(20);
   param->ActivateAngularGeneratorForIonisation(true);
-  param->SetMscRangeFactor(0.02);
-  param->SetMscStepLimitType(fUseDistanceToBoundary);
+  //  param->SetMscRangeFactor(0.02);                     // e-/e+ msc urban
+  //  param->SetMscStepLimitType(fUseDistanceToBoundary); // e-/e+ msc urban
+  param->SetMscStepLimitType(fUseSafety); // error-free stepping for e-/e+ msc gs
+  param->SetMscSkin(3);                   // error-free stepping for e-/e+ msc gs
+  param->SetMscRangeFactor(0.2);          // error-free stepping for e-/e+ msc gs
   param->SetMuHadLateralDisplacement(true);
   //  param->SetLatDisplacementBeyondSafety(true);
   param->SetFluo(true);
@@ -254,7 +262,12 @@ void G4EmStandardPhysics_option4::ConstructProcess()
 
       // multiple scattering
       G4eMultipleScattering* msc = new G4eMultipleScattering;
-      G4UrbanMscModel* msc1 = new G4UrbanMscModel();
+      // e-/e+ msc urban
+      // G4UrbanMscModel* msc1 = new G4UrbanMscModel();
+      // e-/e+ msc gs
+      G4GoudsmitSaundersonMscModel* msc1 = new G4GoudsmitSaundersonMscModel();
+      // e-/e+ msc gs with Mott-correction
+      msc1->SetOptionMottCorrection(true);
       G4WentzelVIModel* msc2 = new G4WentzelVIModel();
       msc1->SetHighEnergyLimit(highEnergyLimit);
       msc2->SetLowEnergyLimit(highEnergyLimit);
@@ -296,7 +309,12 @@ void G4EmStandardPhysics_option4::ConstructProcess()
 
       // multiple scattering
       G4eMultipleScattering* msc = new G4eMultipleScattering;
-      G4UrbanMscModel* msc1 = new G4UrbanMscModel();
+      // e-/e+ msc urban
+      // G4UrbanMscModel* msc1 = new G4UrbanMscModel();
+      // e-/e+ msc gs
+      G4GoudsmitSaundersonMscModel* msc1 = new G4GoudsmitSaundersonMscModel();
+      // e-/e+ msc gs with Mott-correction
+      msc1->SetOptionMottCorrection(true);
       G4WentzelVIModel* msc2 = new G4WentzelVIModel();
       msc1->SetHighEnergyLimit(highEnergyLimit);
       msc2->SetLowEnergyLimit(highEnergyLimit);

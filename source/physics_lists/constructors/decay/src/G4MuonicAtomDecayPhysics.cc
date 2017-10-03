@@ -23,13 +23,19 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-
+// --------------------------------------------------------------
+//	GEANT 4 class implementation file
+//
+//	History: first implementation
+//      June 2017 K.L. Genser, K. Lynch
+//
+// ---------------------------------------------------------------
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo...... 
 
 #include "G4MuonicAtomDecayPhysics.hh"
 
+#include "G4GenericMuonicAtom.hh"
 #include "G4MuonicAtomDecay.hh"
-#include "G4GenericIon.hh"
 #include "globals.hh"
 #include "G4PhysicsListHelper.hh"
 
@@ -50,7 +56,7 @@ G4MuonicAtomDecayPhysics::G4MuonicAtomDecayPhysics(G4int)
 G4MuonicAtomDecayPhysics::G4MuonicAtomDecayPhysics(const G4String& name)
 :  G4VPhysicsConstructor(name)
 {
-  G4cout << "G4MuonicAtomDecayPhysics()\n";
+  G4cout << "G4MuonicAtomDecayPhysics()" << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -63,17 +69,28 @@ G4MuonicAtomDecayPhysics::~G4MuonicAtomDecayPhysics()
 
 void G4MuonicAtomDecayPhysics::ConstructParticle()
 {
-  G4cout << "G4MuonicAtomDecayPhysics::ConstructParticle()\n";
-  G4GenericIon::GenericIon();
+  G4cout << "G4MuonicAtomDecayPhysics::ConstructParticle()" << G4endl;
+  G4GenericMuonicAtom::GenericMuonicAtom();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void G4MuonicAtomDecayPhysics::ConstructProcess()
 {
-  G4cout << "G4MuonicAtomDecayPhysics::ConstructProcess()\n";
-  G4PhysicsListHelper::GetPhysicsListHelper()->
-    RegisterProcess(new G4MuonicAtomDecay(), G4GenericIon::GenericIon());
+  G4cout << "G4MuonicAtomDecayPhysics::ConstructProcess()" << G4endl;
+
+  G4PhysicsListHelper* plh = G4PhysicsListHelper::GetPhysicsListHelper();
+  G4int plhvl = plh->GetVerboseLevel();
+  //  plh->SetVerboseLevel(3);
+  G4bool rc1 = plh->
+    RegisterProcess(new G4MuonicAtomDecay(nullptr), // default G4HadronicInteraction* will be set
+                    G4GenericMuonicAtom::GenericMuonicAtom());
+  plh->SetVerboseLevel(plhvl);
+  if (!(rc1)) {
+    G4cout << " G4MuonicAtomDecayPhysics::ConstructProcess() : "
+          << " RegisterProcess failed for G4GenericMuonicAtom "
+          << G4endl;
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

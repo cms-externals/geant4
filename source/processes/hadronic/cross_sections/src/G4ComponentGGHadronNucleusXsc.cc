@@ -396,7 +396,6 @@ G4ComponentGGHadronNucleusXsc::GetIsoCrossSection(const G4DynamicParticle* aPart
   }
   else // H
     {
-      /*
       if( theParticle == theKPlus   || 
 	  theParticle == theKMinus  || 
 	  theParticle == theK0S     || 
@@ -408,17 +407,15 @@ G4ComponentGGHadronNucleusXsc::GetIsoCrossSection(const G4DynamicParticle* aPart
 	  fElasticXsc = hnXsc->GetElasticHadronNucleonXsc(); 
 	}
       else
-      {*/
-      
-      fTotalXsc = sigma;
-      xsection  = sigma;
-      
-      fInelasticXsc = hpInXsc;
-      fElasticXsc   = fTotalXsc - fInelasticXsc;
-      
-      if (fElasticXsc < 0.) fElasticXsc = 0.;
-      
-      //}
+	{
+	  fTotalXsc = sigma;
+	  xsection  = sigma;
+	  
+	  fInelasticXsc = hpInXsc;
+	  fElasticXsc   = fTotalXsc - fInelasticXsc;
+	  
+	  if (fElasticXsc < 0.) fElasticXsc = 0.;
+	}
     }
   return xsection; 
 }

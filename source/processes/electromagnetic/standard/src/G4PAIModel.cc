@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PAIModel.cc 105869 2017-08-24 13:37:59Z gcosmo $
+// $Id: G4PAIModel.cc 106217 2017-09-21 00:03:23Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -90,7 +90,7 @@ G4PAIModel::G4PAIModel(const G4ParticleDefinition* p, const G4String& nam)
 
   // default generator
   SetAngularDistribution(new G4DeltaAngle());
-  fLowestTcut = 25*CLHEP::eV;
+  fLowestTcut = 12.5*CLHEP::eV;
 }
 
 ////////////////////////////////////////////////////////////////////////////

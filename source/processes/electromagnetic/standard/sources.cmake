@@ -11,7 +11,7 @@
 #
 # Generated on : 24/9/2010
 #
-# $Id: sources.cmake 105900 2017-08-28 07:27:51Z gcosmo $
+# $Id: sources.cmake 106217 2017-09-21 00:03:23Z gcosmo $
 #
 #------------------------------------------------------------------------------
 
@@ -92,7 +92,6 @@ GEANT4_DEFINE_MODULE(NAME G4emstandard
         G4ScreeningMottCrossSection.hh
         G4SeltzerBergerModel.hh
         G4UniversalFluctuation.hh
-        G4UniversalFluctuation2017.hh
         G4UrbanMscModel.hh
         G4WaterStopping.hh
         G4WentzelOKandVIxSection.hh
@@ -161,7 +160,6 @@ GEANT4_DEFINE_MODULE(NAME G4emstandard
         G4ScreeningMottCrossSection.cc
         G4SeltzerBergerModel.cc
         G4UniversalFluctuation.cc
-        G4UniversalFluctuation2017.cc
         G4UrbanMscModel.cc
         G4WaterStopping.cc
         G4WentzelOKandVIxSection.cc

@@ -30,11 +30,13 @@ private:
   }
 #endif
 public:
-  mat(bool a_inc = true) {
+  mat(
+#ifdef TOOLS_MEM
+      bool a_inc = true
+#endif      
+      ) {
 #ifdef TOOLS_MEM
     if(a_inc) mem::increment(s_class().c_str());
-#else
-    (void)a_inc;
 #endif
 #ifdef TOOLS_MAT_NEW
     m_vec = new T[D*D];

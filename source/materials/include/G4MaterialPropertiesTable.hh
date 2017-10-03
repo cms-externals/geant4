@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4MaterialPropertiesTable.hh 99765 2016-10-05 08:49:47Z gcosmo $
+// $Id: G4MaterialPropertiesTable.hh 106193 2017-09-19 04:03:52Z gcosmo $
 //
 ////////////////////////////////////////////////////////////////////////
 //
@@ -61,6 +61,7 @@
 #include <cmath>
 #include <map>
 #include "globals.hh"
+#include "G4MaterialPropertiesIndex.hh"
 #include "G4MaterialPropertyVector.hh"
 
 /////////////////////
@@ -100,24 +101,41 @@ class G4MaterialPropertiesTable
     G4double GetConstProperty(const char *key) const;
     // Get the constant property from the table corresponding to the key-name
 
+    G4double GetConstProperty(const G4MCPindex index) const;
+    // Get the constant property from the table corresponding to the key-index
+
     G4bool ConstPropertyExists(const char *key) const;
     // Return true if a const property 'key' exists.
 
     G4MaterialPropertyVector* GetProperty(const char *key);
     // Get the property from the table corresponding to the key-name.
 
+    G4MaterialPropertyVector* GetProperty(const G4MPindex index);
+    // Get the property from the table corresponding to the key-index.
+
     void AddEntry(const char *key, G4double aPhotonEnergy,
-                                          G4double aPropertyValue);
+                                   G4double aPropertyValue);
     // Add a new entry (pair of numbers) to the table for a given key.
+
+    G4MCPindex GetConstPropertyIndex(const G4String& key) const;
+    // Get the constant property index from the key-name
+
+    G4MPindex GetPropertyIndex(const G4String& key) const;
+    // Get the property index by the key-name.
 
     void DumpTable();
 
   public:  // without description
 
-    const std::map< G4String, G4MaterialPropertyVector*, std::less<G4String> >*
-    GetPropertiesMap() const { return &MPT; }
-    const std::map< G4String, G4double, std::less<G4String> >*
-    GetPropertiesCMap() const { return &MPTC; }
+    std::map< G4String, G4MaterialPropertyVector*, std::less<G4String> >*
+      GetPropertiesMap(); 
+    std::map< G4String, G4double, std::less<G4String> >*
+      GetPropertiesCMap();
+
+    const std::map<G4MPindex, G4MaterialPropertyVector*, std::less<G4MPindex> >*
+      GetPropertyMap() const { return &MP; }
+    const std::map<G4MCPindex, G4double, std::less<G4MCPindex> >*
+      GetConstPropertyMap() const { return &MCP; }
     // Accessors required for persistency purposes
 
   private:
@@ -133,6 +151,15 @@ class G4MaterialPropertiesTable
     std::map< G4String, G4double, std::less<G4String> > MPTC;
     typedef std::map< G4String, G4double,
                       std::less<G4String> >::const_iterator MPTCiterator;
+
+    //material property map and constant property map by index types
+    std::map<G4MPindex, G4MaterialPropertyVector*, std::less<G4MPindex> > MP;
+    typedef std::map< G4MPindex, G4MaterialPropertyVector*,
+                      std::less<G4MPindex> >::const_iterator MPiterator;
+
+    std::map< G4MCPindex, G4double, std::less<G4MCPindex> > MCP;
+    typedef std::map< G4MCPindex, G4double,
+                      std::less<G4MCPindex> >::const_iterator MCPiterator;
 };
 
 /////////////////////

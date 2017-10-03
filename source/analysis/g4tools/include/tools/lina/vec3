@@ -40,11 +40,13 @@ public:
     m_data[1] = a_vec[1];
     m_data[2] = a_vec[2];
   }
-  vec3(const T& a0,const T& a1,const T& a2,bool a_inc = true) {
+  vec3(const T& a0,const T& a1,const T& a2
+#ifdef TOOLS_MEM
+       ,bool a_inc = true
+#endif       
+       ) {
 #ifdef TOOLS_MEM
     if(a_inc) mem::increment(s_class().c_str());
-#else
-    (void)a_inc;
 #endif
     m_data[0] = a0;
     m_data[1] = a1;
@@ -295,18 +297,15 @@ public: //for iv2sg
   }
 
 public:
-  static const vec3<T>& s_x() {
-    static const vec3<T> s_v(1,0,0,false);
-    return s_v;
-  }
-  static const vec3<T>& s_y() {
-    static const vec3<T> s_v(0,1,0,false);
-    return s_v;
-  }
-  static const vec3<T>& s_z() {
-    static const vec3<T> s_v(0,0,1,false);
-    return s_v;
-  }
+#if defined(TOOLS_MEM) && !defined(TOOLS_MEM_ATEXIT)
+  static const vec3<T>& s_x() {static const vec3<T> s_v(1,0,0,false);return s_v;}
+  static const vec3<T>& s_y() {static const vec3<T> s_v(0,1,0,false);return s_v;}
+  static const vec3<T>& s_z() {static const vec3<T> s_v(0,0,1,false);return s_v;}
+#else
+  static const vec3<T>& s_x() {static const vec3<T> s_v(1,0,0);return s_v;}
+  static const vec3<T>& s_y() {static const vec3<T> s_v(0,1,0);return s_v;}
+  static const vec3<T>& s_z() {static const vec3<T> s_v(0,0,1);return s_v;}
+#endif
 protected:
   T m_data[3];
 

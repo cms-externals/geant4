@@ -918,6 +918,7 @@ G4RadioactiveDecay::LoadDecayTable(const G4ParticleDefinition& theParentNucleus)
             // indicated in the last column.
             a /= 1000.;
             c /= 1000.;
+            b/=100.;
             daughterFloatLevel = G4Ions::FloatLevelBase(daughterFloatFlag.back());
 
             switch (theDecayMode) {

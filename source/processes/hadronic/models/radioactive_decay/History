@@ -14,6 +14,16 @@ track of all tags.
      * Reverse chronological order (last date on top), please *
      ----------------------------------------------------------
 
+13 September 2017  Laurent Desorgher  radioactive_decay-V10-03-14
+--------------------------------------------------------
+- G4RadioactiveDecay::LoadDecayTable()
+  Divide the b branching ratio of a specific decay channel read in the database
+  by 100 to avoid that it is higher than 1 as prevented by G4VDecayChannel.
+  This BR is given in pc in the database while it should be smaller than 1
+  when setting it by G4VDecayChannel::SetBR method.
+  This solve a bug that appeared  with changes in  G4VDecayChannel from
+  tag particles-V10-03-13.
+  
 11 July 2017  Dennis Wright  radioactive_decay-V10-03-13
 --------------------------------------------------------
 - G4RadioactiveDecay::BuildPhysicsTable(): remove all settings of photon 

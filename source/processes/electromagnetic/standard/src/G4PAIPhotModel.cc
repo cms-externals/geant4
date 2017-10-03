@@ -86,7 +86,7 @@ G4PAIPhotModel::G4PAIPhotModel(const G4ParticleDefinition* p, const G4String& na
 
   // default generator
   SetAngularDistribution(new G4DeltaAngle());
-  fLowestTcut = 25*CLHEP::eV;
+  fLowestTcut = 12.5*CLHEP::eV;
 }
 
 ////////////////////////////////////////////////////////////////////////////

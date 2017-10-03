@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4OpenGLQtViewer.cc 104288 2017-05-23 13:23:23Z gcosmo $
+// $Id: G4OpenGLQtViewer.cc 105978 2017-09-05 07:45:43Z gcosmo $
 //
 // 
 // G4OpenGLQtViewer : Class to provide Qt specific
@@ -4633,9 +4633,13 @@ void G4OpenGLQtViewer::tableWidgetViewerSetItemChanged(QTableWidgetItem * item) 
 }
 
 bool G4OpenGLQtViewer::isCurrentWidget(){
-  // Prevent from repainting a hidden tab (the current tab name has to be the one of th GL viewer)
-  if ( GetName() != fUiQt->GetViewerTabWidget()->tabText(fUiQt->GetViewerTabWidget()->currentIndex()).toStdString().c_str()) {
-    return false;
+  G4Qt* interactorManager = G4Qt::getInstance ();
+  if (!interactorManager->IsExternalApp()) {
+
+    // Prevent from repainting a hidden tab (the current tab name has to be the one of th GL viewer)
+    if ( GetName() != fUiQt->GetViewerTabWidget()->tabText(fUiQt->GetViewerTabWidget()->currentIndex()).toStdString().c_str()) {
+      return false;
+    }
   }
   return true;
 }

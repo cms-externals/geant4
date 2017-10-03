@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VMultipleScattering.cc 105942 2017-09-01 07:37:29Z gcosmo $
+// $Id: G4VMultipleScattering.cc 106208 2017-09-20 01:53:57Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -570,7 +570,7 @@ G4VMultipleScattering::AlongStepDoIt(const G4Track& track, const G4Step& step)
 	      } else {
 		maxshift = std::min(maxshift, geomLength);
 		if(0.0 < maxshift + dist) {
-		  G4ThreeVector postpoint = step.GetPostStepPoint()->GetPosition();
+		  const G4ThreeVector& postpoint = step.GetPostStepPoint()->GetPosition();
 		  G4ThreeVector point = fNewPosition + dist*fNewDirection;
 		  G4double R2 = (postpoint - point).mag2();
 		  G4double newdist = dist;

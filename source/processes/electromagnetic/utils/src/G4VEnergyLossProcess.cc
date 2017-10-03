@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEnergyLossProcess.cc 105942 2017-09-01 07:37:29Z gcosmo $
+// $Id: G4VEnergyLossProcess.cc 106208 2017-09-20 01:53:57Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -1115,17 +1115,10 @@ G4double G4VEnergyLossProcess::AlongStepGetPhysicalInteractionLength(
   *selection = aGPILSelection;
   if(isIonisation && currentModel->IsActive(preStepScaledEnergy)) {
     fRange = GetScaledRangeForScaledEnergy(preStepScaledEnergy)*reduceFactor;
-
-    // smeared range
-    if(rndmStepFlag && fRange < finalRange) {
-      G4VEmFluctuationModel* fluc = currentModel->GetModelOfFluctuations();
-      if(fluc) { fRange = fluc->RangeSmeared(currentMaterial, particle,
-					     preStepKinEnergy, fRange); }
-      x = fRange;
-    } else {
-      x = (fRange > finalRange) ? fRange*dRoverRange + 
-	finalRange*(1.0 - dRoverRange)*(2.0 - finalRange/fRange) : fRange; 
-    }
+    G4double finR = (rndmStepFlag) ? std::min(finalRange,
+      currentCouple->GetProductionCuts()->GetProductionCut(1)) : finalRange;
+    x = (fRange > finR) ? 
+      fRange*dRoverRange + finR*(1.0 - dRoverRange)*(2.0 - finR/fRange) : fRange; 
    // if(particle->GetPDGMass() > 0.9*GeV)
     /*
     G4cout<<GetProcessName()<<": e= "<<preStepKinEnergy
@@ -1344,7 +1337,7 @@ G4VParticleChange* G4VEnergyLossProcess::AlongStepDoIt(const G4Track& track,
     if(idxSCoffRegions[currentCoupleIndex]) {
 
       G4bool yes = false;
-      G4StepPoint* prePoint = step.GetPreStepPoint();
+      const G4StepPoint* prePoint = step.GetPreStepPoint();
 
       // Check boundary
       if(prePoint->GetStepStatus() == fGeomBoundary) { yes = true; }

@@ -113,8 +113,24 @@ else()
   option(GEANT4_USE_SYSTEM_EXPAT "Use system Expat library" ON)
 
   if(GEANT4_USE_SYSTEM_EXPAT)
-    # If system package requested, make damn sure we find it
+    # If system package requested, find it or fail
     find_package(EXPAT REQUIRED)
+
+    # Check version requirement externally to provide information
+    # on using internal expat.
+    if(${EXPAT_VERSION_STRING} VERSION_LESS "2.0.1")
+      set(__badexpat_include_dir ${EXPAT_INCLUDE_DIR})
+      set(__badexpat_library ${EXPAT_LIBRARY})
+      unset(EXPAT_FOUND)
+      unset(EXPAT_INCLUDE_DIR CACHE)
+      unset(EXPAT_LIBRARY CACHE)
+      message(FATAL_ERROR
+"Detected system expat header and library:
+EXPAT_INCLUDE_DIR = ${__badexpat_include_dir}
+EXPAT_LIBRARY = ${__badexpat_library}
+are of insufficient version '${EXPAT_VERSION_STRING}' (Required >= 2.0.1)
+Set the above CMake variables to point to an expat install of the required version, or set GEANT4_USE_SYSTEM_EXPAT to OFF to use Geant4's packaged version.")
+    endif()
   else()
     set(EXPAT_FOUND TRUE)
     set(GEANT4_USE_BUILTIN_EXPAT TRUE)

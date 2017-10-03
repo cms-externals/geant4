@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: DicomHandler.cc 101109 2016-11-07 08:14:53Z gcosmo $
+// $Id: DicomHandler.cc 106196 2017-09-19 04:19:33Z gcosmo $
 //
 /// \file medical/DICOM/src/DicomHandler.cc
 /// \brief Implementation of the DicomHandler class
@@ -66,7 +66,6 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DicomHandler* DicomHandler::fInstance = 0;
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DicomHandler* DicomHandler::Instance()
@@ -75,34 +74,48 @@ DicomHandler* DicomHandler::Instance()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+#ifdef DICOM_USE_HEAD
 DicomHandler::DicomHandler()
-:   DATABUFFSIZE(8192), LINEBUFFSIZE(5020), FILENAMESIZE(512),
-    fCompression(0), fNFiles(0), fRows(0), fColumns(0),
-    fBitAllocated(0), fMaxPixelValue(0), fMinPixelValue(0),
-    fPixelSpacingX(0.), fPixelSpacingY(0.),
-    fSliceThickness(0.), fSliceLocation(0.),
-    fRescaleIntercept(0), fRescaleSlope(0),
-    fLittleEndian(true), fImplicitEndian(false),
-    fPixelRepresentation(0), fNbrequali(0),
-    fValueDensity(NULL),fValueCT(NULL),fReadCalibration(false),
-    fMergedSlices(NULL),fDriverFile("Data.dat"),fCt2DensityFile("CT2Density.dat")
+:DATABUFFSIZE(8192), LINEBUFFSIZE(5020), FILENAMESIZE(512),
+ fCompression(0),fNFiles(0), fRows(0), fColumns(0), 
+ fBitAllocated(0), fMaxPixelValue(0),
+ fMinPixelValue(0),fPixelSpacingX(0.),
+ fPixelSpacingY(0.),fSliceThickness(0.), 
+ fSliceLocation(0.),fRescaleIntercept(0), 
+ fRescaleSlope(0),fLittleEndian(true), 
+ fImplicitEndian(false),fPixelRepresentation(0), 
+ fNbrequali(0),fValueDensity(NULL),fValueCT(NULL),fReadCalibration(false),
+ fMergedSlices(NULL),fDriverFile("DICOM_HEAD/Data.dat"),
+ fCt2DensityFile("null.dat")
 {
-    fMergedSlices = new DicomPhantomZSliceMerged;
+fMergedSlices = new DicomPhantomZSliceMerged;
 }
-
+#else
+DicomHandler::DicomHandler()
+:DATABUFFSIZE(8192), LINEBUFFSIZE(5020), FILENAMESIZE(512),
+ fCompression(0), fNFiles(0), fRows(0), fColumns(0),
+ fBitAllocated(0), fMaxPixelValue(0), fMinPixelValue(0),
+ fPixelSpacingX(0.), fPixelSpacingY(0.),fSliceThickness(0.), 
+ fSliceLocation(0.), fRescaleIntercept(0), fRescaleSlope(0),
+ fLittleEndian(true),fImplicitEndian(false),fPixelRepresentation(0),
+ fNbrequali(0),fValueDensity(NULL),fValueCT(NULL),
+ fReadCalibration(false),fMergedSlices(NULL),
+ fDriverFile("Data.dat"),fCt2DensityFile("CT2Density.dat")
+{
+ fMergedSlices = new DicomPhantomZSliceMerged;
+}
+#endif
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DicomHandler::~DicomHandler()
-{
-
-}
+{}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 G4int DicomHandler::ReadFile(FILE* dicom, char* filename2)
 {
     G4cout << " ReadFile " << filename2 << G4endl;
+
     G4int returnvalue = 0; size_t rflag = 0;
     char * buffer = new char[LINEBUFFSIZE];
 
@@ -794,38 +807,70 @@ G4int DicomHandler::ReadData(FILE *dicom,char * filename2)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+// DICOM HEAD does not use the calibration curve
+
+#ifdef DICOM_USE_HEAD
+void DicomHandler::ReadCalibration()
+{
+G4cout << "No calibration curve for the DICOM HEAD needed!" << G4endl;
+}
+#else
 // Separated out of Pixel2density
 // No need to read in same calibration EVERY time
 // Increases the speed of reading file by several orders of magnitude
+
 void DicomHandler::ReadCalibration()
 {
-  fNbrequali = 0;
-  
-  // CT2Density.dat contains the calibration curve to convert CT (Hounsfield)
-  // number to physical density
-  std::ifstream calibration(fCt2DensityFile.c_str());
-  calibration >> fNbrequali;
-  
-  fValueDensity = new G4double[fNbrequali];
-  fValueCT = new G4double[fNbrequali];
-  
-  if(!calibration) {
-    G4Exception("DicomHandler::ReadFile",
-                "DICOM001",
-                FatalException,
-                "@@@ No value to transform pixels in density!");
-    
-  } else { // calibration was successfully opened
-    for(G4int i = 0; i < fNbrequali; i++) { // Loop to store all the 
-      //pts in CT2Density.dat
-      calibration >> fValueCT[i] >> fValueDensity[i];
-    }
+ fNbrequali = 0;
+// CT2Density.dat contains the calibration curve to convert CT (Hounsfield)
+// number to physical density
+ std::ifstream calibration(fCt2DensityFile.c_str());
+ calibration >> fNbrequali; 
+ fValueDensity = new G4double[fNbrequali];
+ fValueCT = new G4double[fNbrequali];
+
+ if(!calibration) {
+   G4Exception("DicomHandler::ReadFile","DICOM001", FatalException,
+               "@@@ No value to transform pixels in density!");
+   } 
+   else { // calibration was successfully opened
+      for(G4int i = 0; i < fNbrequali; i++) 
+         { // Loop to store all the pts in CT2Density.dat
+        calibration >> fValueCT[i] >> fValueDensity[i];
+        }
   }
-  calibration.close();
-  
-  fReadCalibration = true;
+calibration.close();
+fReadCalibration = true;
+}
+#endif
+
+#ifdef DICOM_USE_HEAD
+G4float DicomHandler::Pixel2density(G4int pixel)
+{
+ G4float density = -1;
+
+//Air
+  if (pixel == -998.) density = 0.001290;
+//Soft Tissue
+  else if ( pixel == 24.) density = 1.00;
+//Brain
+  else if ( pixel == 52.) density = 1.03; 
+// Spinal disc
+   else if ( pixel == 92.) density = 1.10;
+// Trabecular bone
+   else if ( pixel == 197.) density = 1.18;
+// Cortical Bone
+   else if ( pixel == 923.) density = 1.85;
+// Tooth dentine
+   else if ( pixel == 1280.) density = 2.14;
+//Tooth enamel
+   else if ( pixel == 2310.) density = 2.89; 
+
+return density;
 }
 
+#else
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 G4float DicomHandler::Pixel2density(G4int pixel)
@@ -857,7 +902,7 @@ G4float DicomHandler::Pixel2density(G4int pixel)
   
   return density;
 }
-
+#endif
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void DicomHandler::CheckFileFormat()

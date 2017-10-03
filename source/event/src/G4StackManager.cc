@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4StackManager.cc 73760 2013-09-10 12:49:34Z gcosmo $
+// $Id: G4StackManager.cc 106145 2017-09-14 06:36:31Z gcosmo $
 //
 //
 //  Last Modification : 09/Dec/96 M.Asai
@@ -149,6 +149,45 @@ G4int G4StackManager::PushOneTrack(G4Track *newTrack,G4VTrajectory *newTrajector
 #endif
     }
 ////  End of temporal care of setting process manager
+////  Setting process manager for muonic atom (a temporary solution)
+    if(pd->IsMuonicAtom())
+    {
+#ifdef G4VERBOSE
+      if( verboseLevel > 0 ) {
+        ED << "\n Process manager is temporally set, but this operation is thread-unsafe\n"
+           << "and will be replaced with other methods at version 10.0.";
+        G4Exception("G4StackManager::PushOneTrack","Event10051",JustWarning,ED);
+      }
+#endif
+      G4ParticleDefinition* genericMA = 
+        G4ParticleTable::GetParticleTable()->GetGenericMuonicAtom();
+      G4ProcessManager* pman=nullptr;
+      if (genericMA!=nullptr) pman = genericMA->GetProcessManager();
+      if ((genericMA == nullptr) || (pman== nullptr)){
+        G4Exception( "G4IonTable::AddProcessManager()","PART10052", FatalException,
+                   "Can not define process manager. GenericIon is not available.");
+      }
+      G4ParticleDefinition* muAtom = const_cast<G4ParticleDefinition*>(pd);
+      muAtom->SetParticleDefinitionID(genericMA->GetParticleDefinitionID());
+#ifdef G4VERBOSE
+      if( verboseLevel > 1 )
+      {
+        G4ProcessManager* muAtomPman = muAtom->GetProcessManager();
+        G4cout << "Now " << muAtom->GetParticleName() << " has a process manager at " << muAtomPman
+               << " that is equivalent to " << pman << G4endl;
+        G4ProcessVector* muAtomPvec = muAtomPman->GetProcessList();
+        for(G4int ip1=0;ip1<muAtomPvec->size();ip1++)
+        {
+          G4cout << " " << ip1 << " - " << (*muAtomPvec)[ip1]->GetProcessName()
+                 << " AtRest " << muAtomPman->GetAtRestIndex((*muAtomPvec)[ip1])
+                 << ", AlongStep " << muAtomPman->GetAlongStepIndex((*muAtomPvec)[ip1])
+                 << ", PostStep " << muAtomPman->GetPostStepIndex((*muAtomPvec)[ip1])
+                 << G4endl;
+        }
+      }
+#endif
+    }
+////  End of Setting process manager for muonic atom (a temporary solution)
     else
     {
 #ifdef G4VERBOSE

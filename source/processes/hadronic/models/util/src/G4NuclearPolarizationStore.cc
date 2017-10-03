@@ -53,7 +53,6 @@ G4NuclearPolarizationStore::~G4NuclearPolarizationStore()
   //G4cout << "G4NuclearPolarizationStore::~G4NuclearPolarizationStore() "
   //	 << nuclist.size() << G4endl;
   for(auto nucp : nuclist) {
-    G4cout << nucp << G4endl;
     delete nucp;
   }
   nuclist.clear();

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GoudsmitSaundersonTable.cc 105900 2017-08-28 07:27:51Z gcosmo $
+// $Id: G4GoudsmitSaundersonTable.cc 106235 2017-09-22 21:39:16Z gcosmo $
 //
 // -----------------------------------------------------------------------------
 //
@@ -64,10 +64,10 @@
 //            that use these data has been also completely replaced)
 // 28.04.2017 M. Novak: New representation of the angular distribution data with
 //            significantly reduced data size.
-// 23.08.2017 M. Novak: Added funtionality to handle Mott-correction to the 
-//            base GS angular distributions and some other factors (screening  
-//            parameter, first and second moments) when Mott-correction is 
-//            activated in the GS-MSC model. 
+// 23.08.2017 M. Novak: Added funtionality to handle Mott-correction to the
+//            base GS angular distributions and some other factors (screening
+//            parameter, first and second moments) when Mott-correction is
+//            activated in the GS-MSC model.
 //
 // References:
 //   [1] A.F.Bielajew, NIMB, 111 (1996) 195-208
@@ -86,6 +86,8 @@
 #include "G4GSMottCorrection.hh"
 #include "G4MaterialTable.hh"
 #include "G4Material.hh"
+#include "G4MaterialCutsCouple.hh"
+#include "G4ProductionCutsTable.hh"
 
 #include <fstream>
 #include <cstdlib>
@@ -347,7 +349,7 @@ void G4GoudsmitSaundersonTable::Initialise() {
     gIsInitialised = true;
   }
   InitMoliereMSCParams();
-  // Mott-correction: particle dependet so init them 
+  // Mott-correction: particle dependet so init them
   if (fIsMottCorrection) {
     if (!fMottCorrection) {
       fMottCorrection = new G4GSMottCorrection(fIsElectron);
@@ -425,7 +427,7 @@ G4bool G4GoudsmitSaundersonTable::Sampling(G4double lambdaval, G4double qval, G4
       //sample cos(theta) from the singe scattering pdf:
       // - Mott-correction will be included if it was requested by the user (i.e. if fIsMottCorrection=true)
       curcost       = SingleScattering(lambdaval, scra, lekin, beta2, matindx);
-      G4double dum0 = 1.-cost;
+      G4double dum0 = 1.-curcost;
       cursint       = dum0*(2.0-dum0); // sin^2(theta)
       //
       // if we got current deflection that is not too small
@@ -479,13 +481,11 @@ G4double G4GoudsmitSaundersonTable::SampleCosTheta(G4double lambdaval, G4double 
     G4int    nloop    =  0 ; // rejection loop counter
 //    G4int    ekindx   = -1; // evaluate only in the first call
 //    G4int    deltindx = -1 ; // evaluate only in the first call
-    G4double val      = fMottCorrection->GetMottRejectionValue(lekin, beta2, qval, cost, matindx,
-                                                               mcekini, mcdelti);
+    G4double val      = fMottCorrection->GetMottRejectionValue(lekin, beta2, qval, cost, matindx, mcekini, mcdelti);
     while (G4UniformRand()>val && ++nloop<nlooplim) {
       // sampling cos(theta)
       cost = SampleGSSRCosTheta(*gsDtr, transfPar);
-      val  = fMottCorrection->GetMottRejectionValue(lekin, beta2, qval, cost, matindx,
-                                                    mcekini, mcdelti);
+      val  = fMottCorrection->GetMottRejectionValue(lekin, beta2, qval, cost, matindx, mcekini, mcdelti);
     };
   }
   return cost;
@@ -670,7 +670,7 @@ void G4GoudsmitSaundersonTable::LoadMSCData() {
     for (G4int iq=0; iq<gQNUM2; ++iq) {
       G4int numData;
       infile >> numData;
-      if (numData>0) {
+      if (numData>1) {
         GSMSCAngularDtr *gsd = new GSMSCAngularDtr();
         gsd->fNumData = numData;
         gsd->fUValues = new G4double[gsd->fNumData]();
@@ -788,4 +788,41 @@ void G4GoudsmitSaundersonTable::InitMoliereMSCParams() {
      gMoliereBc[theMaterial->GetIndex()]  *= 1.0/CLHEP::cm;
      gMoliereXc2[theMaterial->GetIndex()] *= CLHEP::MeV*CLHEP::MeV/CLHEP::cm;
    }
+}
+
+
+// this method is temporary, will be removed/replaced with a more effictien solution after 10.3.ref09
+G4double G4GoudsmitSaundersonTable::ComputeScatteringPowerCorrection(const G4MaterialCutsCouple *matcut, G4double ekin) {
+  G4double corFactor = 1.0;
+  // get e- production cut in the current material-cuts in energy
+  G4double ecut  = (*(G4ProductionCutsTable::GetProductionCutsTable()->GetEnergyCutsVector(idxG4ElectronCut)))[matcut->GetIndex()];
+  G4double limit = ecut;
+  if (fIsElectron) {
+    limit *= 2.;
+  }
+  if (ekin>limit) {
+     G4double tau    = ekin/CLHEP::electron_mass_c2;
+     G4double tauCut = ecut/CLHEP::electron_mass_c2;
+     // get the screening parameter fScrA
+//     G4double pt2 = ekin*(ekin+2.0*CLHEP::electron_mass_c2);
+     G4int    matindx = matcut->GetMaterial()->GetIndex();
+     G4double A   = GetMoliereXc2(matindx)/(4.0*tau*(tau+2.)*GetMoliereBc(matindx));
+     G4double gr   = (1.+2.*A)*G4Log(1.+1./A)-2.;
+     G4double dum0 = (tau+2.)/(tau+1.);
+     G4double dum1 = tau+1.;
+     G4double gm = G4Log(0.5*tau/tauCut)+
+                   (1.+dum0*dum0)*G4Log(2.*(tau-tauCut+2.)/(tau+4.))-
+                   0.25*(tau+2.)*( tau+2.+2.*(2.*tau+1.)/(dum1*dum1))*
+                   G4Log((tau+4.)*(tau-tauCut)/tau/(tau-tauCut+2.))+
+                   0.5*(tau-2*tauCut)*(tau+2.)*(1./(tau-tauCut)-1./(dum1*dum1) );
+     if (gm<gr ) {
+       gm = gm/gr;
+     } else {
+       gm = 1.;
+     }
+     G4double z0 = matcut->GetMaterial()->GetIonisation()->GetZeffective();
+     corFactor   = 1.-gm*z0/(z0*(z0+1.));
+  }
+  return corFactor;
+//  G4cout << " ecut in " << matcut->GetMaterial()->GetName() << "  = " << ecut/CLHEP::keV << G4endl;
 }

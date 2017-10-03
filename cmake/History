@@ -30,6 +30,39 @@ add this in the documentation for the changed file as [BUGFIX #BUGNUMBER].
      * Reverse chronological order (last date on top), please *
 
      ----------------------------------------------------------
+
+26th September 2017 - Gunter Folger (cmake-V10-03-37)
+- Switch to new datasets:
+  - G4ENSDFSTATE2.2
+  - G4PhotonEvaporation5.1
+  - G4RadioactiveDecay5.2
+
+13th September 2017 - Ben Morgan (cmake-V10-03-36)
+- Modules/Geant4OptionalComponents.cmake: Require system expat version
+  >= 2.0.1. Identified in Bugzilla #2003. g4tools uses expat functions
+  only present in 2.0.1 or higher. Though Geant4 supported systems all
+  meet this requirement, check expat version and error out if version
+  is < 2.0.1. On error, report information on cause and how to rectify.
+
+11th September 2017 - Ben Morgan (cmake-V10-03-35)
+- Modules/G4CMakeMain.cmake: Remove GEANT4_BUILD_EXAMPLES option.
+  Add GEANT4_INSTALL_EXAMPLES option. Advanced and ON by default,
+  thia is for use by developers who wish to save time/space by not
+  installing all the example code.
+
+7th September 2017 - Ben Morgan (cmake-V10-03-34)
+- Modules/G4DeveloperAPI_OLD.cmake: Set INSTALL_RPATH on macOS
+  Requested by Fons Rademackers. Loading Geant4 dylibs in Python
+  can lead to resolution errors as they cannot locate each other.
+  Append "@loader_path" to the INSTALL_RPATH for all Geant4 libraries.
+  This will expand to the directory of the library being loaded, which
+  will contain the other Geant4 libraries. Append is used to that
+  users may still supply CMAKE_INSTALL_RPATH at configure time,
+  and this will be preferred.
+
+5th September 2017 - Gunter Folger (cmake-V10-03-33)
+- Modules/Geant4DatasetDefinitions.cmake: switch to G4EMLOW7.1
+
 23rd August 2017 - Gunter Folger   (cmake-V10-03-32)
 - Modules/Geant4DatasetDefinitions.cmake: switch to G4EMLOW7.0
 

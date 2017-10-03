@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GoudsmitSaundersonTable.hh 105900 2017-08-28 07:27:51Z gcosmo $
+// $Id: G4GoudsmitSaundersonTable.hh 106235 2017-09-22 21:39:16Z gcosmo $
 //
 // -----------------------------------------------------------------------------
 //
@@ -59,10 +59,10 @@
 //            data size has been reduced from 16 MB down to 5 MB by using a new
 //            representation, the class has been modified significantly due to
 //            this new data representation.
-// 23.08.2017 M. Novak: Added funtionality to handle Mott-correction to the 
-//            base GS angular distributions and some other factors (screening  
-//            parameter, first and second moments) when Mott-correction is 
-//            activated in the GS-MSC model. 
+// 23.08.2017 M. Novak: Added funtionality to handle Mott-correction to the
+//            base GS angular distributions and some other factors (screening
+//            parameter, first and second moments) when Mott-correction is
+//            activated in the GS-MSC model.
 //
 // References:
 //   [1] A.F.Bielajew, NIMB, 111 (1996) 195-208
@@ -79,7 +79,7 @@
 #include "G4Types.hh"
 
 class G4GSMottCorrection;
-
+class G4MaterialCutsCouple;
 
 class G4GoudsmitSaundersonTable {
 
@@ -132,6 +132,8 @@ public:
 
   // set option to activate/inactivate Mott-correction
   void     SetOptionMottCorrection(G4bool val) { fIsMottCorrection = val; }
+  // this method computes the scattering power correction: will be removed/replaced with a more effictien solution after 10.3.ref09
+  G4double ComputeScatteringPowerCorrection(const G4MaterialCutsCouple *matcut, G4double ekin);
 
 
 private:

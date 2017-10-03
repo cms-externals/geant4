@@ -395,16 +395,17 @@ void G4GSMottCorrection::InitMCDataMaterial(const G4Material *mat) {
   moliereXc2 *= CLHEP::MeV*CLHEP::MeV/CLHEP::cm;
   //
   // 2. loop over the kinetic energy grid
-  G4double ekin = gMinEkin;
+//  G4double ekin = gMinEkin;
   for (G4int iek=0; iek<gNumEkin; ++iek) {
     // 2./a. set current kinetic energy and beta2 value
-    ekin          = G4Exp(fLogMinEkin+iek/fInvLogDelEkin);
-    G4double pt2  = ekin*(ekin+2.0*CLHEP::electron_mass_c2);
-    G4double b2   = pt2/(pt2+CLHEP::electron_mass_c2*CLHEP::electron_mass_c2);
-    if (ekin>gMidEkin) {
-      b2   = fMinBeta2+(iek-(gNumEkin-gNumBeta2))/fInvDelBeta2;
-      ekin = CLHEP::electron_mass_c2*(1./std::sqrt(1.-b2)-1.);
-    }
+      G4double ekin          = G4Exp(fLogMinEkin+iek/fInvLogDelEkin);
+      G4double pt2  = ekin*(ekin+2.0*CLHEP::electron_mass_c2);
+//    G4double b2   = pt2/(pt2+CLHEP::electron_mass_c2*CLHEP::electron_mass_c2);
+      if (ekin>gMidEkin) {
+        G4double b2   = fMinBeta2+(iek-(gNumEkin-gNumBeta2))/fInvDelBeta2;
+        ekin = CLHEP::electron_mass_c2*(1./std::sqrt(1.-b2)-1.);
+        pt2  = ekin*(ekin+2.0*CLHEP::electron_mass_c2);
+      }
     // 2./b. loop over the elements at the current kinetic energy point
     for (G4int ielem=0; ielem<numElems; ++ielem) {
       const G4Element *elem = (*elemVect)[ielem];

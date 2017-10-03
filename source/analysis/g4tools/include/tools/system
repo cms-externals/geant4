@@ -51,7 +51,11 @@ inline bool get_env_bool(const std::string& a_string,bool& a_v){
 
 inline bool put_env(const std::string& a_env,const std::string& a_value){
   std::string value = a_env+"="+a_value;
+#ifdef TOOLS_MEM
   if(::putenv(str_dup(value.c_str(),false))) return false;
+#else
+  if(::putenv(str_dup(value.c_str()))) return false;
+#endif
   //check:
   std::string s;
   if(!getenv(a_env,s)) return false;
@@ -63,7 +67,11 @@ inline bool putenv(const std::string& a_env,const std::string& a_value){return p
 inline bool rm_env(const std::string& a_env){
 #ifdef _MSC_VER
   std::string value = a_env+"=";
+#ifdef TOOLS_MEM
   if(::putenv(str_dup(value.c_str(),false))) return false;
+#else
+  if(::putenv(str_dup(value.c_str()))) return false;
+#endif
 #else
   ::unsetenv(a_env.c_str());
 #endif

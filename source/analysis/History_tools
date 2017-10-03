@@ -1,3 +1,18 @@
+ 3.7.0 : quiet some Coverity notifications. In default code, remove some "a_inc" logic in some classes.
+   It comes from a revisit to the way we can decount static object deletion (by using an atexit logic in apps).
+ - tools/mem : have most methods protected. In the static list(), have the s_list on the heap.
+   It permits to have an atexit logic in apps that permits to count the deletion of static objects.
+ - tools/cstr, putenv : #ifdef TOOLS_MEM the "a_inc" argument in str_dup. In put_env(), do not use this
+   argument in default code.
+ - tools/colorf, colors : #ifdef TOOLS_MEM the a_inc argument in constructor. In colors, have a coworking
+   cpp TOOLS_MEM_ATEXIT logic so that this argument is not used in default code.
+ - tools/lina/mat, mat4, vec3, vec4, vec4f : #ifdef TOOLS_MEM the a_inc argument in constructor.
+   In sg/base_camera, have a coworking cpp TOOLS_MEM_ATEXIT logic so that this argument is not used in
+   default code of id_orientation().
+ - test/cpp/viewplot.cpp : #ifdef TOOLS_MEM : example of an atexit final object counting.
+ - tools/glutess/normal : static_ComputeNormal : remove Coverity warnings about not initialized minVert,
+   maxVert variables.
+
  3.6.0 :
  - mesh : Coverity 96394 : in __gl_meshDelete : return to the original code which is in fact ok! Coverity
    had been adused by (too much) clever C code.

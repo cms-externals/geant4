@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GoudsmitSaundersonMscModel.cc 105900 2017-08-28 07:27:51Z gcosmo $
+// $Id: G4GoudsmitSaundersonMscModel.cc 106235 2017-09-22 21:39:16Z gcosmo $
 //
 // ----------------------------------------------------------------------------
 //
@@ -244,7 +244,7 @@ void G4GoudsmitSaundersonMscModel::Initialise(const G4ParticleDefinition* p, con
   SetParticle(p);
   fParticleChange = GetParticleChangeForMSC(p);
   fIsUsePWATotalXsecData = false; // never activate it anymore (will be removed)
-  // -create GoudsmitSaundersonTable and init its Mott-correction member if 
+  // -create GoudsmitSaundersonTable and init its Mott-correction member if
   //  Mott-correction was required
   if (IsMaster()) {
     // clear GS-table
@@ -279,10 +279,10 @@ void G4GoudsmitSaundersonMscModel::Initialise(const G4ParticleDefinition* p, con
 }
 
 
-void G4GoudsmitSaundersonMscModel::InitialiseLocal(const G4ParticleDefinition*, G4VEmModel* masterModel) {  
+void G4GoudsmitSaundersonMscModel::InitialiseLocal(const G4ParticleDefinition*, G4VEmModel* masterModel) {
    fIsUseMottCorrection = static_cast<G4GoudsmitSaundersonMscModel*>(masterModel)->GetOptionMottCorrection();
    fGSTable             = static_cast<G4GoudsmitSaundersonMscModel*>(masterModel)->GetGSTable();
-} 
+}
 
 
 // gives back the first transport mean free path in internal G4 units
@@ -291,8 +291,6 @@ G4GoudsmitSaundersonMscModel::GetTransportMeanFreePath(const G4ParticleDefinitio
                                                        G4double kineticEnergy) {
   // kinetic energy is assumed to be in Geant4 internal energy unit which is MeV
   G4double efEnergy = kineticEnergy;
-//  if (efEnergy<LowEnergyLimit())  efEnergy=LowEnergyLimit();
-//  if (efEnergy>HighEnergyLimit()) efEnergy=HighEnergyLimit();
   //
   const G4Material*  mat = currentCouple->GetMaterial();
   //
@@ -330,20 +328,21 @@ G4GoudsmitSaundersonMscModel::GetTransportMeanFreePath(const G4ParticleDefinitio
 
     fScrA = fGSTable->GetScreeningParam(fG1);
   } else {
-    // Get SCREENING FROM MOLIER
-    // below 1 keV it can give bananas so prevet (1 keV)
-    if  (efEnergy<0.001) efEnergy = 0.001;
+    // use Moliere's screening (with Mott-corretion if it was requested)
+    if  (efEnergy<10.*CLHEP::eV) efEnergy = 10.*CLHEP::eV;
     // total mometum square in Geant4 internal energy2 units which is MeV2
     G4double pt2     = efEnergy*(efEnergy+2.0*electron_mass_c2);
     G4double beta2   = pt2/(pt2+electron_mass_c2*electron_mass_c2);
     G4int    matindx = mat->GetIndex();
     G4double bc      = fGSTable->GetMoliereBc(matindx);
     // get the Mott-correcton factors if Mott-correcton was requested by the user
-    fMCtoScrA    = 1.0;
-    fMCtoQ1      = 1.0;
-    fMCtoG2PerG1 = 1.0;
+    fMCtoScrA       = 1.0;
+    fMCtoQ1         = 1.0;
+    fMCtoG2PerG1    = 1.0;
+    G4double scpCor = 1.0;
     if (fIsUseMottCorrection) {
       fGSTable->GetMottCorrectionFactors(G4Log(efEnergy), beta2, matindx, fMCtoScrA, fMCtoQ1, fMCtoG2PerG1);
+      scpCor = fGSTable->ComputeScatteringPowerCorrection(currentCouple, efEnergy);
     }
     // screening parameter (if Mott-corretioncorrection: the Screened-Rutherford times Mott-corretion DCS with this
     // screening parameter gives back the (elsepa) PWA first transport cross section)
@@ -351,7 +350,7 @@ G4GoudsmitSaundersonMscModel::GetTransportMeanFreePath(const G4ParticleDefinitio
     // elastic mean free path in Geant4 internal lenght units: the neglected (1+screening parameter) term is corrected
     // (if Mott-corretion: the corrected screening parameter is used for this (1+A) correction + Moliere b_c is also
     // corrected with the screening parameter correction)
-    fLambda0 = beta2*(1.+fScrA)*fMCtoScrA/bc;
+    fLambda0 = beta2*(1.+fScrA)*fMCtoScrA/bc/scpCor;
     // first transport coefficient (if Mott-corretion: the corrected screening parameter is used (it will be fully
     // consistent with the one used during the pre-computation of the Mott-correted GS angular distributions))
     fG1      = 2.0*fScrA*((1.0+fScrA)*G4Log(1.0/fScrA+1.0)-1.0);
@@ -367,8 +366,6 @@ G4GoudsmitSaundersonMscModel::GetTransportMeanFreePathOnly(const G4ParticleDefin
                                                        G4double kineticEnergy) {
   // kinetic energy is assumed to be in Geant4 internal energy unit which is MeV
   G4double efEnergy = kineticEnergy;
-//  if(efEnergy<LowEnergyLimit()) efEnergy=LowEnergyLimit();
-//  if(efEnergy>HighEnergyLimit())efEnergy=HighEnergyLimit();
   //
   const G4Material*  mat = currentCouple->GetMaterial();
   //
@@ -398,23 +395,24 @@ G4GoudsmitSaundersonMscModel::GetTransportMeanFreePathOnly(const G4ParticleDefin
     }
   } else {
     // use Moliere's screening (with Mott-corretion if it was requested)
-    // below 1 keV it can give bananas so prevet (1 keV)
-    if  (efEnergy<0.001) efEnergy = 0.001;
+    if  (efEnergy<10.*CLHEP::eV) efEnergy = 10.*CLHEP::eV;
     // total mometum square in Geant4 internal energy2 units which is MeV2
     G4double pt2     = efEnergy*(efEnergy+2.0*electron_mass_c2);
     G4double beta2   = pt2/(pt2+electron_mass_c2*electron_mass_c2);
     G4int    matindx = mat->GetIndex();
     G4double bc      = fGSTable->GetMoliereBc(matindx);
     // get the Mott-correcton factors if Mott-correcton was requested by the user
-    double mctoScrA    = 1.0;
-    double mctoQ1      = 1.0;
-    double mctoG2PerG1 = 1.0;
+    G4double mctoScrA    = 1.0;
+    G4double mctoQ1      = 1.0;
+    G4double mctoG2PerG1 = 1.0;
+    G4double scpCor      = 1.0;
     if (fIsUseMottCorrection) {
       fGSTable->GetMottCorrectionFactors(G4Log(efEnergy), beta2, matindx, mctoScrA, mctoQ1, mctoG2PerG1);
+      scpCor = fGSTable->ComputeScatteringPowerCorrection(currentCouple, efEnergy);
     }
     scrA    = fGSTable->GetMoliereXc2(matindx)/(4.0*pt2*bc)*mctoScrA;
     // total elastic mean free path in Geant4 internal lenght units
-    lambda0 = beta2*(1.+scrA)*mctoScrA/bc;
+    lambda0 = beta2*(1.+scrA)*mctoScrA/bc/scpCor;
     g1      = 2.0*scrA*((1.0+scrA)*G4Log(1.0/scrA+1.0)-1.0);
     lambda1 = lambda0/g1;
   }
@@ -914,18 +912,17 @@ void G4GoudsmitSaundersonMscModel::SampleMSC() {
     eps0            = eloss/kineticEnergy0; // energy loss fraction to the begin step energy
     epsm            = eloss/kineticEnergy;  // energy loss fraction to the mean step energy
 
-    efEnergy        = kineticEnergy * (1. - epsm*epsm*(6.+10.*tau+5.*tau2)/(24.*tau2+48.*tau+72.));
-    G4double dum    = 0.166666*(4.+tau*(6.+tau*(7.+tau*(4.+tau))))*
-                     (epsm/((tau+1.)*(tau+2.)))*(epsm/((tau+1.)*(tau+2.)));
+    efEnergy        = kineticEnergy * (1.-epsm*epsm*(6.+10.*tau+5.*tau2)/(24.*tau2+48.*tau+72.));
+    G4double dum    = 0.166666*(4.+tau*(6.+tau*(7.+tau*(4.+tau))))*(epsm/((tau+1.)*(tau+2.)))*(epsm/((tau+1.)*(tau+2.)));
     efStep          = fTheTrueStepLenght*(1.-dum);
   } else {                              // - take only mean energy
     kineticEnergy  -= 0.5*eloss;  // mean energy along the full step
     efEnergy        = kineticEnergy;
-    G4double factor = 1./(1. + 0.9784671*kineticEnergy); //0.9784671 = 1/(2*rm)
+    G4double factor = 1./(1.+0.9784671*kineticEnergy); //0.9784671 = 1/(2*m_e)
     eps0            = eloss/kineticEnergy0;
     epsm            = eps0/(1.-0.5*eps0);
-    G4double temp   = 0.3*(1. - factor*(1. - 0.333333*factor))*eps0*eps0;
-    efStep          = fTheTrueStepLenght*(1. + temp);
+    G4double temp   = 0.3*(1 -factor*(1.-0.333333*factor))*eps0*eps0;
+    efStep          = fTheTrueStepLenght*(1.+temp);
   }
   //
   // compute elastic mfp, first transport mfp, screening parameter, and G1 (with Mott-correction

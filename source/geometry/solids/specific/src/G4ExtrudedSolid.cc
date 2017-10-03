@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4ExtrudedSolid.cc 104316 2017-05-24 13:04:23Z gcosmo $
+// $Id: G4ExtrudedSolid.cc 106017 2017-09-11 06:46:27Z gcosmo $
 //
 //
 // --------------------------------------------------------------------
@@ -37,16 +37,18 @@
 // CHANGE HISTORY
 // --------------
 //
+// 08.09.2017 E.Tcherniaev: added implementation for a convex
+//            right prism
 // 21.10.2016 E.Tcherniaev: reimplemented CalculateExtent(),
 //            used G4GeomTools::PolygonArea() to calculate area,
 //            replaced IsConvex() with G4GeomTools::IsConvex()
-// 02.03.2016 E.Tcherniaev: added CheckPolygon() to remove 
+// 02.03.2016 E.Tcherniaev: added CheckPolygon() to remove
 //            collinear and coincident points from polygon
 // --------------------------------------------------------------------
 
 #include "G4ExtrudedSolid.hh"
 
-#if !defined(G4GEOM_USE_UEXTRUDEDSOLID)
+//#if !defined(G4GEOM_USE_UEXTRUDEDSOLID)
 
 #include <set>
 #include <algorithm>
@@ -77,10 +79,10 @@ G4ExtrudedSolid::G4ExtrudedSolid( const G4String& pName,
     fZSections(),
     fTriangles(),
     fIsConvex(false),
-    fGeometryType("G4ExtrudedSolid")
-    
+    fGeometryType("G4ExtrudedSolid"),
+    fSolidType(0)
 {
-  // General constructor 
+  // General constructor
 
   // First check input parameters
 
@@ -178,6 +180,18 @@ G4ExtrudedSolid::G4ExtrudedSolid( const G4String& pName,
   fIsConvex = G4GeomTools::IsConvex(fPolygon);
   
   ComputeProjectionParameters();
+
+  // Check if the solid is a convex right prism,
+  // if so then set lateral planes
+  //
+  if (fIsConvex && (fNz == 2)
+      && (fZSections[0].fScale == 1) && (fZSections[1].fScale == 1)
+      && (fZSections[0].fOffset == G4TwoVector(0,0))
+      && (fZSections[1].fOffset == G4TwoVector(0,0)))
+  {
+    fSolidType = 1;
+    ComputeLateralPlanes();
+  }
 }
 
 //_____________________________________________________________________________
@@ -194,8 +208,8 @@ G4ExtrudedSolid::G4ExtrudedSolid( const G4String& pName,
     fZSections(),
     fTriangles(),
     fIsConvex(false),
-    fGeometryType("G4ExtrudedSolid")
-    
+    fGeometryType("G4ExtrudedSolid"),
+    fSolidType(0)
 {
   // Special constructor for solid with 2 z-sections
 
@@ -268,13 +282,24 @@ G4ExtrudedSolid::G4ExtrudedSolid( const G4String& pName,
   fIsConvex = G4GeomTools::IsConvex(fPolygon);
 
   ComputeProjectionParameters();
+
+  // Check if the solid is a convex right prism,
+  // if so then set lateral planes
+  //
+  if (fIsConvex && (scale1 == 1) && (scale2 == 1)
+      && (off1 == G4TwoVector(0,0)) && (off2 == G4TwoVector(0,0)))
+  {
+    fSolidType = 1;
+    ComputeLateralPlanes();
+  }
 }
 
 //_____________________________________________________________________________
 
 G4ExtrudedSolid::G4ExtrudedSolid( __void__& a )
   : G4TessellatedSolid(a), fNv(0), fNz(0), fPolygon(), fZSections(),
-    fTriangles(), fIsConvex(false), fGeometryType("G4ExtrudedSolid")
+    fTriangles(), fIsConvex(false), fGeometryType("G4ExtrudedSolid"),
+    fSolidType(0)
 {
   // Fake default constructor - sets only member data and allocates memory
   //                            for usage restricted to object persistency.
@@ -286,15 +311,16 @@ G4ExtrudedSolid::G4ExtrudedSolid(const G4ExtrudedSolid& rhs)
   : G4TessellatedSolid(rhs), fNv(rhs.fNv), fNz(rhs.fNz),
     fPolygon(rhs.fPolygon), fZSections(rhs.fZSections),
     fTriangles(rhs.fTriangles), fIsConvex(rhs.fIsConvex),
-    fGeometryType(rhs.fGeometryType), fKScales(rhs.fKScales),
-    fScale0s(rhs.fScale0s), fKOffsets(rhs.fKOffsets), fOffset0s(rhs.fOffset0s)
+    fGeometryType(rhs.fGeometryType),
+    fSolidType(rhs.fSolidType), fPlanes(rhs.fPlanes),
+    fKScales(rhs.fKScales), fScale0s(rhs.fScale0s),
+    fKOffsets(rhs.fKOffsets), fOffset0s(rhs.fOffset0s)
 {
 }
 
-
 //_____________________________________________________________________________
 
-G4ExtrudedSolid& G4ExtrudedSolid::operator = (const G4ExtrudedSolid& rhs) 
+G4ExtrudedSolid& G4ExtrudedSolid::operator = (const G4ExtrudedSolid& rhs)
 {
    // Check assignment to self
    //
@@ -309,9 +335,10 @@ G4ExtrudedSolid& G4ExtrudedSolid::operator = (const G4ExtrudedSolid& rhs)
    fNv = rhs.fNv; fNz = rhs.fNz;
    fPolygon = rhs.fPolygon; fZSections = rhs.fZSections;
    fTriangles = rhs.fTriangles; fIsConvex = rhs.fIsConvex;
-   fGeometryType = rhs.fGeometryType; fKScales = rhs.fKScales;
-   fScale0s = rhs.fScale0s; fKOffsets = rhs.fKOffsets;
-   fOffset0s = rhs.fOffset0s;
+   fGeometryType = rhs.fGeometryType;
+   fSolidType = rhs.fSolidType; fPlanes = rhs.fPlanes;
+   fKScales = rhs.fKScales; fScale0s = rhs.fScale0s;
+   fKOffsets = rhs.fKOffsets; fOffset0s = rhs.fOffset0s;
 
    return *this;
 }
@@ -327,15 +354,15 @@ G4ExtrudedSolid::~G4ExtrudedSolid()
 
 void G4ExtrudedSolid::ComputeProjectionParameters()
 {
-  // Compute parameters for point projections p(z) 
+  // Compute parameters for point projections p(z)
   // to the polygon scale & offset:
   // scale(z) = k*z + scale0
   // offset(z) = l*z + offset0
-  // p(z) = scale(z)*p0 + offset(z)  
+  // p(z) = scale(z)*p0 + offset(z)
   // p0 = (p(z) - offset(z))/scale(z);
-  //  
+  //
 
-  for ( G4int iz=0; iz<fNz-1; ++iz) 
+  for ( G4int iz=0; iz<fNz-1; ++iz)
   {
     G4double z1      = fZSections[iz].fZ;
     G4double z2      = fZSections[iz+1].fZ;
@@ -343,19 +370,35 @@ void G4ExtrudedSolid::ComputeProjectionParameters()
     G4double scale2  = fZSections[iz+1].fScale;
     G4TwoVector off1 = fZSections[iz].fOffset;
     G4TwoVector off2 = fZSections[iz+1].fOffset;
-    
+
     G4double kscale = (scale2 - scale1)/(z2 - z1);
-    G4double scale0 =  scale2 - kscale*(z2 - z1)/2.0; 
+    G4double scale0 =  scale2 - kscale*(z2 - z1)/2.0;
     G4TwoVector koff = (off2 - off1)/(z2 - z1);
-    G4TwoVector off0 =  off2 - koff*(z2 - z1)/2.0; 
+    G4TwoVector off0 =  off2 - koff*(z2 - z1)/2.0;
 
     fKScales.push_back(kscale);
     fScale0s.push_back(scale0);
     fKOffsets.push_back(koff);
     fOffset0s.push_back(off0);
-  }  
+  }
 }
 
+//_____________________________________________________________________________
+
+void G4ExtrudedSolid::ComputeLateralPlanes()
+{
+  G4int np = fPolygon.size();
+  fPlanes.resize(np);
+  for (G4int i=0; i<np; ++i)
+  {
+    G4int k = (i == np - 1) ? 0 : i + 1;
+    G4TwoVector norm = (fPolygon[k] - fPolygon[i]).unit();
+    fPlanes[i].a = -norm.y();
+    fPlanes[i].b =  norm.x();
+    fPlanes[i].c =  0;
+    fPlanes[i].d =  norm.y()*fPolygon[i].x() - norm.x()*fPolygon[i].y();
+  }
+}
 
 //_____________________________________________________________________________
 
@@ -370,7 +413,6 @@ G4ThreeVector G4ExtrudedSolid::GetVertex(G4int iz, G4int ind) const
 }       
 
 //_____________________________________________________________________________
-
 
 G4TwoVector G4ExtrudedSolid::ProjectPoint(const G4ThreeVector& point) const
 {
@@ -805,8 +847,23 @@ G4VSolid* G4ExtrudedSolid::Clone() const
 
 //_____________________________________________________________________________
 
-EInside G4ExtrudedSolid::Inside (const G4ThreeVector &p) const
+EInside G4ExtrudedSolid::Inside(const G4ThreeVector &p) const
 {
+  if (fSolidType == 1) // Convex right prism
+  {
+    G4double dist = std::max(fZSections[0].fZ-p.z(),p.z()-fZSections[1].fZ);
+    if (dist > kCarToleranceHalf)  { return kOutside; }
+
+    G4int np = fPlanes.size();
+    for (G4int i=0; i<np; ++i)
+    {
+      G4double dd = fPlanes[i].a*p.x() + fPlanes[i].b*p.y() + fPlanes[i].d;
+      if (dd > dist)  { dist = dd; }
+    }
+    if (dist > kCarToleranceHalf)  { return kOutside; }
+    return (dist > -kCarToleranceHalf) ? kSurface : kInside;
+  }
+
   // Override the base class function  as it fails in case of concave polygon.
   // Project the point in the original polygon scale and check if it is inside
   // for each triangle.
@@ -822,7 +879,7 @@ EInside G4ExtrudedSolid::Inside (const G4ThreeVector &p) const
   {
     // G4cout << "G4ExtrudedSolid::Outside extent: " << p << G4endl;
     return kOutside;
-  }  
+  }
 
   // Project point p(z) to the polygon scale p0
   //
@@ -839,8 +896,8 @@ EInside G4ExtrudedSolid::Inside (const G4ThreeVector &p) const
       //        << G4endl;
 
       return kSurface;
-    }  
-  }   
+    }
+  }
 
   // Now check if inside triangles
   //
@@ -864,17 +921,170 @@ EInside G4ExtrudedSolid::Inside (const G4ThreeVector &p) const
       //        << G4endl;
 
       return kSurface;
-    }  
-  
+    }
+
     // G4cout << "G4ExtrudedSolid::Inside return Inside" << G4endl;
 
     return kInside;
-  }  
-                            
+  }
+
   // G4cout << "G4ExtrudedSolid::Inside return Outside " << G4endl;
 
-  return kOutside; 
+  return kOutside;
 }  
+
+//_____________________________________________________________________________
+
+G4ThreeVector G4ExtrudedSolid::SurfaceNormal(const G4ThreeVector& p) const
+{
+  if (fSolidType == 1) // Convex right prism
+  {
+    G4double nx = 0, ny = 0, nz = 0;
+    if (std::abs(p.z() - fZSections[0].fZ) <= kCarToleranceHalf)  { nz = -1; }
+    if (std::abs(p.z() - fZSections[1].fZ) <= kCarToleranceHalf)  { nz =  1; }
+
+    G4int np = fPlanes.size();
+    for (G4int i=0; i<np; ++i)
+    {
+      G4double dd = fPlanes[i].a*p.x() + fPlanes[i].b*p.y() + fPlanes[i].d;
+      if (std::abs(dd) > kCarToleranceHalf) continue;
+      nx += fPlanes[i].a;
+      ny += fPlanes[i].b;
+    }
+
+    // Return normal
+    //
+    G4int nsurf = nx*nx + ny*ny + nz*nz + 0.5;    // get magnitude
+    if (nsurf == 1)
+    {
+      return G4ThreeVector(nx,ny,nz);
+    }
+    else if (nsurf != 0)                          // edge or corner
+    {
+      return G4ThreeVector(nx,ny,nz).unit();
+    }
+    else
+    {
+      // Point is not on the surface, compute approximate normal
+      //
+#ifdef G4CSGDEBUG
+      std::ostringstream message;
+      G4int oldprc = message.precision(16);
+      message << "Point p is not on surface (!?) of solid: "
+              << GetName() << G4endl;
+      message << "Position:\n";
+      message << "   p.x() = " << p.x()/mm << " mm\n";
+      message << "   p.y() = " << p.y()/mm << " mm\n";
+      message << "   p.z() = " << p.z()/mm << " mm";
+      G4cout.precision(oldprc) ;
+      G4Exception("G4TesselatedSolid::SurfaceNormal(p)", "GeomSolids1002",
+                  JustWarning, message );
+      DumpInfo();
+#endif
+      G4double dist = -DBL_MAX;
+      G4int iside = 0;
+      for (G4int i=0; i<np; ++i)
+      {
+        G4double d = fPlanes[i].a*p.x() + fPlanes[i].b*p.y() + fPlanes[i].d;
+        if (d > dist) { dist = d; iside = i; }
+      }
+      G4double dz0 = fZSections[0].fZ - p.z();
+      G4double dz1 = p.z() - fZSections[1].fZ;
+
+      if (dist > dz0 && dist > dz1)
+      {
+        return G4ThreeVector(fPlanes[iside].a,
+                             fPlanes[iside].b,
+                             fPlanes[iside].c);
+      }
+      else if (dz0 > dz1)
+      {
+        return G4ThreeVector(0, 0,-1);
+      }
+      else
+      {
+        return G4ThreeVector(0, 0, 1);
+      }
+    }
+  }
+
+  return G4TessellatedSolid::SurfaceNormal(p);
+}
+
+//_____________________________________________________________________________
+G4double G4ExtrudedSolid::DistanceToIn(const G4ThreeVector& p,
+                                       const G4ThreeVector& v) const
+{
+  if (fSolidType == 1) // Convex right prism
+  {
+    // Intersection with Z planes
+    //
+    G4double z0 = fZSections[0].fZ*0.5;
+    G4double z1 = fZSections[1].fZ*0.5;
+    G4double dz = z1 - z0;
+    G4double pz = p.z() - (z1 + z0);
+
+    if (((std::abs(pz) - dz) >= -kCarToleranceHalf) && (pz*v.z() >= 0))
+    {
+      return kInfinity;
+    }
+    G4double invz = (v.z() == 0) ? DBL_MAX : -1./v.z();
+    G4double ddz = (invz < 0) ? dz : -dz;
+    G4double tzmin = (pz + ddz)*invz;
+    G4double tzmax = (pz - ddz)*invz;
+
+    // Intersection with lateral planes
+    //
+    G4int np = fPlanes.size();
+    G4double txmin = tzmin, txmax = tzmax;
+    for (G4int i=0; i<np; ++i)
+    { 
+      G4double cosa = fPlanes[i].a*v.x()+fPlanes[i].b*v.y();
+      G4double dist = fPlanes[i].a*p.x()+fPlanes[i].b*p.y()+fPlanes[i].d;
+      if (dist >= -kCarToleranceHalf)
+      {
+        if (cosa >= 0)  { return kInfinity; }
+        G4double tmp  = -dist/cosa;
+        if (txmin < tmp)  { txmin = tmp; }
+      }
+      else if (cosa > 0)
+      {
+        G4double tmp  = -dist/cosa;
+        if (txmax > tmp)  { txmax = tmp; }
+      } 
+    }
+
+    // Find distance
+    //
+    G4double tmin = txmin, tmax = txmax;
+    if (tmax <= tmin + kCarToleranceHalf)   // touch or no hit
+    {
+      return kInfinity;
+    }
+    return (tmin < kCarToleranceHalf) ? 0. : tmin;
+  }
+
+  return G4TessellatedSolid::DistanceToIn(p,v);
+}
+
+//_____________________________________________________________________________
+
+G4double G4ExtrudedSolid::DistanceToIn (const G4ThreeVector& p) const
+{
+  if (fSolidType == 1) // Convex right prism
+  {
+    G4double dist = std::max(fZSections[0].fZ-p.z(),p.z()-fZSections[1].fZ);
+    G4int np = fPlanes.size();
+    for (G4int i=0; i<np; ++i)
+    {
+      G4double dd = fPlanes[i].a*p.x() + fPlanes[i].b*p.y() + fPlanes[i].d;
+      if (dd > dist) dist = dd;
+    }
+    return (dist > 0) ? dist : 0.;
+  }
+
+  return G4TessellatedSolid::DistanceToIn(p);
+}
 
 //_____________________________________________________________________________
 
@@ -884,8 +1094,66 @@ G4double G4ExtrudedSolid::DistanceToOut (const G4ThreeVector &p,
                                                G4bool *validNorm,
                                                G4ThreeVector *n) const
 {
+  if (fSolidType == 1) // Convex right prism
+  {
+    // Intersection with Z planes
+    //
+    G4double z0 = fZSections[0].fZ*0.5;
+    G4double z1 = fZSections[1].fZ*0.5;
+    G4double dz = z1 - z0;
+    G4double pz = p.z() - (z1 + z0);
+
+    if (((std::abs(pz) - dz) >= -kCarToleranceHalf) && (pz*v.z() > 0))
+    {
+      if (calcNorm)
+      {
+        *validNorm = true;
+        n->set(0, 0, (pz < 0) ? -1 : 1);
+      }
+      return 0;
+    }
+    G4double vz = v.z();
+    G4double tmax = (vz == 0) ? DBL_MAX : (std::copysign(dz,vz) - pz)/vz;
+    G4int iside = (vz < 0) ? -4 : -2; // little trick: (-4+3)=-1, (-2+3)=+1
+
+    // Intersection with lateral planes
+    //
+    G4int np = fPlanes.size();
+    for (G4int i=0; i<np; ++i)
+    {
+      G4double cosa = fPlanes[i].a*v.x()+fPlanes[i].b*v.y();
+      if (cosa > 0)
+      {
+        G4double dist = fPlanes[i].a*p.x()+fPlanes[i].b*p.y()+fPlanes[i].d;
+        if (dist >= -kCarToleranceHalf)
+        {
+          if (calcNorm)
+          {
+             *validNorm = true;
+             n->set(fPlanes[i].a, fPlanes[i].b, fPlanes[i].c);
+          }
+          return 0;
+        }
+        G4double tmp = -dist/cosa;
+        if (tmax > tmp) { tmax = tmp; iside = i; }
+      }
+    }
+
+    // Set normal, if required, and return distance
+    //
+    if (calcNorm)
+    {
+      *validNorm = true;
+      if (iside < 0)
+        { n->set(0, 0, iside + 3); } // (-4+3)=-1, (-2+3)=+1
+      else
+        { n->set(fPlanes[iside].a, fPlanes[iside].b, fPlanes[iside].c); }
+    }
+    return tmax;
+  }
+
   // Override the base class function to redefine validNorm
-  // (the solid can be concave) 
+  // (the solid can be concave)
 
   G4double distOut =
     G4TessellatedSolid::DistanceToOut(p, v, calcNorm, validNorm, n);
@@ -894,18 +1162,28 @@ G4double G4ExtrudedSolid::DistanceToOut (const G4ThreeVector &p,
   return distOut;
 }
 
-
 //_____________________________________________________________________________
 
-G4double G4ExtrudedSolid::DistanceToOut (const G4ThreeVector &p) const
+G4double G4ExtrudedSolid::DistanceToOut(const G4ThreeVector &p) const
 {
+  if (fSolidType == 1) // Convex right prism
+  {
+    G4double dist = std::max(fZSections[0].fZ-p.z(),p.z()-fZSections[1].fZ);
+    G4int np = fPlanes.size();
+    for (G4int i=0; i<np; ++i)
+    {
+      G4double dd = fPlanes[i].a*p.x() + fPlanes[i].b*p.y() + fPlanes[i].d;
+      if (dd > dist) dist = dd;
+    }
+    return (dist < 0) ? -dist : 0.;
+  }
+
   // Override the overloaded base class function
 
   return G4TessellatedSolid::DistanceToOut(p);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
+//_____________________________________________________________________________
 // Get bounding box
 
 void G4ExtrudedSolid::BoundingLimits(G4ThreeVector& pMin,
@@ -961,8 +1239,7 @@ void G4ExtrudedSolid::BoundingLimits(G4ThreeVector& pMin,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//
+//_____________________________________________________________________________
 // Calculate extent under transform and specified limit
 
 G4bool
@@ -1107,4 +1384,4 @@ std::ostream& G4ExtrudedSolid::StreamInfo(std::ostream &os) const
   return os;
 }  
 
-#endif
+//#endif

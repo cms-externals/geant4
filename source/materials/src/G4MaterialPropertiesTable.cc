@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4MaterialPropertiesTable.cc 102805 2017-02-22 16:34:13Z gcosmo $
+// $Id: G4MaterialPropertiesTable.cc 106193 2017-09-19 04:03:52Z gcosmo $
 //
 // 
 ////////////////////////////////////////////////////////////////////////
@@ -51,6 +51,8 @@
 #include "G4PhysicalConstants.hh"
 #include "G4Log.hh"
 
+#include <algorithm>
+
 /////////////////
 // Constructors
 /////////////////
@@ -72,32 +74,76 @@ G4MaterialPropertiesTable::~G4MaterialPropertiesTable()
   }
   MPT.clear();
   MPTC.clear();
+
+  MPiterator it;
+  for (it = MP.begin(); it != MP.end(); ++it)
+  {
+    delete (*it).second;
+  }
+  MP.clear();
+  MCP.clear();
+
 }
 
 ////////////
 // Methods
 ////////////
 
+G4MCPindex G4MaterialPropertiesTable::GetConstPropertyIndex(const G4String& key) const
+{
+  // Returns the constant material property index corresponding to a key
+
+  size_t index = std::distance(G4MaterialConstPropertyName.begin(),
+                     std::find(G4MaterialConstPropertyName.begin(), 
+                                         G4MaterialConstPropertyName.end(), key));
+  if((G4MCPindex)index != kNumberOfConstPropertyIndex) return (G4MCPindex)index;
+  G4cout << "key: " << key << G4endl;
+  G4Exception("G4MaterialPropertiesTable::GetConstPropertyIndex()","mat206",
+              FatalException, "Constant Material Property Index not found.");
+  return kNullConstPropertyIndex;
+} 
+
+G4MPindex G4MaterialPropertiesTable::GetPropertyIndex(const G4String& key) const
+{
+  // Returns the material property index corresponding to a key
+  size_t index = std::distance(G4MaterialPropertyName.begin(),
+                     std::find(G4MaterialPropertyName.begin(), 
+                                         G4MaterialPropertyName.end(), key));
+  if((G4MPindex)index != kNumberOfPropertyIndex) return (G4MPindex)index;
+  G4cout << "key: " << key << G4endl;
+  G4Exception("G4MaterialPropertiesTable::GetPropertyIndex()","mat207",
+               FatalException, "Material Property Index not found.");
+  return kNullPropertyIndex;
+} 
+
+G4double G4MaterialPropertiesTable::GetConstProperty(const G4MCPindex index) const
+{
+  // Returns the constant material property corresponding to an index
+
+  MCPiterator j;
+  j = MCP.find(index);
+  if ( j != MCP.end() ) return j->second;
+  G4cout << "index: " << index << G4endl;
+  G4Exception("G4MaterialPropertiesTable::GetConstProperty()","mat202",
+              FatalException, "Constant Material Property Index not found.");
+  return 0.;
+}
+
 G4double G4MaterialPropertiesTable::GetConstProperty(const char *key) const
 {
   // Returns the constant material property corresponding to a key
-
-  MPTCiterator j;
-  j = MPTC.find(G4String(key));
-  if ( j != MPTC.end() ) return j->second;
-  G4cout << "key: " << G4String(key) << G4endl;
-  G4Exception("G4MaterialPropertiesTable::GetConstProperty()","mat202",
-              FatalException, "Constant Material Property not found.");
-  return 0.;
+  const G4MCPindex index = GetConstPropertyIndex(G4String(key));
+  return GetConstProperty(index);
 }
 
 G4bool G4MaterialPropertiesTable::ConstPropertyExists(const char *key) const
 {
   // Returns true if a const property 'key' exists
+  const G4MCPindex index = GetConstPropertyIndex(G4String(key));
 
-  MPTCiterator j;
-  j = MPTC.find(G4String(key));
-  if ( j != MPTC.end() ) return true;
+  MCPiterator j;
+  j = MCP.find(index);
+  if ( j != MCP.end() ) return true;
   return false;
 }
 
@@ -105,6 +151,14 @@ G4MaterialPropertyVector*
 G4MaterialPropertiesTable::GetProperty(const char *key)
 {
   // Returns a Material Property Vector corresponding to a key
+  const G4MPindex index = GetPropertyIndex(G4String(key));
+  return GetProperty(index);
+}
+
+G4MaterialPropertyVector*
+G4MaterialPropertiesTable::GetProperty(const G4MPindex index)
+{
+  // Returns a Material Property Vector corresponding to an index
 
   //Important Note for MT. adotti 17 Feb 2016
   //In previous implementation the following line was at the bottom of the
@@ -128,13 +182,15 @@ G4MaterialPropertiesTable::GetProperty(const char *key)
   //   if the map has GROUPVEL key, if so returns immediately.
   //   This "double check" allows to execute the heavy code to calculate
   //   group velocity only once even if two threads enter SetGROUPVEL together
-  if (G4String(key) == "GROUPVEL") return SetGROUPVEL();
 
-  MPTiterator i;
-  i = MPT.find(G4String(key));
-  if ( i != MPT.end() ) return i->second;
+  if (index == kGROUPVEL ) return SetGROUPVEL();
+
+  MPiterator i;
+  i = MP.find(index);
+  if ( i != MP.end() ) return i->second;
   return nullptr;
 }
+
 
 void G4MaterialPropertiesTable::AddEntry(const char *key,
                                          G4double    aPhotonEnergy,
@@ -142,8 +198,9 @@ void G4MaterialPropertiesTable::AddEntry(const char *key,
 {
   // Allows to add an entry pair directly to the Material Property Vector
   // given a key
+  const G4MPindex index = GetPropertyIndex(G4String(key));
 
-  G4MaterialPropertyVector *targetVector=MPT [G4String(key)];
+  G4MaterialPropertyVector *targetVector=MP[index];
   if (targetVector != nullptr)
   {
     targetVector->InsertValues(aPhotonEnergy, aPropertyValue);
@@ -157,8 +214,8 @@ void G4MaterialPropertiesTable::AddEntry(const char *key,
 
 void G4MaterialPropertiesTable::DumpTable()
 {
-  MPTiterator i;
-  for (i = MPT.begin(); i != MPT.end(); ++i)
+  MPiterator i;
+  for (i = MP.begin(); i != MP.end(); ++i)
   {
     G4cout << (*i).first << G4endl;
     if ( (*i).second != 0 )
@@ -171,8 +228,8 @@ void G4MaterialPropertiesTable::DumpTable()
                   JustWarning, "NULL Material Property Vector Pointer.");
     }
   }
-  MPTCiterator j;
-  for (j = MPTC.begin(); j != MPTC.end(); ++j)
+  MCPiterator j;
+  for (j = MCP.begin(); j != MCP.end(); ++j)
   {
     G4cout << j->first << G4endl;
     if ( j->second != 0 )
@@ -201,13 +258,13 @@ G4MaterialPropertyVector* G4MaterialPropertiesTable::SetGROUPVEL()
 #endif
 
   // check if "GROUPVEL" already exists
-  MPTiterator itr;
-  itr = MPT.find("GROUPVEL");
-  if(itr != MPT.end()) return itr->second;
+  MPiterator itr;
+  itr = MP.find(kGROUPVEL);
+  if(itr != MP.end()) return itr->second;
 
   // fetch RINDEX data, give up if unavailable
   //
-  G4MaterialPropertyVector *rindex = this->GetProperty("RINDEX");
+  G4MaterialPropertyVector *rindex = this->GetProperty(kRINDEX);
   if (rindex==0)  { return 0; }
 
   // RINDEX exists but has no entries, give up
@@ -299,4 +356,41 @@ G4MaterialPropertyVector* G4MaterialPropertiesTable::SetGROUPVEL()
   this->AddProperty( "GROUPVEL", groupvel );
                                                                                 
   return groupvel;
+}
+
+std::map< G4String, G4MaterialPropertyVector*, std::less<G4String> >*
+G4MaterialPropertiesTable::GetPropertiesMap() 
+{ 
+  // warning message
+  G4String message("GetPropertiesMap will be obsolete from the next release ");
+  message += "Use G4MaterialPropertiesTable::GetPropertyMap() instead";
+  G4Exception("G4MaterialPropertiesTable::GetPropertiesMap()", "Obsolete",
+               JustWarning, message);
+
+  for (MPiterator miter = MP.begin(); miter != MP.end(); miter++)
+  {
+    if(miter->second) {
+      MPT [ G4MaterialPropertyName[miter->first] ] = miter->second;
+    }
+    else {
+      G4Exception("G4MaterialPropertiesTable::GetPropertiesMap()","NullPointer",
+                   JustWarning, "Null Pointer for Material Property");
+      continue;
+    }
+  }
+  return &MPT; 
+}
+
+std::map< G4String, G4double, std::less<G4String> >* G4MaterialPropertiesTable::GetPropertiesCMap()
+{ 
+  // warning message
+  G4String message("GetPropertiesCMap will be obsolete from the next release ");
+  message += "Use G4MaterialPropertiesTable::GetConstPropertyMap() instead";
+  G4Exception("G4MaterialPropertiesTable::GetPropertiesCMap()", "Obsolete",
+               JustWarning, message);
+
+  for (MCPiterator miter = MCP.begin(); miter != MCP.end(); miter++) {
+    MPTC[ G4MaterialConstPropertyName[miter->first] ] = miter->second;
+  }
+  return &MPTC; 
 }
