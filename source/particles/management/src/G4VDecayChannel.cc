@@ -128,6 +128,8 @@ G4VDecayChannel::G4VDecayChannel(const G4String  &aName,
   if (numberOfDaughters>1) daughters_name[1] = new G4String(theDaughterName2);
   if (numberOfDaughters>2) daughters_name[2] = new G4String(theDaughterName3);
   if (numberOfDaughters>3) daughters_name[3] = new G4String(theDaughterName4);
+  if      (rbranch <0.  ) rbranch = 0.0;
+  else if (rbranch >1.0 ) rbranch = 1.0;
 }
 
 G4VDecayChannel::G4VDecayChannel(const G4VDecayChannel &right)
@@ -420,6 +422,7 @@ void G4VDecayChannel::FillDaughters()
   // check sum of daghter mass
   G4double widthMass = std::sqrt(G4MT_parent->GetPDGWidth()*G4MT_parent->GetPDGWidth()+sumofdaughterwidthsq);
   if ( (G4MT_parent->GetParticleType() != "nucleus") &&
+       (numberOfDaughters !=1) &&
        (sumofdaughtermass > parentmass + rangeMass*widthMass) ){
    // !!! illegal mass  !!!
 #ifdef G4VERBOSE
@@ -566,6 +569,7 @@ const G4String& G4VDecayChannel::GetNoName() const
 #include "Randomize.hh"
 G4double G4VDecayChannel::DynamicalMass(G4double massPDG, G4double width, G4double maxDev ) const
 { 
+  if (width<=0.0) return massPDG;
   if (maxDev >rangeMass) maxDev = rangeMass;
   if (maxDev <=-1.*rangeMass) return massPDG;  // can not calculate
  
@@ -586,10 +590,11 @@ G4bool    G4VDecayChannel::IsOKWithParentMass(G4double parentMass)
   G4double sumOfDaughterMassMin=0.0;
   CheckAndFillParent();
   CheckAndFillDaughters();
+  if (numberOfDaughters==1) return true;
 
   for (G4int index=0; index < numberOfDaughters;  index++) { 
     sumOfDaughterMassMin += 
       G4MT_daughters_mass[index] -rangeMass*G4MT_daughters_width[index];
   }
-  return (parentMass > sumOfDaughterMassMin); 
+  return (parentMass >= sumOfDaughterMassMin); 
 }
