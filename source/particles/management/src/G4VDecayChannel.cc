@@ -128,8 +128,6 @@ G4VDecayChannel::G4VDecayChannel(const G4String  &aName,
   if (numberOfDaughters>1) daughters_name[1] = new G4String(theDaughterName2);
   if (numberOfDaughters>2) daughters_name[2] = new G4String(theDaughterName3);
   if (numberOfDaughters>3) daughters_name[3] = new G4String(theDaughterName4);
-  if      (rbranch <0.  ) rbranch = 0.0;
-  else if (rbranch >1.0 ) rbranch = 1.0;
 }
 
 G4VDecayChannel::G4VDecayChannel(const G4VDecayChannel &right)
@@ -569,7 +567,6 @@ const G4String& G4VDecayChannel::GetNoName() const
 #include "Randomize.hh"
 G4double G4VDecayChannel::DynamicalMass(G4double massPDG, G4double width, G4double maxDev ) const
 { 
-  if (width<=0.0) return massPDG;
   if (maxDev >rangeMass) maxDev = rangeMass;
   if (maxDev <=-1.*rangeMass) return massPDG;  // can not calculate
  
