@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GoudsmitSaundersonMscModel.hh 105900 2017-08-28 07:27:51Z gcosmo $
+// $Id: G4GoudsmitSaundersonMscModel.hh 106939 2017-10-30 13:06:39Z mnovak $
 //
 // ----------------------------------------------------------------------------
 //
@@ -133,8 +133,7 @@ class G4DataVector;
 class G4ParticleChangeForMSC;
 class G4LossTableManager;
 class G4GoudsmitSaundersonTable;
-class G4PWATotalXsecTable;
-
+class G4GSPWACorrections;
 
 class G4GoudsmitSaundersonMscModel : public G4VMscModel
 {
@@ -163,13 +162,17 @@ public:
 
   G4double GetTransportMeanFreePath(const G4ParticleDefinition*, G4double);
 
-  void SetOptionPWAScreening(G4bool opt)   { fIsUsePWATotalXsecData = opt; }
+  void SetOptionPWACorrection(G4bool opt)    { fIsUsePWACorrection = opt; }
+
+  G4bool GetOptionPWACorrection() const      { return fIsUsePWACorrection; }
 
   void   SetOptionMottCorrection(G4bool opt) { fIsUseMottCorrection = opt; }
 
-  G4bool GetOptionMottCorrection() const { return fIsUseMottCorrection; }
+  G4bool GetOptionMottCorrection() const     { return fIsUseMottCorrection; }
 
-  G4GoudsmitSaundersonTable* GetGSTable() { return fGSTable; }
+  G4GoudsmitSaundersonTable* GetGSTable()          { return fGSTable; }
+
+  G4GSPWACorrections*        GetPWACorrection()    { return fPWACorrection; }
 
 private:
   inline void     SetParticle(const G4ParticleDefinition* p);
@@ -220,9 +223,9 @@ private:
   const G4MaterialCutsCouple* currentCouple;
 
   G4GoudsmitSaundersonTable*  fGSTable;
-  static G4PWATotalXsecTable* gPWAXsecTable;
+  G4GSPWACorrections*         fPWACorrection;
 
-  G4bool   fIsUsePWATotalXsecData;
+  G4bool   fIsUsePWACorrection;
   G4bool   fIsUseMottCorrection;
   //
   G4double fLambda0; // elastic mean free path

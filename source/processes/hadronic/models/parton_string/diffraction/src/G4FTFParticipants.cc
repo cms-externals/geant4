@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4FTFParticipants.cc 105348 2017-07-21 12:22:10Z gcosmo $
+// $Id: G4FTFParticipants.cc 106850 2017-10-26 09:39:38Z ribon $
 // GEANT4 tag $Name:  $
 //
 
@@ -164,7 +164,6 @@ void G4FTFParticipants::GetList( const G4ReactionProduct& thePrimary,
           aInteraction->SetInteractionTime( ( primarySplitable->GetPosition().z() + 
                                               nucleon->GetPosition().z() ) / betta_z );
           theInteractions.push_back( aInteraction );
-//break; // Vova
         }
 
         #ifdef debugFTFparticipant
@@ -205,7 +204,7 @@ void G4FTFParticipants::GetList( const G4ReactionProduct& thePrimary,
   G4double xyradius;                          
   xyradius = theProjectileNucleus->GetOuterRadius() +  // Range of impact parameter sampling
              theNucleus->GetOuterRadius() + deltaxy;
-// Vova xyradius=3.4*fermi;                                    // ! Vova June Au+Au central
+
   G4double impactX( 0.0 ), impactY( 0.0 );
 
   const G4int maxNumberOfLoops = 1000;

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4ICRU49NuclearStoppingModel.cc 103955 2017-05-04 11:29:54Z gcosmo $
+// $Id: G4ICRU49NuclearStoppingModel.cc 106401 2017-10-09 15:40:05Z vnivanch $
 //
 // -------------------------------------------------------------------
 //
@@ -130,7 +130,7 @@ G4ICRU49NuclearStoppingModel::ComputeDEDXPerVolume(
 
   // projectile
   G4double mass1 = p->GetPDGMass();
-  G4double z1 = std::fabs(p->GetPDGCharge()/eplus);
+  G4double z1 = std::abs(p->GetPDGCharge()/eplus);
 
   if(kinEnergy*proton_mass_c2/mass1 > z1*z1*MeV) { return nloss; }
 

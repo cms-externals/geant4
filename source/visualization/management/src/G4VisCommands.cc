@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4VisCommands.cc 105349 2017-07-21 12:23:24Z gcosmo $
+// $Id: G4VisCommands.cc 106384 2017-10-09 09:34:51Z gcosmo $
 
 // /vis/ top level commands - John Allison  5th February 2001
 
@@ -75,13 +75,17 @@ void G4VisCommandAbortReviewKeptEvents::SetNewValue (G4UIcommand*,
   G4cout << "Type \"continue\" to complete the abort." << G4endl;
 }
 
-////////////// /vis/drawOnlyKeptEvents /////////////////////////////
+////////////// /vis/drawOnlyToBeKeptEvents /////////////////////////////
 
-G4VisCommandDrawOnlyKeptEvents::G4VisCommandDrawOnlyKeptEvents () {
+G4VisCommandDrawOnlyToBeKeptEvents::G4VisCommandDrawOnlyToBeKeptEvents ()
+{
   G4bool omitable;
 
-  fpCommand = new G4UIcmdWithABool("/vis/drawOnlyKeptEvents", this);
-  fpCommand -> SetGuidance("Draw only those events that have been kept by th user.");
+  fpCommand = new G4UIcmdWithABool("/vis/drawOnlyToBeKeptEvents", this);
+  fpCommand -> SetGuidance
+  ("DURING A RUN draw only those events that have been \"to be kept\" by the user"
+   "\nwith G4EventManager::GetEventManager()->KeepTheCurrentEvent() or"
+   "\nwith \"/event/keepCurrentEvent\".");
   fpCommand -> SetGuidance(
   "To draw selected events the user should set this flag, then in a user action:"
   "\n  if ( some criterion ) {"
@@ -91,15 +95,15 @@ G4VisCommandDrawOnlyKeptEvents::G4VisCommandDrawOnlyKeptEvents () {
   fpCommand -> SetDefaultValue(true);
 }
 
-G4VisCommandDrawOnlyKeptEvents::~G4VisCommandDrawOnlyKeptEvents () {
+G4VisCommandDrawOnlyToBeKeptEvents::~G4VisCommandDrawOnlyToBeKeptEvents () {
   delete fpCommand;
 }
 
-G4String G4VisCommandDrawOnlyKeptEvents::GetCurrentValue (G4UIcommand*) {
+G4String G4VisCommandDrawOnlyToBeKeptEvents::GetCurrentValue (G4UIcommand*) {
   return G4String();
 }
 
-void G4VisCommandDrawOnlyKeptEvents::SetNewValue (G4UIcommand*,
+void G4VisCommandDrawOnlyToBeKeptEvents::SetNewValue (G4UIcommand*,
                                                   G4String newValue) {
   fpVisManager->SetDrawEventOnlyIfToBeKept(G4UIcommand::ConvertToBool(newValue));
   G4VisManager::Verbosity verbosity = fpVisManager->GetVerbosity();

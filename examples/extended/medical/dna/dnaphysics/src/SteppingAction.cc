@@ -157,6 +157,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     else if (procID==55) flagProcess =14;
     else if (procID==54) flagProcess =15;
     else if (procID==10) flagProcess =110;
+    else if (procID==1)  flagProcess =120;
     else if (procID==2)  flagProcess =130;
   }
         
@@ -168,7 +169,9 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     else if (procID==53) flagProcess =23;
     else if (procID==56) flagProcess =24;
     else if (procID==10) flagProcess =210;
+    else if (procID==1)  flagProcess =220;
     else if (procID==2)  flagProcess =230;
+    else if (procID==8)  flagProcess =240;
   }
         
   else if (flagParticle == 3)
@@ -188,7 +191,9 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     else if (procID==53) flagProcess =43;
     else if (procID==56) flagProcess =44;
     else if (procID==10) flagProcess =410;
+    else if (procID==1)  flagProcess =420;
     else if (procID==2)  flagProcess =430;
+    else if (procID==8)  flagProcess =440;
   }
         
   else if (flagParticle == 5)
@@ -199,6 +204,10 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     else if (procID==53) flagProcess =53;
     else if (procID==56) flagProcess =54;
     else if (procID==57) flagProcess =55;
+    else if (procID==10) flagProcess =510;
+    else if (procID==1)  flagProcess =520;
+    else if (procID==2)  flagProcess =530;
+    else if (procID==8)  flagProcess =540;
   }
         
   else if (flagParticle == 6)
@@ -212,6 +221,10 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   }
 
   else if (processName=="GenericIon_G4DNAIonisation") flagProcess =73;
+  else if (processName=="msc")                        flagProcess =710;
+  else if (processName=="CoulombScat")                flagProcess =720;
+  else if (processName=="ionIoni")                    flagProcess =730;
+  else if (processName=="nuclearStopping")            flagProcess =740;
   // (for all GenericIons)
       
   // Alternatively, using process names
@@ -265,6 +278,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     zp=postStep->GetPosition().z()/nanometer;
 
     // get analysis manager
+
     G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
     // fill ntuple

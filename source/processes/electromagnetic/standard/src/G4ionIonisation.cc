@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4ionIonisation.cc 105734 2017-08-16 12:58:28Z gcosmo $
+// $Id: G4ionIonisation.cc 107020 2017-10-31 22:13:34Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -173,13 +173,14 @@ void G4ionIonisation::InitialiseEnergyLossProcess(
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-void G4ionIonisation::PrintInfo()
+void G4ionIonisation::StreamProcessInfo(std::ostream& out,
+                                        G4String endOfLine) const
 {
   if (stopDataActive && G4GenericIon::GenericIon() == theParticle) {
-    G4cout << "      Stopping Power data for " 
-           << corr->GetNumberOfStoppingVectors()
-	   << " ion/material pairs "
-           << G4endl;
+    out << "      Stopping Power data for " 
+	<< corr->GetNumberOfStoppingVectors()
+	<< " ion/material pairs "
+	<< endOfLine;
   }
 }
 
@@ -193,3 +194,11 @@ void G4ionIonisation::AddStoppingData(G4int Z, G4int A,
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+void G4ionIonisation::ProcessDescription(std::ostream& out) const
+{
+  out << "<strong>Ion ionisation</strong>";
+  G4VEnergyLossProcess::ProcessDescription(out);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.... 

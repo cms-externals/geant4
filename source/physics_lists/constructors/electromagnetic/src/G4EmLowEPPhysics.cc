@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmLowEPPhysics.cc 105735 2017-08-16 12:59:43Z gcosmo $
+// $Id: G4EmLowEPPhysics.cc 107168 2017-11-03 12:16:05Z vnivanch $
 
 #include "G4EmLowEPPhysics.hh"
 #include "G4ParticleDefinition.hh"
@@ -135,6 +135,7 @@ G4EmLowEPPhysics::G4EmLowEPPhysics(G4int ver, const G4String&)
   param->SetLowestElectronEnergy(100*eV);
   param->SetNumberOfBinsPerDecade(20);
   param->ActivateAngularGeneratorForIonisation(true);
+  param->SetLateralDisplacementAlg96(false);
   param->SetFluo(true);
   SetPhysicsType(bElectromagnetic);
 }

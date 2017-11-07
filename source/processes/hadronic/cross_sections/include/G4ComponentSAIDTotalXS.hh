@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4ComponentSAIDTotalXS.hh 67988 2013-03-13 10:52:45Z gcosmo $
+// $Id: G4ComponentSAIDTotalXS.hh 67502 2013-02-22 18:41:11Z vnivanch $
 //
 // -------------------------------------------------------------------
 //

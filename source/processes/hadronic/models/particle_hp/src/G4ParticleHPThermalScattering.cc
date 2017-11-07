@@ -561,7 +561,7 @@ G4HadFinalState* G4ParticleHPThermalScattering::ApplyYourself(const G4HadProject
             tempLH.first = tempLH.second;
             tempLH.second = v_temp[ 1 ];
          }
-         else if (  tempLH.second == 0.0 )
+         else if ( tempLH.second == 0.0 )
          {
             pvE_p_TH = coherentFSs->find( ielement )->second->find ( v_temp.back() )->second;
             std::vector< G4double >::iterator itv;
@@ -584,7 +584,8 @@ G4HadFinalState* G4ParticleHPThermalScattering::ApplyYourself(const G4HadProject
          G4int n1 = pvE_p_TL->size();  
          //G4int n2 = pvE_p_TH->size();  
 
-         for ( G4int i=1 ; i < n1 ; i++ ) 
+         //171005 fix bug, contribution from H.N. TRAN@CEA
+         for ( G4int i=0 ; i < n1 ; i++ ) 
          {
             if ( (*pvE_p_TL)[i]->first != (*pvE_p_TH)[i]->first ) throw G4HadronicException(__FILE__, __LINE__, "A problem is found in Thermal Scattering Data!");
             vE_T.push_back ( (*pvE_p_TL)[i]->first );
@@ -592,7 +593,7 @@ G4HadFinalState* G4ParticleHPThermalScattering::ApplyYourself(const G4HadProject
          }
 
          G4int j = 0;  
-         for ( G4int i = 1 ; i < n ; i++ ) 
+         for ( G4int i = 1 ; i < n1 ; i++ ) 
          {
             if ( E/eV < vE_T[ i ] ) 
             {
@@ -604,26 +605,25 @@ G4HadFinalState* G4ParticleHPThermalScattering::ApplyYourself(const G4HadProject
          G4double rand_for_mu = G4UniformRand();
 
          G4int k = 0;
-         for ( G4int i = 1 ; i < j ; i++ )
+         for ( G4int i = 0 ; i <= j ; i++ )
          {
              G4double Pi = vp_T[ i ] / vp_T[ j ]; 
              if ( rand_for_mu < Pi )
              {
-                k = i-1; 
+                k = i; 
                 break;
              }
          }
 
-         //G4double Ei = vE_T[ j ];
          G4double Ei = vE_T[ k ];
 
          G4double mu = 1 - 2 * Ei / (E/eV) ;  
          //111102
          if ( mu < -1.0 ) mu = -1.0;
+         //G4cout << "E= " << E/eV << ", Ei= " << Ei << ", mu= " << mu << G4endl;
 
          theParticleChange.SetEnergyChange( E );
          theParticleChange.SetMomentumChange( 0.0 , std::sqrt ( 1 - mu*mu ) , mu );
-
 
       }
       else

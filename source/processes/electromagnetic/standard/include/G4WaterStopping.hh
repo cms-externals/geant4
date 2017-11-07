@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4WaterStopping.hh 96934 2016-05-18 09:10:41Z gcosmo $
+// $Id: G4WaterStopping.hh 96909 2016-05-17 10:16:09Z vnivanch $
 
 #ifndef G4WaterStopping_h
 #define G4WaterStopping_h 1

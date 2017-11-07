@@ -86,7 +86,7 @@ namespace G4INCL {
 // From Kamano
      else {
 
-						const G4double pi=std::acos(-1.0);		
+						const G4double pi=acos(-1.0);		
 						G4double x1;
 						G4double u1;
 						G4double fteta;
@@ -180,7 +180,7 @@ namespace G4INCL {
 							fteta=(a6*x1*x1*x1*x1*x1*x1+a5*x1*x1*x1*x1*x1+a4*x1*x1*x1*x1+a3*x1*x1*x1+a2*x1*x1+a1*x1+a0)/interg1;
 							// The condition
 							if (u1*f1 < fteta) {
-								teta=std::acos(x1);
+								teta=acos(x1);
 								//				std::cout << x1  << " " << fteta << " "<< f1/interg1 << " " << u1 << " " << interg1 << std::endl;
 								passe1=1;
 							}
@@ -189,9 +189,9 @@ namespace G4INCL {
 						fi=(2.0*pi)*Random::shoot();		
 						
 						ThreeVector mom_nucleon1(
-																														pn*std::sin(teta)*std::cos(fi),
-																														pn*std::sin(teta)*std::sin(fi),
-																														pn*std::cos(teta)
+																														pn*sin(teta)*cos(fi),
+																														pn*sin(teta)*sin(fi),
+																														pn*cos(teta)
 																														);
 						
 						mom_nucleon = -mom_nucleon1	;

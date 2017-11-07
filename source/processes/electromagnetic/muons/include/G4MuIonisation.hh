@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4MuIonisation.hh 97392 2016-06-02 10:10:32Z gcosmo $
+// $Id: G4MuIonisation.hh 106695 2017-10-19 20:47:29Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -98,6 +98,9 @@ public:
 
   // Print out of the class parameters
   virtual void PrintInfo() override;
+
+  // print description in html
+  virtual void ProcessDescription(std::ostream&) const override;
 
 protected:
 

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4eIonisation.cc 105734 2017-08-16 12:58:28Z gcosmo $
+// $Id: G4eIonisation.cc 107020 2017-10-31 22:13:34Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -141,3 +141,11 @@ void G4eIonisation::PrintInfo()
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+void G4eIonisation::ProcessDescription(std::ostream& out) const
+{
+  out << "<strong>Ionisation</strong>";
+  G4VEnergyLossProcess::ProcessDescription(out);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

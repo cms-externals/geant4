@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4eMultipleScattering.cc 105734 2017-08-16 12:58:28Z gcosmo $
+// $Id: G4eMultipleScattering.cc 107020 2017-10-31 22:13:34Z dsawkey $
 //
 // -----------------------------------------------------------------------------
 //
@@ -83,16 +83,24 @@ void G4eMultipleScattering::InitialiseProcess(const G4ParticleDefinition*)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void G4eMultipleScattering::PrintInfo()
+void G4eMultipleScattering::StreamProcessInfo(std::ostream& out,
+                                              G4String endOfLine) const
 {
-  G4cout << "      RangeFactor= " << RangeFactor()
-	 << ", stepLimitType: " << StepLimitType()
-         << ", latDisplacement: " << LateralDisplasmentFlag();
+  out << "      RangeFactor= " << RangeFactor()
+      << ", stepLimitType: " << StepLimitType()
+      << ", latDisplacement: " << LateralDisplasmentFlag();
   if(StepLimitType() == fUseDistanceToBoundary) {
-    G4cout  << ", skin= " << Skin() << ", geomFactor= " << GeomFactor();
+    out  << ", skin= " << Skin() << ", geomFactor= " << GeomFactor();
   }  
-  G4cout << G4endl;
+  out << endOfLine;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+void G4eMultipleScattering::ProcessDescription(std::ostream& out) const
+{
+  out << "<strong>Multiple scattering</strong>";
+  G4VMultipleScattering::ProcessDescription(out);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

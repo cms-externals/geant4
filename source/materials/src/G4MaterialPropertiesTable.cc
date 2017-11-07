@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4MaterialPropertiesTable.cc 106193 2017-09-19 04:03:52Z gcosmo $
+// $Id: G4MaterialPropertiesTable.cc 106997 2017-10-31 10:22:36Z gcosmo $
 //
 // 
 ////////////////////////////////////////////////////////////////////////
@@ -159,38 +159,49 @@ G4MaterialPropertyVector*
 G4MaterialPropertiesTable::GetProperty(const G4MPindex index)
 {
   // Returns a Material Property Vector corresponding to an index
-
-  //Important Note for MT. adotti 17 Feb 2016
-  //In previous implementation the following line was at the bottom of the
-  //function causing a rare race-condition.
-  //Moving this line here from the bottom solves the problem because:
-  //1- Map is accessed only via operator[] (to insert) and find() (to search),
-  //   and these are thread safe if done on separate elements.
-  //   See notes on data-races at:
-  //   http://www.cplusplus.com/reference/map/map/operator%5B%5D/
-  //   http://www.cplusplus.com/reference/map/map/find/
-  //2- So we have a data race if two threads access the same element (GROUPVEL)
-  //   one in read and one in write mode. This was happening with the line
-  //   at the bottom of the code, one thread in SetGROUPVEL(), 
-  //   and the other here
-  //3- SetGROUPVEL() is protected by a mutex that ensures that only
-  //   one thread at the time will execute its code
-  //4- The if() statement guarantees that only if two threads are searching
-  //   the same problematic key (GROUPVEL) the mutex will be used.
-  //   Different keys do not lock (good for performances)
-  //5- As soon as a thread acquires the mutex in SetGROUPVEL it checks again
-  //   if the map has GROUPVEL key, if so returns immediately.
-  //   This "double check" allows to execute the heavy code to calculate
-  //   group velocity only once even if two threads enter SetGROUPVEL together
-
-  if (index == kGROUPVEL ) return SetGROUPVEL();
-
   MPiterator i;
   i = MP.find(index);
   if ( i != MP.end() ) return i->second;
   return nullptr;
 }
 
+G4MaterialPropertyVector* G4MaterialPropertiesTable::AddProperty(
+                                            const char *key,
+                                            G4double   *PhotonEnergies,
+                                            G4double   *PropertyValues,
+                                            G4int      NumEntries)
+{
+  // Provides a way of adding a property to the Material Properties
+  // Table given a pair of numbers and a key
+  G4MPindex index = GetPropertyIndex(G4String(key));
+
+  G4MaterialPropertyVector *mpv = new G4MaterialPropertyVector(PhotonEnergies, 
+                                                   PropertyValues, NumEntries);
+  MP[index] = mpv;
+
+  // if key is RINDEX, we calculate GROUPVEL - 
+  // contribution from Tao Lin (IHEP, the JUNO experiment) 
+  if (G4String(key)=="RINDEX") {
+      CalculateGROUPVEL();
+  }
+
+  return mpv;
+}
+
+void G4MaterialPropertiesTable::
+AddProperty(const char *key, G4MaterialPropertyVector *mpv)
+{
+  //  Provides a way of adding a property to the Material Properties
+  //  Table given an G4MaterialPropertyVector Reference and a key
+  G4MPindex index = GetPropertyIndex(G4String(key));
+  MP[ index ] = mpv;
+
+  // if key is RINDEX, we calculate GROUPVEL -
+  // contribution from Tao Lin (IHEP, the JUNO experiment) 
+  if (G4String(key)=="RINDEX") {
+      CalculateGROUPVEL();
+  }
+} 
 
 void G4MaterialPropertiesTable::AddEntry(const char *key,
                                          G4double    aPhotonEnergy,
@@ -251,11 +262,14 @@ namespace {
 }
 #endif
 
-G4MaterialPropertyVector* G4MaterialPropertiesTable::SetGROUPVEL()
+G4MaterialPropertyVector* G4MaterialPropertiesTable::CalculateGROUPVEL()
 {
 #ifdef G4MULTITHREADED
   G4AutoLock mptm(&materialPropertyTableMutex);
 #endif
+  // reconsider (i.e, remove) above mutex as this method is likely called only
+  // when RINDEX is added during the detector construction phase (i.e., adding 
+  // meterials properties into geometry) on the master thread (Oct. 2017, SYJ)
 
   // check if "GROUPVEL" already exists
   MPiterator itr;
@@ -283,7 +297,7 @@ G4MaterialPropertyVector* G4MaterialPropertiesTable::SetGROUPVEL()
 
   if (E0 <= 0.)
   {
-    G4Exception("G4MaterialPropertiesTable::SetGROUPVEL()", "mat205",
+    G4Exception("G4MaterialPropertiesTable::CalculateGROUPVEL()", "mat205",
                 FatalException, "Optical Photon Energy <= 0");
   }
                                                                                 
@@ -297,7 +311,7 @@ G4MaterialPropertyVector* G4MaterialPropertiesTable::SetGROUPVEL()
 
     if (E1 <= 0.)
     {
-      G4Exception("G4MaterialPropertiesTable::SetGROUPVEL()", "mat205",
+      G4Exception("G4MaterialPropertiesTable::CalculateGROUPVEL()", "mat205",
                   FatalException, "Optical Photon Energy <= 0");
     }
 
@@ -334,7 +348,7 @@ G4MaterialPropertyVector* G4MaterialPropertiesTable::SetGROUPVEL()
 
       if (E1 <= 0.)
       {
-        G4Exception("G4MaterialPropertiesTable::SetGROUPVEL()", "mat205",
+        G4Exception("G4MaterialPropertiesTable::CalculateGROUPVEL()", "mat205",
                     FatalException, "Optical Photon Energy <= 0");
       }
     }
@@ -356,6 +370,16 @@ G4MaterialPropertyVector* G4MaterialPropertiesTable::SetGROUPVEL()
   this->AddProperty( "GROUPVEL", groupvel );
                                                                                 
   return groupvel;
+}
+
+G4MaterialPropertyVector* G4MaterialPropertiesTable::SetGROUPVEL()
+{
+  G4String message("SetGROUPVEL will be obsolete from the next release ");
+  message += "Use G4MaterialPropertiesTable::CalculateGROUPVEL() instead";
+
+  G4Exception("G4MaterialPropertiesTable::SetGROUPVEL()", "Obsolete",
+               JustWarning, message);
+  return CalculateGROUPVEL();
 }
 
 std::map< G4String, G4MaterialPropertyVector*, std::less<G4String> >*

@@ -1,4 +1,4 @@
-$Id: History 106122 2017-09-13 12:51:53Z gcosmo $
+$Id: History 106957 2017-10-31 08:32:27Z gcosmo $
 
 -------------------------------------------------------------------
 
@@ -25,6 +25,25 @@ committal in the CVS repository !
 
 History file for visualization management sub-category
 ------------------------------------------------------
+
+29th October 2017  John Allison  (visman-V10-03-16)
+- G4VisManager.cc: Protect /vis/enable issued before run established.
+
+6th October 2017  John Allison  (visman-V10-03-15)
+- Needs greps-V10-03-07.
+- G4VisManager:
+  o Remove
+      if (!GetConcreteInstance()) return;
+    from Begin/EndOfRun so that even if the user
+      /vis/disable
+    the vis manager will still report fully, for example, with information
+    about the number of kept events for reviewing or redrawing.
+  o Introduce InitialiseG4ColourMap, which initialises G4Colour's colour map
+    and adds Guy Barrand's 65 X11 colours.
+  o Improve some messages.
+- G4VisCommands:
+  o Change /vis/drawOnlyKeptEvents to /vis/drawOnlyToBeKeptEvents and
+    improve the guidance for improved clarity.
 
 13th September 2017  John Allison  (visman-V10-03-14)
 - G4ViewParameters.cc, G4VisCommandsViewerSet.cc:

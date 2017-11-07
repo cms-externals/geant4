@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PhotonEvaporation.cc 105057 2017-07-10 10:35:53Z gcosmo $
+// $Id: G4PhotonEvaporation.cc 106662 2017-10-19 10:14:44Z vnivanch $
 //
 // -------------------------------------------------------------------
 //
@@ -105,6 +105,7 @@ void G4PhotonEvaporation::Initialise()
   fICM = param->GetInternalConversionFlag();
 
   fTransition->SetPolarizationFlag(fCorrelatedGamma);
+  fTransition->SetTwoJMAX(param->GetTwoJMAX());
   fTransition->SetVerbose(fVerbose);
 }
 
@@ -465,7 +466,7 @@ G4PhotonEvaporation::GenerateGamma(G4Fragment* nucleus)
     }
     // it is discrete transition with possible gamma correlation
     isDiscrete = true;
-    ratio  = level->MixingRatio(idx);
+    ratio  = level->MultipolarityRatio(idx);
     multiP = level->TransitionType(idx);
     fIndex = level->FinalExcitationIndex(idx);
     JP2    = fLevelManager->SpinTwo(fIndex); 
@@ -505,9 +506,6 @@ G4PhotonEvaporation::GenerateGamma(G4Fragment* nucleus)
   }
   return result;
 }
-
-void G4PhotonEvaporation::SetMaxHalfLife(G4double)
-{}
 
 void G4PhotonEvaporation::SetGammaTransition(G4GammaTransition* p)
 {

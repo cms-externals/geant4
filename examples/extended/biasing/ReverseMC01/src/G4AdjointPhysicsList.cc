@@ -26,7 +26,7 @@
 /// \file biasing/ReverseMC01/src/G4AdjointPhysicsList.cc
 /// \brief Implementation of the G4AdjointPhysicsList class
 //
-// $Id: G4AdjointPhysicsList.cc 101303 2016-11-14 11:21:18Z gcosmo $
+// $Id: G4AdjointPhysicsList.cc 106513 2017-10-12 11:54:52Z gcosmo $
 //
 //////////////////////////////////////////////////////////////
 //  Class Name:        G4AdjointPhysicsList
@@ -262,11 +262,9 @@ void G4AdjointPhysicsList::ConstructEM()
   if (fUse_ms) {
          theeminusMS = new G4eMultipleScattering();
          G4UrbanMscModel* msc1 = new G4UrbanMscModel();
-         msc1->SetNewDisplacementFlag(false);
          theeminusMS->AddEmModel(0, msc1);
          theeminusAdjointMS = new G4eAdjointMultipleScattering();
          G4UrbanAdjointMscModel* msc2 = new G4UrbanAdjointMscModel();
-         msc2->SetNewDisplacementFlag(false);
          theeminusAdjointMS->AddEmModel(0, msc2);
          thepMS = new G4hMultipleScattering();
   }        

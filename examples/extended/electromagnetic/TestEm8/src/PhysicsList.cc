@@ -26,7 +26,7 @@
 /// \file electromagnetic/TestEm8/src/PhysicsList.cc
 /// \brief Implementation of the PhysicsList class
 //
-// $Id: PhysicsList.cc 105916 2017-08-28 11:57:56Z gcosmo $
+// $Id: PhysicsList.cc 106918 2017-10-27 16:42:49Z vnivanch $
 //
 //---------------------------------------------------------------------------
 //
@@ -78,15 +78,12 @@
 #include "G4ProcessManager.hh"
 #include "G4ParticleTypes.hh"
 #include "G4ParticleTable.hh"
-
-G4ThreadLocal StepMax* PhysicsList::fStepMaxProcess = nullptr;
+#include "DetectorConstruction.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PhysicsList::PhysicsList() : G4VModularPhysicsList(),
-  fEmPhysicsList(nullptr),
-  fDecayPhysicsList(nullptr),
-  fMessenger(nullptr)
+PhysicsList::PhysicsList(DetectorConstruction* ptr) 
+  : G4VModularPhysicsList(), fDetectorConstruction(ptr)
 {
   // set verbosity for zero to avoid double printout 
   // on physics verbosity should be restored to 1 when cuts
@@ -229,7 +226,7 @@ void PhysicsList::AddPhysicsList(const G4String& name)
 void PhysicsList::AddStepMax()
 {
   // Step limitation seen as a process
-  fStepMaxProcess = new StepMax();
+  StepMax* stepMaxProcess = new StepMax(fDetectorConstruction);
 
   auto particleIterator=GetParticleIterator();
   particleIterator->reset();
@@ -238,9 +235,9 @@ void PhysicsList::AddStepMax()
     G4ParticleDefinition* particle = particleIterator->value();
     G4ProcessManager* pmanager = particle->GetProcessManager();
 
-    if (fStepMaxProcess->IsApplicable(*particle))
+    if (stepMaxProcess->IsApplicable(*particle))
     {
-      pmanager->AddDiscreteProcess(fStepMaxProcess);
+      pmanager->AddDiscreteProcess(stepMaxProcess);
     }
   }
 }

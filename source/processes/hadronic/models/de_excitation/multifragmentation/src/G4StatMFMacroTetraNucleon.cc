@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4StatMFMacroTetraNucleon.cc 91834 2015-08-07 07:24:22Z gcosmo $
+// $Id: G4StatMFMacroTetraNucleon.cc 91817 2015-08-06 14:49:16Z vnivanch $
 //
 // Hadronic Process: Nuclear De-excitations
 // by V. Lara

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GoudsmitSaundersonMscModel.cc 106235 2017-09-22 21:39:16Z gcosmo $
+// $Id: G4GoudsmitSaundersonMscModel.cc 106939 2017-10-30 13:06:39Z mnovak $
 //
 // ----------------------------------------------------------------------------
 //
@@ -98,6 +98,13 @@
 //            Unlike the default GS, the Mott-corrected angular distributions are particle type
 //            (different for e- and e+ <= the DCS_{Mott} and the screening correction) and target
 //            (Z and material) dependent.
+// 27.10.2017 M. Novak:
+//            - Mott-correction flag is set now through the G4EmParameters
+//            - new form of PWA correction to integrated quantities and screening (default)
+//            - changed step limit flag conventions:
+//               # fUseSafety corresponds to Urban's fUseSafety
+//               # fUseDistanceToBoundary corresponds to Urban's fUseDistanceToBoundary
+//               # fUseSafetyPlus corresponds to the error-free stepping algorithm
 //
 // Class description:
 //   Kawrakow-Bielajew Goudsmit-Saunderson MSC model based on the screened Rutherford DCS
@@ -105,8 +112,12 @@
 //   also available now (SetOptionMottCorrection(true)). An EGSnrc like error-free stepping
 //   algorithm (UseSafety) is available beyond the usual Geant4 step limitation algorithms
 //   and true to geomerty and geometry to true step length computations that were adopted
-//   from the Urban model[5]. The most accurate setting: error-free stepping (UseSafety)
-//   with Mott-correction (SetOptionMottCorrection(true)).
+//   from the Urban model[5]. The most accurate setting: error-free stepping i.e. the
+//   UseSafetyPlus MSC step limit with Mott-correction (SetOptionMottCorrection(true)). Both
+//   are expected to be set through the G4EmParameters singleton before initialisation:
+//    # G4EmParameters::Instance()->SetMscStepLimitType(fUseSafetyPlus);
+//    # G4EmParameters::Instance()->SetUseMottCorrection(true);
+//
 //
 // References:
 //   [1] A.F.Bielajew, NIMB 111 (1996) 195-208
@@ -122,7 +133,7 @@
 #include "G4GoudsmitSaundersonMscModel.hh"
 
 #include "G4GoudsmitSaundersonTable.hh"
-#include "G4PWATotalXsecTable.hh"
+#include "G4GSPWACorrections.hh"
 
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
@@ -133,6 +144,7 @@
 #include "G4Positron.hh"
 
 #include "G4LossTableManager.hh"
+#include "G4EmParameters.hh"
 #include "G4Track.hh"
 #include "G4PhysicsTable.hh"
 #include "Randomize.hh"
@@ -141,9 +153,6 @@
 #include "G4Pow.hh"
 #include <fstream>
 
-
-// MISI:: the whole PWA x-sec table will be removed soon
-G4PWATotalXsecTable* G4GoudsmitSaundersonMscModel::gPWAXsecTable = nullptr;
 
 // set accurate energy loss and dispalcement sampling to be always on now
 G4bool G4GoudsmitSaundersonMscModel::gIsUseAccurate    = true;
@@ -187,12 +196,14 @@ G4GoudsmitSaundersonMscModel::G4GoudsmitSaundersonMscModel(const G4String& nam)
   par2                   = 0.;
   par3                   = 0.;
   //
-  // by default Moliere screeing parameter will be used but it can be set to the
-  // PWA screening before calling the Initialise method
-  // MISI: the whole PWA x-sec table will be removed soon !!!
-  fIsUsePWATotalXsecData = false;
+  // Moliere screeing parameter will be used and (by default) corrections are
+  // appalied to the integrated quantities (screeing parameter, elastic mfp, first
+  // and second moments) derived from the corresponding PWA quantities
+  // this PWA correction is ignored if Mott-correction is set to true because
+  // Mott-correction contains all these corrections as well
+  fIsUsePWACorrection    = true;
   //
-  fIsUseMottCorrection   = true;  // MISI: it will be false by defult later nut true now for testing period
+  fIsUseMottCorrection   = false;
   //
   fLambda0               = 0.0; // elastic mean free path
   fLambda1               = 0.0; // first transport mean free path
@@ -222,19 +233,19 @@ G4GoudsmitSaundersonMscModel::G4GoudsmitSaundersonMscModel(const G4String& nam)
   rndmEngineMod          = G4Random::getTheEngine();
   //
   fGSTable               = nullptr;
+  fPWACorrection         = nullptr;
 }
 
 
 G4GoudsmitSaundersonMscModel::~G4GoudsmitSaundersonMscModel() {
   if (IsMaster()) {
-    if(fGSTable) {
+    if (fGSTable) {
       delete fGSTable;
       fGSTable = nullptr;
     }
-
-    if(gPWAXsecTable) {
-      delete gPWAXsecTable;
-      gPWAXsecTable = nullptr;
+    if (fPWACorrection) {
+      delete fPWACorrection;
+      fPWACorrection = nullptr;
     }
   }
 }
@@ -243,19 +254,27 @@ G4GoudsmitSaundersonMscModel::~G4GoudsmitSaundersonMscModel() {
 void G4GoudsmitSaundersonMscModel::Initialise(const G4ParticleDefinition* p, const G4DataVector&) {
   SetParticle(p);
   fParticleChange = GetParticleChangeForMSC(p);
-  fIsUsePWATotalXsecData = false; // never activate it anymore (will be removed)
   // -create GoudsmitSaundersonTable and init its Mott-correction member if
   //  Mott-correction was required
   if (IsMaster()) {
+    // get the Mott-correction flag from EmParameters
+    if (G4EmParameters::Instance()->UseMottCorrection()) {
+      fIsUseMottCorrection = true;
+    }
+    // Mott-correction includes other way of PWA x-section corrections so deactivate it even if it was true
+    // when Mott-correction is activated by the user
+    if (fIsUseMottCorrection) {
+      fIsUsePWACorrection = false;
+    }
     // clear GS-table
     if (fGSTable) {
       delete fGSTable;
       fGSTable = nullptr;
     }
-    // clear PWA x-sec table if any
-    if (gPWAXsecTable) {
-      delete gPWAXsecTable;
-      gPWAXsecTable = nullptr;
+    // clear PWA corrections table if any
+    if (fPWACorrection) {
+      delete fPWACorrection;
+      fPWACorrection = nullptr;
     }
     // create GS-table
     G4bool isElectron = true;
@@ -267,21 +286,24 @@ void G4GoudsmitSaundersonMscModel::Initialise(const G4ParticleDefinition* p, con
     // - Screened-Rutherford DCS based GS angular distributions will be loaded only if they are not there yet
     // - Mott-correction will be initialised if Mott-correction was requested to be used
     fGSTable->SetOptionMottCorrection(fIsUseMottCorrection);
-    fGSTable->Initialise();
-    // MISI: the whole PWA x-sec table will be removed soon!
-    if (fIsUsePWATotalXsecData) {
-      if (!gPWAXsecTable) {
-         gPWAXsecTable = new G4PWATotalXsecTable();
-      }
-      gPWAXsecTable->Initialise();
+    // - set PWA correction (correction to integrated quantites from Dirac-PWA)
+    fGSTable->SetOptionPWACorrection(fIsUsePWACorrection);
+    // init
+    fGSTable->Initialise(LowEnergyLimit(),HighEnergyLimit());
+    // create PWA corrections table if it was requested (and not disactivated because active Mott-correction)
+    if (fIsUsePWACorrection) {
+      fPWACorrection = new G4GSPWACorrections();
+      fPWACorrection->Initialise();
     }
   }
 }
 
 
 void G4GoudsmitSaundersonMscModel::InitialiseLocal(const G4ParticleDefinition*, G4VEmModel* masterModel) {
-   fIsUseMottCorrection = static_cast<G4GoudsmitSaundersonMscModel*>(masterModel)->GetOptionMottCorrection();
-   fGSTable             = static_cast<G4GoudsmitSaundersonMscModel*>(masterModel)->GetGSTable();
+   fGSTable               = static_cast<G4GoudsmitSaundersonMscModel*>(masterModel)->GetGSTable();
+   fIsUseMottCorrection   = static_cast<G4GoudsmitSaundersonMscModel*>(masterModel)->GetOptionMottCorrection();
+   fIsUsePWACorrection    = static_cast<G4GoudsmitSaundersonMscModel*>(masterModel)->GetOptionPWACorrection();
+   fPWACorrection         = static_cast<G4GoudsmitSaundersonMscModel*>(masterModel)->GetPWACorrection();
 }
 
 
@@ -298,65 +320,45 @@ G4GoudsmitSaundersonMscModel::GetTransportMeanFreePath(const G4ParticleDefinitio
   fLambda1 = 0.0; // first transport mean free path
   fScrA    = 0.0; // screening parameter
   fG1      = 0.0; // first transport coef.
-  //
-  // MISI:: the whole PWA x-sec table will be removed soon
-  if (!fIsUseMottCorrection && fIsUsePWATotalXsecData && efEnergy<1.*CLHEP::GeV) {
-    // use PWA total xsec data to determine screening and lambda0 lambda1
-    const G4ElementVector* theElementVector = mat->GetElementVector();
-    const G4double* theAtomNumDensityVector = mat->GetVecNbOfAtomsPerVolume();
-    G4int nelm = mat->GetNumberOfElements();
-    //
-    int elowindx = gPWAXsecTable->GetPWATotalXsecForZet( G4lrint((*theElementVector)[0]->GetZ()) )
-                   ->GetPWATotalXsecEnergyBinIndex(efEnergy);
-    for (G4int i=0;i<nelm;i++){
-      int zet    = G4lrint((*theElementVector)[i]->GetZ());
-      // total elastic scattering cross section in Geant4 internal length2 units
-      int indx   = (G4int)(1.5 + charge*1.5); // specify that want to get the total elastic scattering xsection
-      double elxsec = (gPWAXsecTable->GetPWATotalXsecForZet(zet))->GetInterpXsec(efEnergy,elowindx,indx);
-      // first transport cross section in Geant4 internal length2 units
-      indx   = (G4int)(2.5 + charge*1.5); // specify that want to get the first tarnsport xsection
-      double t1xsec = (gPWAXsecTable->GetPWATotalXsecForZet(zet))->GetInterpXsec(efEnergy,elowindx,indx);
-      fLambda0 += (theAtomNumDensityVector[i]*elxsec);
-      fLambda1 += (theAtomNumDensityVector[i]*t1xsec);
-    }
-    if(fLambda0>0.0) { fLambda0 =1./fLambda0; }
-    if(fLambda1>0.0) { fLambda1 =1./fLambda1; }
 
-    // determine screening parameter such that it gives back PWA G1
-    fG1=0.0;
-    if(fLambda1>0.0) { fG1 = fLambda0/fLambda1; }
-
-    fScrA = fGSTable->GetScreeningParam(fG1);
-  } else {
-    // use Moliere's screening (with Mott-corretion if it was requested)
-    if  (efEnergy<10.*CLHEP::eV) efEnergy = 10.*CLHEP::eV;
-    // total mometum square in Geant4 internal energy2 units which is MeV2
-    G4double pt2     = efEnergy*(efEnergy+2.0*electron_mass_c2);
-    G4double beta2   = pt2/(pt2+electron_mass_c2*electron_mass_c2);
-    G4int    matindx = mat->GetIndex();
-    G4double bc      = fGSTable->GetMoliereBc(matindx);
-    // get the Mott-correcton factors if Mott-correcton was requested by the user
-    fMCtoScrA       = 1.0;
-    fMCtoQ1         = 1.0;
-    fMCtoG2PerG1    = 1.0;
-    G4double scpCor = 1.0;
-    if (fIsUseMottCorrection) {
-      fGSTable->GetMottCorrectionFactors(G4Log(efEnergy), beta2, matindx, fMCtoScrA, fMCtoQ1, fMCtoG2PerG1);
-      scpCor = fGSTable->ComputeScatteringPowerCorrection(currentCouple, efEnergy);
-    }
-    // screening parameter (if Mott-corretioncorrection: the Screened-Rutherford times Mott-corretion DCS with this
-    // screening parameter gives back the (elsepa) PWA first transport cross section)
-    fScrA    = fGSTable->GetMoliereXc2(matindx)/(4.0*pt2*bc)*fMCtoScrA;
-    // elastic mean free path in Geant4 internal lenght units: the neglected (1+screening parameter) term is corrected
-    // (if Mott-corretion: the corrected screening parameter is used for this (1+A) correction + Moliere b_c is also
-    // corrected with the screening parameter correction)
-    fLambda0 = beta2*(1.+fScrA)*fMCtoScrA/bc/scpCor;
-    // first transport coefficient (if Mott-corretion: the corrected screening parameter is used (it will be fully
-    // consistent with the one used during the pre-computation of the Mott-correted GS angular distributions))
-    fG1      = 2.0*fScrA*((1.0+fScrA)*G4Log(1.0/fScrA+1.0)-1.0);
-    // first transport mean free path
-    fLambda1 = fLambda0/fG1;
+  // use Moliere's screening (with Mott-corretion if it was requested)
+  if  (efEnergy<10.*CLHEP::eV) efEnergy = 10.*CLHEP::eV;
+  // total mometum square
+  G4double pt2     = efEnergy*(efEnergy+2.0*electron_mass_c2);
+  // beta square
+  G4double beta2   = pt2/(pt2+electron_mass_c2*electron_mass_c2);
+  // current material index
+  G4int    matindx = mat->GetIndex();
+  // Moliere's b_c
+  G4double bc      = fGSTable->GetMoliereBc(matindx);
+  // get the Mott-correcton factors if Mott-correcton was requested by the user
+  fMCtoScrA       = 1.0;
+  fMCtoQ1         = 1.0;
+  fMCtoG2PerG1    = 1.0;
+  G4double scpCor = 1.0;
+  if (fIsUseMottCorrection) {
+    fGSTable->GetMottCorrectionFactors(G4Log(efEnergy), beta2, matindx, fMCtoScrA, fMCtoQ1, fMCtoG2PerG1);
+    scpCor = fGSTable->ComputeScatteringPowerCorrection(currentCouple, efEnergy);
+  } else if (fIsUsePWACorrection) {
+    fPWACorrection->GetPWACorrectionFactors(G4Log(efEnergy), beta2, matindx, fMCtoScrA, fMCtoQ1, fMCtoG2PerG1);
+    // scpCor = fGSTable->ComputeScatteringPowerCorrection(currentCouple, efEnergy);
   }
+  // screening parameter:
+  // - if Mott-corretioncorrection: the Screened-Rutherford times Mott-corretion DCS with this
+  //   screening parameter gives back the (elsepa) PWA first transport cross section
+  // - if PWA correction: he Screened-Rutherford DCS with this screening parameter
+  //   gives back the (elsepa) PWA first transport cross section
+  fScrA    = fGSTable->GetMoliereXc2(matindx)/(4.0*pt2*bc)*fMCtoScrA;
+  // elastic mean free path in Geant4 internal lenght units: the neglected (1+screening parameter) term is corrected
+  // (if Mott-corretion: the corrected screening parameter is used for this (1+A) correction + Moliere b_c is also
+  // corrected with the screening parameter correction)
+  fLambda0 = beta2*(1.+fScrA)*fMCtoScrA/bc/scpCor;
+  // first transport coefficient (if Mott-corretion: the corrected screening parameter is used (it will be fully
+  // consistent with the one used during the pre-computation of the Mott-correted GS angular distributions))
+  fG1      = 2.0*fScrA*((1.0+fScrA)*G4Log(1.0/fScrA+1.0)-1.0);
+  // first transport mean free path
+  fLambda1 = fLambda0/fG1;
+
   return fLambda1;
 }
 
@@ -373,49 +375,32 @@ G4GoudsmitSaundersonMscModel::GetTransportMeanFreePathOnly(const G4ParticleDefin
   G4double lambda1 = 0.0; // first transport mean free path
   G4double scrA    = 0.0; // screening parametr
   G4double g1      = 0.0; // first transport mean free path
-  //
-  // MISI:: the whole PWA x-sec table will be removed soon
-  if(!fIsUseMottCorrection && fIsUsePWATotalXsecData && efEnergy<1.*CLHEP::GeV) {
-    // use PWA total xsec data to determine screening and lambda0 lambda1
-    const G4ElementVector* theElementVector = mat->GetElementVector();
-    const G4double* theAtomNumDensityVector = mat->GetVecNbOfAtomsPerVolume();
-    G4int nelm = mat->GetNumberOfElements();
 
-    int elowindx = gPWAXsecTable->GetPWATotalXsecForZet( G4lrint((*theElementVector)[0]->GetZ()) )
-                   ->GetPWATotalXsecEnergyBinIndex(efEnergy);
-    for (G4int i=0; i<nelm; i++) {
-      int zet    = G4lrint((*theElementVector)[i]->GetZ());
-      // first transport cross section in Geant4 internal length2 units
-      int indx      = (G4int)(2.5 + charge*1.5); // specify that want to get the first tarnsport xsection
-      double t1xsec = (gPWAXsecTable->GetPWATotalXsecForZet(zet))->GetInterpXsec(efEnergy,elowindx,indx);
-      lambda1 += (theAtomNumDensityVector[i]*t1xsec);
-    }
-    if (lambda1>0.0) {
-      lambda1 =1./lambda1;
-    }
-  } else {
-    // use Moliere's screening (with Mott-corretion if it was requested)
-    if  (efEnergy<10.*CLHEP::eV) efEnergy = 10.*CLHEP::eV;
-    // total mometum square in Geant4 internal energy2 units which is MeV2
-    G4double pt2     = efEnergy*(efEnergy+2.0*electron_mass_c2);
-    G4double beta2   = pt2/(pt2+electron_mass_c2*electron_mass_c2);
-    G4int    matindx = mat->GetIndex();
-    G4double bc      = fGSTable->GetMoliereBc(matindx);
-    // get the Mott-correcton factors if Mott-correcton was requested by the user
-    G4double mctoScrA    = 1.0;
-    G4double mctoQ1      = 1.0;
-    G4double mctoG2PerG1 = 1.0;
-    G4double scpCor      = 1.0;
-    if (fIsUseMottCorrection) {
-      fGSTable->GetMottCorrectionFactors(G4Log(efEnergy), beta2, matindx, mctoScrA, mctoQ1, mctoG2PerG1);
-      scpCor = fGSTable->ComputeScatteringPowerCorrection(currentCouple, efEnergy);
-    }
-    scrA    = fGSTable->GetMoliereXc2(matindx)/(4.0*pt2*bc)*mctoScrA;
-    // total elastic mean free path in Geant4 internal lenght units
-    lambda0 = beta2*(1.+scrA)*mctoScrA/bc/scpCor;
-    g1      = 2.0*scrA*((1.0+scrA)*G4Log(1.0/scrA+1.0)-1.0);
-    lambda1 = lambda0/g1;
+  // use Moliere's screening (with Mott-corretion if it was requested)
+  if  (efEnergy<10.*CLHEP::eV) efEnergy = 10.*CLHEP::eV;
+  // total mometum square in Geant4 internal energy2 units which is MeV2
+  G4double pt2     = efEnergy*(efEnergy+2.0*electron_mass_c2);
+  G4double beta2   = pt2/(pt2+electron_mass_c2*electron_mass_c2);
+  G4int    matindx = mat->GetIndex();
+  G4double bc      = fGSTable->GetMoliereBc(matindx);
+  // get the Mott-correcton factors if Mott-correcton was requested by the user
+  G4double mctoScrA    = 1.0;
+  G4double mctoQ1      = 1.0;
+  G4double mctoG2PerG1 = 1.0;
+  G4double scpCor      = 1.0;
+  if (fIsUseMottCorrection) {
+    fGSTable->GetMottCorrectionFactors(G4Log(efEnergy), beta2, matindx, mctoScrA, mctoQ1, mctoG2PerG1);
+    scpCor = fGSTable->ComputeScatteringPowerCorrection(currentCouple, efEnergy);
+  } else if (fIsUsePWACorrection) {
+    fPWACorrection->GetPWACorrectionFactors(G4Log(efEnergy), beta2, matindx, mctoScrA, mctoQ1, mctoG2PerG1);
+    // scpCor = fGSTable->ComputeScatteringPowerCorrection(currentCouple, efEnergy);
   }
+  scrA    = fGSTable->GetMoliereXc2(matindx)/(4.0*pt2*bc)*mctoScrA;
+  // total elastic mean free path in Geant4 internal lenght units
+  lambda0 = beta2*(1.+scrA)*mctoScrA/bc/scpCor;
+  g1      = 2.0*scrA*((1.0+scrA)*G4Log(1.0/scrA+1.0)-1.0);
+  lambda1 = lambda0/g1;
+
   return lambda1;
 }
 
@@ -616,7 +601,7 @@ G4double G4GoudsmitSaundersonMscModel::ComputeTruePathLengthLimit(const G4Track&
         fTheTrueStepLenght = std::min(fTheTrueStepLenght, tlimit);
       }
     }
-  } else if (steppingAlgorithm==fUseSafety) { // THE ERROR_FREE stepping alg.
+  } else if (steppingAlgorithm==fUseSafetyPlus) { // THE ERROR_FREE stepping alg.
     presafety =  ComputeSafety(sp->GetPosition(),fTheTrueStepLenght);
     geomlimit = presafety;
     // Set skin depth = skin x elastic_mean_free_path
@@ -842,7 +827,7 @@ G4GoudsmitSaundersonMscModel::SampleScattering(const G4ThreeVector& oldDirection
     fTheNewDirection.rotateUz(oldDirection);
     fParticleChange->ProposeMomentumDirection(fTheNewDirection);
     return fTheDisplacementVector;
-  } else if (steppingAlgorithm==fUseSafety) {
+  } else if (steppingAlgorithm==fUseSafetyPlus) {  // error-free stepping
     if (fIsEndedUpOnBoundary) { // do nothing on the boundary
       return fTheDisplacementVector;
     } else if (fIsEverythingWasDone) { // evrything is done if not optimizations case !!!
@@ -864,7 +849,7 @@ G4GoudsmitSaundersonMscModel::SampleScattering(const G4ThreeVector& oldDirection
       return fTheDisplacementVector;
     }
     //
-    // The only thing that could still happen with fUseSafety is that we are in the
+    // The only thing that could still happen with fUseSafetyPlus is that we are in the
     // optimization branch: so sample MSC angle here (no displacement)
   }
   //else MSC needs to be done here

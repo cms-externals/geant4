@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmLivermorePhysics.cc 105867 2017-08-24 13:35:44Z gcosmo $
+// $Id: G4EmLivermorePhysics.cc 107168 2017-11-03 12:16:05Z vnivanch $
 
 #include "G4EmLivermorePhysics.hh"
 #include "G4ParticleDefinition.hh"
@@ -141,6 +141,7 @@ G4EmLivermorePhysics::G4EmLivermorePhysics(G4int ver, const G4String&)
   param->SetMscRangeFactor(0.02);
   param->SetMuHadLateralDisplacement(true);
   param->SetMscStepLimitType(fUseDistanceToBoundary);
+  param->SetLateralDisplacementAlg96(false);
   param->SetFluo(true);
   SetPhysicsType(bElectromagnetic);
 }

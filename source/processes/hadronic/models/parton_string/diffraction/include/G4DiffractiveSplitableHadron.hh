@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4DiffractiveSplitableHadron.hh 100828 2016-11-02 15:25:59Z gcosmo $
+// $Id: G4DiffractiveSplitableHadron.hh 101976 2016-12-14 07:16:52Z ribon $
 // GEANT4 tag $Name:  $
 //
 

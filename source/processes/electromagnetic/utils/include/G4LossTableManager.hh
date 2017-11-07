@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4LossTableManager.hh 105801 2017-08-21 07:37:34Z gcosmo $
+// $Id: G4LossTableManager.hh 106699 2017-10-19 20:51:26Z dsawkey $
 //
 //
 // -------------------------------------------------------------------
@@ -135,7 +135,9 @@ public:
 
   void LocalPhysicsTables(const G4ParticleDefinition* aParticle, 
                           G4VEnergyLossProcess* p);
-  
+ 
+  void DumpHtml();
+
   //-------------------------------------------------
   // Run time access to DEDX, range, energy for a given particle, 
   // energy, and G4MaterialCutsCouple

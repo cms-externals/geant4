@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4FTFParameters.hh 105741 2017-08-16 13:09:53Z gcosmo $
+// $Id: G4FTFParameters.hh 107083 2017-11-01 22:35:08Z yarba $
 // GEANT4 tag $Name:  $
 //
 #ifndef G4FTFParameters_h
@@ -243,8 +243,10 @@ class G4FTFParamCollBaryonProj : public G4FTFParamCollection {
 };
 
 
+
 class G4FTFParameters {
   public:
+    // G4FTFParameters( const G4ParticleDefinition* , G4int theA, G4int theZ, G4double s );
     G4FTFParameters();
     ~G4FTFParameters();
 
@@ -357,7 +359,8 @@ class G4FTFParameters {
   // JVY, July 31, 2017: Is there any reason for NOT making 
   //                     all the members data private ???
   //
-  // private: 
+  //private: 
+// --->    G4FTFParameters();
 
     // Initial energy of hN interactions
     G4double FTFhNcmsEnergy;  // Initial hN CMS energy
@@ -414,7 +417,7 @@ class G4FTFParameters {
   
     void Reset(); 
 
-    // JVY, July 31, 2017: encapsulates (current set of) parameters for the baryon projectile
+    // JVY, Oct. 31, 2017: encapsulates (current set of) parameters for the baryon projectile
     //
     G4FTFParamCollBaryonProj fParCollBaryonProj;
 

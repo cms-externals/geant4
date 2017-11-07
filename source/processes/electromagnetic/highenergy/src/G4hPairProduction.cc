@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4hPairProduction.cc 97391 2016-06-02 10:08:45Z gcosmo $
+// $Id: G4hPairProduction.cc 106697 2017-10-19 20:49:01Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -94,6 +94,11 @@ void G4hPairProduction::InitialiseEnergyLossProcess(
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
+void G4hPairProduction::ProcessDescription(std::ostream& out) const
+{
+  out << "No description available.";
+  out << "<br>\n";
+  G4VEnergyLossProcess::ProcessDescription(out);
+}
 
-
-
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

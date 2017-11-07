@@ -88,7 +88,7 @@ class G4Element;
 class G4GSMottCorrection {
 public:
   G4GSMottCorrection(G4bool iselectron=true);
-  
+
  ~G4GSMottCorrection();
 
   void     Initialise();
@@ -122,9 +122,9 @@ private:
   };
 
   struct DataPerEkin {
-    G4double         fMCScreening;    // correction factor for to Moliere screening parameter
-    G4double         fMCFirstMoment;  // correction factor for to screening parameter
-    G4double         fMCSecondMoment; // correction factor for the screening parameter
+    G4double         fMCScreening;    // correction factor to Moliere screening parameter
+    G4double         fMCFirstMoment;  // correction factor to first moment
+    G4double         fMCSecondMoment; // correction factor to second
     DataPerDelta   **fDataPerDelta;   // per delta value data structure for each delta values
   };
 
@@ -176,7 +176,7 @@ private:
   G4double                   fInvDelDelta;    // 1/[0.9/(fNumDelta-1)]
   G4double                   fInvDelAngle;    // 1/[(1-0)/fNumAngle-1]
   //
-  static const std::string   gElemSymbols[]; 
+  static const std::string   gElemSymbols[];
   //
   std::vector<DataPerMaterial*>  fMCDataPerElement;   // size will be gMaxZet+1; won't be null only at used Z indices
   std::vector<DataPerMaterial*>  fMCDataPerMaterial;  // size will #materials; won't be null only at used mat. indices

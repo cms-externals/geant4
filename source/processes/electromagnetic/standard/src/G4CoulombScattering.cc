@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4CoulombScattering.cc 105734 2017-08-16 12:58:28Z gcosmo $
+// $Id: G4CoulombScattering.cc 107139 2017-11-02 18:52:33Z vnivanch $
 //
 // -------------------------------------------------------------------
 //
@@ -160,13 +160,25 @@ G4double G4CoulombScattering::MinPrimaryEnergy(const G4ParticleDefinition* part,
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-void G4CoulombScattering::PrintInfo()
+void G4CoulombScattering::StreamProcessInfo(std::ostream& outFile,
+                                            G4String endOfLine) const
 {
-  G4cout << "      " << G4EmParameters::Instance()->MscThetaLimit()/degree
-	 << " < Theta(degree) < 180";
+  G4double tetmin = G4EmParameters::Instance()->MscThetaLimit()/degree;
+  outFile << "      ";
+  if(tetmin > 179.) { outFile << "ThetaMin(p)"; }
+  else              { outFile << tetmin; }
+  outFile << " < Theta(degree) < 180";
 
-  if(q2Max < DBL_MAX) { G4cout << "; pLimit(GeV^1)= " << sqrt(q2Max)/GeV; }
-  G4cout << G4endl;
+  if(q2Max < DBL_MAX) { outFile << "; pLimit(GeV^1)= " << sqrt(q2Max)/GeV; }
+  outFile << endOfLine;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+void G4CoulombScattering::ProcessDescription(std::ostream& out) const
+{
+  out << "<strong>Coulomb scattering</strong>";
+  G4VEmProcess::ProcessDescription(out);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.... 

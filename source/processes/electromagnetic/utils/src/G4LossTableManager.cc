@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4LossTableManager.cc 105801 2017-08-21 07:37:34Z gcosmo $
+// $Id: G4LossTableManager.cc 107022 2017-10-31 22:15:12Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -104,6 +104,13 @@
 #include "G4Region.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4Threading.hh"
+
+#include "G4Gamma.hh"
+#include "G4Positron.hh"
+#include "G4OpticalPhoton.hh"
+#include "G4Neutron.hh"
+#include "G4MuonPlus.hh"
+#include "G4MuonMinus.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....
 
@@ -1024,3 +1031,81 @@ void G4LossTableManager::PrintEWarning(G4String tit, G4double /*val*/)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+void G4LossTableManager::DumpHtml()
+{
+  // Automatic generation of html documentation page for physics lists
+  // List processes and models for the most important
+  // particles in descending order of importance
+
+  char* dirName = getenv("G4PhysListDocDir");
+  char* physListName = getenv("G4PhysListName");
+  if (dirName && physListName) {
+    G4String pathName = G4String(dirName) + "/" + G4String(physListName) 
+                                          + ".html";
+
+    std::ofstream outFile;
+    outFile.open(pathName);
+   
+    outFile << "<html>\n";
+    outFile << "<head>\n";
+    outFile << "<title>Physics List Summary</title>\n";
+    outFile << "</head>\n";
+    outFile << "<body>\n";
+    outFile << "<h2> Summary of Electromagnetic Processes, Models and Cross "
+            << "Sections for Physics List "
+            << G4String(physListName) << "</h2>\n";
+    outFile << "<ul>\n";
+
+    std::vector<G4ParticleDefinition*> particles {
+        G4Gamma::Gamma(),
+        G4Electron::Electron(),
+        G4Positron::Positron(),
+        G4Proton::ProtonDefinition(),
+        G4MuonPlus::MuonPlusDefinition(),
+        G4MuonMinus::MuonMinusDefinition(),
+      };
+    
+    for (auto theParticle : particles) {
+      outFile << "<li><h3>" << theParticle->GetParticleName() << "</h3><ul>\n";
+
+      std::vector<G4VEmProcess*> emproc_vector = GetEmProcessVector();
+      for (auto proc : emproc_vector) {
+        if (proc->Particle() == theParticle) {
+          outFile << "<li>\n";
+          proc->ProcessDescription(outFile);
+          outFile << "</li><br>\n";
+        }
+      }
+
+      std::vector<G4VEnergyLossProcess*> enloss_vector = 
+                                                  GetEnergyLossProcessVector();
+      for (auto proc : enloss_vector) {
+        if (proc->Particle() == theParticle) {
+          outFile << "<li>\n";
+          proc->ProcessDescription(outFile);
+          outFile << "</li><br>\n";
+        }
+      }
+
+      std::vector<G4VMultipleScattering*> mscat_vector =
+                                                GetMultipleScatteringVector();
+      for (auto proc : mscat_vector) {
+        if (proc->FirstParticle() == theParticle) {
+          outFile << "<li>\n";
+          proc->ProcessDescription(outFile);
+          outFile << "</li><br>\n";
+        }
+      }
+      outFile << "</ul>\n";
+      outFile << "</li>\n";
+    }
+    outFile << "</ul>\n";
+    outFile << "</body>\n";
+    outFile << "</html>\n";
+    outFile.close();
+  }
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....
+

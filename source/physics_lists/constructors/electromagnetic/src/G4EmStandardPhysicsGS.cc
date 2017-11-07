@@ -33,6 +33,15 @@
 //
 // Modified:
 //
+// Class Description:
+//
+// Standard EM physics constructor for HEP applications with the Goudsmit
+// -Saunderson MSC model for e-/e+ Coulomb scattering below 100 [MeV] (instead
+// of the Urban model). Note, that the Goudsmit-Saunderson MSC model used here
+// with its HEP settings (i.e. less accurate). The Goudsmit-Saunderson MSC
+// model with its most accurate settings is used in the G4EmStandard_opt4
+// physics constructor for e-/e+ Coulomb scattering.
+//
 //----------------------------------------------------------------------------
 //
 
@@ -46,9 +55,8 @@
 #include "G4GammaConversion.hh"
 #include "G4PhotoElectricEffect.hh"
 #include "G4RayleighScattering.hh"
-
-#include "G4KleinNishinaModel.hh"
 #include "G4LivermorePhotoElectricModel.hh"
+
 #include "G4eMultipleScattering.hh"
 #include "G4MuMultipleScattering.hh"
 #include "G4hMultipleScattering.hh"
@@ -113,10 +121,8 @@ G4EmStandardPhysicsGS::G4EmStandardPhysicsGS(G4int ver, const G4String&)
   G4EmParameters* param = G4EmParameters::Instance();
   param->SetDefaults();
   param->SetVerbose(verbose);
-  param->SetLowestElectronEnergy(10*eV);
-  param->SetMscRangeFactor(0.1);
-//  param->SetMscStepLimitType(fUseSafetyPlus);// corresponds to Urban fUseSafety
-  param->SetMscStepLimitType(fUseSafety); // corresponds to the error-free stepping
+  param->SetMscRangeFactor(0.06);
+//  param->SetMscStepLimitType(fUseSafetyPlus); // corresponds to the error-free stepping
 //  param->SetFluo(true);
   SetPhysicsType(bElectromagnetic);
 }
@@ -201,16 +207,18 @@ void G4EmStandardPhysicsGS::ConstructProcess()
     if (!particle) { continue; }
     if (particleName == "gamma") {
 
-      ph->RegisterProcess(new G4PhotoElectricEffect(), particle);
+      G4PhotoElectricEffect* pee = new G4PhotoElectricEffect();
+      pee->SetEmModel(new G4LivermorePhotoElectricModel());
+      ph->RegisterProcess(pee, particle);
+
       ph->RegisterProcess(new G4ComptonScattering(), particle);
       ph->RegisterProcess(new G4GammaConversion(), particle);
+      ph->RegisterProcess(new G4RayleighScattering(), particle);
 
     } else if (particleName == "e-") {
 
       G4eMultipleScattering* msc = new G4eMultipleScattering;
-      // Mott-corresponds is active by default now
       G4GoudsmitSaundersonMscModel* msc1 = new G4GoudsmitSaundersonMscModel();
-
       G4WentzelVIModel* msc2 = new G4WentzelVIModel();
       msc1->SetHighEnergyLimit(highEnergyLimit);
       msc2->SetLowEnergyLimit(highEnergyLimit);
@@ -232,9 +240,7 @@ void G4EmStandardPhysicsGS::ConstructProcess()
     } else if (particleName == "e+") {
 
       G4eMultipleScattering* msc = new G4eMultipleScattering;
-      // Mott-corresponds is active by default now
       G4GoudsmitSaundersonMscModel* msc1 = new G4GoudsmitSaundersonMscModel();
-
       G4WentzelVIModel* msc2 = new G4WentzelVIModel();
       msc1->SetHighEnergyLimit(highEnergyLimit);
       msc2->SetLowEnergyLimit(highEnergyLimit);

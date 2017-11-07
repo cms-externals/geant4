@@ -70,7 +70,8 @@ class G4RootNtupleManager : public G4TNtupleManager<tools::wroot::ntuple>
 
   public:
     explicit G4RootNtupleManager(const G4AnalysisManagerState& state, 
-                                 G4int nofMainManagers = 0);
+                                 G4int nofMainManagers = 0,
+                                 G4bool rowWise = true);
     virtual ~G4RootNtupleManager();
 
    private:

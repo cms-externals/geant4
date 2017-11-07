@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4LivermorePolarizedRayleighModel.hh 93810 2015-11-02 11:27:56Z gcosmo $
+// $Id: G4LivermorePolarizedRayleighModel.hh 93747 2015-10-30 14:10:21Z flongo $
 //
 // Author: Sebastien Incerti
 //         30 October 2008

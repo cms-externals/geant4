@@ -37,7 +37,7 @@ public:
   ,m_out(a_file.out())
   ,m_name("")
   ,m_title("")
-  ,m_branches(a_fac,true)
+  ,m_branches(a_fac,true,true)
   ,m_entries(0)
   {
 #ifdef TOOLS_MEM
@@ -55,7 +55,7 @@ protected:
   ,m_file(a_from.m_file)
   ,m_fac(a_from.m_fac)
   ,m_out(a_from.m_out)
-  ,m_branches(m_fac,false)
+  ,m_branches(m_fac,false,true)
   {}
   tree& operator=(const tree&){return *this;}
 public:
@@ -294,9 +294,9 @@ public:
     // We read leaves in order to keep streaming synchronisation.
     // In fact m_leaves are references to existing leaves read by 
     // the branches in the upper line of code.
-    //::printf("debug : tree : read leaves : begin\n");
-   {ObjArray<base_leaf> m_leaves(m_fac,true);
-    branch b(m_out,m_fac);
+    //::printf("debug : tree : read leaves : begin\n");    
+   {obj_array<base_leaf> m_leaves(m_fac,a_buffer.map_objs()?false:true,true);
+    //branch b(m_out,m_fac);
     ifac::args args;
     //args[ifac::arg_branch()] = &b;
     if(!m_leaves.stream(a_buffer,args)) {
@@ -461,7 +461,7 @@ protected:
   std::string m_name;
   std::string m_title;
 
-  ObjArray<branch> m_branches;
+  obj_array<branch> m_branches;
   uint64 m_entries;   // Number of entries
 };
 

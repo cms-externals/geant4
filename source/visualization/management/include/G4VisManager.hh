@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4VisManager.hh 105349 2017-07-21 12:23:24Z gcosmo $
+// $Id: G4VisManager.hh 106384 2017-10-09 09:34:51Z gcosmo $
 //
 // 
 
@@ -174,7 +174,7 @@ public:
 public: // With description
 
   void Initialise ();
-  void Initialize ();  // Alias Initialise ().
+  void Initialize ();  // Alias Initialise ()
 
   // Optional registration of user vis actions.  Added to scene with
   // /vis/scene/add/userAction.
@@ -193,7 +193,6 @@ public: // With description
   // SetUserAction is deprecated.  Use RegisterRunDurationUserVisAction
   // or other of the above.
   void SetUserActionExtent (const G4VisExtent&);  //Legacy: deprecated.
-
 
   G4bool RegisterGraphicsSystem (G4VGraphicsSystem*);
   // Register an individual graphics system.  Normally this is done in
@@ -491,8 +490,9 @@ private:
   (const T& graphics_primitive, const G4Transform3D& objectTransform);
 
   void PrintAvailableModels            (Verbosity) const;
+  void InitialiseG4ColourMap           () const;
   void PrintAvailableColours           (Verbosity) const;
-  void PrintAvailableUserVisActions   (Verbosity) const;
+  void PrintAvailableUserVisActions    (Verbosity) const;
   void PrintInvalidPointers            () const;
   G4bool IsValidView ();
   // True if view is valid.  Prints messages and sanitises various data.

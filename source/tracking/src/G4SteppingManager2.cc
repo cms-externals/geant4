@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4SteppingManager2.cc 106146 2017-09-14 06:37:20Z gcosmo $
+// $Id: G4SteppingManager2.cc 106991 2017-10-31 10:13:42Z gcosmo $
 //
 //---------------------------------------------------------------
 //
@@ -371,8 +371,10 @@ void G4SteppingManager::InvokeAtRestDoItProcs()
 	   G4ProcessManager* pm = tempSecondaryTrack->GetDefinition()->GetProcessManager();
            if(!pm && tempSecondaryTrack->GetDefinition()->IsGeneralIon())
              { pm = G4ParticleTable::GetParticleTable()->GetGenericIon()->GetProcessManager(); }
+#ifdef G4MUATOMS_INUSE
            if(!pm && tempSecondaryTrack->GetDefinition()->IsMuonicAtom())
              { pm = G4ParticleTable::GetParticleTable()->GetGenericMuonicAtom()->GetProcessManager(); }
+#endif
 	   if (pm->GetAtRestProcessVector()->entries()>0){
 	     tempSecondaryTrack->SetTrackStatus( fStopButAlive );
 	     fSecondary->push_back( tempSecondaryTrack );
@@ -449,8 +451,10 @@ void G4SteppingManager::InvokeAlongStepDoItProcs()
 	   G4ProcessManager* pm = tempSecondaryTrack->GetDefinition()->GetProcessManager();
            if(!pm && tempSecondaryTrack->GetDefinition()->IsGeneralIon())
              { pm = G4ParticleTable::GetParticleTable()->GetGenericIon()->GetProcessManager(); }
+#ifdef G4MUATOMS_INUSE
            if(!pm && tempSecondaryTrack->GetDefinition()->IsMuonicAtom())
              { pm = G4ParticleTable::GetParticleTable()->GetGenericMuonicAtom()->GetProcessManager(); }
+#endif
 	   if (pm->GetAtRestProcessVector()->entries()>0){
 	     tempSecondaryTrack->SetTrackStatus( fStopButAlive );
 	     fSecondary->push_back( tempSecondaryTrack );
@@ -569,8 +573,10 @@ void G4SteppingManager::InvokePSDIP(size_t np)
 	      G4ProcessManager* pm = tempSecondaryTrack->GetDefinition()->GetProcessManager();
               if(!pm && tempSecondaryTrack->GetDefinition()->IsGeneralIon())
                 { pm = G4ParticleTable::GetParticleTable()->GetGenericIon()->GetProcessManager(); }
+#ifdef G4MUATOMS_INUSE
               if(!pm && tempSecondaryTrack->GetDefinition()->IsMuonicAtom())
                 { pm = G4ParticleTable::GetParticleTable()->GetGenericMuonicAtom()->GetProcessManager(); }
+#endif
 	      if (pm->GetAtRestProcessVector()->entries()>0){
 		tempSecondaryTrack->SetTrackStatus( fStopButAlive );
 		fSecondary->push_back( tempSecondaryTrack );

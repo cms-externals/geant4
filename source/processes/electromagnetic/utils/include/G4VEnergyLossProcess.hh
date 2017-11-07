@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEnergyLossProcess.hh 105778 2017-08-17 08:10:46Z gcosmo $
+// $Id: G4VEnergyLossProcess.hh 106649 2017-10-18 17:05:12Z dsawkey $
 // GEANT4 tag $Name:
 //
 // -------------------------------------------------------------------
@@ -141,11 +141,14 @@ private:
 public:
   virtual G4bool IsApplicable(const G4ParticleDefinition& p) override = 0;
   
-  virtual void PrintInfo() = 0;
+  // obsolete to be removed
+  virtual void PrintInfo() {};
 
   virtual void ProcessDescription(std::ostream& outFile) const override;
 
 protected:
+
+  virtual void StreamProcessInfo(std::ostream&, G4String) const {};
 
   virtual void InitialiseEnergyLossProcess(const G4ParticleDefinition*,
                                            const G4ParticleDefinition*) = 0;
@@ -175,9 +178,6 @@ public:
 
   // build a table
   G4PhysicsTable* BuildLambdaTable(G4EmTableType tType = fRestricted);
-
-  // summary printout after initialisation
-  void PrintInfoDefinition(const G4ParticleDefinition& part);
 
   // Called before tracking of each new G4Track
   virtual void StartTracking(G4Track*) override;
@@ -223,6 +223,11 @@ public:
                                       G4bool ascii) override;
 
 private:
+
+  // summary printout after initialisation
+  void StreamInfo(std::ostream& out, const G4ParticleDefinition& part,
+                  G4String endOfLine=G4String("\n")) const;
+
   // store a table
   G4bool StoreTable(const G4ParticleDefinition* p, 
                     G4PhysicsTable*, G4bool ascii,

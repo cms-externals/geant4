@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PhotonEvaporation.hh 104984 2017-07-03 15:13:37Z gcosmo $
+// $Id: G4PhotonEvaporation.hh 106662 2017-10-19 10:14:44Z vnivanch $
 //
 // -------------------------------------------------------------------
 //
@@ -91,8 +91,6 @@ public:
   virtual G4double GetUpperLevelEnergy(G4int Z, G4int A) final;
 
   void SetGammaTransition(G4GammaTransition*);
-
-  void SetMaxHalfLife(G4double);
 
   virtual void SetICM(G4bool);
 

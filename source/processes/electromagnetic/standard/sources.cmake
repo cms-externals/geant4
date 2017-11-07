@@ -11,7 +11,7 @@
 #
 # Generated on : 24/9/2010
 #
-# $Id: sources.cmake 106217 2017-09-21 00:03:23Z gcosmo $
+# $Id: sources.cmake 106939 2017-10-30 13:06:39Z mnovak $
 #
 #------------------------------------------------------------------------------
 
@@ -60,6 +60,7 @@ GEANT4_DEFINE_MODULE(NAME G4emstandard
         G4DipBustGenerator.hh
         G4ESTARStopping.hh
         G4GSMottCorrection.hh
+        G4GSPWACorrections.hh
         G4GammaConversion.hh
         G4GoudsmitSaundersonMscModel.hh
         G4GoudsmitSaundersonTable.hh
@@ -85,7 +86,6 @@ GEANT4_DEFINE_MODULE(NAME G4emstandard
         G4PAIySection.hh
         G4PEEffectFluoModel.hh
         G4PSTARStopping.hh
-        G4PWATotalXsecTable.hh
         G4PairProductionRelModel.hh
         G4PhotoElectricEffect.hh
         G4SauterGavrilaAngularDistribution.hh
@@ -125,6 +125,7 @@ GEANT4_DEFINE_MODULE(NAME G4emstandard
         G4ComptonScattering.cc
         G4CoulombScattering.cc
         G4GSMottCorrection.cc
+        G4GSPWACorrections.cc
         G4GammaConversion.cc
         G4DeltaAngle.cc
         G4DeltaAngleFreeScat.cc
@@ -153,7 +154,6 @@ GEANT4_DEFINE_MODULE(NAME G4emstandard
         G4PAIySection.cc
         G4PEEffectFluoModel.cc
         G4PSTARStopping.cc
-        G4PWATotalXsecTable.cc
         G4PairProductionRelModel.cc
         G4PhotoElectricEffect.cc
         G4SauterGavrilaAngularDistribution.cc

@@ -47,6 +47,7 @@
 #include "G4DeexPrecoParameters.hh"
 #include "G4PairingCorrection.hh"
 #include "G4ShellCorrection.hh"
+#include <iomanip>
 
 G4NuclearLevelData* G4NuclearLevelData::theInstance = nullptr;
 
@@ -483,7 +484,7 @@ G4NuclearLevelData::AddPrivateData(G4int Z, G4int A, const G4String& filename)
 #ifdef G4MULTITHREADED
   G4MUTEXLOCK(&nuclearLevelDataMutex);
 #endif
-  if(A >= AMIN[Z] && A <= AMAX[Z]) { 
+  if(Z > 0 && Z < ZMAX && A >= AMIN[Z] && A <= AMAX[Z]) { 
     const G4LevelManager* newman = 
       fLevelReader->MakeLevelManager(Z, A, filename);
     if(newman) { 
@@ -492,7 +493,14 @@ G4NuclearLevelData::AddPrivateData(G4int Z, G4int A, const G4String& filename)
       (fLevelManagerFlags[Z])[A - AMIN[Z]] = true;
       res = true;
     }
+  } else {
+    G4ExceptionDescription ed;
+    ed << "private nuclear level data for Z= " << Z << " A= " << A
+       << " outside allowed limits ";
+    G4Exception("G4NuclearLevelData::AddPrivateData","had0433",FatalException,
+		ed,"Stop execution");
   }
+  G4cout << "AddPrivateData done" << G4endl;
 #ifdef G4MULTITHREADED
   G4MUTEXUNLOCK(&nuclearLevelDataMutex);
 #endif
@@ -602,4 +610,17 @@ G4PairingCorrection* G4NuclearLevelData::GetPairingCorrection()
 G4ShellCorrection* G4NuclearLevelData::GetShellCorrection()
 {
   return fShellCorrection;
+}
+
+void G4NuclearLevelData::StreamLevels(std::ostream& os, 
+                                      G4int Z, G4int A) const
+{
+  if(0 < Z && Z < ZMAX && A >= AMIN[Z] && A <= AMAX[Z]) {
+    const G4LevelManager* man = (fLevelManagers[Z])[A - AMIN[Z]];
+    if(man) { 
+      os << "Level data for Z= " << Z << " A= " << A << "  " 
+	 << man->NumberOfTransitions() + 1 << " levels \n";
+      man->StreamInfo(os);
+    }
+  }
 }

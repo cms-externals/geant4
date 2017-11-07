@@ -123,6 +123,13 @@ if(NOT GEANT4_BUILD_GRANULAR_LIBS AND UNIX)
     set(G4_BUILTWITH_MULTITHREADING "no")
   endif()
 
+  # - Muonic Atom support
+  if(GEANT4_BUILD_MUONIC_ATOMS_IN_USE)
+    set(G4_BUILTWITH_MUONIC_ATOMS "yes")
+  else()
+    set(G4_BUILTWITH_MUONIC_ATOMS "no")
+  endif()
+
   # - CLHEP
   if(GEANT4_USE_SYSTEM_CLHEP)
     set(G4_BUILTWITH_CLHEP "no")

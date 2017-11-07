@@ -47,7 +47,7 @@
 #include "G4PhysicalConstants.hh"
 
 G4GammaTransition::G4GammaTransition() 
-  : polarFlag(false), fDirection(0.,0.,0.), fVerbose(0)
+  : polarFlag(false), fDirection(0.,0.,0.), fTwoJMAX(10), fVerbose(0)
 {}
 
 G4GammaTransition::~G4GammaTransition() 
@@ -92,7 +92,6 @@ G4GammaTransition::SampleTransition(G4Fragment* nucleus,
   // Do complete Lorentz computation 
   G4LorentzVector lv = nucleus->GetMomentum();
   G4double mass = nucleus->GetGroundStateMass() + newExcEnergy;
-  //G4double e0 = lv.e();
 
   // select secondary
   G4ParticleDefinition* part;
@@ -104,7 +103,7 @@ G4GammaTransition::SampleTransition(G4Fragment* nucleus,
     nucleus->SetNumberOfElectrons(ne);
   }
 
-  if(polarFlag && isDiscrete) {
+  if(polarFlag && isDiscrete && JP1 <= fTwoJMAX) {
     SampleDirection(nucleus, mpRatio, JP1, JP2, MP);
   } else {
     fDirection = G4RandomDirection();
@@ -145,8 +144,8 @@ G4GammaTransition::SampleTransition(G4Fragment* nucleus,
   //G4cout << " DeltaE= " << e0 - lv.e() - res4mom.e() + emass
   //	 << "   Emass= " << emass << G4endl;
   if(fVerbose > 1) {
-    G4cout << "G4GammaTransition::SampleTransition : " << result << G4endl;
-    G4cout << "       Left nucleus: " << nucleus << G4endl;
+    G4cout << "G4GammaTransition::SampleTransition : " << *result << G4endl;
+    G4cout << "       Left nucleus: " << *nucleus << G4endl;
   }
   return result;
 }
@@ -156,6 +155,12 @@ void G4GammaTransition::SampleDirection(G4Fragment* nuc, G4double ratio,
 {
   G4double cosTheta, phi;
   G4NuclearPolarization* np = nuc->GetNuclearPolarization(); 
+  if(fVerbose > 1) {
+    G4cout << "G4GammaTransition::SampleDirection : 2J1= " << twoJ1 
+	   << " 2J2= " << twoJ2 << " ratio= " << ratio 
+	   << " mp= " << mp << G4endl;
+    G4cout << "  Nucleus: " << *nuc << G4endl;
+  }
   if(nullptr == np) {
     cosTheta = 2*G4UniformRand() - 1.0;
     phi = CLHEP::twopi*G4UniformRand();

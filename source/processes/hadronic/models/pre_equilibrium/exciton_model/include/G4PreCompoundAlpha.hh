@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PreCompoundAlpha.hh 90337 2015-05-26 08:34:27Z gcosmo $
+// $Id: G4PreCompoundAlpha.hh 90209 2015-05-20 15:31:15Z vnivanch $
 //
 // by V. Lara
 //

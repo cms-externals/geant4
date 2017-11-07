@@ -125,6 +125,9 @@ public:
   void SetLateralDisplacement(G4bool val);
   G4bool LateralDisplacement() const;
 
+  void SetLateralDisplacementAlg96(G4bool val);
+  G4bool LateralDisplacementAlg96() const;
+
   void SetMuHadLateralDisplacement(G4bool val);
   G4bool MuHadLateralDisplacement() const;
 
@@ -176,6 +179,9 @@ public:
 
   void SetLowestMuHadEnergy(G4double val);
   G4double LowestMuHadEnergy() const;
+
+  void SetLowestTripletEnergy(G4double val);
+  G4double LowestTripletEnergy() const;
 
   void SetLinearLossLimit(G4double val);
   G4double LinearLossLimit() const;
@@ -323,6 +329,7 @@ private:
   G4bool pixe;
   G4bool deexIgnoreCut;
   G4bool lateralDisplacement;
+  G4bool lateralDisplacementAlg96;
   G4bool muhadLateralDisplacement;
   G4bool latDisplacementBeyondSafety;
   G4bool useAngGeneratorForIonisation;
@@ -340,6 +347,7 @@ private:
   G4double maxKinEnergyCSDA;
   G4double lowestElectronEnergy;
   G4double lowestMuHadEnergy;
+  G4double lowestTripletEnergy;
   G4double linLossLimit;
   G4double bremsTh;
   G4double lambdaFactor;

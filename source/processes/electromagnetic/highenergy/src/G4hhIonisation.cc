@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4hhIonisation.cc 105752 2017-08-16 13:45:11Z gcosmo $
+// $Id: G4hhIonisation.cc 106697 2017-10-19 20:49:01Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -155,6 +155,15 @@ void G4hhIonisation::PrintInfo()
 {
   G4cout << "      Delta-ray will not be produced; "
 	 << G4endl;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+void G4hhIonisation::ProcessDescription(std::ostream& out) const
+{
+  out << "No description available.";
+  out << "<br>\n";
+  G4VEnergyLossProcess::ProcessDescription(out);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

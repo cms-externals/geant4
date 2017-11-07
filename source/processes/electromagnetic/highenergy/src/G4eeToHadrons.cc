@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4eeToHadrons.cc 105752 2017-08-16 13:45:11Z gcosmo $
+// $Id: G4eeToHadrons.cc 106697 2017-10-19 20:49:01Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -100,9 +100,10 @@ void G4eeToHadrons::InitialiseProcess(const G4ParticleDefinition*)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-void G4eeToHadrons::PrintInfo()
+void G4eeToHadrons::StreamProcessInfo(std::ostream& outFile,
+                                      G4String endOfLine) const
 {
-  multimodel->PrintInfo();
+  multimodel->ModelDescription(outFile, endOfLine);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -111,6 +112,15 @@ void G4eeToHadrons::SetCrossSecFactor(G4double fac)
 {
   if(multimodel) multimodel->SetCrossSecFactor(fac);
   csFactor = fac;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+void G4eeToHadrons::ProcessDescription(std::ostream& out) const
+{
+  out << "No description available.";
+  out << "<br>\n";
+  G4VEmProcess::ProcessDescription(out);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

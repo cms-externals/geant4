@@ -37,10 +37,11 @@
 #ifndef G4NuclearPolarizationStore_h
 #define G4NuclearPolarizationStore_h 1
 
-#include <vector>
 #include "globals.hh"
 #include "G4NuclearPolarization.hh"
 #include "G4ThreadLocalSingleton.hh"
+
+const G4int maxNumStates = 10;
 
 class G4NuclearPolarizationStore
 {
@@ -68,7 +69,8 @@ private:
 
   static G4ThreadLocal G4NuclearPolarizationStore* instance;
 
-  std::vector<G4NuclearPolarization*> nuclist;
+  G4NuclearPolarization* nuclist[maxNumStates];
+  G4int oldIdx;
 };
 
 #endif

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GoudsmitSaundersonTable.hh 106235 2017-09-22 21:39:16Z gcosmo $
+// $Id: G4GoudsmitSaundersonTable.hh 106939 2017-10-30 13:06:39Z mnovak $
 //
 // -----------------------------------------------------------------------------
 //
@@ -87,7 +87,7 @@ public:
   G4GoudsmitSaundersonTable(G4bool iselectron);
  ~G4GoudsmitSaundersonTable();
 
-  void Initialise();
+  void Initialise(G4double lownergylimit, G4double highenergylimit);
 
   // structure to store one GS transformed angular distribution (for a given s/lambda_el,s/lambda_elG1)
   struct GSMSCAngularDtr {
@@ -118,8 +118,6 @@ public:
   GSMSCAngularDtr* GetGSAngularDtr(G4double scra, G4double &lambdaval,
                                    G4double &qval, G4double &transfpar);
 
-  G4double GetScreeningParam(G4double G1);
-
   // material dependent MSC parameters (computed at initialisation) regarding
   // Moliere's screening parameter
   G4double GetMoliereBc(G4int matindx)  { return gMoliereBc[matindx];  }
@@ -132,9 +130,14 @@ public:
 
   // set option to activate/inactivate Mott-correction
   void     SetOptionMottCorrection(G4bool val) { fIsMottCorrection = val; }
-  // this method computes the scattering power correction: will be removed/replaced with a more effictien solution after 10.3.ref09
+  // set option to activate/inactivate PWA-correction
+  void     SetOptionPWACorrection(G4bool val) { fIsPWACorrection = val; }
+
+  // this method returns with the scattering power correction (to avoid double counting of sub-threshold deflections)
+  // interpolated from tables prepared at initialisation
   G4double ComputeScatteringPowerCorrection(const G4MaterialCutsCouple *matcut, G4double ekin);
 
+  void     InitSCPCorrection();
 
 private:
   // initialisation of material dependent Moliere's MSC parameters
@@ -154,31 +157,31 @@ private:
    static constexpr G4double gQMAX1   = 0.99;      // maximum s/lambda_el G1 in the 1-st Q grid
    static constexpr G4double gQMIN2   = 0.99;      // minimum s/lambda_el G1 in the 2-nd Q grid
    static constexpr G4double gQMAX2   = 7.99;      // maximum s/lambda_el G1 in the 2-nd Q grid
-   // precomputed A(G1) function with its interpolation parameters
-   static constexpr G4double gSCRMIN1  = 1.93214991408357e-12;
-   static constexpr G4double gSCRMAX1  = 2.42974344203683e-01;
-   static constexpr G4double gSCRMAX2  = 5.50564555556202e+01;
    //
-   static const G4double gG1Values1[];
-   static const G4double gScrAValues1[];
-   static const G4double gScrBValues1[];
-   static const G4double gG1Values2[];
-   static const G4double gScrAValues2[];
-   static const G4double gScrBValues2[];
-
    G4bool   fIsElectron;          // GS-table for e- (for e+ otherwise)
    G4bool   fIsMottCorrection;    // flag to indicate if Mott-correction was requested to be used
+   G4bool   fIsPWACorrection;     // flag to indicate is PWA corrections were requested to be used
    G4double fLogLambda0;          // ln(gLAMBMIN)
    G4double fLogDeltaLambda;      // ln(gLAMBMAX/gLAMBMIN)/(gLAMBNUM-1)
    G4double fInvLogDeltaLambda;   // 1/[ln(gLAMBMAX/gLAMBMIN)/(gLAMBNUM-1)]
    G4double fInvDeltaQ1;          // 1/[(gQMAX1-gQMIN1)/(gQNUM1-1)]
    G4double fDeltaQ2;             // [(gQMAX2-gQMIN2)/(gQNUM2-1)]
    G4double fInvDeltaQ2;          // 1/[(gQMAX2-gQMIN2)/(gQNUM2-1)]
-   // for the precumputed A(G1) function
-   G4double fLogG1FuncMin1;
-   G4double fInvLogDeltaG1Func1;
-   G4double fLogG1FuncMin2;
-   G4double fInvLogDeltaG1Func2;
+   //
+   G4double fLowEnergyLimit;
+   G4double fHighEnergyLimit;
+   //
+   int      fNumSPCEbinPerDec;    // scattering power correction energy grid bins per decade
+   struct SCPCorrection {
+     bool   fIsUse;               //
+     double fPrCut;               // sec. e- production cut energy
+     double fLEmin;               // log min energy
+     double fILDel;               // inverse log delta kinetic energy
+     //std::vector<double> fVEkin;  // scattering power correction energies
+     std::vector<double> fVSCPC;  // scattering power correction vector
+   };
+   std::vector<SCPCorrection*>  fSCPCPerMatCuts;
+
 
    // vector to store all GS transformed angular distributions (cumputed based on the Screened-Rutherford DCS)
    static std::vector<GSMSCAngularDtr*> gGSMSCAngularDistributions1;

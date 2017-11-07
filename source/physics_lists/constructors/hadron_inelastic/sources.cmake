@@ -11,7 +11,7 @@
 #
 # Generated on : 10/01/2013
 #
-# $Id: sources.cmake 96328 2016-04-06 15:52:31Z gcosmo $
+# $Id: sources.cmake 106629 2017-10-17 06:26:39Z gcosmo $
 #
 #------------------------------------------------------------------------------
 
@@ -93,6 +93,7 @@ GEANT4_DEFINE_MODULE(NAME G4phys_ctor_hinelastic
         G4HadronPhysicsFTFP_BERT_HP.hh
         G4HadronPhysicsFTFP_BERT_TRV.hh
         G4HadronPhysicsFTFP_BERT_ATL.hh
+        G4HadronPhysicsFTFQGSP_BERT.hh
 	G4HadronPhysicsNuBeam.hh
         G4HadronPhysicsQGS_BIC.hh
         G4HadronPhysicsQGSP_BERT.hh
@@ -111,6 +112,7 @@ GEANT4_DEFINE_MODULE(NAME G4phys_ctor_hinelastic
         G4HadronPhysicsFTFP_BERT_HP.cc
         G4HadronPhysicsFTFP_BERT_TRV.cc
         G4HadronPhysicsFTFP_BERT_ATL.cc
+        G4HadronPhysicsFTFQGSP_BERT.cc
 	G4HadronPhysicsNuBeam.cc
         G4HadronPhysicsQGS_BIC.cc
         G4HadronPhysicsQGSP_BERT.cc

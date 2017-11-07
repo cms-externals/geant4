@@ -26,7 +26,7 @@
 /// \file PhysicsList.cc
 /// \brief Implementation of the PhysicsList class
 //
-// $Id: PhysicsList.cc 105733 2017-08-16 12:56:18Z gcosmo $
+// $Id: PhysicsList.cc 106988 2017-10-31 10:10:31Z gcosmo $
 // 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -70,10 +70,10 @@ PhysicsList::PhysicsList()
   //
   G4DeexPrecoParameters* deex = 
     G4NuclearLevelData::GetInstance()->GetParameters();
-  deex->SetCorrelatedGamma(true);
+  deex->SetCorrelatedGamma(false);
   deex->SetStoreAllLevels(true);
   deex->SetMaxLifeTime(G4NuclideTable::GetInstance()->GetThresholdOfHalfLife()
-                  /std::log(2.));
+                /std::log(2.));
   
   //in case of SetARM true
   //

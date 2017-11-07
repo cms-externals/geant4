@@ -64,8 +64,8 @@
 #include "G4ParticleChangeForRadDecay.hh"
 
 #include "G4NucleusLimits.hh"
-#include "G4RadioactiveDecayRate.hh"
-#include "G4RadioactiveDecayRateVector.hh"
+#include "G4RadioactiveDecayRatesToDaughter.hh"
+#include "G4RadioactiveDecayChainsFromParent.hh"
 #include "G4RadioactivityTable.hh"
 #include "G4ThreeVector.hh"
 #include "G4Threading.hh"
@@ -74,8 +74,8 @@ class G4Fragment;
 class G4RadioactiveDecaymessenger;
 class G4PhotonEvaporation;
 
-typedef std::vector<G4RadioactiveDecayRateVector> G4RadioactiveDecayRateTable;
-typedef std::vector<G4RadioactiveDecayRate> G4RadioactiveDecayRates;
+typedef std::vector<G4RadioactiveDecayChainsFromParent> G4RadioactiveDecayParentChainTable;
+typedef std::vector<G4RadioactiveDecayRatesToDaughter> G4RadioactiveDecayRates;
 typedef std::map<G4String, G4DecayTable*> DecayTableMap;
 
 
@@ -95,6 +95,8 @@ class G4RadioactiveDecay : public G4VRestDiscreteProcess
 
     G4RadioactiveDecay(const G4String& processName="RadioactiveDecay");
     ~G4RadioactiveDecay();
+
+    virtual void ProcessDescription(std::ostream& outFile) const;
 
     // Return true if the specified isotope is
     //  1) defined as "nucleus" and
@@ -136,16 +138,16 @@ class G4RadioactiveDecay : public G4VRestDiscreteProcess
     // descendants of the specified isotope are ready.
     // used in VR decay mode only
 
-    void AddDecayRateTable(const G4ParticleDefinition&);
+    void CalculateChainsFromParent(const G4ParticleDefinition&);
     // Calculates the coefficient and decay time table for all the descendents
     // of the specified isotope.  Adds the calculated table to the private data
-    // member "theDecayRateTableVector".
+    // member "theParentChainTable".
     // used in VR decay mode only 
 
-    void GetDecayRateTable(const G4ParticleDefinition&);
+    void GetChainsFromParent(const G4ParticleDefinition&);
     // Used to retrieve the coefficient and decay time table for all the
-    // descendants of the specified isotope from "theDecayRateTableVector"
-    // and place it in "theDecayRateTable".
+    // descendants of the specified isotope from "theParentChainTable"
+    // and place it in "chainsFromParent".
     // used in VR decay mode only 
 
     void SetDecayRate(G4int,G4int,G4double, G4int, std::vector<G4double>,
@@ -269,6 +271,8 @@ class G4RadioactiveDecay : public G4VRestDiscreteProcess
 
   private:
 
+    void StreamInfo(std::ostream& os, const G4String& endline);
+
     G4RadioactiveDecay(const G4RadioactiveDecay &right);
     G4RadioactiveDecay & operator=(const G4RadioactiveDecay &right);
 
@@ -302,10 +306,10 @@ class G4RadioactiveDecay : public G4VRestDiscreteProcess
     std::vector<G4String> ValidVolumes;
     bool isAllVolumesMode;
 
-    G4RadioactiveDecayRate theDecayRate;
+    G4RadioactiveDecayRatesToDaughter ratesToDaughter;
     G4RadioactiveDecayRates theDecayRateVector;
-    G4RadioactiveDecayRateVector theDecayRateTable;
-    G4RadioactiveDecayRateTable theDecayRateTableVector;
+    G4RadioactiveDecayChainsFromParent chainsFromParent;
+    G4RadioactiveDecayParentChainTable theParentChainTable;
 
     // for the radioactivity tables
     std::vector<G4RadioactivityTable*> theRadioactivityTables;

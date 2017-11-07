@@ -11,6 +11,8 @@
 #include "clss"
 #include "info"
 #include "dummy"
+#include "list"
+#include "iros"
 
 #include "../sout"
 #include "../vmanip"
@@ -81,7 +83,7 @@ public: //ifac
       std::string* sc = ifac::arg_class(a_args);
       if(sc) {
         if((*sc)==streamer_element::s_class()){
-          return new ObjArray<streamer_element>(*this,true);
+          return new obj_array<streamer_element>(*this,true,true);
         } else {
           m_out << "tools::rroot::dummy_fac::create :"
                 << " Can't create TObjArray of " << *sc << "."
@@ -89,7 +91,7 @@ public: //ifac
           return 0;
         }
       } else {
-        return new iros(*this,true);
+        return new iros(*this,true,true);
       }
 
     } else if(rcmp(a_class,"TStreamerBase")
@@ -286,10 +288,10 @@ inline bool TH_read_1D(buffer& a_buffer,hd_data& a_data,
     }
 
    {dummy_fac fac(a_buffer.out());
-    List dummy(fac,true);
+    obj_list dummy(fac,true,true);
     if(!dummy.stream(a_buffer)) {
       a_buffer.out() << "tools::rroot::TH_read_1D :"
-                     << " List stream failed."
+                     << " obj_list stream failed."
                      << std::endl;
       return false;
     }} //Functions
@@ -983,7 +985,7 @@ inline bool read_sinfos(rroot::ifile& a_file){
   }
   rroot::buffer b(out,a_file.byte_swap(),sz,buf,k.key_length(),false);
   dummy_fac fac(out);
-  List infos(fac,true);
+  obj_list infos(fac,true,true);
   if(!infos.stream(b)) return false;
   tools_vforcit(iro*,infos,it) {
     StreamerInfo* info = safe_cast<iro,StreamerInfo>(*(*it));

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PreCompoundEmission.hh 100378 2016-10-19 15:03:27Z gcosmo $
+// $Id: G4PreCompoundEmission.hh 107008 2017-10-31 19:13:44Z vnivanch $
 //
 // Hadronic Process: Nuclear Preequilibrium
 // by V. Lara 
@@ -95,6 +95,7 @@ private:
 
   // Momentum of emitted fragment
   G4ThreeVector theFinalMomentum;
+  G4bool fUseAngularGenerator;
 };
 
 inline G4double 

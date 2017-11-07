@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4ExcitationHandler.cc 104984 2017-07-03 15:13:37Z gcosmo $
+// $Id: G4ExcitationHandler.cc 104972 2017-07-03 10:28:27Z vnivanch $
 //
 // Hadronic Process: Nuclear De-excitations
 // by V. Lara (May 1998)

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4RayleighAngularGenerator.cc 104410 2017-05-30 07:17:09Z gcosmo $
+// $Id: G4RayleighAngularGenerator.cc 104391 2017-05-29 17:43:40Z vnivanch $
 // GEANT4 tag $Name: not supported by svn $
 //
 // -------------------------------------------------------------------

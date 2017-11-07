@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmModelManager.hh 105745 2017-08-16 13:14:37Z gcosmo $
+// $Id: G4EmModelManager.hh 106699 2017-10-19 20:51:26Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -84,8 +84,6 @@ class G4RegionModels
 
 friend class G4EmModelManager;
 
-public:
-
 private:
 
   G4RegionModels(G4int nMod, std::vector<G4int>& indx, 
@@ -132,6 +130,7 @@ private:
 #include "G4VEmModel.hh"
 #include "G4VEmFluctuationModel.hh"
 #include "G4DynamicParticle.hh"
+#include <iostream>
 
 class G4Region;
 class G4ParticleDefinition;
@@ -178,7 +177,8 @@ public:
   G4int NumberOfRegionModels(size_t index_couple) const;
 
   // Automatic documentation
-  void DumpModelList(G4int verb);
+  void DumpModelList(std::ostream& out, G4int verb);
+  void DumpModelList(std::ostream& out, G4int verb, G4String endOfLine);
 
   // Select model for given material cuts couple index
   inline G4VEmModel* SelectModel(G4double& energy, size_t& index);

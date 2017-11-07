@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmStandardPhysics_option1.hh 105735 2017-08-16 12:59:43Z gcosmo $
+// $Id: G4EmStandardPhysics_option1.hh 105562 2017-08-03 11:29:29Z vnivanch $
 //
 //---------------------------------------------------------------------------
 //

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4BetheHeitlerModel.cc 104555 2017-06-06 07:31:32Z gcosmo $
+// $Id: G4BetheHeitlerModel.cc 104545 2017-06-02 18:02:06Z vnivanch $
 //
 // -------------------------------------------------------------------
 //

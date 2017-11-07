@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PreCompoundEmissionFactory.hh 68028 2013-03-13 13:48:15Z gcosmo $
+// $Id: G4PreCompoundEmissionFactory.hh 66241 2012-12-13 18:34:42Z gunter $
 //
 //
 

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmConfigurator.cc 105745 2017-08-16 13:14:37Z gcosmo $
+// $Id: G4EmConfigurator.cc 106493 2017-10-11 18:50:34Z vnivanch $
 //
 // -------------------------------------------------------------------
 //
@@ -139,6 +139,7 @@ void G4EmConfigurator::SetModelForRegion(G4VEmModel* mod,
                                          const G4String& processName,
                                          G4double emin, G4double emax)
 {
+  if(!mod) { return; }
   if(1 < verbose) {
     G4cout << " G4EmConfigurator::SetModelForRegion: " << mod->GetName() 
            << G4endl;
@@ -150,15 +151,12 @@ void G4EmConfigurator::SetModelForRegion(G4VEmModel* mod,
     if(fm) { G4cout << " FLmodel " << fm->GetName(); }
     G4cout << G4endl;
   }
-  G4ParticleTable::G4PTblDicIterator* theParticleIterator = 
-    G4ParticleTable::GetParticleTable()->GetIterator(); 
 
   // Loop checking, 03-Aug-2015, Vladimir Ivanchenko
-  theParticleIterator->reset();
-  while( (*theParticleIterator)() ) {
-    const G4ParticleDefinition* part = theParticleIterator->value();
-
-    //G4cout << particleName << " " << part->GetParticleName() << G4endl;
+  auto myParticleIterator = G4ParticleTable::GetParticleTable()->GetIterator();
+  myParticleIterator->reset();
+  while( (*myParticleIterator)() ) {
+    const G4ParticleDefinition* part = myParticleIterator->value();
 
     if((part->GetParticleName() == particleName) ||
        (particleName == "all") ||
@@ -169,9 +167,12 @@ void G4EmConfigurator::SetModelForRegion(G4VEmModel* mod,
       G4ProcessVector* plist = pmanager->GetProcessList();
       G4int np = pmanager->GetProcessListLength();
   
-      //G4cout << processName << " in list of " << np << G4endl;
-
-      G4VProcess* proc = 0;
+      if(1 < verbose) {
+	G4cout << "Check process <" << processName << "> for " 
+	       << particleName << " in list of " << np << " processes" 
+	       << G4endl;
+      }
+      G4VProcess* proc = nullptr;
       for(G4int i=0; i<np; ++i) {
         if(processName == (*plist)[i]->GetProcessName()) {
           proc = (*plist)[i];
@@ -184,9 +185,7 @@ void G4EmConfigurator::SetModelForRegion(G4VEmModel* mod,
         return;        
       } 
 
-      if(mod) {
-        if(!UpdateModelEnergyRange(mod, emin, emax)) { return; }
-      }
+      if(!UpdateModelEnergyRange(mod, emin, emax)) { return; }
       // classify process
       G4int ii = proc->GetProcessSubType();
       if(10 == ii) {

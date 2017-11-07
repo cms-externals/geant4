@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4MuBremsstrahlung.hh 97392 2016-06-02 10:10:32Z gcosmo $
+// $Id: G4MuBremsstrahlung.hh 106695 2017-10-19 20:47:29Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -93,6 +93,9 @@ public:
   virtual void PrintInfo() override;
 
   inline void SetLowestKineticEnergy(G4double e);
+
+  // print description in html
+  virtual void ProcessDescription(std::ostream&) const override;
 
 protected:
 

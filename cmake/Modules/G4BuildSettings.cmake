@@ -307,6 +307,24 @@ if(GEANT4_BUILD_VERBOSE_CODE)
 endif()
 
 #.rst:
+# - ``GEANT4_BUILD_MUONIC_ATOMS_IN_USE`` (Default: OFF)
+#
+#   - Switched off by default to improve performance when not using
+#     Muonic Atom code. It should be switched on if the project requires
+#     support for Muonic Atoms.
+#     Mark as advanced because most users should not need to worry about it
+#
+option(GEANT4_BUILD_MUONIC_ATOMS_IN_USE
+  "Enable turning on some if statements in track and event code. Switch on if using new Muonic Atom code."
+  OFF)
+mark_as_advanced(GEANT4_BUILD_MUONIC_ATOMS_IN_USE)
+
+# TODO: Migrate this to header
+if(GEANT4_BUILD_MUONIC_ATOMS_IN_USE)
+  add_definitions(-DG4MUATOMS_INUSE)
+endif()
+
+#.rst:
 # - ``GEANT4_BUILD_MSVC_MP`` (Windows only, Default: OFF)
 #
 #    - Provide optional file level parallelization with MSVC compiler.
@@ -322,7 +340,6 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "/MP ${CMAKE_CXX_FLAGS}")
   endif()
 endif()
-
 
 
 #-----------------------------------------------------------------------

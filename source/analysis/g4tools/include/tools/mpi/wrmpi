@@ -48,6 +48,36 @@ protected:
     return s_v;
   }
 public: //inlib::mpi::impi
+  virtual bool pack(char a_val) {
+    tools::uint32 sz = tools::uint32(sizeof(char));
+    if(m_pos+sz>m_max) {if(!expand2(m_size+sz)) return false;}
+    if(::MPI_Pack(&a_val,1,MPI_CHAR,m_buffer,m_size,&m_ipos,m_comm)!=MPI_SUCCESS) {
+      m_out << "tools::mpi::wrmpi : MPI_Pack(char) failed." << std::endl;
+      return false;
+    }
+    m_pos += sz;
+    return true;
+  }
+  virtual bool pack(short a_val) {
+    tools::uint32 sz = tools::uint32(sizeof(short));
+    if(m_pos+sz>m_max) {if(!expand2(m_size+sz)) return false;}
+    if(::MPI_Pack(&a_val,1,MPI_SHORT,m_buffer,m_size,&m_ipos,m_comm)!=MPI_SUCCESS) {
+      m_out << "tools::mpi::wrmpi : MPI_Pack(short) failed." << std::endl;
+      return false;
+    }
+    m_pos += sz;
+    return true;
+  }
+  virtual bool pack(int a_val) {
+    tools::uint32 sz = tools::uint32(sizeof(int));
+    if(m_pos+sz>m_max) {if(!expand2(m_size+sz)) return false;}
+    if(::MPI_Pack(&a_val,1,MPI_INT,m_buffer,m_size,&m_ipos,m_comm)!=MPI_SUCCESS) {
+      m_out << "tools::mpi::wrmpi : MPI_Pack(int) failed." << std::endl;
+      return false;
+    }
+    m_pos += sz;
+    return true;
+  }
   virtual bool pack(unsigned int a_val) {
     tools::uint32 sz = tools::uint32(sizeof(unsigned int));
     if(m_pos+sz>m_max) {if(!expand2(m_size+sz)) return false;}
@@ -73,6 +103,16 @@ public: //inlib::mpi::impi
     if(m_pos+sz>m_max) {if(!expand2(m_size+sz)) return false;}
     if(::MPI_Pack(&a_val,1,TOOLS_MPI_INT64,m_buffer,m_size,&m_ipos,m_comm)!=MPI_SUCCESS) {
       m_out << "tools::mpi::wrmpi : MPI_Pack(int64) failed." << std::endl;
+      return false;
+    }
+    m_pos += sz;
+    return true;
+  }
+  virtual bool pack(float a_val) {
+    tools::uint32 sz = tools::uint32(sizeof(float));
+    if(m_pos+sz>m_max) {if(!expand2(m_size+sz)) return false;}
+    if(::MPI_Pack(&a_val,1,MPI_FLOAT,m_buffer,m_size,&m_ipos,m_comm)!=MPI_SUCCESS) {
+      m_out << "tools::mpi::wrmpi : MPI_Pack(float) failed." << std::endl;
       return false;
     }
     m_pos += sz;
@@ -192,6 +232,30 @@ public: //inlib::mpi::impi
     return true;
   }
 public: //inlib::mpi::impi
+  virtual bool unpack(char& a_val) {
+    if(::MPI_Unpack(m_buffer,m_size,&m_ipos,&a_val,1,MPI_CHAR,m_comm)!=MPI_SUCCESS) {
+      m_out << "tools::mpi::wrmpi : MPI_Unpack(char) failed." << std::endl;
+      a_val = 0;
+      return false;
+    }
+    return true;
+  }
+  virtual bool unpack(short& a_val) {
+    if(::MPI_Unpack(m_buffer,m_size,&m_ipos,&a_val,1,MPI_SHORT,m_comm)!=MPI_SUCCESS) {
+      m_out << "tools::mpi::wrmpi : MPI_Unpack(short) failed." << std::endl;
+      a_val = 0;
+      return false;
+    }
+    return true;
+  }
+  virtual bool unpack(int& a_val) {
+    if(::MPI_Unpack(m_buffer,m_size,&m_ipos,&a_val,1,MPI_INT,m_comm)!=MPI_SUCCESS) {
+      m_out << "tools::mpi::wrmpi : MPI_Unpack(int) failed." << std::endl;
+      a_val = 0;
+      return false;
+    }
+    return true;
+  }
   virtual bool unpack(unsigned int& a_val) {
     if(::MPI_Unpack(m_buffer,m_size,&m_ipos,&a_val,1,MPI_UNSIGNED,m_comm)!=MPI_SUCCESS) {
       m_out << "tools::mpi::wrmpi : MPI_Unpack(unsigned int) failed." << std::endl;
@@ -211,6 +275,14 @@ public: //inlib::mpi::impi
   virtual bool unpack(tools::int64& a_val) {
     if(::MPI_Unpack(m_buffer,m_size,&m_ipos,&a_val,1,TOOLS_MPI_INT64,m_comm)!=MPI_SUCCESS) {
       m_out << "tools::mpi::wrmpi : MPI_Unpack(int64) failed." << std::endl;
+      a_val = 0;
+      return false;
+    }
+    return true;
+  }
+  virtual bool unpack(float& a_val) {
+    if(::MPI_Unpack(m_buffer,m_size,&m_ipos,&a_val,1,MPI_FLOAT,m_comm)!=MPI_SUCCESS) {
+      m_out << "tools::mpi::wrmpi : MPI_Unpack(float) failed." << std::endl;
       a_val = 0;
       return false;
     }

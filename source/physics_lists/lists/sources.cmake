@@ -11,7 +11,7 @@
 #
 # Generated on : 24/9/2010
 #
-# $Id: sources.cmake 97176 2016-05-27 12:42:50Z gcosmo $
+# $Id: sources.cmake 106630 2017-10-17 06:27:47Z gcosmo $
 #
 #------------------------------------------------------------------------------
 
@@ -116,6 +116,8 @@ GEANT4_DEFINE_MODULE(NAME G4phys_lists
 	FTFP_BERT_TRV.icc
 	FTFP_BERT_ATL.hh
 	FTFP_BERT_ATL.icc
+	FTFQGSP_BERT.hh
+	FTFQGSP_BERT.icc
 	G4GenericPhysicsList.hh
 	G4GenericPhysicsList.icc
         G4PhysListFactory.hh

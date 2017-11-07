@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PhotoElectricEffect.cc 105734 2017-08-16 12:58:28Z gcosmo $
+// $Id: G4PhotoElectricEffect.cc 107020 2017-10-31 22:13:34Z dsawkey $
 //
 //
 //------------------ G4PhotoElectricEffect physics process ---------------------
@@ -117,5 +117,13 @@ void G4PhotoElectricEffect::InitialiseProcess(const G4ParticleDefinition*)
 
 void G4PhotoElectricEffect::PrintInfo()
 {}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void G4PhotoElectricEffect::ProcessDescription(std::ostream& out) const
+{
+  out << "<strong>Photoelectric effect</strong>";
+  G4VEmProcess::ProcessDescription(out);
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

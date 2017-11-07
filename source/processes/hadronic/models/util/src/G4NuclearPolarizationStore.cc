@@ -45,39 +45,43 @@ G4NuclearPolarizationStore* G4NuclearPolarizationStore::GetInstance()
 
 G4NuclearPolarizationStore::G4NuclearPolarizationStore()
 {
-  nuclist.reserve(10);
+  for(G4int i=0; i<maxNumStates; ++i) { nuclist[i] = nullptr; }
+  oldIdx = 0;
 }
 
 G4NuclearPolarizationStore::~G4NuclearPolarizationStore()
 {
-  //G4cout << "G4NuclearPolarizationStore::~G4NuclearPolarizationStore() "
-  //	 << nuclist.size() << G4endl;
-  for(auto nucp : nuclist) {
-    delete nucp;
+  for(G4int i=0; i<maxNumStates; ++i) { 
+    delete nuclist[i];
+    nuclist[i] = nullptr; 
   }
-  nuclist.clear();
 }
 
 void G4NuclearPolarizationStore::Register(G4NuclearPolarization* ptr)
 {
-  for (auto nucp : nuclist) {
-    if(ptr == nucp) { return; }
+  G4int idx = -1;
+  for(G4int i=0; i<maxNumStates; ++i) { 
+    if(ptr == nuclist[i]) { return; }
+    if(nullptr == nuclist[i]) { idx = i; }
   }
-  for (auto nucp : nuclist) {
-    if(nullptr == nucp) { 
-      nucp = ptr;
-      return; 
-    }
+  if(idx >= 0) {
+    nuclist[idx] = ptr;
+    return;
   }
-  nuclist.push_back(ptr);
-  //G4cout <<"G4NuclearPolarizationStore::Register() "<< ptr <<G4endl; 
+  // delete oldest object
+  delete nuclist[oldIdx];
+  nuclist[oldIdx] = ptr;
+  // redefine oldIdx
+  ++oldIdx;
+  if(oldIdx >= maxNumStates) { oldIdx = 0; }
 }
 
 G4NuclearPolarization* 
 G4NuclearPolarizationStore::FindOrBuild(G4int Z, G4int A, G4double Eexc)
 {
   static const G4double tolerance = 10.*CLHEP::eV;
-  for (auto nucp : nuclist) {
+  for(G4int i=0; i<maxNumStates; ++i) { 
+    auto nucp = nuclist[i];
     if(nucp && Z == nucp->GetZ() && A == nucp->GetA() && 
        std::abs(Eexc - nucp->GetExcitationEnergy()) < tolerance) { 
       return nucp; 
@@ -90,13 +94,20 @@ G4NuclearPolarizationStore::FindOrBuild(G4int Z, G4int A, G4double Eexc)
 
 void G4NuclearPolarizationStore::RemoveMe(G4NuclearPolarization* ptr)
 {
-  G4int length = nuclist.size();
-  for (G4int i=0; i<length; ++i) {
+  for(G4int i=0; i<maxNumStates; ++i) { 
     if(ptr == nuclist[i]) { 
-      //G4cout <<"G4NuclearPolarizationStore::RemoveMe() "<< ptr <<G4endl; 
       delete ptr;
-      if(i+1 == length) { nuclist.pop_back(); }
-      else { nuclist[i] = nullptr; }
+      nuclist[i] = nullptr;
+      // do we need redefine oldIdx?
+      if(i == oldIdx) {
+	for(G4int j=0; j<maxNumStates; ++j) { 
+	  if(j != i && nullptr != nuclist[j]) { 
+	    oldIdx = j;
+            return;
+	  }
+	}
+	oldIdx = i;   
+      }
       return;
     }
   }

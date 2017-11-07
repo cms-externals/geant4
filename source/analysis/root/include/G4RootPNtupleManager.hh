@@ -47,7 +47,7 @@ namespace tools {
 namespace wroot {
 class file;
 class ntuple;
-class pntuple;
+class imt_ntuple;
 }
 }
 
@@ -151,7 +151,7 @@ class G4RootPNtupleManager : public G4BaseNtupleManager
   private:
     G4RootPNtupleDescription*  
       GetNtupleDescriptionInFunction(G4int id, G4String function, G4bool warn = true) const;
-    tools::wroot::pntuple*  
+    tools::wroot::base_pntuple*  
       GetNtupleInFunction(G4int id, G4String function, G4bool warn = true) const;
     tools::wroot::ntuple*  
       GetMainNtupleInFunction(G4int id, G4String function, G4bool warn = true) const;
@@ -174,7 +174,7 @@ class G4RootPNtupleManager : public G4BaseNtupleManager
     G4PNtupleCreateMode  fCreateMode;
     G4RootMainNtupleManager*  fMainNtupleManager;
     std::vector<G4RootPNtupleDescription*> fNtupleDescriptionVector;
-    std::vector<tools::wroot::pntuple*> fNtupleVector;
+    std::vector<tools::wroot::imt_ntuple*> fNtupleVector;
 };
 
 // inline functions
@@ -259,7 +259,7 @@ inline G4bool G4RootPNtupleManager::FillNtupleTColumn(
   }
 
   auto icolumn =  ntuple->columns()[index];
-  auto column = dynamic_cast<tools::wroot::pntuple::column_string* >(icolumn);
+  auto column = dynamic_cast<tools::wroot::base_pntuple::column_string* >(icolumn);
   if ( ! column ) {
     G4ExceptionDescription description;
     description << " Column type does not match: "
@@ -319,7 +319,7 @@ G4bool G4RootPNtupleManager::FillNtupleTColumn(
   auto icolumn =  ntuple->columns()[index];
 
   // get column and check its type
-  auto column = dynamic_cast<tools::wroot::pntuple::column<T>* >(icolumn);
+  auto column = dynamic_cast<tools::wroot::base_pntuple::column<T>* >(icolumn);
   if ( ! column ) {
     G4ExceptionDescription description;
     description << " Column type does not match: "

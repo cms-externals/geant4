@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmProcessOptions.cc 96088 2016-03-14 16:03:38Z gcosmo $
+// $Id: G4EmProcessOptions.cc 96064 2016-03-11 17:59:49Z vnivanch $
 //
 // -------------------------------------------------------------------
 //

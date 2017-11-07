@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4LivermorePolarizedComptonModel.cc 95950 2016-03-03 10:42:48Z gcosmo $
+// $Id: G4LivermorePolarizedComptonModel.cc 95920 2016-03-02 17:51:10Z sincerti $
 //
 // Authors: G.Depaola & F.Longo
 //

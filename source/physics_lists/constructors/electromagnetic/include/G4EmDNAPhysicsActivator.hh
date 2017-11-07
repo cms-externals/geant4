@@ -60,8 +60,9 @@ private:
   void AddHeliumModels0(const G4String& region, G4bool a1msc, G4bool a2msc, 
 			G4double elimel, G4double pminbb, G4double pmax);
 
-  void AddGenericIonModels0(const G4String& region, G4bool imsc, 
-			    G4double elimel, G4double pminbb);
+  void AddGenericIonModels0(const G4String& region, G4double pminbb);
+
+  void DeactivateNuclearStopping(G4ProcessManager*, G4double elimel);
  
   G4bool HasMsc(G4ProcessManager*) const;
 

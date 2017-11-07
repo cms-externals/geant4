@@ -46,12 +46,15 @@ enum G4DeexChannelType
 };
 
 class G4StateManager;
+class G4DeexParametersMessenger;
 
 class G4DeexPrecoParameters
 {
 public:
 
   explicit G4DeexPrecoParameters();
+
+  ~G4DeexPrecoParameters();
 
   void SetDefaults();
 
@@ -91,6 +94,8 @@ public:
 
   inline G4int GetDeexModelType() const;
 
+  inline G4int GetTwoJMAX() const;
+
   inline G4bool NeverGoBack() const;
 
   inline G4bool UseSoftCutoff() const;
@@ -109,7 +114,7 @@ public:
 
   inline G4bool GetInternalConversionFlag() const;
 
-  inline G4bool StoreAllLevels() const;
+  inline G4bool StoreICLevelData() const;
 
   inline G4DeexChannelType GetDeexChannelsType() const;
 
@@ -143,6 +148,8 @@ public:
 
   void SetDeexModelType(G4int);
 
+  void SetTwoJMAX(G4int);
+
   void SetNeverGoBack(G4bool);
 
   void SetUseSoftCutoff(G4bool);
@@ -159,12 +166,16 @@ public:
 
   void SetCorrelatedGamma(G4bool);
 
+  void SetStoreICLevelData(G4bool);
+
+  // obsolete method (use previous)
   void SetStoreAllLevels(G4bool);
 
   void SetInternalConversionFlag(G4bool);
 
   void SetDeexChannelsType(G4DeexChannelType);
 
+  // obsolete method (has no effect)
   inline void SetUseFilesNEW(G4bool) {};
 
 private:
@@ -177,6 +188,7 @@ private:
   G4bool operator==(const G4DeexPrecoParameters &right) const = delete;
   G4bool operator!=(const G4DeexPrecoParameters &right) const = delete;
 
+  G4DeexParametersMessenger* theMessenger;
   G4StateManager* fStateManager;
 
   // Level density parameter
@@ -210,6 +222,7 @@ private:
 
   // Internal conversion model ID
   G4int fInternalConversionID;
+  G4int fTwoJMAX;
 
   // Preco model
   G4int fMinZForPreco;
@@ -307,6 +320,11 @@ inline G4int G4DeexPrecoParameters::GetDeexModelType() const
   return fDeexType;
 }
 
+inline G4int G4DeexPrecoParameters::GetTwoJMAX() const
+{
+  return fTwoJMAX;
+}
+
 inline G4bool G4DeexPrecoParameters::NeverGoBack() const
 {
   return fNeverGoBack;
@@ -347,7 +365,7 @@ inline G4bool G4DeexPrecoParameters::CorrelatedGamma() const
   return fCorrelatedGamma;
 }
 
-inline G4bool G4DeexPrecoParameters::StoreAllLevels() const
+inline G4bool G4DeexPrecoParameters::StoreICLevelData() const
 {
   return fStoreAllLevels;
 }

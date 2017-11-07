@@ -26,7 +26,7 @@
 /// \file electromagnetic/TestEm8/include/DetectorMessenger.hh
 /// \brief Definition of the DetectorMessenger class
 //
-// $Id: DetectorMessenger.hh 67268 2013-02-13 11:38:40Z ihrivnac $
+// $Id: DetectorMessenger.hh 106918 2017-10-27 16:42:49Z vnivanch $
 //
 /////////////////////////////////////////////////////////////////////////
 //
@@ -81,6 +81,7 @@ private:
   G4UIcmdWithAString*        fWorldMaterCmd;
 
   G4UIcmdWithADoubleAndUnit* fIonCmd;
+  G4UIcmdWithADoubleAndUnit* fStepMaxCmd;
 };
 
 #endif

@@ -95,7 +95,7 @@ G4bool G4XmlRNtupleManager::SetNtupleIColumn(G4int ntupleId,
   auto subNtuple = new tools::aida::ntuple(G4cout, columnName);
   ntupleDescription->fIVectorBindingMap[subNtuple] = &vector;
   tools::ntuple_binding* ntupleBinding = ntupleDescription->fNtupleBinding;
-  ntupleBinding->add_column(columnName, *subNtuple);
+  ntupleBinding->add_column_cid(columnName, *subNtuple);
 
 #ifdef G4VERBOSE
   if ( fState.GetVerboseL2() ) {
@@ -133,7 +133,7 @@ G4bool G4XmlRNtupleManager::SetNtupleFColumn(G4int ntupleId,
   auto subNtuple = new tools::aida::ntuple(G4cout, columnName);
   ntupleDescription->fFVectorBindingMap[subNtuple] = &vector;
   tools::ntuple_binding* ntupleBinding = ntupleDescription->fNtupleBinding;
-  ntupleBinding->add_column(columnName, *subNtuple);
+  ntupleBinding->add_column_cid(columnName, *subNtuple);
 
 #ifdef G4VERBOSE
   if ( fState.GetVerboseL2() ) {
@@ -171,7 +171,7 @@ G4bool G4XmlRNtupleManager::SetNtupleDColumn(G4int ntupleId,
   auto subNtuple = new tools::aida::ntuple(G4cout, columnName);
   ntupleDescription->fDVectorBindingMap[subNtuple] = &vector;
   tools::ntuple_binding* ntupleBinding = ntupleDescription->fNtupleBinding;
-  ntupleBinding->add_column(columnName, *subNtuple);
+  ntupleBinding->add_column_cid(columnName, *subNtuple);
 
 #ifdef G4VERBOSE
   if ( fState.GetVerboseL2() ) {

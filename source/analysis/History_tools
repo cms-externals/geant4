@@ -1,3 +1,50 @@
+ 4.2.0 : correction to pass integration in Geant4 (for the 10.4) :
+ - aida_ntuple : id_class() method.
+ - ntuple_binding : add_column_cid() method.
+ - wroot/branch : fill(), add_basket() : have a check "m_write_basket>=m_max_baskets".
+ - wroot/mt_ntuple_column_wise : in add_row() and end_fill() : check m_cols.size() versus m_main_branches.size().
+ 
+ 4.1.0 : wroot : have material/corrections in order to do ntuple booking without the "ref" logic for all column types.
+ - test/cpp/mt_ntuple.cpp : now an example with the "variable on column" logic for all column types.
+ - test/cpp/mt_ntuple_ref.cpp : example with the "user variable ref" logic for all column types.
+
+ 4.0.0 : changes in wroot, rroot in order to handle row wise ntuple in case of multi-thread or MPI.
+ - wroot : branch::end_pfill : do not add empty basket.
+ - wroot : ObjArray => obj_array, List => obj_list.
+ - wroot : Windows : get_me() to avoid usage of *this in constructor.
+ - wroot : icol : get_branch() return ref and not a pointer.
+ - wroot : leaf_ref, leaf_string_ref, leaf_std_vector_ref : _ref logic to have same logic than for other drivers.
+ - wroot : leaf : rm m_title field : mimick ROOT logic.
+ - wroot : base_leaf : handle m_leaf_count object.
+ - wroot : columns.icc : to put column code in common between ntuple and base_pntuple.
+ - wroot : new file to support row wise ntuple for MT and MPI : SET_MAX.icc, base_pntuple_column_wise, base_pntuple_row_wise
+           basket_add, impi_ntuple, imt_ntuple,
+	   mpi_basket_add, mpi_create_basket, mpi_ntuple_column_wise, mpi_ntuple_row_wise, mpi_protocol.
+ - wroot : pntuple => mt_ntuple_column_wise, mpi_pntuple => mpi_ntuple_column_wise.
+
+ - rroot : ntuple : handle row_wise.
+ - rroot : base_leaf : handle m_is_range field, handle m_own_leaf_count.
+ - rroot : leaf : handle leaf_count logic : it permits to store std::vector of basic type on a leaf<T>.
+ - rroot : named splitted in iros, object, list, obj_array, named.
+ - rroot : buffer : read_object() : handle a trailing bool& a_created argument. It helps to know if
+           the created object is managed or not.
+ - rroot : Windows : get_me() to avoid usage of *this in constructor.
+ - rroot : ObjArray => obj_array, List => obj_list.
+
+ - ntuple_binding : handle class id in column_binding.
+ - ntuple_booking : has_similar_layout() : to compare with another ntuple_booking object. Used in MT to be sure MT booking object
+   as the same "layout" than the one coming from the main.
+
+ - wcsv_ntuple : in _ref columns, pass user variable as const.
+
+ - hdf5 : header : to write/read a "header" with general infos as the name of the writing library and the "data schema version.".
+
+ - test/cpp : pwroot.cpp => mt_ntuple.cpp, wroot_pntuple.cpp => mt_ntuple_seq.cpp.
+ - test/cpp : read_root.icc : used in mt_ntuple.cpp, mpi_ntuple.cpp to check consistency.
+ 
+ - test/cpp : cern_root_read_rg_rbw.cpp : to check that the ntuple in .root files produced by mt_ntuple.cpp
+   and mpi_ntuple.cpp are readable by CERN-ROOT.
+
  3.7.0 : quiet some Coverity notifications. In default code, remove some "a_inc" logic in some classes.
    It comes from a revisit to the way we can decount static object deletion (by using an atexit logic in apps).
  - tools/mem : have most methods protected. In the static list(), have the s_list on the heap.

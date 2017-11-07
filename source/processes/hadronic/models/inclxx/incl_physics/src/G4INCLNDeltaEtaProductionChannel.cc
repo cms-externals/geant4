@@ -55,7 +55,8 @@ namespace G4INCL {
   NDeltaEtaProductionChannel::~NDeltaEtaProductionChannel() {}
 
   G4double NDeltaEtaProductionChannel::sampleDeltaMass(G4double ecmorigin) {
-    const G4double ecm = ecmorigin - 686.987; // 686.987 MeV translation to open pion(delta) production in NNEta
+//    const G4double ecm = ecmorigin - 686.987; // 686.987 MeV translation to open pion(delta) production in NNEta
+    const G4double ecm = ecmorigin - 581.437; // 581.437 MeV translation to open pion(delta) production in NNEta
     const G4double maxDeltaMass = ecm - ParticleTable::effectiveNucleonMass - 1.0;
     const G4double maxDeltaMassRndm = std::atan((maxDeltaMass-ParticleTable::effectiveDeltaMass)*2./ParticleTable::effectiveDeltaWidth);
     const G4double deltaMassRndmRange = maxDeltaMassRndm - ParticleTable::minDeltaMassRndm;
@@ -93,7 +94,7 @@ namespace G4INCL {
     }
     return x;
   }
-
+ 
  void NDeltaEtaProductionChannel::fillFinalState(FinalState *fs) {
   
 /**

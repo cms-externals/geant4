@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmStandardPhysics_option1.cc 105735 2017-08-16 12:59:43Z gcosmo $
+// $Id: G4EmStandardPhysics_option1.cc 107168 2017-11-03 12:16:05Z vnivanch $
 //
 //---------------------------------------------------------------------------
 //
@@ -218,7 +218,6 @@ void G4EmStandardPhysics_option1::ConstructProcess()
       G4eMultipleScattering* msc = new G4eMultipleScattering;
       G4UrbanMscModel* msc1 = new G4UrbanMscModel();
       G4WentzelVIModel* msc2 = new G4WentzelVIModel();
-      msc1->SetNewDisplacementFlag(false);
       msc1->SetHighEnergyLimit(highEnergyLimit);
       msc2->SetLowEnergyLimit(highEnergyLimit);
       msc->SetEmModel(msc1);
@@ -244,7 +243,6 @@ void G4EmStandardPhysics_option1::ConstructProcess()
       G4eMultipleScattering* msc = new G4eMultipleScattering;
       G4UrbanMscModel* msc1 = new G4UrbanMscModel();
       G4WentzelVIModel* msc2 = new G4WentzelVIModel();
-      msc1->SetNewDisplacementFlag(false);
       msc1->SetHighEnergyLimit(highEnergyLimit);
       msc2->SetLowEnergyLimit(highEnergyLimit);
       msc->SetEmModel(msc1);

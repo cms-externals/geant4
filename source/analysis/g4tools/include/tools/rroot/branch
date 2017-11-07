@@ -6,7 +6,7 @@
 
 #include "base_leaf"
 #include "basket"
-#include "named"
+#include "obj_array"
 #include "seek"
 #include "ifile"
 #include "ifac"
@@ -760,7 +760,7 @@ public:
   :m_out(a_out)
   ,m_fac(a_fac)
 
-  ,m_streamed_baskets(m_fac,true)
+  ,m_streamed_baskets(m_fac,true,true)
   ,m__read_basket(0)
 
   //,m_bits(0)
@@ -768,8 +768,8 @@ public:
   ,m_title("")
   ,fAutoDelete(false)
 
-  ,m_branches(m_fac,true)
-  ,m_leaves(m_fac,true)
+  ,m_branches(m_fac,true,true)
+  ,m_leaves(m_fac,true,true)
 
   ,fEntryOffsetLen(0)
   ,m_write_basket(0)
@@ -793,9 +793,11 @@ protected:
   branch(const branch& a_from)
   :iro(a_from)
   ,m_out(a_from.m_out),m_fac(a_from.m_fac)
-  ,m_streamed_baskets(m_fac,false),m__read_basket(0)
+  ,m_streamed_baskets(m_fac,false,true)
+  ,m__read_basket(0)
   ,fAutoDelete(false)
-  ,m_branches(m_fac,false),m_leaves(m_fac,false)
+  ,m_branches(m_fac,false,true)
+  ,m_leaves(m_fac,false,true)
   ,fEntryOffsetLen(1000)
   ,m_write_basket(0)
   ,m_entry_number(0)
@@ -915,7 +917,7 @@ protected:
   ifac& m_fac;
   std::vector< std::pair<uint64,uint64> > m_first_last;
   std::map<uint32, std::pair<basket*,bool> > m_baskets;
-  ObjArray<basket> m_streamed_baskets;
+  obj_array<basket> m_streamed_baskets;
   basket* m__read_basket; //optimization
 protected:
   //Object
@@ -925,8 +927,8 @@ protected:
   std::string m_title;
 
   bool fAutoDelete;
-  ObjArray<branch> m_branches;
-  ObjArray<base_leaf> m_leaves;
+  obj_array<branch> m_branches;
+  obj_array<base_leaf> m_leaves;
   uint32 fEntryOffsetLen;  //  Initial Length of fEntryOffset table in the basket buffers
   uint32 m_write_basket;   //  Last basket number written
   uint32 m_entry_number;   // Current entry number (last one filled in this branch)

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4ElectronIonPair.cc 92921 2015-09-21 15:06:51Z gcosmo $
+// $Id: G4ElectronIonPair.cc 92872 2015-09-18 16:00:22Z vnivanch $
 //
 // -------------------------------------------------------------------
 //

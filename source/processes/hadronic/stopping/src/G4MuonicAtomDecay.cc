@@ -66,14 +66,11 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 G4MuonicAtomDecay::G4MuonicAtomDecay(G4HadronicInteraction* hiptr,
-                                     // G4HadronicInteraction* diptr,
                                      const G4String& name)
   : G4VRestDiscreteProcess(name, fDecay),
-    //    theTotalResult(new G4ParticleChange()),
     fMuMass(G4MuonMinus::MuonMinus()->GetPDGMass()),
     cmptr(hiptr),
-    // dmptr(diptr),
-    verboseLevel(2)
+    verboseLevel(0)
 {
   // This is not a hadronic process; assume it is a kind of decay
   enableAtRestDoIt = true;

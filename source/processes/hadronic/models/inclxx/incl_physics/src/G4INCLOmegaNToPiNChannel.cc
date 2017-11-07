@@ -96,7 +96,7 @@ namespace G4INCL {
 		omega->setEnergy(ee);
 		G4double pn=std::sqrt(en*en-mn*mn);
 /*// test isotropy
-		const G4double pi=std::acos(-1.0);		
+		const G4double pi=acos(-1.0);		
 		G4double x1;
 		G4double u1;
 		G4double fteta;
@@ -109,7 +109,7 @@ namespace G4INCL {
 			x1=(pi/2.)*Random::shoot();
 			// Sample u from 0 to 1
 			u1=Random::shoot();
-			fteta=std::sin(x1);
+			fteta=sin(x1);
 			// The condition
 			if (u1 < fteta) {
 				teta=x1;
@@ -123,9 +123,9 @@ namespace G4INCL {
 		
 // end test		
         ThreeVector mom_nucleon(
-                                pn*std::sin(teta)*std::cos(fi),
-                                pn*std::sin(teta)*std::sin(fi),
-                                pn*std::cos(teta)
+                                pn*sin(teta)*cos(fi),
+                                pn*sin(teta)*sin(fi),
+                                pn*cos(teta)
                                 );
 		if (Random::shoot() < 0.5) {
 			nucleon->setMomentum(mom_nucleon);

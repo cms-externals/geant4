@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmStandardPhysics_option3.cc 106205 2017-09-19 10:39:33Z gcosmo $
+// $Id: G4EmStandardPhysics_option3.cc 107168 2017-11-03 12:16:05Z vnivanch $
 //
 //---------------------------------------------------------------------------
 //
@@ -129,6 +129,7 @@ G4EmStandardPhysics_option3::G4EmStandardPhysics_option3(G4int ver,
   param->SetNumberOfBinsPerDecade(20);
   param->SetMscStepLimitType(fUseDistanceToBoundary);
   param->SetMuHadLateralDisplacement(true);
+  param->SetLateralDisplacementAlg96(false);
   param->SetFluo(true);
   SetPhysicsType(bElectromagnetic);
 }

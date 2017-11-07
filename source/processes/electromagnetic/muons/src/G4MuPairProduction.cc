@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4MuPairProduction.cc 105750 2017-08-16 13:42:26Z gcosmo $
+// $Id: G4MuPairProduction.cc 107024 2017-10-31 22:17:01Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -140,18 +140,19 @@ void G4MuPairProduction::InitialiseEnergyLossProcess(
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-void G4MuPairProduction::PrintInfo()
+void G4MuPairProduction::StreamProcessInfo(std::ostream& out,
+                                           G4String endOfLine) const
 {
   G4ElementData* ed = EmModel()->GetElementData();
   if(ed) {
     for(G4int Z=1; Z<93; ++Z) {
       G4Physics2DVector* pv = ed->GetElement2DData(Z);
       if(pv) {
-        G4cout << "      Sampling table " << pv->GetLengthY()
-	       << "x" << pv->GetLengthX() << "; from "
-	       << exp(pv->GetY(0))/GeV << " GeV to " 
-	       << exp(pv->GetY(pv->GetLengthY()-1))/TeV 
-	       << " TeV " << G4endl;
+        out << "      Sampling table " << pv->GetLengthY()
+	    << "x" << pv->GetLengthX() << "; from "
+	    << exp(pv->GetY(0))/GeV << " GeV to " 
+	    << exp(pv->GetY(pv->GetLengthY()-1))/TeV 
+	    << " TeV " << endOfLine;
 	break;
       }
     }
@@ -160,6 +161,10 @@ void G4MuPairProduction::PrintInfo()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
+void G4MuPairProduction::ProcessDescription(std::ostream& out) const
+{
+  out << "<strong>Pair production</strong>";
+  G4VEnergyLossProcess::ProcessDescription(out);
+}
 
-
-
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

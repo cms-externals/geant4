@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4StackManager.cc 106145 2017-09-14 06:36:31Z gcosmo $
+// $Id: G4StackManager.cc 106992 2017-10-31 10:14:18Z gcosmo $
 //
 //
 //  Last Modification : 09/Dec/96 M.Asai
@@ -149,6 +149,7 @@ G4int G4StackManager::PushOneTrack(G4Track *newTrack,G4VTrajectory *newTrajector
 #endif
     }
 ////  End of temporal care of setting process manager
+#ifdef G4MUATOMS_INUSE
 ////  Setting process manager for muonic atom (a temporary solution)
     if(pd->IsMuonicAtom())
     {
@@ -188,6 +189,7 @@ G4int G4StackManager::PushOneTrack(G4Track *newTrack,G4VTrajectory *newTrajector
 #endif
     }
 ////  End of Setting process manager for muonic atom (a temporary solution)
+#endif
     else
     {
 #ifdef G4VERBOSE

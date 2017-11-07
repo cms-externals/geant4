@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4eBremsstrahlung.cc 105734 2017-08-16 12:58:28Z gcosmo $
+// $Id: G4eBremsstrahlung.cc 107020 2017-10-31 22:13:34Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -146,18 +146,27 @@ G4eBremsstrahlung::InitialiseEnergyLossProcess(const G4ParticleDefinition*,
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-void G4eBremsstrahlung::PrintInfo()
+void G4eBremsstrahlung::StreamProcessInfo(std::ostream& out,
+                                          G4String endOfLine) const
 {
   if(EmModel(0)) {
     G4EmParameters* param = G4EmParameters::Instance();
     G4double eth = param->BremsstrahlungTh(); 
-    G4cout << "      LPM flag: " << param->LPM() << " for E > " 
-	   << EmModel(0)->HighEnergyLimit()/GeV << " GeV";
+    out << "      LPM flag: " << param->LPM() << " for E > " 
+	<< EmModel(0)->HighEnergyLimit()/GeV << " GeV";
     if(eth < DBL_MAX) { 
-      G4cout << ",  VertexHighEnergyTh(GeV)= " << eth/GeV; 
+      out << ",  VertexHighEnergyTh(GeV)= " << eth/GeV; 
     }
-    G4cout << G4endl;
+    out << endOfLine;
   }
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.... 
+
+void G4eBremsstrahlung::ProcessDescription(std::ostream& out) const
+{
+  out << "<strong>Bremsstrahlung</strong>";
+  G4VEnergyLossProcess::ProcessDescription(out);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.... 

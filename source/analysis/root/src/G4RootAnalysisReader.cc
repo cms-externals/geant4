@@ -407,6 +407,8 @@ G4int G4RootAnalysisReader::ReadNtupleImpl(const G4String& ntupleName,
   auto buffer
     = new tools::rroot::buffer(G4cout, rfile->byte_swap(), size, charBuffer, 
                                key->key_length(), verbose);
+  buffer->set_map_objs(true);
+
   auto fac = new tools::rroot::fac(G4cout);
 
   auto tree = new tools::rroot::tree(*rfile, *fac);

@@ -73,6 +73,10 @@ public:
       }
       if(names.size()!=TFORMs.size()) {
         m_out << "tools::hdf5::store::store : names/TFORMs size mismatch." << std::endl;
+        m_out << "names :" << std::endl;
+       {tools_vforcit(std::string,names,it) m_out << *it << std::endl;}
+        m_out << "TFORMs :" << std::endl;
+       {tools_vforcit(std::string,TFORMs,it) m_out << *it << std::endl;}
         ::H5Gclose(m_group);
         m_group = -1;
 	return;
@@ -103,11 +107,15 @@ public:
       }
      {std::vector<std::string> names;
       tools_vforcit(pages*,m_pagess,it) names.push_back((*it)->name());
+   //{m_out << "debug : write : names :" << std::endl;
+   // tools_vforcit(std::string,names,it) m_out << *it << std::endl;}
       if(!write_array_string(m_group,s_names(),names)) {
         m_out << "tools::hdf5::store::~store : write_array_string(names) failed." << std::endl;
       }}
      {std::vector<std::string> TFORMs;
       tools_vforcit(pages*,m_pagess,it) TFORMs.push_back((*it)->form());
+   //{m_out << "debug : write : TFORMs :" << std::endl;
+   // tools_vforcit(std::string,TFORMs,it) m_out << *it << std::endl;}
       if(!write_array_string(m_group,s_forms(),TFORMs)) {
         m_out << "tools::hdf5::store::~store : write_array_string(tforms) failed." << std::endl;
       }}
@@ -139,7 +147,8 @@ public:
     a_entries = m_pagess.front()->entries();
     tools_vforcit(pages*,m_pagess,it) {
       if((*it)->entries()!=a_entries) {
-        m_out << "tools::hdf5::store::entries : not same entries on all columns." << std::endl;
+        m_out << "tools::hdf5::store::entries : not same entries on all columns."
+	      << " Front " << a_entries << ", it " << (*it)->entries() << "." << std::endl;
         a_entries = 0;
 	return false;
       }

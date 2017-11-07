@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4PairingCorrection.hh 105799 2017-08-21 07:35:55Z gcosmo $
+// $Id: G4PairingCorrection.hh 105793 2017-08-18 16:55:43Z vnivanch $
 //
 // Hadronic Process: Nuclear De-excitations
 // by V. Lara

@@ -113,8 +113,13 @@ G4bool G4Hdf5FileManager::CreateDirectory(const G4String& directoryType,
 }
 
 //_____________________________________________________________________________
-G4bool G4Hdf5FileManager::WriteDirectory(const G4String& directoryType, 
+#ifdef G4VERBOSE
+G4bool G4Hdf5FileManager::WriteDirectory(const G4String& directoryType,
    const G4String& directoryName, hid_t& directory)
+#else
+G4bool G4Hdf5FileManager::WriteDirectory(const G4String& /*directoryType*/,
+   const G4String& directoryName, hid_t& directory)
+#endif  
 {
 #ifdef G4VERBOSE
   if ( fState.GetVerboseL4() ) {

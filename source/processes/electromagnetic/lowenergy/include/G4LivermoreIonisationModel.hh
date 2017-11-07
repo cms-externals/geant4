@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4LivermoreIonisationModel.hh 80788 2014-05-12 09:07:49Z gcosmo $
+// $Id: G4LivermoreIonisationModel.hh 80771 2014-05-11 16:43:19Z vnivanch $
 //
 // Author: Luciano Pandola
 //         on base of G4LowEnergyIonisation developed by A.Forti and V.Ivanchenko

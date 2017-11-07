@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEmAngularDistribution.hh 95657 2016-02-17 13:03:36Z gcosmo $
+// $Id: G4VEmAngularDistribution.hh 95621 2016-02-17 00:44:34Z dsawkey $
 //
 // -------------------------------------------------------------------
 //

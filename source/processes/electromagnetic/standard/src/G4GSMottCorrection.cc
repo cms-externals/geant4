@@ -27,7 +27,6 @@
 //
 // ----------------------------------------------------------------------------
 //
-// GEANT4 Class header file
 //
 // File name:     G4GSMottCorrection
 //
@@ -97,12 +96,12 @@ void G4GSMottCorrection::GetMottCorrectionFactors(G4double logekin, G4double bet
     // remRfaction = -1.
   } else if (beta2>=fMinBeta2) {  // linear interpolation on \beta^2
     remRfaction   = (beta2 - fMinBeta2) * fInvDelBeta2;
-    ekinIndxLow   = (int)remRfaction;
+    ekinIndxLow   = (G4int)remRfaction;
     remRfaction  -= ekinIndxLow;
     ekinIndxLow  += (gNumEkin - gNumBeta2);
   } else if (logekin>=fLogMinEkin) {
     remRfaction   = (logekin - fLogMinEkin) * fInvLogDelEkin;
-    ekinIndxLow   = (int)remRfaction;
+    ekinIndxLow   = (G4int)remRfaction;
     remRfaction  -= ekinIndxLow;
   } // the defaults otherwise i.e. use the lowest energy values when ekin is smaller than the minum ekin
   //
@@ -138,12 +137,12 @@ double G4GSMottCorrection::GetMottRejectionValue(G4double logekin, G4double beta
       // probIndxHigh = -1.
     } else if (beta2>=fMinBeta2) {    // linear interpolation on \beta^2
       probIndxHigh  = (beta2 - fMinBeta2) * fInvDelBeta2;
-      ekinIndxLow   = (int)probIndxHigh;
+      ekinIndxLow   = (G4int)probIndxHigh;
       probIndxHigh -= ekinIndxLow;
       ekinIndxLow  += (gNumEkin - gNumBeta2);
     } else if (logekin>fLogMinEkin) { // linear interpolation on \ln(E_{kin})
       probIndxHigh  = (logekin - fLogMinEkin) * fInvLogDelEkin;
-      ekinIndxLow   = (int)probIndxHigh;
+      ekinIndxLow   = (G4int)probIndxHigh;
       probIndxHigh -= ekinIndxLow;
     } // the defaults otherwise i.e. use the lowest energy values when ekin is smaller than the minum ekin
     //
@@ -395,12 +394,10 @@ void G4GSMottCorrection::InitMCDataMaterial(const G4Material *mat) {
   moliereXc2 *= CLHEP::MeV*CLHEP::MeV/CLHEP::cm;
   //
   // 2. loop over the kinetic energy grid
-//  G4double ekin = gMinEkin;
   for (G4int iek=0; iek<gNumEkin; ++iek) {
-    // 2./a. set current kinetic energy and beta2 value
+    // 2./a. set current kinetic energy and pt2 value
       G4double ekin          = G4Exp(fLogMinEkin+iek/fInvLogDelEkin);
       G4double pt2  = ekin*(ekin+2.0*CLHEP::electron_mass_c2);
-//    G4double b2   = pt2/(pt2+CLHEP::electron_mass_c2*CLHEP::electron_mass_c2);
       if (ekin>gMidEkin) {
         G4double b2   = fMinBeta2+(iek-(gNumEkin-gNumBeta2))/fInvDelBeta2;
         ekin = CLHEP::electron_mass_c2*(1./std::sqrt(1.-b2)-1.);

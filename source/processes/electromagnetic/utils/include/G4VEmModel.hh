@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEmModel.hh 104457 2017-05-31 15:52:37Z gcosmo $
+// $Id: G4VEmModel.hh 106699 2017-10-19 20:51:26Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -222,7 +222,10 @@ public:
   virtual void DefineForRegion(const G4Region*);
 
   // for automatic documentation
-  virtual void ModelDescription(std::ostream& outFile) const; 
+  virtual void ModelDescription(std::ostream& outFile) const;
+  
+  virtual void ModelDescription(std::ostream& outFile,
+                                G4String endOfLine) const; 
 
 protected:
 

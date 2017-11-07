@@ -89,7 +89,7 @@ namespace G4INCL {
 
 		G4double ECM=G4INCL::KinematicsUtils::totalEnergyInCM(particle1,particle2);
 
-		const G4double pi=std::acos(-1.0);		
+		const G4double pi=acos(-1.0);		
 		G4double x1;
 		G4double u1;
 		G4double fteta;
@@ -117,7 +117,7 @@ namespace G4INCL {
 			fteta=(a1*x1*x1+b1*x1+c1)/interg1;
 			// The condition
 			if (u1*f1/interg1 < fteta) {
-				teta=std::acos(x1);
+				teta=acos(x1);
 				passe1=1;
 			}
 		}
@@ -142,10 +142,10 @@ namespace G4INCL {
 			
 			// Sample u from 0 to 1
 			u1=Random::shoot();
-			fteta=((a2*x1*x1+b2*x1+c2)*(0.5+(std::atan(10*(x1+dev)))/pi) + vert)/interg2;
+			fteta=((a2*x1*x1+b2*x1+c2)*(0.5+(atan(10*(x1+dev)))/pi) + vert)/interg2;
 			// The condition
 			if (u1*f2 < fteta) {
-				teta=std::acos(x1);
+				teta=acos(x1);
 				passe2=1;
 			}
 		}
@@ -154,9 +154,9 @@ namespace G4INCL {
 		fi=(2.0*pi)*Random::shoot();		
 
 		ThreeVector mom_nucleon(
-                                pn*std::sin(teta)*std::cos(fi),
-                                pn*std::sin(teta)*std::sin(fi),
-                                pn*std::cos(teta)
+                                pn*sin(teta)*cos(fi),
+                                pn*sin(teta)*sin(fi),
+                                pn*cos(teta)
                                 );
 // end real distribution			
 		

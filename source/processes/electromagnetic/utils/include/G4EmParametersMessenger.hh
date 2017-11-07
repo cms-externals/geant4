@@ -95,6 +95,7 @@ private:
   G4UIcmdWithABool*          pixeCmd;
   G4UIcmdWithABool*          dcutCmd;
   G4UIcmdWithABool*          latCmd;
+  G4UIcmdWithABool*          lat96Cmd;
   G4UIcmdWithABool*          mulatCmd;
   G4UIcmdWithABool*          catCmd;
   G4UIcmdWithABool*          delCmd;
@@ -111,6 +112,7 @@ private:
   G4UIcmdWithADoubleAndUnit* maxEnCmd;
   G4UIcmdWithADoubleAndUnit* cenCmd;
   G4UIcmdWithADoubleAndUnit* lowEnCmd;
+  G4UIcmdWithADoubleAndUnit* lowEn3Cmd;
   G4UIcmdWithADoubleAndUnit* lowhEnCmd;
   G4UIcmdWithADouble*        lllCmd;
   G4UIcmdWithADoubleAndUnit* brCmd;

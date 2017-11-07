@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4MuMultipleScattering.cc 105750 2017-08-16 13:42:26Z gcosmo $
+// $Id: G4MuMultipleScattering.cc 107024 2017-10-31 22:17:01Z dsawkey $
 //
 // -----------------------------------------------------------------------------
 //
@@ -85,14 +85,22 @@ void G4MuMultipleScattering::InitialiseProcess(const G4ParticleDefinition*)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void G4MuMultipleScattering::PrintInfo()
+void G4MuMultipleScattering::StreamProcessInfo(std::ostream& out,
+                                               G4String endOfLine) const
 {
-  G4cout << "      RangeFactor= " << RangeFactor()
-         << ", step limit type: " << StepLimitType()
-         << ", lateralDisplacement: " << LateralDisplasmentFlag()
-	 << ", polarAngleLimit(deg)= " << PolarAngleLimit()/degree
-         << G4endl;
+  out << "      RangeFactor= " << RangeFactor()
+      << ", step limit type: " << StepLimitType()
+      << ", lateralDisplacement: " << LateralDisplasmentFlag()
+      << ", polarAngleLimit(deg)= " << PolarAngleLimit()/degree
+      << endOfLine;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+void G4MuMultipleScattering::ProcessDescription(std::ostream& out) const
+{
+  out << "<strong>Muon multiple scattering</strong>";
+  G4VMultipleScattering::ProcessDescription(out);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

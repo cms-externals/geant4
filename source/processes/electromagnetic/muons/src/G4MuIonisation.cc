@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4MuIonisation.cc 105750 2017-08-16 13:42:26Z gcosmo $
+// $Id: G4MuIonisation.cc 107024 2017-10-31 22:17:01Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -185,6 +185,10 @@ void G4MuIonisation::PrintInfo()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
+void G4MuIonisation::ProcessDescription(std::ostream& out) const
+{
+  out << "<strong>Muon ionisation</strong>";
+  G4VEnergyLossProcess::ProcessDescription(out);
+}
 
-
-
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

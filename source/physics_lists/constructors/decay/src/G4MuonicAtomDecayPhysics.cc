@@ -47,16 +47,27 @@ G4_DECLARE_PHYSCONSTR_FACTORY(G4MuonicAtomDecayPhysics);
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4MuonicAtomDecayPhysics::G4MuonicAtomDecayPhysics(G4int)
-:  G4VPhysicsConstructor("G4MuonicAtomDecay")
+G4MuonicAtomDecayPhysics::G4MuonicAtomDecayPhysics(G4int vL)
+   :  G4VPhysicsConstructor("G4MuonicAtomDecay")
 {
-  G4cout << "G4MuonicAtomDecayPhysics()\n";
+  SetVerboseLevel(vL);
+#ifdef G4VERBOSE
+  if (GetVerboseLevel()>0) {
+   G4cout << "G4MuonicAtomDecayPhysics() with verboseLevel "
+          << verboseLevel << G4endl;
+  }
+#endif
 }
 
 G4MuonicAtomDecayPhysics::G4MuonicAtomDecayPhysics(const G4String& name)
 :  G4VPhysicsConstructor(name)
 {
-  G4cout << "G4MuonicAtomDecayPhysics()" << G4endl;
+#ifdef G4VERBOSE
+  if (GetVerboseLevel()>0) {
+   G4cout << "G4MuonicAtomDecayPhysics() with verboseLevel "
+          << verboseLevel << " and name " << name << G4endl;
+  }
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -69,7 +80,11 @@ G4MuonicAtomDecayPhysics::~G4MuonicAtomDecayPhysics()
 
 void G4MuonicAtomDecayPhysics::ConstructParticle()
 {
-  G4cout << "G4MuonicAtomDecayPhysics::ConstructParticle()" << G4endl;
+#ifdef G4VERBOSE
+  if (GetVerboseLevel()>0) {
+    G4cout << "G4MuonicAtomDecayPhysics::ConstructParticle()" << G4endl;
+  }
+#endif
   G4GenericMuonicAtom::GenericMuonicAtom();
 }
 
@@ -77,11 +92,14 @@ void G4MuonicAtomDecayPhysics::ConstructParticle()
 
 void G4MuonicAtomDecayPhysics::ConstructProcess()
 {
-  G4cout << "G4MuonicAtomDecayPhysics::ConstructProcess()" << G4endl;
-
   G4PhysicsListHelper* plh = G4PhysicsListHelper::GetPhysicsListHelper();
   G4int plhvl = plh->GetVerboseLevel();
-  //  plh->SetVerboseLevel(3);
+#ifdef G4VERBOSE
+  if (GetVerboseLevel()>0) {
+    G4cout << "G4MuonicAtomDecayPhysics::ConstructProcess() verboseLevel "
+           << GetVerboseLevel() << " to be set to " << plhvl << G4endl;
+  }
+#endif
   G4bool rc1 = plh->
     RegisterProcess(new G4MuonicAtomDecay(nullptr), // default G4HadronicInteraction* will be set
                     G4GenericMuonicAtom::GenericMuonicAtom());

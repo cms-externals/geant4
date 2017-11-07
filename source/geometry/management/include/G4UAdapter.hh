@@ -295,6 +295,7 @@ operator=(const G4UAdapter& rhs)
   // Copy base class data
   //
   G4VSolid::operator=(rhs);
+  UnplacedVolume_t::operator=(rhs);
 
   // Copy data
   //

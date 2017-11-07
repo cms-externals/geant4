@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEmProcess.hh 105745 2017-08-16 13:14:37Z gcosmo $
+// $Id: G4VEmProcess.hh 106830 2017-10-25 15:56:08Z vnivanch $
 //
 // -------------------------------------------------------------------
 //
@@ -105,11 +105,14 @@ public:
 
   virtual G4bool IsApplicable(const G4ParticleDefinition& p) override = 0;
 
-  virtual void PrintInfo() = 0;
+  // obsolete
+  virtual void PrintInfo() {};
 
   virtual void ProcessDescription(std::ostream& outFile) const override;
 
 protected:
+
+  virtual void StreamProcessInfo(std::ostream&, G4String) const {};
 
   virtual void InitialiseProcess(const G4ParticleDefinition*) = 0;
 
@@ -313,7 +316,8 @@ private:
 
   void BuildLambdaTable();
 
-  void PrintInfoProcess(const G4ParticleDefinition&);
+  void StreamInfo(std::ostream& outFile, const G4ParticleDefinition&,
+                  G4String endOfLine=G4String("\n")) const;
 
   void FindLambdaMax();
 
@@ -376,6 +380,7 @@ private:
   G4double                     maxKinEnergy;
   G4double                     lambdaFactor;
   G4double                     biasFactor;
+  G4double                     massRatio;
 
   G4bool                       integral;
   G4bool                       applyCuts;
@@ -385,6 +390,7 @@ private:
   G4bool                       actMaxKinEnergy;
   G4bool                       actBinning;
   G4bool                       actSpline;
+  G4bool                       isIon;
 
   // ======== Cashed values - may be state dependent ================
 

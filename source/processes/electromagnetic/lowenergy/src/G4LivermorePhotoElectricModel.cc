@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4LivermorePhotoElectricModel.cc 106173 2017-09-15 13:05:16Z gcosmo $
+// $Id: G4LivermorePhotoElectricModel.cc 107137 2017-11-02 18:07:14Z vnivanch $
 //
 //
 // Author: Sebastien Incerti
@@ -526,13 +526,13 @@ G4LivermorePhotoElectricModel::ReadData(G4int Z, const char* path)
             return;
         }
     }
-    
+
     // spline for photoeffect total x-section above K-shell 
     // but below the parameterized ones
     fCrossSection[Z] = new G4LPhysicsFreeVector();
     fCrossSection[Z]->SetSpline(true);
     std::ostringstream ost;
-    ost << datadir << "/livermore/epics2014/phot/pe-cs-" << Z <<".dat";
+    ost << datadir << "/livermore/phot_epics2014/pe-cs-" << Z <<".dat";
     std::ifstream fin(ost.str().c_str());
     if( !fin.is_open()) {
         G4ExceptionDescription ed;
@@ -540,7 +540,7 @@ G4LivermorePhotoElectricModel::ReadData(G4int Z, const char* path)
         << "> is not opened!" << G4endl;
         G4Exception("G4LivermorePhotoElectricModel::ReadData()",
                     "em0003",FatalException,
-                    ed,"G4LEDATA version should be G4EMLOW6.32 or later.");
+                    ed,"G4LEDATA version should be G4EMLOW7.2 or later.");
         return;
     } else {
         if(verboseLevel > 3) { G4cout << "File " << ost.str().c_str()
@@ -557,7 +557,7 @@ G4LivermorePhotoElectricModel::ReadData(G4int Z, const char* path)
     G4int n2 = 0;
     G4double x;
     std::ostringstream ost1;
-    ost1 << datadir << "/livermore/epics2014/phot/pe-high-" << Z <<".dat";
+    ost1 << datadir << "/livermore/phot_epics2014/pe-high-" << Z <<".dat";
     std::ifstream fin1(ost1.str().c_str());
     if( !fin1.is_open()) {
         G4ExceptionDescription ed;
@@ -565,7 +565,7 @@ G4LivermorePhotoElectricModel::ReadData(G4int Z, const char* path)
         << "> is not opened!" << G4endl;
         G4Exception("G4LivermorePhotoElectricModel::ReadData()",
                     "em0003",FatalException,
-                    ed,"G4LEDATA version should be G4EMLOW6.32 or later.");
+                    ed,"G4LEDATA version should be G4EMLOW7.2 or later.");
         return;
     } else {
         if(verboseLevel > 3) {
@@ -603,7 +603,7 @@ G4LivermorePhotoElectricModel::ReadData(G4int Z, const char* path)
     G4int n2_low = 0;
     G4double x_low;
     std::ostringstream ost1_low;
-    ost1_low << datadir << "/livermore/epics2014/phot/pe-low-" << Z <<".dat";
+    ost1_low << datadir << "/livermore/phot_epics2014/pe-low-" << Z <<".dat";
     std::ifstream fin1_low(ost1_low.str().c_str());
     if( !fin1_low.is_open()) {
         G4ExceptionDescription ed;
@@ -611,7 +611,7 @@ G4LivermorePhotoElectricModel::ReadData(G4int Z, const char* path)
         << "> is not opened!" << G4endl;
         G4Exception("G4LivermorePhotoElectricModel::ReadData()",
                     "em0003",FatalException,
-                    ed,"G4LEDATA version should be G4EMLOW6.32 or later.");
+                    ed,"G4LEDATA version should be G4EMLOW7.2 or later.");
         return;
     } else {
         if(verboseLevel > 3) {
@@ -653,7 +653,7 @@ G4LivermorePhotoElectricModel::ReadData(G4int Z, const char* path)
     
     if(1 < n2) {
         std::ostringstream ost2;
-        ost2 << datadir << "/livermore/epics2014/phot/pe-ss-cs-" << Z <<".dat";
+        ost2 << datadir << "/livermore/phot_epics2014/pe-ss-cs-" << Z <<".dat";
         std::ifstream fin2(ost2.str().c_str());
         if( !fin2.is_open()) {
             G4ExceptionDescription ed;
@@ -661,7 +661,7 @@ G4LivermorePhotoElectricModel::ReadData(G4int Z, const char* path)
             << "> is not opened!" << G4endl;
             G4Exception("G4LivermorePhotoElectricModel::ReadData()",
                         "em0003",FatalException,
-                        ed,"G4LEDATA version should be G4EMLOW6.32 or later.");
+                        ed,"G4LEDATA version should be G4EMLOW7.2 or later.");
             return;
         } else {
             if(verboseLevel > 3) {
@@ -688,7 +688,7 @@ G4LivermorePhotoElectricModel::ReadData(G4int Z, const char* path)
     if(1 < fNShells[Z]) {
         fCrossSectionLE[Z] = new G4LPhysicsFreeVector();
         std::ostringstream ost3;
-        ost3 << datadir << "/livermore/epics2014/phot/pe-le-cs-" << Z <<".dat";
+        ost3 << datadir << "/livermore/phot_epics2014/pe-le-cs-" << Z <<".dat";
         std::ifstream fin3(ost3.str().c_str());
         if( !fin3.is_open()) {
             G4ExceptionDescription ed;
@@ -696,7 +696,7 @@ G4LivermorePhotoElectricModel::ReadData(G4int Z, const char* path)
             << "> is not opened!" << G4endl;
             G4Exception("G4LivermorePhotoElectricModel::ReadData()",
                         "em0003",FatalException,
-                        ed,"G4LEDATA version should be G4EMLOW6.32 or later.");
+                        ed,"G4LEDATA version should be G4EMLOW7.2 or later.");
             return;
         } else {
             if(verboseLevel > 3) {

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4mplIonisationWithDeltaModel.hh 97391 2016-06-02 10:08:45Z gcosmo $
+// $Id: G4mplIonisationWithDeltaModel.hh 97351 2016-06-01 16:55:46Z dsawkey $
 //
 // -------------------------------------------------------------------
 //

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4StatMFMacroNucleon.hh 68724 2013-04-05 09:26:32Z gcosmo $
+// $Id: G4StatMFMacroNucleon.hh 68360 2013-03-22 15:59:41Z vnivanch $
 //
 // Hadronic Process: Nuclear De-excitations
 // by V. Lara

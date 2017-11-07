@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4ElectroNuclearCrossSection.cc 94961 2016-01-08 16:31:48Z gcosmo $
+// $Id: G4ElectroNuclearCrossSection.cc 94959 2016-01-08 13:33:05Z witoldp $
 //
 // G4 Physics class: G4ElectroNuclearCrossSection for gamma+A cross sections
 // Created: M.V. Kossov, CERN/ITEP(Moscow), 10-OCT-01

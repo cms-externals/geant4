@@ -39,7 +39,8 @@ using namespace G4Analysis;
 
 //_____________________________________________________________________________
 G4RootNtupleManager::G4RootNtupleManager(const G4AnalysisManagerState& state,
-                                         G4int nofMainManagers)
+                                         G4int nofMainManagers,
+                                         G4bool rowWise)
  : G4TNtupleManager<tools::wroot::ntuple>(state),
    fCreateMode(G4NtupleCreateMode::kUndefined),
    fFileManager(nullptr),
@@ -48,7 +49,7 @@ G4RootNtupleManager::G4RootNtupleManager(const G4AnalysisManagerState& state,
 {
   for ( G4int i=0; i<nofMainManagers; ++i) {
     fMainNtupleManagers.push_back(
-      new G4RootMainNtupleManager(this, fState));
+      new G4RootMainNtupleManager(this, rowWise, fState));
   }
 }
 

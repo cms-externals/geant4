@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4DeuteronCoulombBarrier.cc 97097 2016-05-25 07:50:31Z gcosmo $
+// $Id: G4DeuteronCoulombBarrier.cc 97057 2016-05-23 17:37:49Z vnivanch $
 //
 // Hadronic Process: Nuclear De-excitations
 // by V. Lara (Dec 1999)

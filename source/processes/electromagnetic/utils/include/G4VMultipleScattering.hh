@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VMultipleScattering.hh 105745 2017-08-16 13:14:37Z gcosmo $
+// $Id: G4VMultipleScattering.hh 106649 2017-10-18 17:05:12Z dsawkey $
 //
 // -------------------------------------------------------------------
 //
@@ -104,13 +104,16 @@ public:
 
   virtual G4bool IsApplicable(const G4ParticleDefinition& p) override = 0;
 
-  virtual void PrintInfo() = 0;
+  // obsolete
+  virtual void PrintInfo() {};
 
   virtual void ProcessDescription(std::ostream& outFile) const override;
 
 protected:
 
   virtual void InitialiseProcess(const G4ParticleDefinition*) = 0;
+
+  virtual void StreamProcessInfo(std::ostream&, G4String) const {};
 
 public:
 
@@ -123,9 +126,6 @@ public:
 
   // Build physics table during initialisation
   void BuildPhysicsTable(const G4ParticleDefinition&) override;
-
-  // Print out of generic class parameters
-  void PrintInfoDefinition();
 
   // Store PhysicsTable in a file.
   // Return false in case of failure at I/O
@@ -250,6 +250,10 @@ private:
   G4VMultipleScattering(G4VMultipleScattering &) = delete;
   G4VMultipleScattering & 
     operator=(const G4VMultipleScattering &right) = delete;
+
+  // Print out of generic class parameters
+  void StreamInfo(std::ostream& outFile, const G4ParticleDefinition&,
+                  G4String endOfLine=G4String("\n")) const;
 
   // ======== Parameters of the class fixed at construction =========
 

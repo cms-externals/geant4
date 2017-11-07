@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4FTFAnnihilation.hh 100828 2016-11-02 15:25:59Z gcosmo $
+// $Id: G4FTFAnnihilation.hh 101976 2016-12-14 07:16:52Z ribon $
 
 #ifndef G4FTFAnnihilation_h
 #define G4FTFAnnihilation_h 1

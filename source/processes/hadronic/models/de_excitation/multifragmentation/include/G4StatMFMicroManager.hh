@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4StatMFMicroManager.hh 67983 2013-03-13 10:42:03Z gcosmo $
+// $Id: G4StatMFMicroManager.hh 67320 2013-02-14 12:54:07Z vnivanch $
 //
 // Hadronic Process: Nuclear De-excitations
 // by V. Lara

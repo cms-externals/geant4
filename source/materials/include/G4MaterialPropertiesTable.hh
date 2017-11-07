@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4MaterialPropertiesTable.hh 106193 2017-09-19 04:03:52Z gcosmo $
+// $Id: G4MaterialPropertiesTable.hh 106997 2017-10-31 10:22:36Z gcosmo $
 //
 ////////////////////////////////////////////////////////////////////////
 //
@@ -81,14 +81,14 @@ class G4MaterialPropertiesTable
                                  G4double PropertyValue);
     // Add a new property to the table by giving a key-name and value 
 
-    inline G4MaterialPropertyVector* AddProperty(const char     *key,
-                                                 G4double *PhotonEnergies,
-                                                 G4double *PropertyValues,
-                                                 G4int     NumEntries);
+    G4MaterialPropertyVector* AddProperty(const char     *key,
+                                          G4double *PhotonEnergies,
+                                          G4double *PropertyValues,
+                                          G4int     NumEntries);
     // Add a new property to the table by giving a key-name and the
     // arrays x and y of size NumEntries.
 
-    inline void AddProperty(const char *key, G4MaterialPropertyVector *opv);
+    void AddProperty(const char *key, G4MaterialPropertyVector *opv);
     // Add a new property to the table by giving a key-name and an
     // already constructed G4MaterialPropertyVector.
 
@@ -140,7 +140,11 @@ class G4MaterialPropertiesTable
 
   private:
 
+    G4MaterialPropertyVector* CalculateGROUPVEL();
+    // Calculate the group velocity based on RINDEX
+
     G4MaterialPropertyVector* SetGROUPVEL();
+    // Dummy method: will be obsolete from the next (version 11) release
 
   private:
 
@@ -151,8 +155,9 @@ class G4MaterialPropertiesTable
     std::map< G4String, G4double, std::less<G4String> > MPTC;
     typedef std::map< G4String, G4double,
                       std::less<G4String> >::const_iterator MPTCiterator;
+    // MPT and MPTC will be obsolete when associate public interfaces, 
+    // GetPropertiesMap and GetPropertiesCMap are removed from the version 11. 
 
-    //material property map and constant property map by index types
     std::map<G4MPindex, G4MaterialPropertyVector*, std::less<G4MPindex> > MP;
     typedef std::map< G4MPindex, G4MaterialPropertyVector*,
                       std::less<G4MPindex> >::const_iterator MPiterator;
@@ -160,6 +165,7 @@ class G4MaterialPropertiesTable
     std::map< G4MCPindex, G4double, std::less<G4MCPindex> > MCP;
     typedef std::map< G4MCPindex, G4double,
                       std::less<G4MCPindex> >::const_iterator MCPiterator;
+    //material property map and constant property map by index types
 };
 
 /////////////////////

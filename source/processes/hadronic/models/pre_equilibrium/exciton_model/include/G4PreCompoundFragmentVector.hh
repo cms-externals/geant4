@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PreCompoundFragmentVector.hh 100378 2016-10-19 15:03:27Z gcosmo $
+// $Id: G4PreCompoundFragmentVector.hh 100376 2016-10-19 14:54:43Z vnivanch $
 //
 // Hadronic Process: Nuclear Preequilibrium
 // by V. Lara

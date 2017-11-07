@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4O17GEMProbability.cc 74869 2013-10-23 09:26:17Z gcosmo $
+// $Id: G4O17GEMProbability.cc 74829 2013-10-22 17:33:01Z vnivanch $
 //
 // Hadronic Process: Nuclear De-excitations
 // by V. Lara (Nov 1999)

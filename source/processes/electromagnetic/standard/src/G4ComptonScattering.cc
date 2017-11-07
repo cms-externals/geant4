@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4ComptonScattering.cc 105734 2017-08-16 12:58:28Z gcosmo $
+// $Id: G4ComptonScattering.cc 107020 2017-10-31 22:13:34Z dsawkey $
 //
 // 
 //------------ G4ComptonScattering physics process -----------------------------
@@ -115,3 +115,11 @@ void G4ComptonScattering::PrintInfo()
 {}         
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void G4ComptonScattering::ProcessDescription(std::ostream& out) const
+{
+  out << "<strong>Compton scattering</strong>";
+  G4VEmProcess::ProcessDescription(out);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

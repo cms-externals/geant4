@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmStandardPhysics_option4.cc 106234 2017-09-22 21:36:55Z gcosmo $
+// $Id: G4EmStandardPhysics_option4.cc 106944 2017-10-30 16:23:44Z mnovak $
 //
 //---------------------------------------------------------------------------
 //
@@ -137,11 +137,10 @@ G4EmStandardPhysics_option4::G4EmStandardPhysics_option4(G4int ver,
   param->SetLowestElectronEnergy(100*eV);
   param->SetNumberOfBinsPerDecade(20);
   param->ActivateAngularGeneratorForIonisation(true);
-  //  param->SetMscRangeFactor(0.02);                     // e-/e+ msc urban
-  //  param->SetMscStepLimitType(fUseDistanceToBoundary); // e-/e+ msc urban
-  param->SetMscStepLimitType(fUseSafety); // error-free stepping for e-/e+ msc gs
-  param->SetMscSkin(3);                   // error-free stepping for e-/e+ msc gs
-  param->SetMscRangeFactor(0.2);          // error-free stepping for e-/e+ msc gs
+  param->SetUseMottCorrection(true);          // use Mott-correction for e-/e+ msc gs
+  param->SetMscStepLimitType(fUseSafetyPlus); // error-free stepping for e-/e+ msc gs
+  param->SetMscSkin(3);                       // error-free stepping for e-/e+ msc gs
+  param->SetMscRangeFactor(0.2);              // error-free stepping for e-/e+ msc gs
   param->SetMuHadLateralDisplacement(true);
   //  param->SetLatDisplacementBeyondSafety(true);
   param->SetFluo(true);
@@ -226,6 +225,7 @@ void G4EmStandardPhysics_option4::ConstructProcess()
 
   // nuclear stopping
   G4NuclearStopping* pnuc = new G4NuclearStopping();
+  G4NuclearStopping* inuc = new G4NuclearStopping();
 
   // Add standard EM Processes
   G4ParticleTable* table = G4ParticleTable::GetParticleTable();
@@ -262,12 +262,9 @@ void G4EmStandardPhysics_option4::ConstructProcess()
 
       // multiple scattering
       G4eMultipleScattering* msc = new G4eMultipleScattering;
-      // e-/e+ msc urban
-      // G4UrbanMscModel* msc1 = new G4UrbanMscModel();
-      // e-/e+ msc gs
-      G4GoudsmitSaundersonMscModel* msc1 = new G4GoudsmitSaundersonMscModel();
       // e-/e+ msc gs with Mott-correction
-      msc1->SetOptionMottCorrection(true);
+      // (Mott-correction is set through G4EmParameters)
+      G4GoudsmitSaundersonMscModel* msc1 = new G4GoudsmitSaundersonMscModel();
       G4WentzelVIModel* msc2 = new G4WentzelVIModel();
       msc1->SetHighEnergyLimit(highEnergyLimit);
       msc2->SetLowEnergyLimit(highEnergyLimit);
@@ -309,12 +306,9 @@ void G4EmStandardPhysics_option4::ConstructProcess()
 
       // multiple scattering
       G4eMultipleScattering* msc = new G4eMultipleScattering;
-      // e-/e+ msc urban
-      // G4UrbanMscModel* msc1 = new G4UrbanMscModel();
-      // e-/e+ msc gs
-      G4GoudsmitSaundersonMscModel* msc1 = new G4GoudsmitSaundersonMscModel();
       // e-/e+ msc gs with Mott-correction
-      msc1->SetOptionMottCorrection(true);
+      // (Mott-correction is set through G4EmParameters)
+      G4GoudsmitSaundersonMscModel* msc1 = new G4GoudsmitSaundersonMscModel();
       G4WentzelVIModel* msc2 = new G4WentzelVIModel();
       msc1->SetHighEnergyLimit(highEnergyLimit);
       msc2->SetLowEnergyLimit(highEnergyLimit);
@@ -384,7 +378,7 @@ void G4EmStandardPhysics_option4::ConstructProcess()
 
       ph->RegisterProcess(hmsc, particle);
       ph->RegisterProcess(ionIoni, particle);
-      ph->RegisterProcess(pnuc, particle);
+      ph->RegisterProcess(inuc, particle);
 
     } else if (particleName == "pi+" ||
                particleName == "pi-" ) {
@@ -464,6 +458,7 @@ void G4EmStandardPhysics_option4::ConstructProcess()
     
   // Nuclear stopping
   pnuc->SetMaxKinEnergy(MeV);
+  inuc->SetMaxKinEnergy(MeV);
     
   // Deexcitation
   G4VAtomDeexcitation* de = new G4UAtomicDeexcitation();

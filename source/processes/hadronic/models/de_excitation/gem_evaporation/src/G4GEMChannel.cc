@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GEMChannel.cc 105799 2017-08-21 07:35:55Z gcosmo $
+// $Id: G4GEMChannel.cc 107010 2017-10-31 19:14:25Z vnivanch $
 //
 // Hadronic Process: Nuclear De-excitations
 // by V. Lara (Oct 1998)
@@ -45,6 +45,7 @@
 #include "G4Pow.hh"
 #include "G4Log.hh"
 #include "G4Exp.hh"
+#include "G4RandomDirection.hh"
 
 G4GEMChannel::G4GEMChannel(G4int theA, G4int theZ, const G4String & aName,
                            G4GEMProbability * aEmissionStrategy) :
@@ -131,8 +132,8 @@ G4Fragment* G4GEMChannel::EmittedFragment(G4Fragment* theNucleus)
   G4Fragment* evFragment = 0;
   G4double evEnergy = SampleKineticEnergy(*theNucleus) + EvaporatedMass;
 
-  G4ThreeVector momentum(IsotropicVector
-    (std::sqrt((evEnergy - EvaporatedMass)*(evEnergy + EvaporatedMass))));
+  G4ThreeVector momentum = G4RandomDirection()*
+    std::sqrt((evEnergy - EvaporatedMass)*(evEnergy + EvaporatedMass));
   
   G4LorentzVector EvaporatedMomentum(momentum, evEnergy);
   G4LorentzVector ResidualMomentum = theNucleus->GetMomentum();
@@ -248,19 +249,6 @@ G4double G4GEMChannel::SampleKineticEnergy(const G4Fragment & fragment)
     
   return KineticEnergy;
 } 
-
-G4ThreeVector G4GEMChannel::IsotropicVector(const G4double Magnitude)
-    // Samples a isotropic random vectorwith a magnitude given by Magnitude.
-    // By default Magnitude = 1.0
-{
-  G4double CosTheta = 1.0 - 2.0*G4UniformRand();
-  G4double SinTheta = std::sqrt(1.0 - CosTheta*CosTheta);
-  G4double Phi = twopi*G4UniformRand();
-  G4ThreeVector Vector(Magnitude*std::cos(Phi)*SinTheta,
-		       Magnitude*std::sin(Phi)*SinTheta,
-		       Magnitude*CosTheta);
-  return Vector;
-}
 
 void G4GEMChannel::Dump() const
 {

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4ee2KChargedModel.cc 91869 2015-08-07 15:21:02Z gcosmo $
+// $Id: G4ee2KChargedModel.cc 91860 2015-08-07 13:59:41Z vnivanch $
 //
 // -------------------------------------------------------------------
 //

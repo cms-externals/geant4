@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4HadronHElasticPhysics.cc 105730 2017-08-16 12:51:52Z gcosmo $
+// $Id: G4HadronHElasticPhysics.cc 106721 2017-10-20 09:46:54Z gcosmo $
 //
 //---------------------------------------------------------------------------
 //
@@ -299,11 +299,7 @@ void G4HadronHElasticPhysics::ConstructProcess() {
               ) {
       G4HadronElasticProcess* hel = new G4HadronElasticProcess();
       hel->AddDataSet( theComponentGGNuclNuclData );
-      // To preserve reproducibility, replace temporarily 
-      // G4NuclNuclDiffuseElastic with the Gheisha elastic model.
-      //hel->RegisterMe( diffuseNuclNuclElastic );
-      G4HadronElastic* lhepLightIon = new G4HadronElastic();     
-      hel->RegisterMe( lhepLightIon );
+      hel->RegisterMe( diffuseNuclNuclElastic );
       pmanager->AddDiscreteProcess( hel );
       if ( verbose > 1 ) {
 	G4cout << "### HadronElasticPhysics: " << hel->GetProcessName()
@@ -337,16 +333,14 @@ void G4HadronHElasticPhysics::ConstructProcess() {
       }
 
     } else if ( pname == "GenericIon" ) {
-      // To preserve reproducibility, disable temporarily 
-      // G4NuclNuclDiffuseElastic.
-      //G4HadronElasticProcess* hel = new G4HadronElasticProcess();
-      //hel->AddDataSet( theComponentGGNuclNuclData );
-      //hel->RegisterMe( diffuseNuclNuclElastic );
-      //pmanager->AddDiscreteProcess( hel );
-      //if ( verbose > 1 ) {
-      //  G4cout << "### HadronElasticPhysics: " << hel->GetProcessName()
-      //         << " added for " << particle->GetParticleName() << G4endl;
-      //}
+      G4HadronElasticProcess* hel = new G4HadronElasticProcess();
+      hel->AddDataSet( theComponentGGNuclNuclData );
+      hel->RegisterMe( diffuseNuclNuclElastic );
+      pmanager->AddDiscreteProcess( hel );
+      if ( verbose > 1 ) {
+        G4cout << "### HadronElasticPhysics: " << hel->GetProcessName()
+               << " added for " << particle->GetParticleName() << G4endl;
+      }
 
     }
 

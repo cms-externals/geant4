@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4RootAnalysisManager.cc 105338 2017-07-21 09:14:27Z gcosmo $
+// $Id: G4RootAnalysisManager.cc 106985 2017-10-31 10:07:18Z gcosmo $
 
 // Author: Ivana Hrivnacova, 18/06/2013  (ivana@ipno.in2p3.fr)
 
@@ -80,6 +80,7 @@ G4bool G4RootAnalysisManager::IsInstance()
 G4RootAnalysisManager::G4RootAnalysisManager(G4bool isMaster)
  : G4ToolsAnalysisManager("Root", isMaster),
    fNofNtupleFiles(0),
+   fNtupleRowWise(true),
    fNtupleMergeMode(G4NtupleMergeMode::kNone),
    fNtupleManager(nullptr),
    fSlaveNtupleManager(nullptr),
@@ -268,7 +269,7 @@ void G4RootAnalysisManager::CreateNtupleManagers()
       G4int nofMainManagers = fNofNtupleFiles;
       if ( ! nofMainManagers ) nofMainManagers = 1;
              // create one manager if merging required into the histos & profiles files
-      fNtupleManager = new G4RootNtupleManager(fState, nofMainManagers);
+      fNtupleManager = new G4RootNtupleManager(fState, nofMainManagers, fNtupleRowWise);
       fNtupleManager->SetFileManager(fFileManager);
       SetNtupleManager(fNtupleManager);
       break;
@@ -664,12 +665,14 @@ G4bool G4RootAnalysisManager::CloseFileImpl()
 
 //_____________________________________________________________________________
 void G4RootAnalysisManager::SetNtupleMerging(G4bool mergeNtuples, 
-                                             G4int nofNtupleFiles,
+                                             G4int  nofNtupleFiles,
+                                             G4bool rowWise,
                                              unsigned int basketSize)
 
 {
   // Keep basketSize in file manager
   fFileManager->SetBasketSize(basketSize);
+  fNtupleRowWise = rowWise;
 
   // Set ntuple merging mode 
   SetNtupleMergingMode(mergeNtuples, nofNtupleFiles);

@@ -253,7 +253,7 @@ G4LevelReader::LevelManager(G4int Z, G4int A, G4int nlev,
 	   << " <" << fFile << ">" <<  G4endl;
   }
 
-  G4bool allLevels = fParam->StoreAllLevels();
+  G4bool allLevels = fParam->StoreICLevelData();
 
   G4int nlevels = (0 == nlev) ? fLevelMax : nlev;
   if(fVerbose > 0) {
@@ -320,7 +320,7 @@ G4LevelReader::LevelManager(G4int Z, G4int A, G4int nlev,
     }
     vEnergy[i] = ener;
     if(fTime > 0.0f)  { fTime *= fTimeFactor; }
-    if(fSpin > 20.0f) { fSpin = 0.0f; }
+    if(fSpin > 48.0f) { fSpin = 0.0f; }
     vSpin[i]   = (G4int)(100 + fSpin + fSpin) + k*100000;
     if(fVerbose > 1) {
       G4cout << "   Level #" << i1 << " E(MeV)= " << ener/CLHEP::MeV

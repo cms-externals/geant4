@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PhysListFactory.cc 103591 2017-04-19 07:53:55Z gcosmo $
+// $Id: G4PhysListFactory.cc 106630 2017-10-17 06:27:47Z gcosmo $
 //
 //---------------------------------------------------------------------------
 //
@@ -44,6 +44,7 @@
 #include "FTFP_BERT_HP.hh"
 #include "FTFP_BERT_TRV.hh"
 #include "FTFP_BERT_ATL.hh"
+#include "FTFQGSP_BERT.hh"
 #include "FTFP_INCLXX.hh"
 #include "FTFP_INCLXX_HP.hh"
 #include "FTF_BIC.hh"
@@ -74,10 +75,10 @@
 G4PhysListFactory::G4PhysListFactory() 
   : defName("FTFP_BERT"),verbose(1)
 {
-  nlists_hadr = 22;
-  G4String ss[22] = {
-    "FTFP_BERT","FTFP_BERT_TRV","FTFP_BERT_ATL","FTFP_BERT_HP","FTFP_INCLXX",
-    "FTFP_INCLXX_HP","FTF_BIC", "LBE","QBBC",
+  nlists_hadr = 23;
+  G4String ss[23] = {
+    "FTFP_BERT","FTFP_BERT_TRV","FTFP_BERT_ATL","FTFP_BERT_HP","FTFQGSP_BERT",
+    "FTFP_INCLXX","FTFP_INCLXX_HP","FTF_BIC", "LBE","QBBC",
     "QGSP_BERT","QGSP_BERT_HP","QGSP_BIC","QGSP_BIC_HP","QGSP_BIC_AllHP",
     "QGSP_FTFP_BERT","QGSP_INCLXX","QGSP_INCLXX_HP","QGS_BIC",
     "Shielding","ShieldingLEND","ShieldingM","NuBeam"};
@@ -150,6 +151,7 @@ G4PhysListFactory::GetReferencePhysList(const G4String& name)
   else if(had_name == "FTFP_BERT_HP")   {p = new FTFP_BERT_HP(verbose);}
   else if(had_name == "FTFP_BERT_TRV")  {p = new FTFP_BERT_TRV(verbose);}
   else if(had_name == "FTFP_BERT_ATL")  {p = new FTFP_BERT_ATL(verbose);}
+  else if(had_name == "FTFQGSP_BERT")   {p = new FTFQGSP_BERT(verbose);}
   else if(had_name == "FTFP_INCLXX")    {p = new FTFP_INCLXX(verbose);}
   else if(had_name == "FTFP_INCLXX_HP") {p = new FTFP_INCLXX_HP(verbose);}
   else if(had_name == "FTF_BIC")        {p = new FTF_BIC(verbose);}

@@ -124,6 +124,7 @@ void G4EmParameters::Initialise()
   pixe = false;
   deexIgnoreCut = false;
   lateralDisplacement = true;
+  lateralDisplacementAlg96 = true;
   muhadLateralDisplacement = false;
   latDisplacementBeyondSafety = false;
   useAngGeneratorForIonisation = false;
@@ -141,6 +142,7 @@ void G4EmParameters::Initialise()
   maxKinEnergyCSDA = 1.0*CLHEP::GeV;
   lowestElectronEnergy = 1.0*CLHEP::keV;
   lowestMuHadEnergy = 1.0*CLHEP::keV;
+  lowestTripletEnergy = 1.0*CLHEP::MeV;
   linLossLimit = 0.01;
   bremsTh = maxKinEnergy;
   lambdaFactor = 0.8;
@@ -295,7 +297,7 @@ G4bool G4EmParameters::Pixe() const
 
 void G4EmParameters::SetDeexcitationIgnoreCut(G4bool val)
 {
-  if(IsLocked()) { return; }
+  if(!IsLocked()) { return; }
   deexIgnoreCut = val;
 }
 
@@ -313,6 +315,17 @@ void G4EmParameters::SetLateralDisplacement(G4bool val)
 G4bool G4EmParameters::LateralDisplacement() const
 {
   return lateralDisplacement;
+}
+
+void G4EmParameters::SetLateralDisplacementAlg96(G4bool val)
+{
+  if(!IsLocked()) { return; }
+  lateralDisplacementAlg96 = val;
+}
+
+G4bool G4EmParameters::LateralDisplacementAlg96() const
+{
+  return lateralDisplacementAlg96;
 }
 
 void G4EmParameters::SetMuHadLateralDisplacement(G4bool val)
@@ -557,6 +570,17 @@ void G4EmParameters::SetLowestMuHadEnergy(G4double val)
 G4double G4EmParameters::LowestMuHadEnergy() const
 {
   return lowestMuHadEnergy; 
+}
+
+void G4EmParameters::SetLowestTripletEnergy(G4double val)
+{
+  if(IsLocked()) { return; }
+  if(val > 0.0) { lowestTripletEnergy = val; }
+}
+
+G4double G4EmParameters::LowestTripletEnergy() const
+{
+  return lowestTripletEnergy;
 }
 
 void G4EmParameters::SetLinearLossLimit(G4double val)
@@ -1243,9 +1267,10 @@ std::ostream& G4EmParameters::StreamInfo(std::ostream& os) const
   os << "Auger cascade enabled                              " <<augerCascade << "\n";
   os << "PIXE atomic de-excitation enabled                  " <<pixe << "\n";
   os << "De-excitation module ignores cuts                  " <<deexIgnoreCut << "\n";
-  os << "Msc lateraral displacement for e+- enabled         " <<lateralDisplacement << "\n";
-  os << "Msc lateraral displacement for muons and hadrons   " <<muhadLateralDisplacement << "\n";
-  os << "Msc lateraral displacement beyond geometry safety  " <<latDisplacementBeyondSafety << "\n";
+  os << "Msc lateral displacement for e+- enabled           " <<lateralDisplacement << "\n";
+  os << "Msc lateral displacement for muons and hadrons     " <<muhadLateralDisplacement << "\n";
+  os << "Msc lateral displacement alg96 for e+-             " <<lateralDisplacementAlg96 << "\n";
+  os << "Msc lateral displacement beyond geometry safety    " <<latDisplacementBeyondSafety << "\n";
   os << "Enable angular generator interface                 " 
      <<useAngGeneratorForIonisation << "\n";
   os << "Use Mott correction for e- scattering              " << useMottCorrection << "\n";
@@ -1266,6 +1291,8 @@ std::ostream& G4EmParameters::StreamInfo(std::ostream& os) const
      <<G4BestUnit(lowestElectronEnergy,"Energy") << "\n";
   os << "Lowest muon/hadron kinetic energy                  " 
      <<G4BestUnit(lowestMuHadEnergy,"Energy") << "\n";
+  os << "Lowest triplet kinetic energy                      " 
+     <<G4BestUnit(lowestTripletEnergy,"Energy") << "\n";
   os << "Linear loss limit " <<linLossLimit << "\n";
   os << "Bremsstrahlung energy threshold above which \n" 
      << "  primary is added to the list of secondary        " 
