@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4RayleighScattering.cc 107089 2017-11-02 03:05:46Z dsawkey $
+// $Id: G4RayleighScattering.cc 107118 2017-11-02 15:10:19Z gcosmo $
 //
 // 
 // 19-12-2008, first implementation, Luciano Pandola 

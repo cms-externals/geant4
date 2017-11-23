@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4HETCFragment.cc 100375 2016-10-19 14:49:20Z vnivanch $
+// $Id: G4HETCFragment.cc 100378 2016-10-19 15:03:27Z gcosmo $
 //
 // by V. Lara
 //

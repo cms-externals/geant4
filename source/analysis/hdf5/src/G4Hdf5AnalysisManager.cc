@@ -81,11 +81,11 @@ G4Hdf5AnalysisManager::G4Hdf5AnalysisManager(G4bool isMaster)
 {
 #ifdef G4MULTITHREADED
 #ifndef H5_HAVE_THREADSAFE
-    G4ExceptionDescription description;
-    description 
+    G4ExceptionDescription message;
+    message 
       << "Your HDF5 lib is not built with H5_HAVE_THREADSAFE.";
     G4Exception("G4Hdf5AnalysisManager::G4Hdf5AnalysisManager",
-                "Analysis_F001", FatalException, description);
+                "Analysis_F001", FatalException, message);
 #endif
 #endif
 

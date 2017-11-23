@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4ElasticHNScattering.hh 101976 2016-12-14 07:16:52Z ribon $
+// $Id: G4ElasticHNScattering.hh 100828 2016-11-02 15:25:59Z gcosmo $
 
 #ifndef G4ElasticHNScattering_h
 #define G4ElasticHNScattering_h 1

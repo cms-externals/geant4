@@ -273,13 +273,13 @@ std::ostream& G4DeexPrecoParameters::StreamInfo(std::ostream& os) const
      << fLevelDensity*CLHEP::MeV << "\n";
   os << "Time limit for long lived isomeres (ns)             " 
      << fMaxLifeTime/CLHEP::ns << "\n";
-  os << "Store e- internal conversion data                   " << fStoreAllLevels << "\n";
-  os << "Correlated gamma emission flag                      " << fCorrelatedGamma << "\n";
-  os << "Max 2J for sampling of angular correlations         " << fTwoJMAX << "\n";
-  os << "Correlated gamma emission flag                      " 
+  os << "Internal e- conversion flag                         " 
      << fInternalConversion << "\n";
+  os << "Store e- internal conversion data                   " << fStoreAllLevels << "\n";
   os << "Electron internal conversion ID                     " 
      << fInternalConversionID << "\n";
+  os << "Correlated gamma emission flag                      " << fCorrelatedGamma << "\n";
+  os << "Max 2J for sampling of angular correlations         " << fTwoJMAX << "\n";
   os << "=======================================================================" << "\n";
   os.precision(prec);
   return os;

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4BertiniElectroNuclearBuilder.cc 103970 2017-05-04 17:58:03Z vnivanch $
+// $Id: G4BertiniElectroNuclearBuilder.cc 104018 2017-05-08 07:32:45Z gcosmo $
 //
 //---------------------------------------------------------------------------
 //

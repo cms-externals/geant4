@@ -1156,7 +1156,7 @@ namespace G4INCL {
     // Initialise balance variables with the incoming values
     theBalance.Z = theEventInfo.Zp + theEventInfo.Zt;
     theBalance.A = theEventInfo.Ap + theEventInfo.At;
-    theBalance.S = 0;
+    theBalance.S = theEventInfo.Sp + theEventInfo.St;
 
     theBalance.energy = getInitialEnergy();
     theBalance.momentum = getIncomingMomentum();

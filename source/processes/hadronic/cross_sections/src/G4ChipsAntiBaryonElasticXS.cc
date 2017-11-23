@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4ChipsAntiBaryonElasticXS.cc 93065 2015-10-02 09:14:04Z witoldp $
+// $Id: G4ChipsAntiBaryonElasticXS.cc 93260 2015-10-14 08:37:04Z gcosmo $
 //
 //
 // G4 Physics class: G4ChipsAntiBaryonElasticXS for pA elastic cross sections

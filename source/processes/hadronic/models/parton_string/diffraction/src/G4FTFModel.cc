@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4FTFModel.cc 107083 2017-11-01 22:35:08Z yarba $
+// $Id: G4FTFModel.cc 107317 2017-11-08 16:25:57Z gcosmo $
 // GEANT4 tag $Name:  $
 //
 
@@ -254,11 +254,11 @@ void G4FTFModel::Init( const G4Nucleus& aNucleus, const G4DynamicParticle& aProj
   theParticipants.Init( aNucleus.GetA_asInt(), aNucleus.GetZ_asInt() );
   //theParticipants.Init( aNucleus.GetA_asInt(), 0 ); // For h+neutron
 
-/*
+  /*
   if ( theParameters != 0 ) delete theParameters;
   theParameters = new G4FTFParameters( theProjectile.GetDefinition(), aNucleus.GetA_asInt(),
                                        aNucleus.GetZ_asInt(), PlabPerParticle );
-*/
+  */
 
   // reset/recalculate everything for the new interaction
   //
@@ -335,12 +335,12 @@ G4ExcitedStringVector* G4FTFModel::GetStrings() {
 
     GetResiduals();
 
-/*
+    /*
     if ( theParameters != 0 ) {
       delete theParameters;
       theParameters = 0;
     }
-*/
+    */
   } else if ( ! GetProjectileNucleus() ) {
     // Erase the hadron projectile
     std::vector< G4VSplitableHadron* > primaries;

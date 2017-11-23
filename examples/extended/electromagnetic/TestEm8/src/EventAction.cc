@@ -26,7 +26,7 @@
 /// \file electromagnetic/TestEm8/src/EventAction.cc
 /// \brief Implementation of the EventAction class
 //
-// $Id: EventAction.cc 84648 2014-10-17 11:23:00Z bagoulia $
+// $Id: EventAction.cc 85243 2014-10-27 08:22:42Z gcosmo $
 //
 //---------------------------------------------------------------------------
 //

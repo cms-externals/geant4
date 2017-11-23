@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VMultipleScattering.cc 106649 2017-10-18 17:05:12Z dsawkey $
+// $Id: G4VMultipleScattering.cc 107364 2017-11-09 10:53:25Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -352,10 +352,11 @@ void G4VMultipleScattering::BuildPhysicsTable(const G4ParticleDefinition& part)
 void G4VMultipleScattering::StreamInfo(std::ostream& outFile, 
                   const G4ParticleDefinition& part, G4String endOfLine) const
 {
-  outFile << endOfLine << GetProcessName() 
-	  << ":   for " << part.GetParticleName()
-	  << "    SubType= " << GetProcessSubType() 
-	  << endOfLine;
+  outFile << endOfLine << GetProcessName() << ": ";
+	if (endOfLine != G4String("<br>\n")) {
+		outFile << "  for " << part.GetParticleName();
+	}
+	outFile  << "    SubType= " << GetProcessSubType() << endOfLine;
   StreamProcessInfo(outFile, endOfLine);
   modelManager->DumpModelList(outFile, verboseLevel, endOfLine);
 }

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4CrossSectionPairGG.cc 94959 2016-01-08 13:33:05Z witoldp $
+// $Id: G4CrossSectionPairGG.cc 94961 2016-01-08 16:31:48Z gcosmo $
 // $ GEANT4 tag $Name: not supported by cvs2svn $
 //
 //   Class G4CrossSectionPairGG

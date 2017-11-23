@@ -30,6 +30,16 @@ if("$ENV{DICOM_USE_DCMTK}")
 endif()
 
 #----------------------------------------------------------------------------
+# Download DICOM_HEAD data 
+#
+if("$ENV{DICOM_USE_HEAD}")
+    set(CMAKE_MODULE_PATH 
+        ${CMAKE_SOURCE_DIR}/cmake
+        ${CMAKE_MODULE_PATH})
+  include(DownloadDICOMData)
+endif()
+
+#----------------------------------------------------------------------------
 # Locate sources and headers for this project
 #
 include_directories(${PROJECT_SOURCE_DIR}/include 

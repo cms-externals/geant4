@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4TritonEvaporationProbability.cc 96627 2016-04-27 08:51:52Z vnivanch $
+// $Id: G4TritonEvaporationProbability.cc 96634 2016-04-27 09:31:49Z gcosmo $
 //
 // J.M. Quesada (August2008). Based on:
 //

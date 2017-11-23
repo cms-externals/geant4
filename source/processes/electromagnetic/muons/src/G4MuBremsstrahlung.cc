@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4MuBremsstrahlung.cc 107024 2017-10-31 22:17:01Z dsawkey $
+// $Id: G4MuBremsstrahlung.cc 107056 2017-11-01 14:52:32Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

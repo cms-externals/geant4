@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4LossTableManager.cc 107022 2017-10-31 22:15:12Z dsawkey $
+// $Id: G4LossTableManager.cc 107364 2017-11-09 10:53:25Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -1065,36 +1065,53 @@ void G4LossTableManager::DumpHtml()
         G4MuonPlus::MuonPlusDefinition(),
         G4MuonMinus::MuonMinusDefinition(),
       };
+   
+    std::vector<G4VEmProcess*> emproc_vector = GetEmProcessVector();
+    std::vector<G4VEnergyLossProcess*> enloss_vector = 
+      GetEnergyLossProcessVector();
+    std::vector<G4VMultipleScattering*> mscat_vector =
+      GetMultipleScatteringVector();
     
     for (auto theParticle : particles) {
       outFile << "<li><h3>" << theParticle->GetParticleName() << "</h3><ul>\n";
 
-      std::vector<G4VEmProcess*> emproc_vector = GetEmProcessVector();
-      for (auto proc : emproc_vector) {
-        if (proc->Particle() == theParticle) {
-          outFile << "<li>\n";
-          proc->ProcessDescription(outFile);
-          outFile << "</li><br>\n";
+			G4ProcessManager* pm = theParticle->GetProcessManager();
+      G4ProcessVector*  pv = pm->GetProcessList();
+      G4int plen = pm->GetProcessListLength();
+
+      for (auto emproc : emproc_vector) {
+        for (G4int i = 0; i < plen; ++i) {
+          G4VProcess* proc = (*pv)[i];
+          if (proc == emproc) {
+            outFile << "<li>\n";
+            proc->ProcessDescription(outFile);
+            outFile << "</li>\n";
+            break;
+          }
         }
       }
 
-      std::vector<G4VEnergyLossProcess*> enloss_vector = 
-                                                  GetEnergyLossProcessVector();
-      for (auto proc : enloss_vector) {
-        if (proc->Particle() == theParticle) {
-          outFile << "<li>\n";
-          proc->ProcessDescription(outFile);
-          outFile << "</li><br>\n";
+      for (auto mscproc : mscat_vector) {
+        for (G4int i = 0; i < plen; ++i) {
+          G4VProcess* proc = (*pv)[i];
+          if (proc == mscproc) {
+            outFile << "<li>\n";
+            proc->ProcessDescription(outFile);
+            outFile << "</li>\n";
+            break;
+          }
         }
       }
 
-      std::vector<G4VMultipleScattering*> mscat_vector =
-                                                GetMultipleScatteringVector();
-      for (auto proc : mscat_vector) {
-        if (proc->FirstParticle() == theParticle) {
-          outFile << "<li>\n";
-          proc->ProcessDescription(outFile);
-          outFile << "</li><br>\n";
+      for (auto enlossproc : enloss_vector) {
+        for (G4int i = 0; i < plen; ++i) {
+          G4VProcess* proc = (*pv)[i];
+          if (proc == enlossproc) {
+            outFile << "<li>\n";
+            proc->ProcessDescription(outFile);
+            outFile << "</li>\n";
+            break;
+          }
         }
       }
       outFile << "</ul>\n";

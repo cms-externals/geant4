@@ -299,13 +299,31 @@ endif()
 GEANT4_ADD_FEATURE(GEANT4_USE_FREETYPE "Building Geant4 analysis library with Freetype support")
 
 #-----------------------------------------------------------------------
-# Optional support for HDF5 - Requires external HDF5 install
+# Optional support for HDF5
+# - Requires external HDF5 1.8 or higher install
+# - Install must be MT safe if building Geant4 in MT mode
 #
 option(GEANT4_USE_HDF5 "Build Geant4 analysis library with HDF5 support" OFF)
 mark_as_advanced(GEANT4_USE_HDF5)
 
 if(GEANT4_USE_HDF5)
-  find_package(HDF5 REQUIRED)
+  find_package(HDF5 1.8 REQUIRED)
+
+  # If we're in MT mode, found HDF5 must also support MT
+  if(GEANT4_BUILD_MULTITHREADED)
+    include(CheckCXXSymbolExists)
+    set(CMAKE_REQUIRED_INCLUDES "${HDF5_INCLUDE_DIRS}")
+    check_cxx_symbol_exists(H5_HAVE_THREADSAFE "H5pubconf.h" GEANT4_HAVE_H5_HAVE_THREADSAFE)
+    unset(CMAKE_REQUIRED_INCLUDES)
+
+    if(NOT GEANT4_HAVE_H5_HAVE_THREADSAFE)
+      message(FATAL_ERROR
+        "Found an install of HDF5, but it was not built with support for thread safety. "
+        "Either build Geant4 in single threaded mode, or use/reinstall HDF5 with "
+        "thread safety enabled. See HDF5's install guides, available from https://support.hdfgroup.org/HDF5/release/, for instructions on this.\n"
+        )
+    endif()
+  endif()
 
   # As FindHDF5 does not yet supply imported targets, we
   # create an internal INTERFACE target to wrap these.

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PhotoElectricEffect.cc 107020 2017-10-31 22:13:34Z dsawkey $
+// $Id: G4PhotoElectricEffect.cc 107058 2017-11-01 14:54:12Z gcosmo $
 //
 //
 //------------------ G4PhotoElectricEffect physics process ---------------------

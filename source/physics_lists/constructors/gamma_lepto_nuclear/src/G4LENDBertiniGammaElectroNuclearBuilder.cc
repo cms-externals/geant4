@@ -85,6 +85,7 @@ void G4LENDBertiniGammaElectroNuclearBuilder::Build()
    
    theGammaReaction->SetMinEnergy(20*MeV);
    G4LENDorBERTModel* theGammaReactionLowE = new G4LENDorBERTModel( G4Gamma::Gamma() );
+   theGammaReactionLowE->DumpLENDTargetInfo(true);
    G4LENDCombinedCrossSection* theGammaCrossSectionLowE = new G4LENDCombinedCrossSection( G4Gamma::Gamma() );
    theGammaReactionLowE->SetMaxEnergy(20*MeV);
    thePhotoNuclearProcess->RegisterMe(theGammaReactionLowE);

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4UnstableFragmentBreakUp.cc 99773 2016-10-05 09:52:35Z vnivanch $
+// $Id: G4UnstableFragmentBreakUp.cc 99812 2016-10-06 08:49:27Z gcosmo $
 //
 // -------------------------------------------------------------------
 //      GEANT 4 class file 

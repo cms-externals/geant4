@@ -297,7 +297,7 @@ G4bool G4EmParameters::Pixe() const
 
 void G4EmParameters::SetDeexcitationIgnoreCut(G4bool val)
 {
-  if(!IsLocked()) { return; }
+  if(IsLocked()) { return; }
   deexIgnoreCut = val;
 }
 
@@ -319,7 +319,7 @@ G4bool G4EmParameters::LateralDisplacement() const
 
 void G4EmParameters::SetLateralDisplacementAlg96(G4bool val)
 {
-  if(!IsLocked()) { return; }
+  if(IsLocked()) { return; }
   lateralDisplacementAlg96 = val;
 }
 

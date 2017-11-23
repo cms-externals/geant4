@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4Trap.cc 105975 2017-09-05 07:42:02Z gcosmo $
+// $Id: G4Trap.cc 107544 2017-11-22 13:25:54Z evc $
 //
 // class G4Trap
 //
@@ -687,9 +687,14 @@ EInside G4Trap::Inside( const G4ThreeVector& p ) const
 
 G4ThreeVector G4Trap::SurfaceNormal( const G4ThreeVector& p ) const
 {
+  G4int nsurf = 0; // number of surfaces where p is placed
   G4double nx = 0, ny = 0, nz = 0;
   G4double dz = std::abs(p.z()) - fDz;
-  if (std::abs(dz) <= halfCarTolerance) nz = (p.z() < 0) ? -1 : 1;
+  if (std::abs(dz) <= halfCarTolerance)
+  {
+    nz = (p.z() < 0) ? -1 : 1;
+    ++nsurf;
+  }
 
   switch (fTrapType)
   {
@@ -701,6 +706,7 @@ G4ThreeVector G4Trap::SurfaceNormal( const G4ThreeVector& p ) const
         if (std::abs(dy) > halfCarTolerance) continue;
         ny  = fPlanes[i].b;
         nz += fPlanes[i].c;
+        ++nsurf;
         break;
       }
       for (G4int i=2; i<4; ++i)
@@ -711,6 +717,7 @@ G4ThreeVector G4Trap::SurfaceNormal( const G4ThreeVector& p ) const
         nx  = fPlanes[i].a;
         ny += fPlanes[i].b;
         nz += fPlanes[i].c;
+        ++nsurf;
         break;
       }
       break;
@@ -727,6 +734,7 @@ G4ThreeVector G4Trap::SurfaceNormal( const G4ThreeVector& p ) const
         nx  = fPlanes[i].a;
         ny += fPlanes[i].b;
         nz += fPlanes[i].c;
+        ++nsurf;
         break;
       }
       break;
@@ -741,6 +749,7 @@ G4ThreeVector G4Trap::SurfaceNormal( const G4ThreeVector& p ) const
       {
         nx  = (p.x() < 0) ? -fPlanes[3].a : fPlanes[3].a;
         nz += fPlanes[3].c;
+        ++nsurf;
       }
       break;
     }
@@ -754,6 +763,7 @@ G4ThreeVector G4Trap::SurfaceNormal( const G4ThreeVector& p ) const
       {
         nx  = (p.x() < 0) ? -fPlanes[3].a : fPlanes[3].a;
         ny += fPlanes[3].b;
+        ++nsurf;
       }
       break;
     }
@@ -761,7 +771,6 @@ G4ThreeVector G4Trap::SurfaceNormal( const G4ThreeVector& p ) const
 
   // Return normal
   //
-  G4int nsurf = nx*nx + ny*ny + nz*nz + 0.5;                  // get magnitude
   if (nsurf == 1)      return G4ThreeVector(nx,ny,nz);
   else if (nsurf != 0) return G4ThreeVector(nx,ny,nz).unit(); // edge or corner
   else

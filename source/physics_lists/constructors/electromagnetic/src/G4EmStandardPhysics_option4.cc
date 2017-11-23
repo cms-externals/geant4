@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmStandardPhysics_option4.cc 106944 2017-10-30 16:23:44Z mnovak $
+// $Id: G4EmStandardPhysics_option4.cc 107332 2017-11-08 16:44:06Z gcosmo $
 //
 //---------------------------------------------------------------------------
 //
@@ -143,7 +143,8 @@ G4EmStandardPhysics_option4::G4EmStandardPhysics_option4(G4int ver,
   param->SetMscRangeFactor(0.2);              // error-free stepping for e-/e+ msc gs
   param->SetMuHadLateralDisplacement(true);
   //  param->SetLatDisplacementBeyondSafety(true);
-  param->SetFluo(true);
+  // param->SetFluo(true);
+  param->SetAugerCascade(true);
   SetPhysicsType(bElectromagnetic);
 }
 

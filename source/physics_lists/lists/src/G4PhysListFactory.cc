@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PhysListFactory.cc 106630 2017-10-17 06:27:47Z gcosmo $
+// $Id: G4PhysListFactory.cc 107319 2017-11-08 16:29:22Z gcosmo $
 //
 //---------------------------------------------------------------------------
 //
@@ -60,6 +60,7 @@
 #include "QGSP_INCLXX.hh"
 #include "QGSP_INCLXX_HP.hh"
 #include "Shielding.hh"
+#include "ShieldingLEND.hh"
 #include "NuBeam.hh"
 
 #include "G4EmStandardPhysics.hh"
@@ -71,9 +72,11 @@
 #include "G4EmStandardPhysicsSS.hh"
 #include "G4EmLivermorePhysics.hh"
 #include "G4EmPenelopePhysics.hh"
+#include "G4PhysListFactoryMessenger.hh"
+#include "G4UImessenger.hh"
 
 G4PhysListFactory::G4PhysListFactory() 
-  : defName("FTFP_BERT"),verbose(1)
+  : defName("FTFP_BERT"),verbose(1),theMessenger(nullptr)
 {
   nlists_hadr = 23;
   G4String ss[23] = {
@@ -94,7 +97,9 @@ G4PhysListFactory::G4PhysListFactory()
 }
 
 G4PhysListFactory::~G4PhysListFactory()
-{}
+{
+  delete theMessenger;
+}
 
 G4VModularPhysicsList* 
 G4PhysListFactory::ReferencePhysList()
@@ -146,7 +151,7 @@ G4PhysListFactory::GetReferencePhysList(const G4String& name)
     G4cout << "G4PhysListFactory::GetReferencePhysList <" << had_name
 	   << em_name << ">  EMoption= " << em_opt << G4endl;
   }
-  G4VModularPhysicsList* p = 0;
+  G4VModularPhysicsList* p = nullptr;
   if(had_name == "FTFP_BERT")           {p = new FTFP_BERT(verbose);}
   else if(had_name == "FTFP_BERT_HP")   {p = new FTFP_BERT_HP(verbose);}
   else if(had_name == "FTFP_BERT_TRV")  {p = new FTFP_BERT_TRV(verbose);}
@@ -167,7 +172,7 @@ G4PhysListFactory::GetReferencePhysList(const G4String& name)
   else if(had_name == "QGSP_INCLXX_HP") {p = new QGSP_INCLXX_HP(verbose);}
   else if(had_name == "QGS_BIC")        {p = new QGS_BIC(verbose);}
   else if(had_name == "Shielding")      {p = new Shielding(verbose);}
-  else if(had_name == "ShieldingLEND")  {p = new Shielding(verbose,"LEND");}
+  else if(had_name == "ShieldingLEND")  {p = new ShieldingLEND(verbose);}
   else if(had_name == "ShieldingM")     {p = new Shielding(verbose,"HP","M");}
   else if(had_name == "NuBeam")         {p = new NuBeam(verbose);}
   else {
@@ -180,7 +185,7 @@ G4PhysListFactory::GetReferencePhysList(const G4String& name)
 	   << em_name << " is built" << G4endl;
     G4int ver = p->GetVerboseLevel();
     p->SetVerboseLevel(0);
-    if(0 < em_opt) {
+    if(0 < em_opt && had_name != "LBE") {
       if(1 == em_opt) { 
 	p->ReplacePhysics(new G4EmStandardPhysics_option1(verbose)); 
       } else if(2 == em_opt) {
@@ -200,6 +205,7 @@ G4PhysListFactory::GetReferencePhysList(const G4String& name)
       }
     }
     p->SetVerboseLevel(ver);
+    theMessenger = new G4PhysListFactoryMessenger(p);
   }
   G4cout << G4endl;
   return p;

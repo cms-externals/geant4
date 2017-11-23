@@ -33,7 +33,6 @@
 //  G4FSALDormandPrince745.cc
 //  Geant4
 //
-//
 //    This is the source file of G4FSALDormandPrince745 class containing the
 //    definition of the stepper() method that evaluates one step in
 //    field propagation.
@@ -46,10 +45,15 @@
 //    8/9 | 19372/6561 −25360/2187 64448/6561 −212/729
 //    1   | 9017/3168  −355/33    46732/5247  49/176  −5103/18656
 //    1   | 35/384      0         500/1113    125/192 −2187/6784    11/84
-//    ----------f--------------------------------------------------------------
+//    ---------------------------------------------------------------------------
 //          35/384       0        500/1113    125/192  −2187/6784    11/84   0
 //          5179/57600   0       7571/16695  393/640  −92097/339200 187/2100 1/40
-
+//
+//    Implementation by Somnath Banerjee - GSoC 2015
+//       Work supported by Google as part of Google Summer of Code 2015.
+//    Supervision / code review: John Apostolakis
+//
+//  First version: June 2015 - Somnath Banerjee
 
 #include "G4FSALDormandPrince745.hh"
 #include "G4LineSection.hh"
@@ -59,7 +63,8 @@
 G4FSALDormandPrince745::G4FSALDormandPrince745(G4EquationOfMotion *EqRhs,
                                    G4int noIntegrationVariables,
                                    G4bool primary)
-: G4VFSALIntegrationStepper(EqRhs, noIntegrationVariables){
+   : G4VFSALIntegrationStepper(EqRhs, noIntegrationVariables)
+{
     
     const G4int numberOfVariables = noIntegrationVariables;
     
@@ -72,6 +77,9 @@ G4FSALDormandPrince745::G4FSALDormandPrince745(G4EquationOfMotion *EqRhs,
     ak5 = new G4double[numberOfVariables];
     ak6 = new G4double[numberOfVariables];
     ak7 = new G4double[numberOfVariables];
+    // Also always allocate arrays for interpolation stages    
+    ak8 = new G4double[numberOfVariables];
+    ak9 = new G4double[numberOfVariables];
     
     yTemp = new G4double[numberOfVariables] ;
     yIn = new G4double[numberOfVariables] ;
@@ -85,37 +93,43 @@ G4FSALDormandPrince745::G4FSALDormandPrince745(G4EquationOfMotion *EqRhs,
     
     fMidVector = new G4double[numberOfVariables];
     fMidError =  new G4double[numberOfVariables];
+    
+    fAuxStepper = nullptr;
     if( primary )
     {
         fAuxStepper = new G4FSALDormandPrince745(EqRhs, numberOfVariables,
                                            !primary);
     }
+    fLastStepLength = -1.0;
 }
 
 
 //Destructor
-G4FSALDormandPrince745::~G4FSALDormandPrince745(){
+G4FSALDormandPrince745::~G4FSALDormandPrince745()
+{
     //clear all previously allocated memory for stepper and DistChord
-    delete[] ak2;
-    delete[] ak3;
-    delete[] ak4;
-    delete[] ak5;
-    delete[] ak6;
-    delete[] ak7;
+    delete[] ak2;  ak2=nullptr;
+    delete[] ak3;  ak3=nullptr;
+    delete[] ak4;  ak4=nullptr;
+    delete[] ak5;  ak5=nullptr;
+    delete[] ak6;  ak6=nullptr;
+    delete[] ak7;  ak7=nullptr;
+    delete[] ak8;  ak8=nullptr;
+    delete[] ak9;  ak9=nullptr;
     
-    delete[] yTemp;
-    delete[] yIn;
+    delete[] yTemp; yTemp= nullptr;
+    delete[] yIn;   yIn= nullptr;
+
+    delete[] pseudoDydx_for_DistChord;  pseudoDydx_for_DistChord= nullptr;
+    delete[] fInitialDyDx;              fInitialDyDx=       nullptr;
     
-    delete[] fLastInitialVector;
-    delete[] fLastFinalVector;
-    delete[] fLastDyDx;
-    delete[] fMidVector;
-    delete[] fMidError;
+    delete[] fLastInitialVector;    fLastInitialVector= nullptr;
+    delete[] fLastFinalVector;      fLastFinalVector  = nullptr;
+    delete[] fLastDyDx;             fLastDyDx  = nullptr;
+    delete[] fMidVector;            fMidVector = nullptr;
+    delete[] fMidError;             fMidError  = nullptr;
     
-    delete fAuxStepper;
-    
-    delete[] pseudoDydx_for_DistChord;
-    
+    delete fAuxStepper;             fAuxStepper= nullptr;
 }
 
 
@@ -360,9 +374,6 @@ void G4FSALDormandPrince745::SetupInterpolate(const G4double yInput[],
     }
     
     yTemp[7]  = yIn[7];
-    
-    ak8 = new G4double[numberOfVariables];
-    ak9 = new G4double[numberOfVariables];
     
     //Evaluate the extra stages :
     for(int i=0;i<numberOfVariables;i++)

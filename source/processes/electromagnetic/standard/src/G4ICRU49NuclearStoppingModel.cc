@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4ICRU49NuclearStoppingModel.cc 106401 2017-10-09 15:40:05Z vnivanch $
+// $Id: G4ICRU49NuclearStoppingModel.cc 106442 2017-10-10 08:00:30Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

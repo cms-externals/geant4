@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4ExtrudedSolid.hh 106017 2017-09-11 06:46:27Z gcosmo $
+// $Id: G4ExtrudedSolid.hh 107007 2017-10-31 16:05:41Z evc $
 //
 //
 // --------------------------------------------------------------------
@@ -159,6 +159,9 @@ class G4ExtrudedSolid : public G4TessellatedSolid
 
     void ComputeProjectionParameters();
     void ComputeLateralPlanes();
+    inline G4bool PointInPolygon(const G4ThreeVector& p) const;
+    inline G4double DistanceToPolygonSqr(const G4ThreeVector& p) const;
+    G4ThreeVector ApproxSurfaceNormal(const G4ThreeVector& p) const;
 
     G4ThreeVector GetVertex(G4int iz, G4int ind) const;
     G4TwoVector ProjectPoint(const G4ThreeVector& point) const;
@@ -198,8 +201,11 @@ class G4ExtrudedSolid : public G4TessellatedSolid
     G4GeometryType  fGeometryType;
 
     G4int fSolidType;
-    struct plane { G4double a,b,c,d; };
+    struct plane { G4double a,b,c,d; }; // a*x + b*y + c*z + d = 0
     std::vector<plane> fPlanes;
+    struct line { G4double k,m; };      // x = k*y + m;
+    std::vector<line> fLines;
+    std::vector<G4double> fLengths;     // edge lengths
 
     std::vector<G4double>      fKScales;
     std::vector<G4double>      fScale0s;

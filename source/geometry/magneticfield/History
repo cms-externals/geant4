@@ -1,4 +1,4 @@
-$Id: History 106564 2017-10-13 09:06:13Z gcosmo $
+$Id: History 107508 2017-11-20 08:23:14Z gcosmo $
 -------------------------------------------------------------------
 
      =========================================================
@@ -16,6 +16,121 @@ committal in the CVS repository !
      ----------------------------------------------------------
      * Reverse chronological order (last date on top), please *
      ----------------------------------------------------------
+
+Nov 17, 2017 J. Apostolakis             - field-V10-03-30
+---------------------------
+- G4ChordFinder: Reinstated old driver G4MagInt_Drv, for use 
+    with G4DormandPrince745 (5th order) in G4ChordFinder's
+    2nd constructor (with magnetic field.)
+  ( Reverses change made in field-V10-03-27 )
+
+Nov 16, 2017 J. Apostolakis             - field-V10-03-29
+---------------------------
+- Suppressed statistics printing in G4ChordFinder and new drivers
+   ( G4IntegrationDriver and G4FSALIntegrationDriver )
+   protecting them by verbosity flags.
+    
+- Minor fix to initialise scalar data member in new steppers
+  G4RK547FEq1, G4RK547FEq2 and G4RK547FEq3. 
+  Fixes coverity issues 97886, 97888 and 97889.
+
+
+Nov 14, 2017 J. Apostolakis             - field-V10-03-28
+---------------------------
+- Suppressed extra verbosity in G4ChordFinder.
+- Fix in G4FSALDormandPrince745 for unitialised variables.
+  Initialise ak8[], ak9[] in constructor. This avoids repeated
+  memory allocation, without deletion - i.e. a memory leak.
+- Initialise fLastStepLength and/or fAuxStepper data members in 
+  in constructors of G4DormandPrince745 and G4FSALDormandPrince745.
+  Coverity issues: 67394 (G4FSALDormandPrince745)
+                   67391     (G4DormandPrince745)
+
+Nov 14, 2017 J. Apostolakis             - field-V10-03-27 (fixed)
+---------------------------             - field-V10-03-26
+- G4ChordFinder: changes in default stepper & driver in 2nd constructor.
+  in which only a magnetic field is provided (used widely) :
+  
+  * Reinstated G4DormandPrince745 (5th order) as default in G4ChordFinder.
+   (corrected -23, which missed to initialise driver.)
+
+  * New templated driver G4IntegrationDriver is chosen for the 
+    the simple constuctors of G4ChordFinder and G4FieldManager
+    which only require a (pure) magnetic field. ( Details below.)
+
+  Additional information and details:
+  * New optional parameter to constructor of G4ChordFinder which
+    allow to create an FSAL stepper and corresponding driver instead.
+    This aims to reuse some derivatives, thus reducing computations
+    of derivatives and thus field evaluations. )
+
+  * The templated 'driver' classes, available and now chosen in 
+    G4ChordFinder's 2nd constructor, are used per type of stepper
+    class:
+     - G4IntegrationDriver      for non-FSAL     steppers
+     - G4FSALIntegrationDriver  for FSAL-capable steppers
+    These make non-virtual calls to the stepper, as they know its type.
+
+- First fix in G4FSALDormandPrince745 for memory leak, missing 
+  delete[] fInitialDyDx in destructor. Coverity issue: 96383.
+
+----------------------------------------------------------------------
+Multiple tags (below) were to better test stepper/driver combinations:
+Date   Tagger         Tag name        Stepper                Driver
+======================================================================
+Nov 3, D. Sorokin     field-V10-03-25 G4FSALBogackiShampine45 FSAL 
+Nov 3, J. Apostolakis field-V10-03-24 G4FSALDormandPrince745  FSAL  ok
+Nov 2, J. Apostolakis field-V10-03-23 G4DormandPrince745      new    
+Nov 2, J. Apostolakis field-V10-03-22 G4RK547FEq1             FSAL  ok
+----------------------------------------------------------------------
+Glossary of drivers:
+   the FSAL driver = using G4FSALIntegrationDriver (templated)
+   the new  driver = using G4IntegrationDriver     (templated)
+===================================================================
+
+Nov  2, 2017 D. Sorokin                 - field-V10-03-21
+---------------------------------------
+- Added new steppers G4RK547FEq{1,2,3} which implement 7 stage embedded 
+  Runge-Kutta 4,5 pairs with:
+     - FSAL property (return derivative at endpoint for use in next step),
+     - stable equilibrium states ( improved handling of difficulties in
+         integration: better stability in choosing step size. )
+  Each one can be used with all existing Runge-Kutta drivers:
+     - G4FSALIntegrationDriver, using its FSAL property;
+     - G4IntegrationDriver    without its FSAL property.
+     - the original G4MagInt_Driver, also ignoring FSAL.
+
+- Reinstated G4DormandPrince745  ( known widely as DOPRI5 ) as
+  the default RK method in G4ChordFinder for pure magnetic fields.
+    ( Withdrew G4BogackiShampine45. )  J. Apostolakis
+  
+Nov  1, 2017 J. Apostolakis             - field-V10-03-20
+---------------------------
+- Made G4BogackiShampine45 the default RK method in G4ChordFinder
+   for pure magnetic fields.
+
+Oct 30, 2017 D. Sorokin/J.Apostolakis   - field-V10-03-19
+---------------------------------------
+- add GetStepper method to G4VIntegrationDriver for backward compatibility
+
+Oct 20, 2017 D. Sorokin                 - field-V10-03-18
+---------------------------------------
+Introduced base class for any driver algorithm (G4VIntegrationDriver)
+New concrete classes added:
+- G4IntegrationDriver: implementation of templated driver algorithm
+  for non-fsal explicit Runge-Kutta steppers
+- G4FSALIntegrationDriver: implementation of driver algorithm for
+  FSAL explicit Runge-Kutta steppers.
+Existing class G4MagInt_Drv remains, deriving from base class.
+
+- Expanded testing in testProElectroMagField (higher precision, new driver)
+   ( J. Apostolakis)
+
+Oct 13, 2017 D. Sorokin                 - field-V10-03-17
+---------------------------------------
+- add G4FieldUtils.hh, G4FieldUtils.icc, G4FieldUtils.cc: 
+  utilities to extract data from arrays in conventions of the 
+  magneticfield integration.
 
 Oct 13, 2017 G. Cosmo                   - field-V10-03-16
 ---------------------------------------

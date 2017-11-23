@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4eeToTwoGammaModel.cc 101193 2016-11-08 18:02:50Z vnivanch $
+// $Id: G4eeToTwoGammaModel.cc 101198 2016-11-09 09:34:52Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

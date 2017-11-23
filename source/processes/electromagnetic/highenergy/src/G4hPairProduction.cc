@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4hPairProduction.cc 106697 2017-10-19 20:49:01Z dsawkey $
+// $Id: G4hPairProduction.cc 107367 2017-11-09 10:56:09Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -96,8 +96,7 @@ void G4hPairProduction::InitialiseEnergyLossProcess(
 
 void G4hPairProduction::ProcessDescription(std::ostream& out) const
 {
-  out << "No description available.";
-  out << "<br>\n";
+  out << "<strong>Hadron pair production</strong>";
   G4VEnergyLossProcess::ProcessDescription(out);
 }
 

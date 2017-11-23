@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VMultipleScattering.hh 106649 2017-10-18 17:05:12Z dsawkey $
+// $Id: G4VMultipleScattering.hh 106714 2017-10-20 09:38:06Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

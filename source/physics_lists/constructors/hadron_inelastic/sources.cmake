@@ -11,7 +11,7 @@
 #
 # Generated on : 10/01/2013
 #
-# $Id: sources.cmake 106629 2017-10-17 06:26:39Z gcosmo $
+# $Id: sources.cmake 107320 2017-11-08 16:30:22Z gcosmo $
 #
 #------------------------------------------------------------------------------
 
@@ -103,6 +103,7 @@ GEANT4_DEFINE_MODULE(NAME G4phys_ctor_hinelastic
         G4HadronPhysicsQGSP_FTFP_BERT.hh
         G4HadronPhysicsINCLXX.hh
         G4HadronPhysicsShielding.hh
+        G4HadronPhysicsShieldingLEND.hh
         G4VHadronPhysics.hh
         G4HadronPhysicsQGSP_BIC_AllHP.hh 
     SOURCES
@@ -122,6 +123,7 @@ GEANT4_DEFINE_MODULE(NAME G4phys_ctor_hinelastic
         G4HadronPhysicsQGSP_FTFP_BERT.cc
         G4HadronPhysicsINCLXX.cc
         G4HadronPhysicsShielding.cc
+        G4HadronPhysicsShieldingLEND.cc
         G4VHadronPhysics.cc
         G4HadronPhysicsQGSP_BIC_AllHP.cc 
     GRANULAR_DEPENDENCIES

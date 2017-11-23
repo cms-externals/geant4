@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: DicomDetectorConstruction.cc 106196 2017-09-19 04:19:33Z gcosmo $
+// $Id: DicomDetectorConstruction.cc 107363 2017-11-09 10:51:28Z gcosmo $
 //
 /// \file  medical/DICOM/src/DicomDetectorConstruction.cc
 /// \brief Implementation of the DicomDetectorConstruction class
@@ -95,7 +95,7 @@ DicomDetectorConstruction::~DicomDetectorConstruction()
 {
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....
 G4VPhysicalVolume* DicomDetectorConstruction::Construct()
 {
   if(!fConstructed || fWorld_phys == 0) {
@@ -368,7 +368,7 @@ void DicomDetectorConstruction::InitialisationOfMaterials()
 
     // Trabecular bone used in the DICOM Head
    
-    G4Material* trabecularBone_head = new G4Material ("TrabecularBone", 
+    G4Material* trabecularBone_head = new G4Material ("TrabecularBone_HEAD", 
                                                       1.18 * g/cm3, 
                                                       numberofElements = 12);
     trabecularBone_head->AddElement(elH, 8.50*perCent);
@@ -450,7 +450,8 @@ void DicomDetectorConstruction::InitialisationOfMaterials()
   fOriginalMaterials.push_back(liver); // rho = 1.071
   fOriginalMaterials.push_back(trabecularBone); // rho = 1.159 - HEAD PHANTOM
   fOriginalMaterials.push_back(denseBone); // rho = 1.575
-  G4cout << "The default materials of the DICOM Extended examples have been used" << G4endl;
+  G4cout << "The default materials of the DICOM Extended examples have been used" 
+         << G4endl;
 #endif
 }
 
@@ -527,9 +528,9 @@ void DicomDetectorConstruction::ReadPhantomDataNew()
                       "Wrong index in phantom file",
                       FatalException,
                       G4String("It should be between 0 and "
-                               + G4UIcommand::ConvertToString(nMaterials-1) 
-                               + ", while it is " 
-                               + G4UIcommand::ConvertToString(mateID)).c_str());
+                              + G4UIcommand::ConvertToString(nMaterials-1) 
+                              + ", while it is " 
+                              + G4UIcommand::ConvertToString(mateID)).c_str());
         }
         fMateIDs[nnew] = mateID;
       }
@@ -570,7 +571,8 @@ void DicomDetectorConstruction::ReadVoxelDensities( std::ifstream& fin )
     for( G4int iy = 0; iy < fNVoxelY; iy++ ) {
       for( G4int ix = 0; ix < fNVoxelX; ix++ ) {
         fin >> dens; 
-        //        G4cout << ix << " " << iy << " " << iz << " density " << dens << G4endl;
+        //        G4cout << ix << " " << iy << " " << iz
+        // << " density " << dens << G4endl;
         G4int copyNo = ix + (iy)*fNVoxelX + (iz)*fNVoxelX*fNVoxelY;
 
         if( densityDiff != -1. ) continue; 
@@ -588,7 +590,7 @@ void DicomDetectorConstruction::ReadVoxelDensities( std::ifstream& fin )
         if(std::fabs(dens - (*imite).second->GetDensity()/CLHEP::g*CLHEP::cm3 ) < 1.e-9 ) continue;
         
         //--- Build material name with thePhantomMaterialsOriginal name + density
-        //        float densityBin = densityDiffs[mateID] * (G4int(dens/densityDiffs[mateID])+0.5);
+        //float densityBin = densityDiffs[mateID] * (G4int(dens/densityDiffs[mateID])+0.5);
         G4int densityBin = (G4int(dens/densityDiffs[mateID]));
 
         G4String mateName = (*imite).second->GetName()+G4UIcommand::ConvertToString(densityBin);
@@ -638,8 +640,10 @@ std::map< std::pair<G4Material*,G4int>, matInfo* >::iterator mppite;
     G4double averdens = (*mppite).second->fSumdens/(*mppite).second->fNvoxels;
     G4double saverdens = G4int(1000.001*averdens)/1000.;
 #ifndef G4VERBOSE
-    G4cout << "DicomDetectorConstruction::ReadVoxelDensities AVER DENS " << averdens << " -> " 
-           << saverdens << " -> " << G4int(1000*averdens) << " " << G4int(1000*averdens)/1000 
+    G4cout << "DicomDetectorConstruction::ReadVoxelDensities AVER DENS " 
+           << averdens << " -> " 
+           << saverdens << " -> " << G4int(1000*averdens) << " " 
+           << G4int(1000*averdens)/1000 
            << " " <<  G4int(1000*averdens)/1000. << G4endl;
 #endif
 
@@ -655,7 +659,8 @@ std::map< std::pair<G4Material*,G4int>, matInfo* >::iterator mppite;
 void DicomDetectorConstruction::ReadPhantomData()
 {
 #ifdef DICOM_USE_HEAD
-  G4String dataFile = "DICOM_HEAD/Data.dat";
+  G4String path = getenv("DICOM_PATH");
+  G4String dataFile = path+"/Data.dat";
 #else
   G4String dataFile = "Data.dat";
 #endif
@@ -665,7 +670,8 @@ void DicomDetectorConstruction::ReadPhantomData()
 if(finDF.good() != 1 ) 
  { 
   G4String descript = "Problem reading data file: "+dataFile;
-  G4Exception(" DicomDetectorConstruction::ReadPhantomData"," ", FatalException,descript);
+  G4Exception(" DicomDetectorConstruction::ReadPhantomData"," ", 
+              FatalException,descript);
   }
 
   G4int compression;
@@ -673,10 +679,14 @@ if(finDF.good() != 1 )
   finDF >> fNoFiles;
 
   for(G4int i = 0; i < fNoFiles; i++ ) {
+
   finDF >> fname;
+
   //--- Read one data file
   fname += ".g4dcm";
+
   ReadPhantomDataFile(fname);
+
 }
 
 //----- Merge data headers
@@ -688,10 +698,12 @@ void DicomDetectorConstruction::ReadPhantomDataFile(const G4String& fname)
 {
   G4cout << " DicomDetectorConstruction::ReadPhantomDataFile opening file " 
          << fname << G4endl; //GDEB
+
 #ifdef G4VERBOSE
   G4cout << " DicomDetectorConstruction::ReadPhantomDataFile opening file " 
          << fname << G4endl;
 #endif
+  
   std::ifstream fin(fname.c_str(), std::ios_base::in);
   if( !fin.is_open() ) {
     G4Exception("DicomDetectorConstruction::ReadPhantomDataFile",

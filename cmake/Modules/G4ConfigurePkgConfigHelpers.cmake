@@ -211,6 +211,13 @@ if(NOT GEANT4_BUILD_GRANULAR_LIBS AND UNIX)
     set(G4_BUILTWITH_FREETYPE "no")
   endif()
 
+  # - Freetype
+  if(GEANT4_USE_HDF5)
+    set(G4_BUILTWITH_HDF5 "yes")
+  else()
+    set(G4_BUILTWITH_HDF5 "no")
+  endif()
+
   # - Qt
   if(GEANT4_USE_QT)
     set(G4_BUILTWITH_QT "yes")

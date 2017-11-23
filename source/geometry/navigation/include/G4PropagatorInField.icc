@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4PropagatorInField.icc 105904 2017-08-28 07:36:13Z gcosmo $
+// $Id: G4PropagatorInField.icc 107114 2017-11-02 14:54:05Z gcosmo $
 //
 // 
 // ------------------------------------------------------------------------
@@ -305,18 +305,12 @@ G4bool G4PropagatorInField::IntersectChord( const G4ThreeVector&  StartPointA,
   return retVal;
 }
 
-inline G4EquationOfMotion*   G4PropagatorInField::GetCurrentEquationOfMotion()
+inline G4EquationOfMotion* G4PropagatorInField::GetCurrentEquationOfMotion()
 {
-  G4EquationOfMotion*    equationOfMotion = nullptr; 
-
-  G4ChordFinder*    pChordFinder= this->GetChordFinder();
-  if( pChordFinder ) 
-  {
-     auto pIntDriver= pChordFinder->GetIntegrationDriver(); 
-     if( pIntDriver )
-     {
-        equationOfMotion= pIntDriver->GetEquationOfMotion();
-     }     
+  if(auto pChordFinder = GetChordFinder()) {
+    if(auto pIntDriver = pChordFinder->GetIntegrationDriver()) {
+      return pIntDriver->GetEquationOfMotion();
+    }
   }
-  return equationOfMotion;
+  return nullptr;
 }

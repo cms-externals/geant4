@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PhotonEvaporation.cc 106662 2017-10-19 10:14:44Z vnivanch $
+// $Id: G4PhotonEvaporation.cc 106723 2017-10-20 09:50:34Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

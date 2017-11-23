@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4AnnihiToMuPair.cc 97351 2016-06-01 16:55:46Z dsawkey $
+// $Id: G4AnnihiToMuPair.cc 97391 2016-06-02 10:08:45Z gcosmo $
 //
 //         ------------ G4AnnihiToMuPair physics process ------
 //         by H.Burkhardt, S. Kelner and R. Kokoulin, November 2002

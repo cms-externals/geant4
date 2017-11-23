@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4IonProtonCrossSection.cc 90427 2015-05-28 12:00:44Z ribon $
+// $Id: G4IonProtonCrossSection.cc 90447 2015-05-29 07:41:53Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

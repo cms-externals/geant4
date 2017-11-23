@@ -28,11 +28,11 @@ geant4_add_dataset(
 # - Photon evaporation
 geant4_add_dataset(
   NAME      PhotonEvaporation
-  VERSION   5.1
+  VERSION   5.2
   FILENAME  G4PhotonEvaporation
   EXTENSION tar.gz
   ENVVAR    G4LEVELGAMMADATA
-  MD5SUM    ac1e9f62de944ae91260d8e6eee51836
+  MD5SUM    37c5dea9614a07885050350d071a6973
   )
 
 # - Radioisotopes

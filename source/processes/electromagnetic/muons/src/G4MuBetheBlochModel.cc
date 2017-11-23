@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4MuBetheBlochModel.cc 97349 2016-06-01 16:53:22Z dsawkey $
+// $Id: G4MuBetheBlochModel.cc 97392 2016-06-02 10:10:32Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

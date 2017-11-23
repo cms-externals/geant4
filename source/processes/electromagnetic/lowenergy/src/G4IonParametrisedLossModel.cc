@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4IonParametrisedLossModel.cc 95920 2016-03-02 17:51:10Z sincerti $
+// $Id: G4IonParametrisedLossModel.cc 95950 2016-03-03 10:42:48Z gcosmo $
 //
 // ===========================================================================
 // GEANT4 class source file

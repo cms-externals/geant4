@@ -531,7 +531,7 @@ macro(_g4tc_configure_tc_variables SHELL_FAMILY SCRIPT_NAME)
     # Derive base dir from include path, NB, not 100% robust as Geant4GNUmake makes
     # significant assumptions about how USolids was installed
     get_filename_component(_USOLIDS_INCLUDE_DIR "${USOLIDS_INCLUDE_DIRS}" REALPATH)
-    get_filename_component(_USOLIDS_BASE_DIR "${_USOLIDS_INCLUDE_DIR}" DIRECTORY)
+    get_filename_component(_USOLIDS_BASE_DIR "${VECGEOM_INSTALL_DIR}" REALPATH)
     _g4tc_setenv_command(GEANT4_TC_USOLIDS_BASE_DIR ${SHELL_FAMILY} USOLIDS_BASE_DIR "${_USOLIDS_BASE_DIR}")
 
     if(GEANT4_USE_ALL_USOLIDS)

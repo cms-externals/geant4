@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VAtomDeexcitation.hh 98982 2016-08-28 16:49:48Z vnivanch $
+// $Id: G4VAtomDeexcitation.hh 98985 2016-08-29 07:01:17Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

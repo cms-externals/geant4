@@ -1895,19 +1895,19 @@ G4RadioactiveDecay::DecayIt(const G4Track& theTrack, const G4Step&)
             tempprods = DoDecay(*parentNucleus);
           }
 
-
           // save the secondaries for buffers
           numberOfSecondaries = tempprods->entries();
           currentTime = finalGlobalTime + theDecayTime;
           for (index = 0; index < numberOfSecondaries; index++) {
             asecondaryparticle = tempprods->PopProducts();
-            if (asecondaryparticle->GetDefinition()->GetBaryonNumber() < 5) {
+            if (asecondaryparticle->GetDefinition()->GetPDGStable() ) {
               pw.push_back(weight);
               ptime.push_back(currentTime);
               secondaryparticles.push_back(asecondaryparticle);
-            }
-            //Generate gammas and XRays from  excited nucleus, added by L.Desorgher
-            else if (((const G4Ions*)(asecondaryparticle->GetDefinition()))->GetExcitationEnergy()>0. && weight>0.){//Compute the gamma
+            } else if (((const G4Ions*)(asecondaryparticle->GetDefinition()))->GetExcitationEnergy() > 0.
+                                                                                           && weight > 0.) {
+              // Compute the gamma
+              // Generate gammas and XRays from excited nucleus, added by L.Desorgher
               G4ParticleDefinition* apartDef =asecondaryparticle->GetDefinition();
               AddDeexcitationSpectrumForBiasMode(apartDef,weight,currentTime,pw,ptime,secondaryparticles);
             }

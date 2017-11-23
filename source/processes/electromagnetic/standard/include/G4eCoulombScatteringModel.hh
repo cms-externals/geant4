@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4eCoulombScatteringModel.hh 104241 2017-05-19 18:11:50Z vnivanch $
+// $Id: G4eCoulombScatteringModel.hh 104307 2017-05-24 09:01:45Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

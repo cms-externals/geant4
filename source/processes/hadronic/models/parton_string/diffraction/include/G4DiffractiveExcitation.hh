@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4DiffractiveExcitation.hh 101976 2016-12-14 07:16:52Z ribon $
+// $Id: G4DiffractiveExcitation.hh 100828 2016-11-02 15:25:59Z gcosmo $
 
 #ifndef G4DiffractiveExcitation_h
 #define G4DiffractiveExcitation_h 1

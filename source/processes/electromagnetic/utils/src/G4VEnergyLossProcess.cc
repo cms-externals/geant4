@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEnergyLossProcess.cc 106830 2017-10-25 15:56:08Z vnivanch $
+// $Id: G4VEnergyLossProcess.cc 107364 2017-11-09 10:53:25Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -968,11 +968,12 @@ void G4VEnergyLossProcess::StreamInfo(std::ostream& out,
                 const G4ParticleDefinition& part, G4String endOfLine) const
 {
   out << std::setprecision(6);
-  out << endOfLine << GetProcessName() << ":   for  "
-      << part.GetParticleName()
-      << "    SubType= " << GetProcessSubType() 
-      << endOfLine;
-  out << "      dE/dx and range tables from "
+  out << endOfLine << GetProcessName()  << ": ";
+  if (endOfLine != G4String("<br>\n")) {
+    out << "  for  " << part.GetParticleName();
+  }
+  out << "    SubType= " << GetProcessSubType() << endOfLine
+      << "      dE/dx and range tables from "
       << G4BestUnit(minKinEnergy,"Energy")
       << " to " << G4BestUnit(maxKinEnergy,"Energy")
       << " in " << nBins << " bins" << endOfLine

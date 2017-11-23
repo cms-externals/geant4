@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4hMultipleScattering.cc 107020 2017-10-31 22:13:34Z dsawkey $
+// $Id: G4hMultipleScattering.cc 107365 2017-11-09 10:54:29Z gcosmo $
 //
 // -----------------------------------------------------------------------------
 //
@@ -98,7 +98,11 @@ void G4hMultipleScattering::StreamProcessInfo(std::ostream& out,
 
 void G4hMultipleScattering::ProcessDescription(std::ostream& out) const
 {
-  out << "<strong>Hadron multiple scattering</strong>";
+  out << 
+  "<strong>"
+  "Hadron multiple scattering</strong>. Simulates combined effects of <br>"
+  "elastic scattering at the end of the step, to save computing time. May<br>"
+  "be combined with Coulomb scattering in a 'mixed' scattering algorithm.";
   G4VMultipleScattering::ProcessDescription(out);
 }
 

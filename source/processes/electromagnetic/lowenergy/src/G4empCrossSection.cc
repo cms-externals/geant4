@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4empCrossSection.cc 92727 2015-09-14 17:23:18Z vnivanch $
+// $Id: G4empCrossSection.cc 92765 2015-09-15 15:20:47Z gcosmo $
 //
 //         
 //

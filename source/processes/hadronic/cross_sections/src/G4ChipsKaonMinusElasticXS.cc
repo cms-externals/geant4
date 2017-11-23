@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4ChipsKaonMinusElasticXS.cc 93215 2015-10-12 12:03:16Z witoldp $
+// $Id: G4ChipsKaonMinusElasticXS.cc 93203 2015-10-12 07:42:34Z gcosmo $
 //
 //
 // G4 Physics class: G4ChipsKaonMinusElasticXS for pA elastic cross sections

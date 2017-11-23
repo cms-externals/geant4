@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GoudsmitSaundersonTable.hh 106939 2017-10-30 13:06:39Z mnovak $
+// $Id: G4GoudsmitSaundersonTable.hh 106953 2017-10-31 08:30:13Z gcosmo $
 //
 // -----------------------------------------------------------------------------
 //

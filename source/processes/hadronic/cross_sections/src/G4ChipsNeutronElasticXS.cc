@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4ChipsNeutronElasticXS.cc 93127 2015-10-08 08:27:04Z witoldp $
+// $Id: G4ChipsNeutronElasticXS.cc 93080 2015-10-02 14:45:31Z gcosmo $
 //
 //
 // G4 Physics class: G4ChipsNeutronElasticXS for nA elastic cross sections

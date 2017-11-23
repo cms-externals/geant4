@@ -59,7 +59,9 @@ void DicomPhantomParameterisationColour::ReadColourData()
     
     //----- Read file
 #ifdef DICOM_USE_HEAD
- G4String colourFile = "DICOM_HEAD/ColourMap.dat";
+ G4String path = getenv("DICOM_PATH");
+ G4String colourFile = path+"/ColourMap.dat";
+ G4cout<< colourFile << G4endl; 
 #else
     G4String colourFile = "ColourMap.dat";
 #endif

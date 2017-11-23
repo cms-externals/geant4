@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEmFluctuationModel.hh 106206 2017-09-19 18:16:01Z vnivanch $
+// $Id: G4VEmFluctuationModel.hh 106208 2017-09-20 01:53:57Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

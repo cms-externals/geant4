@@ -100,7 +100,7 @@ int main()
 
   G4double Dz,Theta,Phi, Dy1,Dx1,Dx2,Alpha1, Dy2,Dx3,Dx4,Alpha2;
   G4double del    = 1.E-12; // vertex disturbance
-  G4double angdel = 1.E-10; // angle disturbance
+  G4double angdel = 1.E-12; // angle disturbance
 
   // Define box
   G4VSolid* box = new G4Box("Box", dx, dy, dz);
@@ -122,9 +122,9 @@ int main()
   );
 
   G4VSolid* trap1 = new G4Trap("Trap",
-    Dz  = dz, Theta = 0, Phi = 0,
-    Dy1 = dy, Dx1 = dx, Dx2 = dx-del, Alpha1 = 0,
-    Dy2 = dy, Dx3 = dx, Dx4 = dx-del, Alpha2 = 0
+    Dz  = dz, Theta = angdel*deg, Phi = 0,
+    Dy1 = dy, Dx1 = dx, Dx2 = dx, Alpha1 = 0,
+    Dy2 = dy, Dx3 = dx-del, Dx4 = dx-del, Alpha2 = 0
   );
 
   G4VSolid* trap2 = new G4Trap("Trap",

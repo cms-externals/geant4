@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4MagIntegratorDriver.cc 105858 2017-08-24 07:56:26Z gcosmo $
+// $Id: G4MagIntegratorDriver.cc 107059 2017-11-01 14:58:16Z gcosmo $
 //
 // 
 //
@@ -1053,3 +1053,31 @@ void G4MagInt_Driver::SetSmallestFraction(G4double newFraction)
            << "  Value must be between 1.e-8 and 1.e-16" << G4endl;
   }
 }
+
+void G4MagInt_Driver::GetDerivatives(const G4FieldTrack& y_curr, G4double* dydx) const
+{
+    G4double ytemp[G4FieldTrack::ncompSVEC];
+    y_curr.DumpToArray(ytemp);
+    GetStepper()->RightHandSide(ytemp, dydx);
+}
+
+G4EquationOfMotion* G4MagInt_Driver::GetEquationOfMotion()
+{
+    return pIntStepper->GetEquationOfMotion();
+}
+
+void G4MagInt_Driver::SetEquationOfMotion(G4EquationOfMotion *equation)
+{
+    pIntStepper->SetEquationOfMotion(equation);
+}
+
+const G4MagIntegratorStepper* G4MagInt_Driver::GetStepper() const
+{
+    return pIntStepper;
+}
+
+G4MagIntegratorStepper* G4MagInt_Driver::GetStepper()
+{
+    return pIntStepper;
+}
+

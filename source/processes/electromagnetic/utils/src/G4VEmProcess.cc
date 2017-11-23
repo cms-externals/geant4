@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4VEmProcess.cc 106830 2017-10-25 15:56:08Z vnivanch $
+// $Id: G4VEmProcess.cc 107364 2017-11-09 10:53:25Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -553,9 +553,12 @@ void G4VEmProcess::StreamInfo(std::ostream& out,
                   const G4ParticleDefinition& part, G4String endOfLine) const
 {
   out << std::setprecision(6);
-  out << endOfLine << GetProcessName() << ":   for  "
-      << part.GetParticleName();
-  if(integral)  { out << ", integral: 1 "; }
+  out << endOfLine << GetProcessName() << ": ";
+  if (endOfLine != G4String("<br>\n")) {
+    out << "  for  " << part.GetParticleName();
+    if (integral) { out << ","; }
+  }
+  if(integral)  { out << " integral: 1 "; }
   if(applyCuts) { out << ", applyCuts: 1 "; }
   out << "    SubType= " << GetProcessSubType();;
   if(biasFactor != 1.0) { out << "   BiasingFactor= " << biasFactor; }

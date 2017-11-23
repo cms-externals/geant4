@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EvaporationChannel.hh 98577 2016-07-25 13:05:12Z vnivanch $
+// $Id: G4EvaporationChannel.hh 98739 2016-08-09 12:56:55Z gcosmo $
 //
 //
 //J.M. Quesada (August2008). Based on:

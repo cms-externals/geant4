@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4VEvaporationFactory.hh 96391 2016-04-11 16:44:49Z vnivanch $
+// $Id: G4VEvaporationFactory.hh 96402 2016-04-12 07:30:48Z gcosmo $
 //
 // Hadronic Process: Nuclear De-excitations
 // by V. Lara

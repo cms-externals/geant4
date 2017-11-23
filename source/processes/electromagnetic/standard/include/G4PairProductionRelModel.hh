@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4PairProductionRelModel.hh 106616 2017-10-16 17:14:56Z vnivanch $
+// $Id: G4PairProductionRelModel.hh 106628 2017-10-17 06:25:38Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

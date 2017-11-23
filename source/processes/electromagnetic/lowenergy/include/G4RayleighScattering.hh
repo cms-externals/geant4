@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4RayleighScattering.hh 107150 2017-11-03 09:26:11Z vnivanch $
+// $Id: G4RayleighScattering.hh 107157 2017-11-03 11:27:29Z gcosmo $
 //
 //------------------ G4RayleighScattering physics process -----------------------
 //

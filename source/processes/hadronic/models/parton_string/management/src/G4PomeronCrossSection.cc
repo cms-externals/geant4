@@ -194,54 +194,54 @@ void G4PomeronCrossSection::InitForNucleon()
   pomeron_S=		2.7*GeV*GeV;
   //pomeron_Gamma=	2.16/GeV/GeV;
   //pomeron_Gamma=	3.96/GeV/GeV;
-  pomeron_Gamma=		(2.6+3.96)/GeV/GeV;
+  pomeron_Gamma=	(2.6+3.96)/GeV/GeV;
   pomeron_C=		1.4;
   pomeron_Rsquare=	3.56/GeV/GeV;
   //pomeron_Alpha=	1.0808;
-  pomeron_Alpha=		0.9808;
+  pomeron_Alpha=	0.9808;
   pomeron_Alphaprime=	0.25/GeV/GeV;     
-  pomeron_Gamma_Hard =    0.0002/GeV/GeV;  // Note! if pomeron_Gamma_Hard != 0 to fit total pp-crosscection
-                                           //       pomeron_Gamma_Soft shold be 2.35/GeV/GeV
-  pomeron_Alpha_Hard =    1.47;            
+  pomeron_Gamma_Hard=   0.0002/GeV/GeV;  // Note! if pomeron_Gamma_Hard != 0 to fit total pp-crosscection
+                                         //       pomeron_Gamma_Soft shold be 2.35/GeV/GeV
+  pomeron_Alpha_Hard=   1.47;            
 }
 
 void G4PomeronCrossSection::InitForPion()
 {
   pomeron_S=		1.5*GeV*GeV;
   //pomeron_Gamma=	1.46/GeV/GeV;
-  pomeron_Gamma=		2.17/GeV/GeV;
+  pomeron_Gamma=	2.17/GeV/GeV;
   pomeron_C=		1.6;
   pomeron_Rsquare=	2.36/GeV/GeV;
-  pomeron_Alpha=		1.0808;
+  pomeron_Alpha=	1.0808;
   pomeron_Alphaprime=	0.25/GeV/GeV;
-  pomeron_Gamma_Hard =    0.0002/GeV/GeV;
-  pomeron_Alpha_Hard =    1.47;
+  pomeron_Gamma_Hard=   0.0002/GeV/GeV;
+  pomeron_Alpha_Hard=   1.47;
 }
 
 void G4PomeronCrossSection::InitForKaon()
 {
   pomeron_S=		2.3*GeV*GeV;
   //pomeron_Gamma=	1.31/GeV/GeV;
-  pomeron_Gamma=		1.92/GeV/GeV;
+  pomeron_Gamma=	1.92/GeV/GeV;
   pomeron_C=		1.8;
   pomeron_Rsquare=	1.96/GeV/GeV;
-  pomeron_Alpha=		1.0808;
+  pomeron_Alpha=	1.0808;
   pomeron_Alphaprime=	0.25/GeV/GeV;
-  pomeron_Gamma_Hard =    0.0002/GeV/GeV;
-  pomeron_Alpha_Hard =    1.47;
+  pomeron_Gamma_Hard=   0.0002/GeV/GeV;
+  pomeron_Alpha_Hard=   1.47;
 }
 
 void G4PomeronCrossSection::InitForGamma()
 {
   pomeron_S=		1.7*GeV*GeV;
   //pomeron_Gamma=	1.42/GeV/GeV;
-  pomeron_Gamma=		2.07/GeV/GeV;
+  pomeron_Gamma=	2.07/GeV/GeV;
   pomeron_C=		1.7;
   pomeron_Rsquare=	2.16/GeV/GeV;
-  pomeron_Alpha=		1.0808;
+  pomeron_Alpha=	1.0808;
   pomeron_Alphaprime=	0.25/GeV/GeV;
-  pomeron_Gamma_Hard =    0.0002/GeV/GeV;
-  pomeron_Alpha_Hard =    1.47;
+  pomeron_Gamma_Hard=   0.0002/GeV/GeV;
+  pomeron_Alpha_Hard=   1.47;
 }
 
 G4double G4PomeronCrossSection::Expand(G4double z)

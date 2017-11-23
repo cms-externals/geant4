@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4NeutronCaptureXS.hh 91476 2015-07-18 10:14:20Z vnivanch $
+// $Id: G4NeutronCaptureXS.hh 91580 2015-07-27 12:55:01Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

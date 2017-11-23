@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: DicomHandler.cc 106196 2017-09-19 04:19:33Z gcosmo $
+// $Id: DicomHandler.cc 107363 2017-11-09 10:51:28Z gcosmo $
 //
 /// \file medical/DICOM/src/DicomHandler.cc
 /// \brief Implementation of the DicomHandler class
@@ -85,10 +85,12 @@ DicomHandler::DicomHandler()
  fRescaleSlope(0),fLittleEndian(true), 
  fImplicitEndian(false),fPixelRepresentation(0), 
  fNbrequali(0),fValueDensity(NULL),fValueCT(NULL),fReadCalibration(false),
- fMergedSlices(NULL),fDriverFile("DICOM_HEAD/Data.dat"),
- fCt2DensityFile("null.dat")
+ fMergedSlices(NULL),fCt2DensityFile("null.dat")
 {
 fMergedSlices = new DicomPhantomZSliceMerged;
+G4String path = getenv("DICOM_PATH");
+fDriverFile= path+"/Data.dat";
+G4cout << "Reading the DICOM_HEAD project " <<fDriverFile << G4endl;
 }
 #else
 DicomHandler::DicomHandler()
@@ -259,7 +261,6 @@ G4int DicomHandler::ReadFile(FILE* dicom, char* filename2)
 
     // Perform functions originally written straight to file
     DicomPhantomZSliceHeader* zslice = new DicomPhantomZSliceHeader(fnameG4DCM);
-
     std::map<G4float,G4String>::const_iterator ite;
     for( ite = fMaterialIndices.begin(); ite != fMaterialIndices.end(); ++ite){
       zslice->AddMaterial(ite->second);
@@ -581,7 +582,7 @@ void DicomHandler::StoreData(std::ofstream& foutG4DCM)
   
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo..
 void DicomHandler::ReadMaterialIndices( std::ifstream& finData)
 {
   unsigned int nMate;
@@ -606,6 +607,7 @@ unsigned int DicomHandler::GetMaterialIndex( G4float density )
 {
   std::map<G4float,G4String>::reverse_iterator ite;
   G4int ii = fMaterialIndices.size();
+ 
   for( ite = fMaterialIndices.rbegin(); ite != fMaterialIndices.rend();
        ite++, ii-- ) {
     if( density >= (*ite).first ) {
@@ -665,14 +667,14 @@ G4int DicomHandler::ReadData(FILE *dicom,char * filename2)
     }
   }
   
-  // Creation of .g4 files wich contains averaged density data
-  char * nameProcessed = new char[FILENAMESIZE];
-  FILE* fileOut;
-  
+ // Creation of .g4 files wich contains averaged density data
+ char * nameProcessed = new char[FILENAMESIZE];
+ FILE* fileOut;
+ 
   std::sprintf(nameProcessed,"%s.g4dcmb",filename2);
   fileOut = std::fopen(nameProcessed,"w+b");
   std::printf("### Writing of %s ###\n",nameProcessed);
-  
+
   unsigned int nMate = fMaterialIndices.size();
   rflag = std::fwrite(&nMate, sizeof(unsigned int), 1, fileOut);
   //--- Write materials
@@ -686,7 +688,7 @@ G4int DicomHandler::ReadData(FILE *dicom,char * filename2)
     const char* mateNameC = mateName.c_str();
     rflag = std::fwrite(mateNameC, sizeof(char),40, fileOut);
   }
-  
+
   unsigned int fRowsC = fRows/fCompression;
   unsigned int fColumnsC = fColumns/fCompression;
   unsigned int planesC = 1;
@@ -795,7 +797,7 @@ G4int DicomHandler::ReadData(FILE *dicom,char * filename2)
   rflag = std::fclose(fileOut);
   
   delete [] nameProcessed;
-  
+
   /*    for ( G4int i = 0; i < fRows; i ++ ) {
         delete [] fTab[i];
         }
@@ -806,13 +808,15 @@ G4int DicomHandler::ReadData(FILE *dicom,char * filename2)
   return returnvalue;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.......
 
 // DICOM HEAD does not use the calibration curve
 
 #ifdef DICOM_USE_HEAD
 void DicomHandler::ReadCalibration()
 {
+fNbrequali = 0;
+fReadCalibration = false;
 G4cout << "No calibration curve for the DICOM HEAD needed!" << G4endl;
 }
 #else
@@ -871,7 +875,7 @@ return density;
 }
 
 #else
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....
 
 G4float DicomHandler::Pixel2density(G4int pixel)
 {
@@ -889,7 +893,7 @@ G4float DicomHandler::Pixel2density(G4int pixel)
       deltaDensity = fValueDensity[j] - fValueDensity[j-1];
       
       // interpolating linearly
-      density = fValueDensity[j] - ((fValueCT[j] - pixel)*deltaDensity/deltaCT );
+      density = fValueDensity[j]-((fValueCT[j] - pixel)*deltaDensity/deltaCT );
       break;
     }
   }
@@ -964,19 +968,52 @@ void DicomHandler::CheckFileFormat()
     char * name = new char[FILENAMESIZE];
     char * inputFile = new char[FILENAMESIZE];
     G4int rflag;
-    
     lecturePref = std::fopen(fDriverFile.c_str(),"r");
+ 
     rflag = std::fscanf(lecturePref,"%s",fCompressionc);
     fCompression = atoi(fCompressionc);
     rflag = std::fscanf(lecturePref,"%s",maxc);
     fNFiles = atoi(maxc);
     G4cout << " fNFiles " << fNFiles << G4endl;
+  
+///////////////////// 
+
+#ifdef DICOM_USE_HEAD
+    for( G4int i = 1; i <= fNFiles; i++ ) 
+    { // Begin loop on filenames
+     rflag = std::fscanf(lecturePref,"%s",inputFile);
+      G4String path=getenv("DICOM_PATH");
+      path = path+"/"; 
     
-    for( G4int i = 1; i <= fNFiles; i++ ) { // Begin loop on filenames
-      
-      rflag = std::fscanf(lecturePref,"%s",inputFile);
+     std::sprintf(name,"%s.dcm",inputFile);
+     //Writes the results to a character string buffer.
+     
+     char name2[200];
+     strcpy(name2, path.c_str());
+     strcat(name2, name);
+     //  Open input file and give it to gestion_dicom :
+     std::printf("### Opening %s and reading :\n",name2);
+     dicom = std::fopen(name2,"rb");
+     // Reading the .dcm in two steps:
+     //      1.  reading the header
+     //      2. reading the pixel data and store the density in Moyenne.dat
+     if( dicom != 0 ) {
+        ReadFile(dicom,inputFile);
+      } else {
+        G4cout << "\nError opening file : " << name2 << G4endl;
+      }
+      rflag = std::fclose(dicom);
+    }
+#else
+
+     for( G4int i = 1; i <= fNFiles; i++ ) 
+    { // Begin loop on filenames
+     rflag = std::fscanf(lecturePref,"%s",inputFile);
+ 
       std::sprintf(name,"%s.dcm",inputFile);
-      G4cout << "check 1: " << name << G4endl;
+      //Writes the results to a character string buffer.
+      
+       //G4cout << "check: " << name << G4endl;
       //  Open input file and give it to gestion_dicom :
       std::printf("### Opening %s and reading :\n",name);
       dicom = std::fopen(name,"rb");
@@ -990,6 +1027,8 @@ void DicomHandler::CheckFileFormat()
       }
       rflag = std::fclose(dicom);
     }
+#endif
+
     rflag = std::fclose(lecturePref);
     
     // Checks the spacing is correct. Dumps to files
@@ -1009,7 +1048,7 @@ void DicomHandler::CheckFileFormat()
   
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 G4int DicomHandler::read_defined_nested(FILE * nested,G4int SQ_Length)
 {
@@ -1046,7 +1085,7 @@ G4int DicomHandler::read_defined_nested(FILE * nested,G4int SQ_Length)
   if (rflag) return 1;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void DicomHandler::read_undefined_nested(FILE * nested)
 {
@@ -1081,7 +1120,7 @@ void DicomHandler::read_undefined_nested(FILE * nested)
     if (rflag) return;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....
 
 void DicomHandler::read_undefined_item(FILE * nested)
 {
@@ -1114,7 +1153,7 @@ void DicomHandler::read_undefined_item(FILE * nested)
   if (rflag) return;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo..... 
 
 template <class Type>
 void DicomHandler::GetValue(char * _val, Type & _rval) {
@@ -1135,5 +1174,5 @@ void DicomHandler::GetValue(char * _val, Type & _rval) {
     _rval = *(Type *)_val;
   }
   
-  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.... 
 

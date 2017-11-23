@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4GammaConversionToMuons.hh 106916 2017-10-27 15:46:24Z vnivanch $
+// $Id: G4GammaConversionToMuons.hh 106961 2017-10-31 08:36:29Z gcosmo $
 //
 //         ------------ G4GammaConversionToMuons physics process ------
 //         by H.Burkhardt, S. Kelner and R. Kokoulin, April 2002

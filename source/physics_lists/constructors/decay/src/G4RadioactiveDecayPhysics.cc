@@ -50,7 +50,7 @@ G4_DECLARE_PHYSCONSTR_FACTORY(G4RadioactiveDecayPhysics);
 G4RadioactiveDecayPhysics::G4RadioactiveDecayPhysics(G4int)
 :  G4VPhysicsConstructor("G4RadioactiveDecay")
 {
-  G4EmParameters::Instance()->SetFluo(true);
+  G4EmParameters::Instance()->SetAugerCascade(true);
   G4DeexPrecoParameters* deex = G4NuclearLevelData::GetInstance()->GetParameters();
   deex->SetStoreICLevelData(true);
   deex->SetMaxLifeTime(G4NuclideTable::GetInstance()->GetThresholdOfHalfLife()
@@ -80,7 +80,7 @@ void G4RadioactiveDecayPhysics::ConstructProcess()
   G4LossTableManager* man = G4LossTableManager::Instance();
   G4VAtomDeexcitation* ad = man->AtomDeexcitation();
   if(!ad) {
-    G4EmParameters::Instance()->SetFluo(true);
+    G4EmParameters::Instance()->SetAugerCascade(true);
     ad = new G4UAtomicDeexcitation();
     man->SetAtomDeexcitation(ad);
     ad->InitialiseAtomicDeexcitation();

@@ -389,6 +389,7 @@ G4GIDI_target* G4LENDCrossSection::get_target_from_map( G4int nuclear_code ) {
 void G4LENDCrossSection::DumpLENDTargetInfo( G4bool force ) {
 
    if ( lend_manager->GetVerboseLevel() >= 1 || force ) {
+      if ( usedTarget_map.size() == 0 ) create_used_target_map(); 
       G4cout << "Dumping UsedTarget of " << GetName() << " for " << proj->GetParticleName() << G4endl;
       G4cout << "Requested Evaluation, Z , A -> Actual Evaluation, Z , A(0=Nat) " << G4endl;
       for ( std::map< G4int , G4LENDUsedTarget* >::iterator 

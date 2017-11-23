@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4AlphaGEMChannel.hh 97081 2016-05-24 15:15:05Z vnivanch $
+// $Id: G4AlphaGEMChannel.hh 97097 2016-05-25 07:50:31Z gcosmo $
 //
 // Hadronic Process: Nuclear De-excitations
 // by V. Lara (Sept. 2001)

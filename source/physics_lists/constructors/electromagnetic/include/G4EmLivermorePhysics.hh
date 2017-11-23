@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EmLivermorePhysics.hh 105562 2017-08-03 11:29:29Z vnivanch $
+// $Id: G4EmLivermorePhysics.hh 105735 2017-08-16 12:59:43Z gcosmo $
 
 #ifndef G4EmLivermorePhysics_h
 #define G4EmLivermorePhysics_h 1

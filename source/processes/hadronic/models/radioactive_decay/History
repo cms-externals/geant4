@@ -14,6 +14,23 @@ track of all tags.
      * Reverse chronological order (last date on top), please *
      ----------------------------------------------------------
 
+15 November 2017  Dennis Wright  radioactive_decay-V10-03-20
+------------------------------------------------------------
+- G4RadioactiveDecay::DecayIt in the variance reduction branch:
+  replace the line 
+      if (asecondaryparticle->GetDefinition()->GetBaryonNumber() < 5) {
+  with 
+      if (asecondaryparticle->GetDefinition()->GetPDGStable() ) {
+  This will allow the stable nucleus at the end of the decay chain to 
+  be added to the final state particle stack.  Fixes bug report #2007.
+
+
+09 November 2017  L.Desorgher  radioactive_decay-V10-03-19
+-----------------------------------------------------------
+- G4ECDecay: Set the probability for selection of L and M subshells to PL1/PL=0.995,PL2/PL=0.005
+             PM1/PM=0.995 and PM2/PM=0.005. Close to Fe55 case.
+                     
+
 01 November 2017  V.Ivanchenko  radioactive_decay-V10-03-18
 -----------------------------------------------------------
 - G4RadioactiveDecay: added StreamInfo method for printing

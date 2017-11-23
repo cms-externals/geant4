@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4GoudsmitSaundersonTable.cc 106939 2017-10-30 13:06:39Z mnovak $
+// $Id: G4GoudsmitSaundersonTable.cc 107234 2017-11-06 11:53:54Z gcosmo $
 //
 // -----------------------------------------------------------------------------
 //
@@ -650,12 +650,13 @@ void G4GoudsmitSaundersonTable::InitSCPCorrection() {
     const G4MaterialCutsCouple *matCut =  thePCTable->GetMaterialCutsCouple(imc);
     // get e- production cut in the current material-cuts in energy
     G4double limit;
+    G4double ecut;
     if (fIsElectron) {
-      G4double ecut  = (*(thePCTable->GetEnergyCutsVector(idxG4ElectronCut)))[matCut->GetIndex()];
-      limit          = 2.*ecut;
+      ecut  = (*(thePCTable->GetEnergyCutsVector(idxG4ElectronCut)))[matCut->GetIndex()];
+      limit = 2.*ecut;
     } else {
-      G4double ecut  = (*(thePCTable->GetEnergyCutsVector(idxG4PositronCut)))[matCut->GetIndex()];
-      limit          = ecut;
+      ecut  = (*(thePCTable->GetEnergyCutsVector(idxG4PositronCut)))[matCut->GetIndex()];
+      limit = ecut;
     }
     G4double min = std::max(limit,fLowEnergyLimit);
     G4double max = fHighEnergyLimit;
@@ -666,6 +667,7 @@ void G4GoudsmitSaundersonTable::InitSCPCorrection() {
       continue;
     }
     G4int numEbins       = fNumSPCEbinPerDec*G4lrint(std::log10(max/min));
+    numEbins             = std::max(numEbins,3);
     G4double lmin        = G4Log(min);
     G4double ldel        = G4Log(max/min)/(numEbins-1.0);
     fSCPCPerMatCuts[imc] = new SCPCorrection();
@@ -680,7 +682,7 @@ void G4GoudsmitSaundersonTable::InitSCPCorrection() {
       // compute correction factor: I.Kawrakow NIMB 114(1996)307-326 (Eqs(32-37))
       if (ie>0) {
          G4double tau     = ekin/CLHEP::electron_mass_c2;
-         G4double tauCut  = limit/CLHEP::electron_mass_c2;
+         G4double tauCut  = ecut/CLHEP::electron_mass_c2;
          // Moliere's screening parameter
          G4int    matindx = matCut->GetMaterial()->GetIndex();
          G4double A       = GetMoliereXc2(matindx)/(4.0*tau*(tau+2.)*GetMoliereBc(matindx));

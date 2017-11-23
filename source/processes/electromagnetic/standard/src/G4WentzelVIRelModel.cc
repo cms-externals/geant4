@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4WentzelVIRelModel.cc 104480 2017-06-01 10:49:50Z vnivanch $
+// $Id: G4WentzelVIRelModel.cc 104487 2017-06-01 13:41:55Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

@@ -45,6 +45,7 @@ G4ParticleHPManager::G4ParticleHPManager()
 ,NEGLECT_DOPPLER(false)
 ,DO_NOT_ADJUST_FINAL_STATE(false)
 ,PRODUCE_FISSION_FRAGMENTS(false)
+,USE_NRESP71_MODEL(false)
 ,theElasticCrossSections(NULL)
 ,theCaptureCrossSections(NULL)
 //,theInelasticCrossSections(NULL)
@@ -66,6 +67,7 @@ G4ParticleHPManager::G4ParticleHPManager()
    if ( getenv( "G4NEUTRONHP_NEGLECT_DOPPLER" ) || getenv("G4PHP_NEGLECT_DOPPLER") ) NEGLECT_DOPPLER = true;
    if ( getenv( "G4NEUTRONHP_SKIP_MISSING_ISOTOPES" ) ) SKIP_MISSING_ISOTOPES = true;
    if ( getenv( "G4NEUTRONHP_PRODUCE_FISSION_FRAGMENTS" ) ) PRODUCE_FISSION_FRAGMENTS = true;
+   if ( getenv( "G4PHP_USE_NRESP71_MODEL" ) ) USE_NRESP71_MODEL = true;
 }
 G4ParticleHPManager::~G4ParticleHPManager()
 {

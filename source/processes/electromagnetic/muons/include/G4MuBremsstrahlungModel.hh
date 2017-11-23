@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4MuBremsstrahlungModel.hh 103197 2017-03-21 16:35:55Z vnivanch $
+// $Id: G4MuBremsstrahlungModel.hh 103220 2017-03-22 11:35:04Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

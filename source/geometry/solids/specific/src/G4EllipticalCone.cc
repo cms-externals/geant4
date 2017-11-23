@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4EllipticalCone.cc 105454 2017-07-27 13:16:40Z gcosmo $
+// $Id: G4EllipticalCone.cc 105421 2017-07-27 06:24:15Z evc $
 //
 // Implementation of G4EllipticalCone class
 //

@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4FTFAnnihilation.cc 106902 2017-10-27 09:26:20Z ribon $
+// $Id: G4FTFAnnihilation.cc 107525 2017-11-21 07:16:52Z gcosmo $
 //
 
 // ------------------------------------------------------------
@@ -143,6 +143,17 @@ G4bool G4FTFAnnihilation::Annihilate( G4VSplitableHadron* projectile,
   G4LorentzRotation toLab( toCms.inverse() );
 
   G4double SqrtS = std::sqrt( S );
+
+  //AR-Nov2017 String rotation: Begin
+  G4bool RotateStrings = false;
+  G4LorentzRotation RandomRotation;
+  if ( G4UniformRand() <= G4Pow::GetInstance()->powA( 1880.0/SqrtS, 4.0 ) ) {
+    RotateStrings = true;
+    RandomRotation.rotateZ( 2.*pi*G4UniformRand() );
+    RandomRotation.rotateY( std::acos( 2.*G4UniformRand()-1. ) );
+  }  
+  //AR-Nov2017 String rotation: End
+
   G4double maxPtSquare;
   G4double X_a( 0.0 ), X_b( 0.0 ), X_c( 0.0 ), X_d( 0.0 );
 
@@ -562,6 +573,7 @@ G4bool G4FTFAnnihilation::Annihilate( G4VSplitableHadron* projectile,
     G4ThreeVector tmp = Quark_Mom[0] + Quark_Mom[3];
     G4LorentzVector Pstring1( tmp, std::sqrt( Quark_Mom[0].mag2() + MassQ2 ) +
                                    std::sqrt( Quark_Mom[3].mag2() + MassQ2 ) );
+    if ( RotateStrings ) Pstring1 *= RandomRotation;  //AR-Nov2017 String rotation
     G4double Ystring1 = Pstring1.rapidity();
 
     //G4cout << "Mom 1 string " << G4endl << Quark_Mom[0] << G4endl << Quark_Mom[3] << G4endl
@@ -571,6 +583,7 @@ G4bool G4FTFAnnihilation::Annihilate( G4VSplitableHadron* projectile,
     tmp = Quark_Mom[1] + Quark_Mom[4];
     G4LorentzVector Pstring2( tmp, std::sqrt( Quark_Mom[1].mag2() + MassQ2 ) +
                                    std::sqrt( Quark_Mom[4].mag2() + MassQ2 ) );
+    if ( RotateStrings ) Pstring2 *= RandomRotation;  //AR-Nov2017 String rotation
     G4double Ystring2 = Pstring2.rapidity();
 
     //G4cout << "Mom 2 string " << G4endl << Quark_Mom[1] << G4endl << Quark_Mom[4] << G4endl
@@ -580,6 +593,7 @@ G4bool G4FTFAnnihilation::Annihilate( G4VSplitableHadron* projectile,
     tmp = Quark_Mom[2] + Quark_Mom[5];
     G4LorentzVector Pstring3( tmp, std::sqrt( Quark_Mom[2].mag2() + MassQ2 ) +
                                    std::sqrt( Quark_Mom[5].mag2() + MassQ2 ) );
+    if ( RotateStrings ) Pstring3 *= RandomRotation;  //AR-Nov2017 String rotation
     G4double Ystring3 = Pstring3.rapidity();
 
     //G4cout << "Mom 3 string " << G4endl << Quark_Mom[2] << G4endl << Quark_Mom[5] << G4endl
@@ -706,6 +720,18 @@ G4bool G4FTFAnnihilation::Annihilate( G4VSplitableHadron* projectile,
       //projectile->SetSecondParton( DQ );
       projectile->SetFirstParton( DQ );
       projectile->SetSecondParton( Anti_DQ );
+
+      //AR-Nov2017 String rotation : Begin
+      if ( RotateStrings ) {
+        G4LorentzVector Pquark = G4LorentzVector( 0., 0., SqrtS/2., SqrtS/2. );  
+        Pquark  *= RandomRotation;
+        G4LorentzVector Paquark = G4LorentzVector( 0., 0., -SqrtS/2., SqrtS/2. );  
+        Paquark *= RandomRotation;
+        Pquark.transform(toLab);  projectile->GetNextParton()->Set4Momentum(Pquark);
+        Paquark.transform(toLab); projectile->GetNextAntiParton()->Set4Momentum(Paquark);
+      }
+      //AR-Nov2017 String rotation : End
+
       projectile->SetStatus( 0 );
       target->SetStatus( 4 );  // The target nucleon has annihilated 3->4
       Pprojectile.setPx( 0.0 );
@@ -997,6 +1023,7 @@ G4bool G4FTFAnnihilation::Annihilate( G4VSplitableHadron* projectile,
       G4ThreeVector tmp = Quark_Mom[0] + Quark_Mom[2];
       G4LorentzVector Pstring1( tmp, std::sqrt( Quark_Mom[0].mag2() + MassQ2 ) +
                                      std::sqrt( Quark_Mom[2].mag2() + MassQ2 ) );
+      if ( RotateStrings ) Pstring1 *= RandomRotation;  //AR-Nov2017 String rotation
       G4double Ystring1 = Pstring1.rapidity();
 
       //G4cout << "Mom 1 string " << G4endl << Quark_Mom[0] << G4endl << Quark_Mom[2] << G4endl
@@ -1006,6 +1033,7 @@ G4bool G4FTFAnnihilation::Annihilate( G4VSplitableHadron* projectile,
       tmp = Quark_Mom[1] + Quark_Mom[3];
       G4LorentzVector Pstring2( tmp, std::sqrt( Quark_Mom[1].mag2() + MassQ2 ) +
                                      std::sqrt( Quark_Mom[3].mag2() + MassQ2 ) );
+      if ( RotateStrings ) Pstring2 *= RandomRotation;  //AR-Nov2017 String rotation
       G4double Ystring2 = Pstring2.rapidity();
 
       //G4cout << "Mom 2 string " << G4endl <<Quark_Mom[1] << G4endl << Quark_Mom[3] << G4endl
@@ -1143,6 +1171,14 @@ G4bool G4FTFAnnihilation::Annihilate( G4VSplitableHadron* projectile,
       Pprojectile.setPz( 0.0 );
       Pprojectile.setE( SqrtS );
       Pprojectile.transform( toLab );
+
+      //AR-Nov2017 String rotation : Begin
+      G4LorentzVector Pquark  = G4LorentzVector( 0., 0.,  SqrtS/2., SqrtS/2. );  
+      G4LorentzVector Paquark = G4LorentzVector( 0., 0., -SqrtS/2., SqrtS/2. );  
+      if ( RotateStrings ) { Pquark *= RandomRotation; Paquark *= RandomRotation; }  
+      Pquark.transform(toLab);  projectile->GetNextParton()->Set4Momentum(Pquark);
+      Paquark.transform(toLab); projectile->GetNextAntiParton()->Set4Momentum(Paquark);
+      //AR-Nov2017 String rotation : End
 
       // Calculation of the creation time
       projectile->SetTimeOfCreation( target->GetTimeOfCreation() );

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4LossTableManager.hh 106699 2017-10-19 20:51:26Z dsawkey $
+// $Id: G4LossTableManager.hh 106714 2017-10-20 09:38:06Z gcosmo $
 //
 //
 // -------------------------------------------------------------------

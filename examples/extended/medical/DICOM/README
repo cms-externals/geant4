@@ -102,8 +102,16 @@ then make
   - DICOM_USE_HEAD
      - set to 1 (export DICOM_USE_HEAD=1) to use the digital head phantom documented in Giacometti, V., Guatelli, S., Bazalova-Carter, M., Rosenfeld, A.B., Schulte, R.W.,
        "Development of a high resolution voxelised head phantom for medical physics applications", (2017) Physica Medica, 33, pp. 182-188. 
-       The required dicom files, Data.dat, ColourMap.dat are in the directory DICOM_HEAD and input to the DICOM application if the DICOM_HEAD option is used. 
-       
+       To use this option, the DICOM library needs to be downloaded. This is distributed with the other Geant4 data files on the Geant4 Download site.
+       For convenience of use, it is suggested to have the DICOM library directory in the DICOM Geant4 extended example or in the directory containing the DICOM executable.
+       When using this option,
+       1) export DICOM_USE_HEAD=1
+       2) export DICOM_PATH=path/to/DICOM1.1/DICOM_HEAD - to use the full DICOM HEAD project 
+          or
+          export DICOM_PATH=path/to/DICOM1.1/DICOM_HEAD_TEST - to use 4 DICOM files of the DICOM HEAD project. This option is useful for testing purposes.
+       3) THE DICOM_HEAD uses the OLD version of the Metadata files (see point 4a)
+       Note 1: The Conversion of Hounsfield numbers to materials (point 5) is not used. The material is associated to the voxel in the Detector Construction 
+               without using the calibration curve.This happens because the DICOM project has already been segmented and cleaned from artefacts (see publication).
 
 --->4a) Metadata file, OLD version:
 

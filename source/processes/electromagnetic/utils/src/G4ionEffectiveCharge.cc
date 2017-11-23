@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4ionEffectiveCharge.cc 100350 2016-10-18 17:41:40Z vnivanch $
+// $Id: G4ionEffectiveCharge.cc 100363 2016-10-19 09:24:47Z gcosmo $
 //
 // -------------------------------------------------------------------
 //

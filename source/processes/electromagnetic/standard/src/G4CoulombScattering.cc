@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: G4CoulombScattering.cc 107139 2017-11-02 18:52:33Z vnivanch $
+// $Id: G4CoulombScattering.cc 107365 2017-11-09 10:54:29Z gcosmo $
 //
 // -------------------------------------------------------------------
 //
@@ -177,7 +177,11 @@ void G4CoulombScattering::StreamProcessInfo(std::ostream& outFile,
 
 void G4CoulombScattering::ProcessDescription(std::ostream& out) const
 {
-  out << "<strong>Coulomb scattering</strong>";
+  out <<
+  "<strong>Coulomb scattering</strong>. Simulation of elastic scattering <br>"
+  "events individually. May be used in combination with multiple<br>"
+  "scattering, where Coulomb scattering is used for hard (large angle)<br>"
+  "collisions and multiple scattering for soft collisions.";
   G4VEmProcess::ProcessDescription(out);
 }
 
