@@ -1,0 +1,217 @@
+
+        ############################################
+        !!! WARNING - FPE detection is activated !!!
+        ############################################
+
+*************************************************************
+ Geant4 version Name: geant4-10-04-ref-00    (08-December-2017)
+                      Copyright : Geant4 Collaboration
+                      Reference : NIM A 506 (2003), 250-303
+                            WWW : http://cern.ch/geant4
+*************************************************************
+
+### New material Water
+=======================================================================
+======                 Electromagnetic Physics Parameters      ========
+=======================================================================
+Fluctuations of dE/dx are enabled                  1
+Build CSDA range enabled                           1
+LPM effect enabled                                 1
+Spline of EM tables enabled                        1
+Use cut as a final range enabled                   1
+Apply cuts on all EM processes                     0
+Fluorescence enabled                               0
+Fluorescence Bearden data files enabled            0
+Auger electron production enabled                  0
+Auger cascade enabled                              0
+PIXE atomic de-excitation enabled                  0
+De-excitation module ignores cuts                  0
+Msc lateral displacement for e+- enabled           1
+Msc lateral displacement for muons and hadrons     0
+Msc lateral displacement alg96 for e+-             1
+Msc lateral displacement beyond geometry safety    0
+Enable angular generator interface                 0
+Use Mott correction for e- scattering              0
+Use integral approach for tracking                 1
+Use built-in Birks satuaration                     0
+Use fast sampling in DNA models                    0
+Use Stationary option in DNA models                0
+Use DNA with multiple scattering of e-             0
+Factor of cut reduction for sub-cutoff method      1
+Min kinetic energy for tables                      10 eV 
+Max kinetic energy for tables                      10 TeV
+Max kinetic energy for CSDA tables                 10 TeV
+Lowest e+e- kinetic energy                         1 keV
+Lowest muon/hadron kinetic energy                  1 keV
+Lowest triplet kinetic energy                      1 MeV
+Linear loss limit 0.01
+Bremsstrahlung energy threshold above which 
+  primary is added to the list of secondary        100 TeV
+X-section factor for integral approach             0.8
+Factor used for dynamic computation of angular 
+  limit between single and multiple scattering     1
+Fixed angular limit between single 
+  and multiple scattering                          3.1416 rad
+Range factor for msc step limit for e+-            0.04
+Range factor for msc step limit for muons/hadrons  0.2
+Geometry factor for msc step limitation of e+-     2.5
+Skin parameter for msc step limitation of e+-      1
+Screening factor                                   1
+Step function for e+-                              (0.2, 1 mm)
+Step function for muons/hadrons                    (0.2, 0.1 mm)
+Number of bins in tables                           120
+Number of bins per decade of a table               10
+Verbose level                                      0
+Verbose level for worker thread                    0
+Type of msc step limit algorithm for e+-           1
+Type of msc step limit algorithm for muons/hadrons 0
+Type of nuclear form-factor                        1
+Type of PIXE cross section for hadrons             Empirical
+Type of PIXE cross section for e+-                 Livermore
+=======================================================================
+/run/verbose 2
+#
+/testem/det/setMat Water
+/testem/det/setSize 1 cm
+/run/geometryModified
+#
+/testem/phys/addPhysics standard
+#
+/run/setCut 1 mm
+#
+/run/initialize
+userDetector->Construct() start.
+
+ The Box is 1 cm  of Water
+  Material:    Water    density:  1.000 g/cm3   RadL:  36.092 cm   Nucl.Int.Length:  75.356 cm 
+                       Imean:  78.000 eV   temperature: 293.15 K  pressure:   1.00 atm
+
+   --->  Element: Hydrogen (H)   Z =  1.0   N =     1   A =  1.010 g/mole
+         --->  Isotope:    H1   Z =  1   N =   1   A =   1.01 g/mole   abundance: 99.989 %
+         --->  Isotope:    H2   Z =  1   N =   2   A =   2.01 g/mole   abundance:  0.011 %
+          ElmMassFraction:  11.21 %  ElmAbundance  66.67 % 
+
+   --->  Element: Oxygen (O)   Z =  8.0   N =    16   A = 16.000 g/mole
+         --->  Isotope:   O16   Z =  8   N =  16   A =  15.99 g/mole   abundance: 99.757 %
+         --->  Isotope:   O17   Z =  8   N =  17   A =  17.00 g/mole   abundance:  0.038 %
+         --->  Isotope:   O18   Z =  8   N =  18   A =  18.00 g/mole   abundance:  0.205 %
+          ElmMassFraction:  88.79 %  ElmAbundance  33.33 % 
+
+Water is registered to the default region.
+physicsList->Construct() start.
+physicsList->CheckParticleList() start.
+physicsList->setCut() start.
+/process/list
+     Transportation,            ionIoni,    nuclearStopping,              hIoni
+              eIoni,              eBrem,            annihil,               phot
+              compt,               conv,             muIoni,            muBrems
+         muPairProd,             hBrems,          hPairProd,        UserStepMax
+
+#
+/gun/particle e-
+/gun/energy 100 MeV
+#
+/run/beamOn 100000
+
+Region <DefaultRegionForTheWorld> --  -- appears in <Water> world volume
+ This region is in the mass world.
+ Root logical volume(s) : Water 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Water 
+ Production cuts :   gamma 1 mm      e- 1 mm      e+ 1 mm  proton 1 mm 
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 mm      e- 1 mm      e+ 1 mm  proton 1 mm 
+
+========= Table of registered couples ==============================
+
+Index : 0     used in the geometry : Yes
+ Material : Water
+ Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
+ Energy thresholds :  gamma  2.94056 keV    e-  351.877 keV    e+  342.545 keV proton 100 keV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+====================================================================
+
+Start closing geometry.
+G4GeometryManager::ReportVoxelStats -- Voxel Statistics
+
+    Total memory consumed for geometry optimisation:   0 kByte
+    Total CPU time elapsed for geometry optimisation: 0 seconds
+### Run 0 starts.
+
+--------- Ranecu engine status ---------
+ Initial seed (index) = 0
+ Current couple of seeds = 9876, 54321
+----------------------------------------
+ Run terminated.
+Run Summary
+  Number of events processed : 100000
+  User=0.62s Real=0.62s Sys=0s
+
+ ======================== run summary ======================
+
+ The run was 100000 e- of 100 MeV through 1 cm  of Water (density: 1 g/cm3 )
+
+ Process defining step :
+      Edep alone=    311   Transportation=  99992            eBrem=  37558            eIoni=  24144
+
+
+ TrackLength = 10 mm   nb of steps = 1.62  stepSize = 6.173 mm   (3.424 nm --> 1.001 cm )
+
+ Energy continuously deposited along primary track (restricted dE/dx)  dE1 = 1.744 MeV  (606.1 keV --> 2.921 MeV)
+
+ Evaluation of dE1 from reading restricted Range table : dE1_table = 1.744 MeV   ---> dE1/dE1_table = 1
+
+ Energy transfered to secondary particles :
+       due to eBrem:  dE2 =  2.376 MeV  (2.942 keV --> 99.05 MeV)
+       due to eIoni:  dE2 =  450.2 keV  (351.9 keV --> 50.28 MeV)
+
+ Total energy transfered to secondaries : dE3 = sum of dE2 = 2.826 MeV  (2.942 keV --> 99.05 MeV)
+
+ Total energy lost by incident particle : dE4 = dE1 + dE3 = 4.57 MeV  (1.333 MeV --> 100 MeV)
+
+ calcul of dE4 from energy balance : dE4_bal = E_in - E_out = 4.57 MeV  (1.333 MeV --> 100 MeV)
+
+ Evaluation of dE4 from reading full Range table : dE4_table = 4.578 MeV   ---> dE4/dE4_table = 0.9984
+
+ Energy spectrum of secondary particles :
+             e-:   24144  Emean =  1.864 MeV  (351.9 keV --> 49.78 MeV)
+          gamma:   37544  Emean =  6.328 MeV  (2.942 keV --> 99.01 MeV)
+
+
+--------- Ranecu engine status ---------
+ Initial seed (index) = 0
+ Current couple of seeds = 150141884, 397385343
+----------------------------------------
+G4 kernel has come to Quit state.
+UserDetectorConstruction deleted.
+UserPhysicsList deleted.
+UserRunAction deleted.
+UserPrimaryGenerator deleted.
+RunManager is deleting RunManagerKernel.
+EventManager deleted.
+Units table cleared.
+TransportationManager deleted.
+Total navigation history collections cleaned: 6
+================== Deleting memory pools ===================
+Pool ID '20G4NavigationLevelRep', size : 0.00673 MB
+Pool ID '24G4ReferenceCountedHandleIvE', size : 0.000961 MB
+Pool ID '7G4Event', size : 0.000961 MB
+Pool ID '15G4PrimaryVertex', size : 0.000961 MB
+Pool ID '17G4PrimaryParticle', size : 0.000961 MB
+Pool ID '17G4DynamicParticle', size : 0.00192 MB
+Pool ID '7G4Track', size : 0.00288 MB
+Pool ID '18G4TouchableHistory', size : 0.000961 MB
+Pool ID '15G4CountedObjectIvE', size : 0.000961 MB
+Number of memory pools allocated: 9 of which, static: 0
+Dynamic pools deleted: 9 / Total memory freed: 0.017 MB
+============================================================
+G4Allocator objects are deleted.
+UImanager deleted.
+StateManager deleted.
+RunManagerKernel is deleted. Good bye :)
