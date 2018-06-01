@@ -34,7 +34,10 @@ class G4HadFinalState;
 class G4VLeadingParticleBiasing 
 {
   public:
-  
+
+  G4VLeadingParticleBiasing() {};
+  ~G4VLeadingParticleBiasing() {};
+
   virtual G4HadFinalState * Bias(G4HadFinalState * result) = 0;
 };
 
