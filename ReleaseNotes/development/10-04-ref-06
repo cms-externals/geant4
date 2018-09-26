@@ -1,0 +1,212 @@
+
+                       geant4-10-04-ref-06
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Improved reporting of looping particle, adding info on density and
+   fraction (%) of proposed step that was completed, and momentum.
+   Changed default values for thresholds related to the killing of
+   looping particles by transportation processes.
+ o Added possibility to optionally enable profiling with TiMemory.
+ o New data set G4EMLOW-7.4.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-04-14
+-----
+- Added "auto" dummy Thread Local Storage model; when "auto" is used,
+  no explicit compiler flag is being set to select the TLS model; selection
+  is left to compiler default.
+- Added configuration for optional profiling package TiMemory.
+- Skip validation checking for external zlib sources.
+- Switched to new data-set G4EMLOW-7.4.
+
+externals/zlib                                   zlib-V10-04-03
+--------------
+- Updated to version 1.2.11. Use original files format and adopt C Compiler
+  for installation. Addressing compilation warnings on gcc-8.1.
+
+geometry
+--------
+- magneticfield (field-V10-04-07)
+  o Use G4Exception warnings instead of streaming to cerr.
+  o Added override final for virtual methods in G4UniformMagField.
+  o Fixed Coverity defects in G4BurlischStoer and G4ModifiedMidPoint;
+    some code cleanup.
+- navigation (geomnav-V10-04-11):
+  o G4PropagatorInField: fix for case of finishing integration in last
+    iteration (so a looping particle will not be signalled incorrectly in
+    that case). Improved reporting of looping particle, adding info on
+    density and fraction (%) of proposed step that was completed, and
+    momentum.
+  o Use G4Exception instead of streaming to cerr in various classes.
+  o Fixed Coverity defect in diagnostic report in G4MultiLevelLocator.
+- solids/specific (geom-specific-V10-04-10):
+  o Use dynamic_cast to attempt fix for spurious compilation warnings on
+    CentOS7/gcc-5.3 on G4UTessellatedSolid wrapper.
+
+global                                           global-V10-04-18
+------
+- Added G4TiMemory header which defines an dummy initializer and empty
+  macros when the profiling package TiMemory is disabled, while it includes
+  the TiMemory headers and defines an initializer when built with TiMemory
+  support enabled.
+- Removed obsolete definition in G4Timer and G4SliceTimer, causing
+  conflicts with TiMemory. Updated CMake scripts.
+
+intercoms                                        intercoms-V10-04-03
+---------
+- Fixed compilation warnings for not used return parameters.
+
+interfaces                                       interfaces-V10-04-07
+----------
+- G4Xt: fixed compilation warnings for casts on gcc-8.1.
+- Fixed compilation warnings for not used return parameters.
+
+persistency/gdml                                 gdml-V10-04-03
+----------------
+- Clear auxiliary map information in G4GDMLReadStructure::Clear().
+  Addressing problem report #2064.
+
+processes/electromagnetic/dna                    emdna-V10-04-04
+-----------------------------
+- Updated use of thread-local static variables to function returning
+  a thread-local static reference. New model for allowing support of
+  multi-threading on Windows DLLs.
+- Fixed compilation warnings for not used return parameters.
+
+processes/electromagnetic/standard               emstand-V10-04-29
+----------------------------------
+- G4PairProductionRelModel, G4BetheHeitler5DModel: fixed computation of cross- 
+  section in the new version of the high energy model. Fixed triplet production 
+  below treshold in the 5D model.
+- G4BetheHeitler5DModel: optimization of the final state sampling.
+- G4AtimaEnergyLossModel, G4LindhardSorensenData: fixed Coverity warnings on
+  read/write out of array boundary.
+- G4AtimaEnergyLossModel, G4AtimaFluctuations: fixed data handling in the new
+  ion ionisation, which were identified by Coverity code analysis.
+- G4LindhardSorensenData: fixed Coverity warnings on read beyond the array
+  boundary.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-04-16)
+  o G4NeutronElasticXS, G4NeutronInelasticXS, G4NeutronCaptureXS,
+    G4ParticleInelasticXS, G4CrossSectionDataStore: restore logic used in
+    release 10.4 for the selection of isotope cross-sections; make these
+    x-sections isotope-wise for all energies.
+  o G4HadronXSDataTable: new class for cross-section handling.
+  o Use const pointer to G4Isotope.
+  o G4NeutronElasticXS, G4NeutronInelasticXS, G4NeutronCaptureXS: fix to not
+    clear previous cross-sections from the list allowing to use HP cross-
+    sections.
+  o G4PiNuclearCrossSection: logical fix suggested by Coverity, affecting
+    only transuranic elements.
+- management (hadr-man-V10-04-04)
+  o G4HadronicProcess: use correct return type when calling CheckResult()
+    from PostStepDoIt(): fixes case when the value of pointer 'result' does
+    not get properly reset to NULL in case a non-conservation is detected,
+    thus "bad" interaction does not get re-sampled.
+- models/parton_string/diffraction (hadr-string-diff-V10-04-10)
+  o G4FTFAnnihilation: fix to get flat cos(theta) and phi distributions for
+    antiproton annihilation at rest. Added also a protection for the evaluation
+    of rapidity.
+  o G4FTFModel, G4DiffractiveExcitation, G4FTFAnnihilation: code improvements.
+    No changes in physics output, but with possible differences in the random
+    sequence, due to numerical effects caused by re-ordering of operations.
+
+processes/transportation                         transport-V10-04-05
+------------------------
+- G4Transportation, G4CoupledTransportation: changed default values of two
+  thresholds related to the killing of looping particles: 
+  Important_Energy: particles with MORE energy are killed ONLY after multiple
+                    steps (fThresholdTrials) marked as 'looping'.
+  Warning_Energy: particles with LESS energy are killed SILENTLY.
+  Intermediate value: particles between these energies are killed after
+                      one 'looping step' (with warning.)
+  New values:  Warning_Energy = 1.0 KeV
+               Important_Energy = 1.0 MeV
+  NOTES:
+  This can happen if a track's propagation in field requires a large number
+  of integration steps (default number is 1000, and it is controlled by
+  G4PropagatorInField's  Get/SetMaxLoopCount() methods).
+  Usually the material is vacuum or very low density material and particles
+  have either low momentum or momentum with a very small component along the
+  direction of the magnetic field (zero or nearly zero).
+  Improved reporting of the issue of dropped particles (above 'warning
+  threshold'): now providing the type of particle, position, momentum, material
+  density and step length in addition to the energy; added recommendations for
+  users along with the warning (printed only for the first 5 warnings).
+  Addressing problem report #2063.
+- New class G4TransportationLogger to consolidate reports from the
+  Transportation processes.
+- Fixed Coverity defects.
+
+run                                              run-V10-04-09
+---
+- Added TiMemory auto-timer macros to some key functions in G4RunManager,
+  G4RunManagerKernel, G4MTRunManager, and G4MTRunManagerKernel
+- Added TiMemory libraries and includes to CMake script for optional use.
+
+visualization                                    vis-V10-04-07
+-------------
+- modeling (modeling-V10-04-05):
+  o G4PhysicalVolumeModel: fixed Coverity warning for unnecessary check
+    on pointer.
+- OpenInventor (openinventor-V10-04-03):
+  o Fixed compilation warnings on gcc-8.1.0.
+
+data sets:
+---------
+- G4EMLOW-7.4:
+  o Updated microelec elastic cross-section files.
+
+examples                                         examples-V10-04-06
+--------
+- Updated documentation and reference outputs.
+- advanced/composite_calorimeter (ccal-V10-04-05)
+  o Fixed compilation warning on gcc-8.1 in CCalRunAction.
+- extended/electromagnetic/TestEm7 (testem7-V10-04-03)
+  o SteppingAction: added edep at end of step for photo-electric.
+  o Fixed compilation warning on gcc-8.1.
+- extended/electromagnetic/TestEm11 (testem11-V10-04-03)
+  o SteppingAction: added edep at end of step for photo-electric.
+- extended/electromagnetic/TestEm12 (testem12-V10-04-02)
+  o Added missing inclusion of G4Types.hh header for self-consistency.
+- extended/electromagnetic/TestEm15 (testem15-V10-04-06)
+  o PhysicsList: added G4EmStandardPhysicsWVI, GS, SS.
+- extended/errorpropagation (exerrprop-V10-04-00)
+  o Use implicit destructor in ExErrorMagneticField.
+  o Updated README.
+- extended/exoticphysics/phonon (phononExample-V10-04-03)
+  o Updated outputs specific for Windows-MT.
+- extended/hadronic/Hadr07 (exhadr07-V10-04-03)
+  o SteppingAction: added edep at end of step for photo-electric.
+- extended/medical/DICOM (DICOM-V10-04-03)
+  o Added DICOMUtilities.cmake script, defining a DICOM_BUILD_LIBRARY macro
+    which handles how to build DICOM-library (and dicomReader library if
+    USE_DICOM_DCMTK=ON) based on the Geant4 installation (e.g. build shared,
+    static, or both) + updates to configuration scripts to handle which
+    library type to use and link to.
+- extended/medical/DICOM2 (DICOM2-V10-04-01)
+  o Updated CMake script to force setting DICOM_DIR cache entry to Geant4_DIR
+    if not defined.
+- extended/medical/dna/slowing (slowing-V10-04-01)
+  o Updated input script and code cleanup.
+- extended/parallel/ThreadsafeScorers (ThreadsafeScorers-V10-04-03)
+  o TSPhysicsLists no longer declares G4VPhysicsConstructors in header.
+  o Added TiMemory timing to TSPrimaryGeneratorAction and G4Run.
+  o Added TiMemory ASCII output and serialization to main().
+  o Fixed shadowing warnings in G4atomic.hh header.
+- extended/persistency/P02 (exampleP02-V10-04-01)
+  o Updated selection.xml file with new members of G4MaterialPropertiesTable.
+  o Fixed crash on reading due to duplication of materials in .root file.
+    Addressing problem report #2065.
+
+tests                                            tests-V10-04-06
+-----
+- Updated reference outputs and tools.
