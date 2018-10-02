@@ -1,0 +1,376 @@
+
+                       geant4-10-04-ref-08
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Updated field steppers to make use of cached field vales.
+ o New G4InterpolationDriver field driver class using Runge-Kutta method
+   with interpolation property to integrate EoM with error control.
+ o Fixed proton momentum and direction in G4NeutronBetaDecay.
+ o Major revision of all ion builders.
+ o Correction in G4UrbanMscModel in order to get better backscattering
+   for low energy.
+ o Improved strangeness and few nucleon removal in INCLXX.
+ o New data sets G4EMLOW-7.7 and G4SAIDDATA-2.0.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-04-21
+-----
+- Updated FindInventor.cmake to properly setup SoQt if existing.
+- Geant4InterfaceOptions.cmake: added check for existance of SoQt package.
+- Geant4MakeRules_cxx.cmake: added -DGL_SILENCE_DEPRECATION to
+  CMAKE_CXX_FLAGS_INIT for clang to silence GL deprecation compilation
+  warnings on MacOS 10.14 Mojave.
+- Switched to new data-sets G4EMLOW-7.7 and G4SAIDDATA-2.0.
+
+config                                           config-V10-04-09
+------
+- Fixed setting of G4RUNPATHOPTION in Darwin/Linux-clang/g++ and binmake.cmk.
+  Addressing problem report #2086.
+- Cleanup settings for GL in Darwin-clang.gmk and Darwin-g++.gmk.
+  Added -DGL_SILENCE_DEPRECATION to CPPFLAGS to silence GL deprecation
+  compilation warnings on MacOS 10.14 Mojave.
+
+analysis                                         analysis-V10-04-04
+--------
+- Fixed the default value of rowWise argument (false)
+  in G4RootAnalysisManager::SetNtupleMerging().
+- Updated G4TNtupleManager::FinishTNtuple() to support creating n-tuples
+  both before and after OpenFile().
+
+geometry
+--------
+- magneticfield (field-V10-04-16)
+  o G4NystromRK4 now uses G4CachedMagneticField for caching values and
+    creates it if not provided. Any other stepper will work with that cached
+    field too. 
+  o Removed G4MagIntegratorStepper::ComputeRightHandSide() method (call
+    non-virtual RightHandSide() instead).
+  o New class G4BFieldIntegrationDriver for pure magnetic field.
+    In QuickAdvance() it uses helix stepper when rotation angle is larger
+    than pi/3.
+  o New class G4InterpolationDriver; using Runge-Kutta method with 
+    interpolation property to integrate EoM with error control.
+- navigation (geomnav-V10-04-12):
+  o In G4PropagatorInField::ComputeStep(), notify G4ChordFinder at the
+    beginning of each call.
+- solids/CSG (geom-csg-V10-04-05):
+  o G4UTorus: removed leftover use of UVector3 and replaced with U3Vector.
+- solids/specific (geom-specific-V10-04-15):
+  o Enabled VecGeom wrapper for G4Tet.
+  o Make G4UPolycone wrapper inheriting from vecgeom::GenericUnplacedPolycone,
+    following the latest changes in VecGeom.
+  o G4UTessellatedSolid, G4UExtrudedSolid: removed leftover use of
+    UVector3 and replaced with U3Vector.
+
+global                                           global-V10-04-21
+------
+- G4PhysicsVector, G4Physics2DVector: fixed possible out-of-bound access
+  in FindBin() method. Addressing problem report #2087.
+- G4Timer: fixed CPU number printout in operator<<().
+  Use G4 types. Code formatting.
+
+interfaces                                       interfaces-V10-04-08
+----------
+- Changed G4VInteractorManager::SecondaryLoop() to virtual to cope with
+  OpenInventor Qt visualization driver.
+
+materials                                        materials-V10-04-07
+---------
+- New class G4AtomicShells_XDB_EADL using experimental binding energy data
+  from X-ray Data Book (XDB) where available and theoretical values otherwise.
+  Removed old class G4AtomicShells_EADL.
+- New class G4ICRU90StoppingData for ICRU90 data. Added method in G4NistManager
+  to access G4ICRU90StoppingData; removed check forcing instantiation only in
+  the master thread.
+
+particles                                        particles-V10-04-11
+---------
+- Fixed proton momentum and direction in G4NeutronBetaDecay.
+  Addressing problem report #2088.
+- Changed UI command directory for G4NuclideTable.
+- Removed obsolete class G4NucleiPropertiesTableAME03.
+- Fix in muon decay channel with spin, for calculation of beta of
+  a 2 neutrino system in CM frame. Addressing problem report #2072.
+- Code cleanup.
+
+physics_lists/builders                           phys-builders-V10-04-01
+----------------------
+- OrderingParameterTable: added gamma and e- processes.
+- G4FTFBinaryPiKBuilder, G4HyperonFTFPBuilder: improved deletion.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-04-11
+------------------------------------------
+- G4EmStandardPhysics_option4, G4EmLivermorePhysics, G4EmPenelopePhysics,
+  G4EmPolarizedLivermorePhysics: use same Goudsmit-Saunderson multiple
+  scattering model configuration and same configurations for hadrons and ions.
+- G4EmLowEPPhysics: use same configurations for hadrons.
+- Renamed G4GammaSuperProcess to G4GammaGeneralProcess.
+- G4GammaGeneralProcess, G4EmStandardPhysics, G4EmStandardPhysics_option1,
+  G4EmStandardPhysics_option4: updated usage of gamma general process.
+- Added new constructors G4EmDNAPhysics_option8 and G4EmDNAChemistry_option1.
+
+physics_lists/constructors/gamma_lepto_nuclear   phys-ctor-glnuclear-V10-04-06
+----------------------------------------------
+- G4EmExtraPhysics, G4BertiniElectroNuclearBuilder: added enabling of
+  G4GammaGeneralProcess.
+
+physics_lists/constructors/hadron_inelastic      phys-ctor-hinelastic-V10-04-09
+-------------------------------------------
+- G4HadronInelasticQBBC: removed more statics variables.
+
+physics_lists/constructors/ions                  phys-ctor-ions-V10-04-04
+-------------------------------
+- Major revision of all ion builders: reduced number of thread-local variables;
+  simplified class constructors; for QMD, INCLXX, XS enabled combined list of
+  de-excitation channels; use max energy from G4HadronicParameters and do not
+  instantiate FTFP model if this energy is below max energy of the cascade;
+  G4IonBinaryCascadePhysics is now identical to G4IonPhysics.
+
+physics_lists/lists                              phys-list-V10-04-03
+-------------------
+- QGSP_BIC_HP, Shielding, QBBC: use EM physics Opt4.
+- QBBC: use G4IonPhysicsXS.
+- PhysListFactory: added extra EM option "EM0", enabling default Opt0
+  EM physics configuration.
+
+processes/cuts                                   procuts-V10-04-00
+--------------
+- Code cleanup; use of nullptr and c++11.
+
+processes/management                             procman-V10-04-03
+--------------------
+- Code cleanup; use of nullptr and c++11.
+
+processes/electromagnetic/dna                    emdna-V10-04-10
+-----------------------------
+- Fixed header guards in G4ITFinder and G4AllITFinder.
+  Addressing problem report #2084.
+
+processes/electromagnetic/highenergy             emhighenergy-V10-04-02
+------------------------------------
+- G4eeToHadrons, G4eeToHadronsMultiModel, G4hBremsstrahlung, G4hPairProduction,
+  G4hhIonisation, G4mplIonisation: automatic documentation format now rST.
+
+processes/electromagnetic/lowenergy              emlowen-V10-04-10
+-----------------------------------
+- Fixed problem G4PenelopeIonisationModel responsible for rare energy 
+  non-conservation and run-time warning.
+- G4RayleighScattering: changed automatic documentation format to rST.
+
+processes/electromagnetic/muons                  emmuons-V10-04-05
+-------------------------------
+- G4EnergyLossForExtrapolator: fixed MT initialisation and destruction.
+- G4MuMultipleScattering, G4MuPairProduction, G4eePairProduction,
+  G4MuBremsstrahlung, G4MuIonisation: automatic documentation format now rST.
+
+processes/electromagnetic/standard               emstand-V10-04-41
+----------------------------------
+- G4UrbanMscModel: correction in order to get better backscattering for low
+  energy.
+- G4eSingleCoulombScatteringModel: fixed calculation of scattering angle.
+  Addressing problem report #2090.
+- G4LindhardSorensenIonModel: fixed numerical problem in computation of
+  correction.
+- G4GammaConversion, G4eBremsstrahlung, G4hIonisation: use upper energy limit
+  for low-energy model from physics-list instead of hard-coded values.
+- G4ionIonisation: apply correction to energy loss only to BetheBloch
+  ionisation model.
+- G4ScreeningMottCrossSection: use G4MottData and improved time consuming 
+  computations. Removed obsolete G4MottCoefficients class, replaced by static
+  data class G4MottData.
+- G4ScreeningMottCrossSection, G4eSingleCoulombScatteringModel: added extra
+  protections on argument of std::acos avoiding crash due to precision lost;
+  code cleanup.
+- G4CoulombScattering, G4eBremsstrahlung, G4[e,h]MultipleScattering,
+  G4eplusAnnihilation, G4[e,h,ion,alpha]Ionisation, G4ComptonScattering,
+  G4NuclearStopping, G4PhotoElectricEffect: changed auto-generated
+  documentation format to rST.
+- G4BraggModel, G4BraggIonModel, G4BetheBlochModel: added optional
+  possibility to use ICRU90 data.
+- G4LindhardSorensenData: fixed interpolation of corrections for large energies.
+- G4LindhardSorensenIonModel, G4PSTARStopping: minor code cleanup.
+
+processes/electromagnetic/utils                  emutils-V10-04-21
+-------------------------------
+- G4EmCalculator: fixed computation dEdx for ions.
+- G4EmParameters, G4EmParametersMessenger: added extra parameter and UI command
+  to enable usage of ICRU90 data; fixed DNA parameters; added checks of EM
+  physics type. 
+- G4VEmProcess, G4VEnergyLossProcess: withdraw optimisation changes introduced
+  in previous tags, return back to original 10.4 logic.
+- G4EmModelManager, G4VEmModel, G4VEmProcess, G4VEnergyLossProcess,
+  G4VMultipleScattering: auto-generated documentation now in rST format.
+
+processes/electromagnetic/xrays                  xrays-V10-04-05
+-------------------------------
+- G4Cerenkov, G4Scintillation: correctly reset number of photons to 0 each step.
+  Addressing problem report #2056.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-04-35)
+  o G4HadronCrossSections: added a protection (with a "JustWarning" exception)
+    in the case of direct calls of cross-sections for particles not handled by
+    Gheisha (e.g. gamma, He3, light anti-ions).
+  o G4ComponentGGNuclNuclXsc: fixed bug for light ion cross-sections.
+  o G4VComponentCrossSection, G4CrossSectionInelastic, G4CrossSectionElastic,
+    G4ComponentSAIDTotalXS, G4ComponentGGNuclNuclXsc,
+    G4ComponentGGHadronNucleusXsc: use stream in the Description() method
+    instead of cout.
+  o G4ComponentBarNucleonNucleusXsc: simplified and cleaned up, use
+    G4BarashenkovData.
+  o G4BGGPionInelasticXS: use Nikolay Starkov parameterisation for pion-nucleon.
+  o G4NucleonNuclearCrossSection: use G4ComponentBarNucleonNucleusXsc.
+  o G4UPiNuclearCrossSection, G4PiNuclearCrossSection: code cleanup.
+  o G4ComponentGGNuclNuclXsc, G4ComponentGGHadronNucleusXsc: completed cleanup;
+    removed code duplication, all parameterisations are used from
+    G4HadronNucleonXsc class only; do not create temporary G4DynamicParticle
+    objects; implemented computations only inside ComputeCrossSections()
+    methods.
+  o G4BGGNucleonElasticXS, G4BGGNucleonInelasticXS, G4BGGPionElasticXS,
+    G4ComponentSAIDTotalXS, G4CrossSectionPairGG, G4NeutronElasticXS,
+    G4NeutronInelasticXS, G4ParticleInelasticXS: improved destruction.
+  o G4VComponentCrossSection, G4CrossSectionDataSetRegistry,
+    G4CrossSectionElastic, G4CrossSectionInelastic: fixed deletion of
+    cross-sections and components in MT mode.
+- management (hadr-man-V10-04-08)
+  o Removed obsolete class G4HadronicInteractionWrapper.
+- models/abla (hadr-abla-V10-04-05)
+  o Extended model to hypernuclei.
+- models/cascade (hadr-casc-V10-04-09)
+  o G4NucleiModel: replace Kossov parameterization of gammaQDxsec with new
+    values coming from smooth line through deuteron photo-disintegration
+    data which include 2004 JLab data up to 3 GeV.
+    Fix in boundaryTransition() to prevent glancing incidence at shell
+    boundaries from reflecting too many times.
+  o G4CascadeT11pizNChannel, G4CascadeT31piNChannel, G4CascadeT33piNChannel:
+    re-ordered particle types in final state arrays so that pion is first and
+    nucleon is second. Two body final state methods assume this.
+  o G4CascadeKminusNChannel, G4CascadeKminusPChannel, G4CascadeKplusNChannel,
+    G4CascadeKplusPChannel, G4CascadeKzeroBarNChannel,
+    G4CascadeKzeroBarPChannel, G4CascadeKzeroNChannel, G4CascadeKzeroPChannel:
+    same as above but re-ordered only for two- and three-body final states.
+  o G4CascadeT1GamNChannel: re-ordered final state particle types so that
+    mesons are first in two- and three-body cases.
+- models/coherent_elastic (hadr-cohe-V10-04-07)
+  o G4DiffuseElastic, G4DiffuseElasticV2, G4NuclNuclDiffuseElastic: increased
+    the number of equal-sized logarithmic-energy bins (from 200 to 300) in 
+    order to have no larger bins up to 10 PeV.
+  o G4NuclNuclDiffuseElastic: replaced the high-energy limit of applicability
+    of the model from 1 TeV to the value specified in G4HadronicParameters.
+  o G4AntiNuclElastic: do not delete component at the end of run.
+- models/de_excitation (hadr-deex-V10-04-06)
+  o G4LevelReader: attempt to adress problem reports #1986 and #2076 by
+    changing hadling of internal conversion data.
+  o G4DeexPrecoParameters: set default deexcitation "evaporation+GEM".
+- models/inclxx (hadr-inclxx-V10-04-02)
+  o Updated to INCL++ v6.25:
+    Improved strangeness and few nucleon removal (HFB).
+    Fixed mass of a light hypernucleus (Z=1,A=2). Fixed various bugs.
+    Checked porting with C++17 enabled.
+    Requiring new G4INCL-1.0 data set and corresponnding G4INCLDATA path
+    environment variable.
+- models/particle_hp (hadr-hpp-V10-04-06)
+  o Fixed incorrect sampling of isotropic distribution.
+    Addressing problem report #1745.
+  o Fixed gamma level mismatch in G4ParticleHPInelasticCompFS.
+    Not a complete fix because gamma data comes from ENSDF and does not
+    necessarily match excitations in ENDF.
+    Addressing problem report #1789.
+  o Fixed memory leaks in G4ParticleHPContEnergyAngular::Sample() and 
+    G4ParticleHPContAngularPar::cacheInit().
+    Addressing problem report #2026.
+- util (hadr-util-V10-04-04)
+  o Fixed GNUmake script.
+
+run                                              run-V10-04-11
+---
+- G4PhysicsListHelper: added two new EM physics process types.
+
+track                                            track-V10-04-01
+-----
+- Fixed potential memory leaks in assignment operator and copy constructor
+  for G4Step and G4Track.
+- Some code cleanup.
+
+visualization                                    vis-V10-04-14
+-------------
+- management (visman-V10-04-18):
+  o /vis/drawVolume and /vis/scene/add/volume now draw all occurrences of
+    a physical volume.
+  o Fixed bug for multiple worlds in /vis/touchable/dump.
+  o Reinstated G4VViewer::G4Spline.
+- modeling (modeling-V10-04-10):
+  o G4LogicalVolumeModel: added overlap checking (printing only for now).
+    Avoid multiple printing of overlaps. Print only first time for a given
+    instantiation of G4LogicalVolume.
+  o Added G4TouchableGlobalTransformScene: returning a pointer to the global
+    transform of a touchable.
+  o Added G4TouchableUtils: implementing FindGlobalTransform().
+  o Added setLineWidth() for trajectory models.
+- OpenInventor (openinventor-V10-04-07):
+  o Fixes to CMake build script; make OIQT driver installation optional.
+
+data sets:
+---------
+- G4EMLOW-7.7:
+  o Added a new directory fluor_XDB_EADL with most recent data on binding
+    energies including rare high Z elements.
+- G4SAIDDATA-2.0:
+  o Updated data for p,n,pi,k inelastic and elastic.
+  o Updated data for piN-->2piN and gamma induced reactions.
+
+examples                                         examples-V10-04-08
+--------
+- Updated documentation and reference outputs.
+- advanced/brachytherapy (brachy-V10-04-01)
+  o Included new brachy source (I-125 Oncura 6711). 
+  o Updated visualization setup.
+- advanced/composite_calorimeter (ccal-V10-04-06)
+  o Updated visualization setup.
+- advanced/hadrontherapy (hadrontherapy-V10-04-08)
+  o LET class completely renewed with new calculation approaches.
+  o Updated user interface initialisation in main().
+- advanced/iort_therapy (iort_therapy-V10-04-03)
+  o Removed readout geometry together with Hit class. Including scoring mesh.
+  o Fixed bug in the way to delete the geometry of the disk. 
+  o Removed analysis class.
+  o Removed G4Decay and IORTMatrix as no longer needed.
+  o Removed Protontherapy.
+  o Updated visualization setup.
+- advanced/microbeam (microbeam-V10-04-04)
+  o Updated visualization setup.
+- advanced/nanobeam (nanobeam-V10-04-02)
+  o Simplified UI session and updated default.mac macro.
+- extended/biasing/GB03 (GB03-V10-04-02)
+  o Fixed bug in GB03BOptnSplitOrKillOnBoundary in the computation of
+    the killing probability.
+- extended/electromagnetic/TestEm5 (testem5-V10-04-07)
+- extended/electromagnetic/TestEm12 (testem12-V10-04-04)
+  o Updated dna.mac input macro.
+- extended/eventgenerator/HepMC/HepMCEx01 (HepMCEx01-V10-04-00)
+- extended/eventgenerator/HepMC/HepMCEx02 (HepMCEx02-V10-04-00)
+  o Updated building scripts and applied coding guidelines.
+- extended/eventgenerator/HepMC/MCTruth (mctruthex-V10-04-00)
+  o Applied coding guidelines.
+- extended/hadronic/Hadr01 (exhadr01-V10-04-04)
+  o DetectorConstruction: minor improvement of printout.
+  o Added test macros.
+- extended/medical/dna/dnaphysics (dnaphysics-V10-04-03)
+  o Updated README.
+- extended/medical/dna/microyz (microyz-V10-04-02)
+  o Updated plotting function.
+- extended/optical/OpNovice2 (OpNovice2-V10-04-06)
+  o Added scintillation and Cerenkov GetNumPhotons() to SteppingAction.
+
+tests                                            tests-V10-04-08
+-----
+- Updated reference outputs and tools.
+- tests/test22 (test22-V10-04-02)
+  o Fixed CMake script to remove obsolete policy setting.

@@ -1,0 +1,277 @@
+
+                       geant4-10-04-ref-02
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Enabled builds with c++17, provided CMake version 3.8 or greater is used.
+ o Enabled MT builds on Windows, restricted to use of static libraries.
+ o Replaced POSIX threading with C++11 threading, allowing for use of
+   multi-threading on Windows.
+ o Re-enabled possibility to have user-defined material properties, accidentally
+   turned off in release 10.4.
+ o G4RunManagerKernel: application state is properly set to G4State_Init while
+   application is initialising the run.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in release 10.4.p01
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-04-06
+-----
+- Added c++17 to C++ standards against which Geant4 can be compiled,         (*)
+  as experimental build. Will require a minimum CMake version 3.8 to
+  enable, but this is not checked.
+- Updated URL for downloads to use dedicated server alias.                   (*)
+- Added initial configuration support for MT on Windows; removed restrictions
+  and warnings on enabling MT on Windows; added restriction on building MT DLLs,
+  emitting a fatal error if this combination is selected, and report needed
+  settings to enable static MT libraries.
+- Support use of WINDOWS_EXPORT_ALL_SYMBOLS for DLL builds with cmake >=3.4
+  retaining old capability for CMake 3.3.
+
+config                                           config-V10-04-01
+------
+- Disabled obsolete linker flag for static libraries in Darwing-clang.gmk.   (*)
+
+analysis                                         analysis-V10-04-01
+--------
+- Fixed a deadlock issue with G4RootPNtupleManager where the mutex
+  was locked before being passed to Root.
+
+event                                            event-V10-04-03             (*)
+-----
+- Added deprecation warning for '/gun/ionL' UI command.
+
+
+externals
+---------
+- clhep (clhep-V10-04-00)
+  o Ranlux64Engine: fixed compilation warning on Windows for shift count
+    negative or too big.
+  o MixMaxRng: temporary fix for Windows to exclude potential data race when
+    running in MT mode.
+
+geometry
+--------
+- magneticfield (field-V10-04-00):
+  o Removed static data from G4FSALIntegrationDriver, G4IntegrationDriver and
+    G4MagIntegratorDriver and moved to base class as normal data members.
+    Fix required for allowing proper symbol exporting on Windows DLLs.
+- navigation (geomnav-V10-04-00)                                             (*)
+  o Fix for momentum value in G4PathFinder::SetChargeMomentumMass(), where
+    magnitude square was passed instead of magnitude.
+    Addressing problem report #2037.
+- solids/CSG (geom-csg-V10-04-01)                                            (*)
+  o Correction in G4UPara::ComputeDimensions() to add explicit cast for the
+    solid type to parameterise.
+- solids/specific (geom-specific-V10-04-06):
+  o Corrected use of facets indeces and vertices in G4UTessellatedSolid.
+  o Minor cleanup in G4TessellatedSolid::CreatePolyhedron(), no functional
+    changes.
+
+global                                           global-V10-04-07
+------
+- G4Threading: replaced POSIX threading with C++11 threading
+  (std::condition_variable, std::mutex + std::recursive_mutex, std::thread).
+  Many of the former macros are now dummy macros (e.g. G4MUTEXINIT,
+  G4MUTEX_INITIALIZER, etc.). Updated pin affinity
+- G4AutoLock is now a thin wrapper around std::unique_lock providing previous
+  functionality + more features (e.g. try_lock, try_lock_until, etc.)
+  Overloaded G4AutoLock member functions in sequential mode to not execute
+  locking/unlocking.
+- Added G4RecursiveAutoLock for recursive mutexes
+- Extended G4TemplateAutoLock to take advantage of the features std::unique_lock
+  offers.
+- G4MTBarrier: removed WIN32 specifics, updated G4CONDITIONWAIT to use
+  G4AutoLock (std::unique_lock) instead of G4Mutex, removed G4MUTEX_INITIALIZER
+  from constructor.
+- Added G4TypeMutex<T> and G4TypeRecursiveMutex<T> function to threading
+  for safely obtaining a static mutex that is unique to the template type T.
+- Replaced static G4Mutex in G4Cache<T> with calls to G4TypeMutex<G4Cache<T>>
+  function calls to safely initialize mutexes on Windows.
+- Expanded DEFINED_PPC and DEFINED_INTEL in G4FPEDetection.
+- Migrated G4Timer real (wall) time to use std::chrono::high_precision_clock
+  from C++11.
+- G4MTcoutDestination blocks G4cout from worker threads while application    (*)
+  is in G4State_Init instead of G4State_Idle.
+- Added SetVerbosity() method in G4StateManager and notify state change.     (*)
+
+interfaces                                       interfaces-V10-04-02        (*)
+----------
+- G4UIQt: fix to remove parameters from popup in Qt interface when
+  autocompleting command line. Take into account of '\n' character for
+  command guidance in help tree.
+
+materials                                        materials-V10-04-03         (*)
+---------
+- Re-enable user-defined material properties in G4MaterialPropertiesTable
+  and G4MaterialPropertiesIndex. Addressing problem report #2030.
+- G4OpticalSurface: moved static methods to source.
+
+particles                                        particles-V10-04-01
+---------
+- Removed obsolete MaxNumberOfProducts enumerator in G4DecayProducts.
+- Removed G4MUTEX_INITIALIZER from constructor in G4VDecayChannel.
+
+persistency/gdml                                 gdml-V10-04-01              (*)
+----------------
+- Updates to G4GDMLWriteSolids and G4GDMLWriteMaterials for changes in
+  G4Material[Const]PropertiesTable for addressing problem report #2030.
+
+physics_lists
+-------------
+- constructors/factory (phys-ctor-fact-V10-04-01)
+  o Move G4_REFERENCE_PHYSCONSTR_FACTORY macro calls out of
+    G4PhysicsConstructorRegistry., where they cause an implicit circular
+    dependency when building granular libraries; moved into inline source.
+    where they can be included as necessary in a higher level compilation unit.
+  o REFERENCE macro calls can be made unique.
+  o Code cleanup.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V10-04-02)
+  o G4EmExtraPhysics, G4EmMessenger: added extra UI commands and modifiers
+    to define flags for neutrinos and for neutrino-electron interactions.
+  o Removed G4MUTEX_INITIALIZER from constructor in G4EmExtraPhysics.
+- lists (phys-list-V10-04-00)
+  o Use new G4RegisterPhysicsConstructors inline definitions to ensure that
+    for static builds G4PhysicsConstructorRegistry is populated.
+  o No longer register ShieldingLEND as a wrapper, but use explicit one.
+
+processes/biasing                                procbiasing-V10-04-02       (*)
+-----------------
+- G4ImportanceConfigurator: introduced mutex to protect instantiation
+  of the biasing process against a thread-race in MT mode and clearing
+  data in destructor. Addressing problem report #1945.
+
+processes/electromagnetic/dna                    emdna-V10-04-01             (*)
+-----------------------------
+- G4DNAMolecularMaterial: allow GetDensityTableFor() and
+  GetNumMolPerVolTableFor() methods to be accepted at G4State_Init rather
+  than G4State_Idle.
+
+processes/electromagnetic/muons                  emmuons-V10-04-00
+-------------------------------
+- G4MuMultipleScattering, G4MuPairProduction, G4MuIonisation, G4ePairProduction,
+  G4MuBremsstrahlungModel, G4MuBremsstrahlung, G4MuBetheBlochModel: use default
+  destructor.
+
+processes/electromagnetic/polarisation           empolar-V10-04-00           (*)
+--------------------------------------
+- G4StokesVector: moved static inline method to the source.
+
+processes/electromagnetic/standard               emstand-V10-04-04
+----------------------------------
+- G4GoudsmitSaundersonMscModel: implemented interface method for macroscopic 
+  first transport cross-section computation per volume (used only for testing).
+- G4GSMottCorrection, G4GSPWACorrections: fixed initialization of first moment 
+  correction factor.
+- G4WentzelOKandVIxSection: fixed form-factor for proton.
+- G4BetheBlochModel: use form-factor for projectile ion as in formulation of
+  NIM A 488 (2002) 282.
+- G4eBremsstrahlungRelModel, G4PairProductionRelModel, G4PAIySection,
+  G4PAIxSection, G4ICRU73QOModel: moved inline method which use static constants
+  to source. Improved code formatting.
+
+processes/electromagnetic/utils                  emutils-V10-04-04
+-------------------------------
+- G4EmCorrections, G4VEmModel, G4ionEffectiveCharge, G4VAtomDeexcitation: avoid
+  use of static class members in inline methods; moved long methods to source; 
+  added thread safe definition of model index for de-excitation.
+- G4EmCalculator: fixed GetCrossSectionPerVolume() method in case of multiple 
+  scattering process; the proper value of the first transport cross-section is 
+  retrieved now.
+
+processes/electromagnetic/xrays                  xrays-V10-04-02             (*)
+-------------------------------
+- Moved few static and virtual methods from inline to source. Code cleanup.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-04-05)
+  o Added extra methods to G4NeutrinoElectronTotXsc.
+  o Replaced file-scoped mutexes in G4CrossSectionFactoryRegistry to use
+    G4TypeMutex<G4CrossSectionFactoryRegistry> which addresses a static
+    mutex initialization bug on Windows.
+- models/cascade (hadr-casc-V10-04-01)
+  o Added strange pair production channels to list of 6, 7, 8 and 9-body 
+    final states in classes G4CascadeT31piNChannel and G4CascadeT33piNChannel.
+    Modified template values accordingly.
+  o G4NucleiModel: replaced use of obsolete std::bind2nd with std::bind.     (*)
+- models/de_excitation (hadr-deex-V10-04-02)
+  o G4ChatterjeeCrossSection, G4KalbachCrossSection: moved implementation
+    to source.
+  o G4VEmissionProbability, G4EvaporationProbability: fixed integration 
+    of probabilities for neutron emission for OPT=1,2.
+  o G4DeexPrecoParameters: fixed checks on parameter values.
+- models/lepto_nuclear (hadr-lepnuc-V10-04-00)
+  o G4NeutrinoElectronCcModel: added extra interfaces.
+- models/parton_string/qgsm (hadr-qgsm-V10-04-04)
+  o G4QGSParticipants: introduced protection against negative squared mass
+    in method PutOnMassShell(), which was causing some rare crashes. 
+    If a negative squared mass occurs, a "JustWarning" exception is thrown
+    and the squared mass is set to 0, before calling the square root (which
+    is now computed only once).
+- models/pre_equilibrium (hadr-pre-V10-04-00)
+  o G4PreCompoundEmission, G4PreCompoundFragment, G4PreCompoundNucleon:
+    fixed computations for OPT=1,2.
+  o G4PreCompoundModel: fixed initialisation.
+  o G4PreCompoundFragmentVector: moved inlined methods to source.
+- processes (hadr-proc-V10-04-05)
+  o Updated G4NeutrinoElectronProcess; modified constructor.
+- util (hadr-util-V10-04-01)                                                 (*)
+  o G4StableIsotopes: Move member function definitions to source file
+    to avoid global data visibility issues in Windows DLLs.
+
+run                                              run-V10-04-05
+---
+- G4RunManagerKernel: application state is set to G4State_Init while         (*)
+  application is in RunInitialization().
+  Updated banners by adding last two general papers.
+- Replaced pthread-style <void*(void*)> function signatures with
+  <void(G4WorkerThread*)> as it is now unnecessary
+- Removed WIN32 conditional for G4THREADCREATE in
+  G4UserWorkerThreadInitialization, no longer needed.
+- Changed G4Thread to G4NativeThread when setting pin affinity in
+  G4WorkerThread.
+
+visualization                                    vis-V10-04-01
+-------------
+- OpenGL (opengl-V10-04-03):
+  o Updated G4CONDITIONWAIT(...) to new C++11 requirements.
+  o G4OpenGLQtViewer: replaced explicit usage of G4Mutex locking/unlocking with
+    G4AutoLock pointers initialized with std::defer_lock as this enables one to
+    avoid any deadlock or non-locked condition_variable waits by using
+    G4AutoLock::owns_mutex().
+
+examples                                         examples-V10-04-02
+--------
+- Updated documentation and reference outputs.
+- advanced/composite_calorimeter (ccal-V10-04-00)
+  o Created ActionInitialization class, in preparation for MT migration.
+  o Removed CCalAnalysis class and employ g4analysis only.
+- basic/B5 (exampleB5-V10-04-00)                                             (*)
+  o Added missing filling of row n-tuple in EventAction.
+- extended/medical/dna/chem1 (chem1-V10-04-00)
+- extended/medical/dna/chem2 (chem2-V10-04-00)
+- extended/medical/dna/chem3 (chem3-V10-04-00)
+- extended/medical/dna/chem4 (chem4-V10-04-00)
+- extended/medical/dna/mfp (mfp-V10-04-00)
+- extended/medical/dna/neuron (neuron-V10-04-00)
+- extended/medical/dna/spower (spower-V10-04-00)
+  o Use G4RegisterPhysicsConstructors inline definitions to ensure
+    G4PhysicsConstructorRegisty is filled when using static libraries.
+- extended/medical/electronScattering2 (exampleES2-V10-04-00)                (*)
+  o Removed unused instantiation of ScoringManager.
+- extended/parallel/ThreadsafeScorers (ThreadsafeScorers-V10-04-00)
+  o Removed G4MUTEX_INITIALIZER from constructors of
+    G4TAtomicHits{Collection,Map}.
+- extended/physicslists/shared (physicslistsShared-V10-04-01)
+  o Copy script works whether include/src directories exist or not.
+
+tests                                            tests-V10-04-02
+-----
+- Updated reference outputs and tools.
+- tests/test73 (test73-V10-04-00)
+  o Minor change to xmacro.C to work with Root-6.
