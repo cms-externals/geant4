@@ -1,0 +1,43 @@
+#!/bin/bash
+#-----------------------------------------------------------------------
+die() {
+  echo 'pre-commit hook failure' 1>&2
+  echo '-----------------------' 1>&2
+  echo "$@" 1>&2
+  exit 1
+}
+
+#----------------------------------------------------------------------
+worktree_DIR="$GIT_DIR/.."
+g4GitSetupScript="GitUtilities/SetupForDevelopment.sh"
+
+#-----------------------------------------------------------------------
+# - Check that development setup is up-to-date.
+lastG4GitUtilitiesVersion=$(git config --get geant4.GitUtilitiesVersion || echo 0)
+eval $(grep '^Geant4_GitUtilities_VERSION=' "${worktree_DIR}/$g4GitSetupScript")
+test -n "$Geant4_GitUtilities_VERSION" || Geant4_GitUtilities_VERSION=0
+if test $lastG4GitUtilitiesVersion -lt $Geant4_GitUtilities_VERSION; then
+  die "Developer setup in this work tree is out of date.  Please re-run
+
+  $g4GitSetupScript
+
+"
+fi
+
+#-----------------------------------------------------------------------
+# - Check that all blobs are below defined size threshold, or 5MB
+maxFileSize=$(git config geant4.filesizehardlimit)
+: ${maxFileSize:=5000000}
+
+# Get the list of files that have been modified but not deleted relative to HEAD
+modifiedFiles=$(git diff --cached --name-only --diff-filter=ACMRTUXB)
+
+for f in $modifiedFiles ; do
+  object=$(git ls-files --stage "$f" | cut -d" " -f2)
+  size=$(git cat-file -s "$object")
+  if test $size -gt $maxFileSize; then
+    die "Staged file '$f' is too large at ${size}B (limit is ${maxFileSize}B)"
+  fi
+done
+
+exit 0

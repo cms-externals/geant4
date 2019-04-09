@@ -1,0 +1,170 @@
+
+                       geant4-10-05-ref-01
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Allowing absolute zero proper decay time.
+ o G4EmStandardPhysics_option4: changed RangeFactor to 0.08 to improve
+   results from fanoCavity.
+ o Fixed (weak and strong) event non-reproducibility in INCLXX.
+ o Cross-sections: added high energy extension of nu-e xsc (M_W and M_Z
+   propagator factors and Glashow resonance).
+ o Added new visualization UI commands for view interpolation and centering.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(+)  Fixes included in release 10.4.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-05-00
+-----
+- Added configuration GEANT4_USE_SMARTSTACK to enable use of smart-stack
+  algorithm for default stack in G4TrackStack.
+
+digits_hits                                      digits_hits-V10-05-00
+-----------
+- Fixed shadowing compilation warning in G4ScoringBox and G4ScoringCylinder.
+
+event                                            event-V10-05-01
+-----
+- G4PrimaryTransformer: allowing absolute zero proper decay time.
+- G4HEPEvtInterface: clean up G4Exception severities when end-of-file
+  is detected.
+
+g3tog4                                           g3tog4-V10-05-00
+------
+- Fixed shadowing compilation warning in G3toG4MakeSolid.
+
+geometry
+--------
+- management (geommng-V10-05-00)
+  o Use reverse_iterator in G4SolidStore::DeRegister() in order to speedup   (+)
+    partial deregistration on setups with many solids instances.
+  o G4Region: added possibility to disable search in the tree in
+    AddRootLogicalVolume() for speeding up process in complex flat geometries.
+- solids/specific (geom-specific-V10-05-01):
+  o Disabled precise computation of extent and use simple bounding-box in
+    CalculateExtent() for G4Tet and G4TessellatedSolid, to speed up
+    intialisation in setups with relatively complex meshes.
+  o Apply bounding-box calculation for extent also for the corresponding
+    VecGeom wrappers.
+
+global                                           global-V10-05-00
+------
+- Updated date and tag-ID for ref-01
+
+graphics_reps                                    greps-V10-05-00
+-------------
+- G4VisExtent: added operator*(const G4Transform3D&).
+
+particles                                        particles-V10-05-00
+---------
+- G4PrimaryParticle: allowing absolute zero proper decay time.
+
+persistency/ascii                                ascii-V10-05-00
+-----------------
+- Fixed shadowing compilation warning in G4tgbGeometryDumper and G4tgbVolume.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-05-02
+------------------------------------------
+- G4EmStandardPhysicsWVI: use G4eplusTo2GammaOKVIModel with 3-gamma
+  annihilation for e+.
+- G4EmStandardPhysics_option4: changed RangeFactor to 0.08 to improve results
+  from fanoCavity test.
+- G4EmModelActivator: fixed compilation warning on clang.
+
+processes/decay                                  decay-V10-05-00
+---------------
+- G4Decay, G4UnknownDecay: allowing absolute zero proper decay time.
+
+processes/electromagnetic/dna                    emdna-V10-05-01
+-----------------------------
+- Moved checking of position of track status in
+  G4ITStepProcessor::SetInitialStep().
+- Clarified pointer ownership in G4DNAChemistryManager.
+
+processes/electromagnetic/standard               emstand-V10-05-00
+----------------------------------
+- G4eplusTo2GammaOKVIModel: fixed crash at initialisation.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-05-01)
+  o G4NeutrinoElectronNcXsc, G4NeutrinoElectronTotXsc: high energy extension
+    of nu-e xsc (M_W and M_Z propagator factors and Glashow resonance).
+  o G4ChipsNeutronElasticXS: fixed compilation warnings on clang.
+- models/de_excitation (hadr-deex-V10-05-00)
+  o G4LevelReader: fixed typo. Addressing problem report #2124.
+- models/inclxx (hadr-inclxx-V10-05-00)
+  o G4INCLHFB: fixed (weak and strong) event non-reproducibility by making
+    the arrays 'radiusP, radiusN, diffusenessP, diffusenessN' thread-local.
+- models/radioactive_decay (radioactive_decay-V10-05-00)
+  o G4RadioactiveDecayBase: added StreamInfo() method; updated to new
+    N shell EC; enable printout of parameters with G4VERBOSE in
+    BuildPhysicsTable().
+
+visualization                                    vis-V10-05-06
+-------------
+- management:
+  o Include parameterised volumes in overlap checking and visualisation
+    in G4LogicalVolumeModel (in addition to ordinary placements).
+  o Introduced "/vis/viewer/centreOn" and "/vis/touchable/centreOn" UI commands.
+    This allows one to centre the view (zoom in) on a volume.
+    Reset with "/vis/viewer/reset".
+  o Rationalised view interpolation; encapsulate algorithm into base class
+    G4VVisCommand, so that commands "/vis/viewer/interpolate",
+    "/vis/viewer/centreOn" and "/vis/touchable/centerOn" now use this.
+    Might consider use by all view changing commands.
+  o Pick up default number of line-segments-per-circle from G4Polyhedron.
+  o Improved guidance for "/vis/scene/add/volume".
+  o Minor improvements to visualization manager.
+- modeling:
+  o Added volume count (but commented out printing).
+- gMocren:
+  o Fixed shadowing compilation warning in G4GMocrenFileSceneHandler.
+
+examples                                         examples-V10-05-01
+--------
+- Updated documentation and reference outputs.
+- advanced/doiPET (doiPET-V10-05-00)
+  o Fixed compilation warnings on clang for unused data members in
+    doiPETDetectorConstruction and doiPETEventAction classes.
+- extended/electromagnetic/TestEm5 (testem5-V10-05-00)
+  o StackinAction: fixed log histograms, which where filled in a wrong way.
+  o PhysListEm19DStandard: use 3-gamma annihilation model.
+- extended/hadronic/Hadr01 (exhadr01-V10-05-00)
+  o HistoManager: added linear histogram for pion energy at production.
+- extended/hadronic/Hadr02 (exhadr02-V10-05-00)
+  o Fixed bug in the energe range of the transition between FTFP and BERT
+    for the recently created CRMC_FTFP_BERT physics list.
+- extended/medical/dna/dnaphysics (dnaphysics-V10-05-00)
+  o Updated README.
+- extended/medical/fanoCavity (fano-V10-05-00)
+  o DetectorConstruction, DetectorMessenger: fixed usage of base materials
+    and cleanup (should fix ~1% error for Opt4 EM physics)
+- extended/runAndEvent/RE05 (exampleRE05-V10-05-00)
+  o Reduced the number of events in pythia_event.data to make it smaller than
+    2 MB. Number of events executed by the macro exampleRE05.in is also reduced
+    accordingly.
+
+tests                                            tests-V10-05-01
+-----
+- Updated reference outputs and tools.
+- tests/test19 (test19-V10-05-00)
+  o Test19Histo: fixed g++ 8.2 warnings.
+- tests/test22 (test22-V10-05-00)
+  o Updated subdirectory  PbarPchan/ and added the new one PbarHyperonV/ 
+    for the validation of FTF antiproton annihilation.
+- tests/test23 (test23-V10-05-01)
+  o Tst23Histo, TstHisto: fixed g++ 8.2 warnings.
+- tests/test47 (test47-V10-05-00)
+  o HistoTest47: fixed g++ 8.2 warnings.
+- tests/test48 (test48-V10-05-00)
+  o TestStoppingHisto: fixed g++ 8.2 warnings.
+- tests/test67 (test67-V10-05-00)
+  o Calculate the mean number of secondaries per event and the mean number
+    of steps per secondary.
+- tests/test75 (test75-V10-05-00)
+  o Tst75Histo: fixed g++ 8.2 warnings.
