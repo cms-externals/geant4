@@ -1,0 +1,405 @@
+
+                       geant4-10-05-ref-08
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Optimised method in G4PhysicsVector, implementing optimised algorithm
+   for use with log-vectors only, now adopted in EM physics and cross-sections.
+ o Added alternative computation of density effect, with possibility to enable
+   on-fly computation using "exact" formulas.
+ o Added free electron density in G4Material.
+ o Enabled wrappers for VecGeom implementation of G4EllipticalTube,
+   G4EllipticalCone and G4Ellipsoid.
+ o C++11 revision of most geometry classes.
+ o Fixed issues related to resetting of looper flag and other state for
+   field propagation in transportation classes.
+ o Modified step limit parameters in G4UrbanMscModel.
+ o Replaced explicit values for the energy transition region with values
+   from G4HadronicParameters, for nearly all physics builders and constructors.
+ o New physics constructor class to handle nuclear capture at rest of
+   negatively charged particles, similar to G4StoppingPhysics, with the only
+   difference that Fritiof coupled with Binary Cascade is used instead of FTFP,
+   for anti-proton and anti-neutron annihilation at rest; used in FTF_BIC
+   and QGS_BIC.
+ o Code review/cleanup in physics-lists.
+ o Added new parameterisation in G4HadronElastic and new GEM model for
+   de_excitation.
+ o Minor improvement in G4FTFModel in annihilation at rest of light anti-ions.
+ o Updated to data-set G4PARTICLEXS-2.1.
+ o Coworks with new VecGeom version v1.1.4.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-05-10
+-----
+- Added ELLIPSOID, ELLIPTICALCONE and ELLIPTICALTUBE flags to enable
+  wrapping of G4Ellipsoid, G4EllipticalCone and G4EllipticalTube with
+  correspondent VecGeom primitives.
+- Updated to data-set G4PARTICLEXS-2.1.
+
+config                                           config-V10-05-03
+------
+- geomconf.gmk: added VecGeom wrappers flags for G4EllipticalTube,
+  G4EllipticalCone and G4Ellipsoid.
+
+geometry/management                              geommng-V10-05-09
+-------------------
+- Use pre-increment wherever possible.
+
+geometry/navigation                              geomnav-V10-05-09
+-------------------
+- Use pre-increment wherever possible.
+
+geometry/solids/Boolean                          geom-bool-V10-05-01
+-----------------------
+- Use pre-increment wherever possible.
+
+geometry/solids/csg                              geom-csg-V10-05-05
+-------------------
+- Minor c++11 revision and headers cleanup.
+- Use pre-increment wherever possible.
+
+geometry/solids/specific                         geom-specific-V10-05-16
+------------------------
+- G4ExtrudedSolid: fixed a bug in DistanceToOut(), affecting extruded solids
+  defined off-center along the z-axis.
+- Enabled wrappers for VecGeom implementation of G4EllipticalTube,
+  G4EllipticalCone and G4Ellipsoid.
+- Minor c++11 revision and headers cleanup. Code formatting.
+- Use pre-increment wherever possible.
+- G4GenericTrap: fixed compilation warnings for variable shadowing on clang-8.
+
+geometry/volumes                                 geomvol-V10-05-04
+----------------
+- Revised G4PVPlacement::CheckOverlaps() for speed up; improved diagnostics.
+- Use pre-increment wherever possible.
+
+global                                           global-V10-05-16
+------
+- G4PhysicsVector: added optimised LogVectorValue() method, implementing
+  optimised algorithm for use with log-vectors only. All conditional branches
+  are eliminated by increased robustness of the algorithm.
+- G4PhysicsVector, G4PhysicsLogVector, G4PhysicsLinearVector and
+  G4PhysicsLnVector: changed dBin member to invdBin(=1/dBin) to get rid
+  of run-time divisions.
+- G4PhysicsVector: added protection against idx > entries() in insertAt()
+  function. Addressing problem report #2182.
+- Updated date and tag-ID for geant4-10-05-ref-08.
+
+graphics_reps                                    greps-V10-05-04
+-------------
+- Added G4TessellatedSolid to list of solids that may be specially treated;
+  solids that may access the graphics scene directly through G4VGraphicsScene.
+
+materials                                        materials-V10-05-06
+---------
+- G4DensityEffectCalculator: new class courtesy of by M.Strait, proposing
+  alternative computation of the density effect.
+  Added possibility to enable on-fly computation of the density effect
+  correction using "exact" formulas (added ComputeDensityEffectOnFly()
+  method); as default the old approach is used.
+  Added to G4IonisParamMat logic for selection of density effect
+  parameterisation; if > 70% of mass of a compound corresponds to a
+  particular element, then density effect parameterisation for this element
+  is used with mass correction. Addressing problem report #2121.
+- G4Material: added free electron density; use G4NistManager to instantiate
+  element in constructor with effective Z and A. Reordered class members. 
+- G4SandiaTable, G4IonisParamMat: use const material pointer
+- G4AtomicShells, G4AtomicShells_XDB_EADL: added new method 
+  GetNumberOfFreeElectrons().
+- G4NistManager: fixed potential thread safety issue.
+
+persistency/gdml                                 gdml-V10-05-07
+----------------
+- G4GDMLMessenger: fix to avoid UI commands from being broadcasted to
+  worker threads.
+
+physics_lists/builders                           phys-builders-V10-05-01
+----------------------
+- Replaced explicit values for the energy transition region with values
+  from G4HadronicParameters, for nearly all builders.
+  Note: kept unchanged the transition region between FTFP and BERT only
+  in four cases: G4HadronPhysicsFTFP_BERT_ATL, G4HadronPhysicsINCLXX,
+  G4HadronPhysicsNuBeam and "ShieldingM".
+- Modified G4NeutronCrossSectionXS as consequence of code cleanup in lists
+  and removal of G4Dataquestionaire.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-05-13
+------------------------------------------
+- G4GammaGeneralProcess: fixed "Base Material" use case.
+  Use the new, optimised log-vector access method.
+- G4EmStandardPhysics_option2, G4EmStandardPhysics_option3: implemented
+  "General Process" option for gamma.
+- G4EmStandardPhysics_option4: use 5D model for gamma conversion.
+- G4EmStandardPhysicsSS: in the case if Mott correction flag is TRUE,
+  apply G4eSingleCoulombScatteringModel both for e+ and e-.
+
+physics_lists/constructors/hadron_elastic        phys-ctor-helastic-V10-05-02
+-----------------------------------------
+- G4HadronElasticPhysics: use HE elastic model for the full energy range.
+
+physics_lists/constructors/hadron_inelastic      phys-ctor-hinelastic-V10-05-01
+-------------------------------------------
+- Replaced explicit values for the energy transition region with values
+  from G4HadronicParameters in nearly all constructors.
+  Note: kept unchanged the transition region between FTFP and BERT only
+  in four cases: G4HadronPhysicsFTFP_BERT_ATL, G4HadronPhysicsINCLXX,
+  G4HadronPhysicsNuBeam and "ShieldingM".
+- G4HadronInelasticQBBC: use XS proton inelastic.
+- Updated README information.
+
+physics_lists/constructors/ions                  phys-ctor-ions-V10-05-01
+-------------------------------
+- G4IonPhysics, G4IonPhysicsPHP, G4IonQMDPhysics: replaced explicit values
+  for the energy transition region with values from G4HadronicParameters.
+
+physics_lists/constructors/stopping              phys-ctor-stopping-V10-05-01
+-----------------------------------
+- G4StoppingPhysicsFritiofWithBinaryCascade: new class to handle the
+  nuclear capture at rest of negatively charged particles. It is similar
+  to G4StoppingPhysics, with the only difference that Fritiof coupled with
+  Binary Cascade is used instead of FTFP, for anti-proton and anti-neutron
+  annihilation at rest.
+
+physics_lists/lists                              phys-lists-V10-05-03
+-------------------
+- FTF_BIC, QGS_BIC: use the newly introduced stopping physics constructor
+  G4StoppingPhysicsFritiofWithBinaryCascade (instead of the default
+  G4StoppingPhysics).
+- Shielding: replacing explicit values for the energy transition region
+  with values from G4HadronicParameters.
+- Code clean-up: removed template mechanism (except for G4GenericPhysicsList,
+  G4PhysListStamper and INCLXXPhysicsListHelper); deleted copy-constructor and
+  assignment operator; for empty destructors, use "=default"; moved
+  include/x.icc to src/x.cc for lists without template; removed SetCuts()
+  implementation where not specialised; removed version number from lists;
+  removed G4DataQuestionaire.
+
+physics_lists/util                               phys-lists-V10-05-00
+------------------
+- Removed G4DataQuestionaire class.
+
+processes/electromagnetic/muons                  emmuons-V10-05-01
+-------------------------------
+- G4TablesForExtrapolator: create G4LossTableBuilder and destruct at end of run.
+
+processes/electromagnetic/standard               emstand-V10-05-17
+----------------------------------
+- G4UrbanMscModel: modified step limit parameters; 'lambdalimit' set to 0.5 mm;
+  'facsafety' to 0.67.
+- G4WentzelVIModel: return to original parameterisation of screening parameter.
+- G4SeltzerBergerModel: during initialisation data files upload only data
+  for elements used in geometry, lazy initialisation of the data is also
+  available (may be used in unit tests).
+- G4ScreeningMottCrossSection, G4eSingleCoulombScatteringModel: optimized
+  code and data structure; fixed floating point exception for low energy;
+  use C++11 patterns.
+- G4hCoulombScatteringModel, G4hCoulombScatteringModel: removed unused headers.
+
+processes/electromagnetic/utils                  emutils-V10-05-16
+-------------------------------
+- G4VEmProcess, G4VEnergyLossProcess, G4VMscModel, G4EmElementSelector:
+  utilise new optimised LogVectorValue() function from G4PhysicsVector
+  (for log-vector).
+- G4EmElementSelector: new optimised version; adopting linear interpolation
+  to avoid redundant energy grid related computations; branches used to
+  handle rare corner cases are eliminated by increased robustness of the
+  algorithm.
+- Removed no longer used members in G4EmElementSelector and G4VEmModel.
+- G4LossTableBuilder, G4LossTableManager, G4VEmModel, G4VMscModel, 
+  G4VEmProcess, G4VEnergyLossProcess, G4EmCalculator: allow both approaches,
+  "General Process" and "Base Materials", work together.
+- G4EmParameters: enable "General Process" for gamma by default.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-05-18)
+  o G4ParticleInelasticXS, G4NeutronElasticXS, G4NeutronInelasticXS,
+    G4NeutronCaptureXS: adopt the new G4PhysicsVector::LogVectorValue()
+    optimised method for log-vector.
+  o G4NeutronCaptureXS: upload data only for elements used in geometry.
+  o G4BGGNucleonInelasticXS, G4BGGNucleonElasticXS: use coherent low-energy
+    threshold of 14 MeV; code clean-up.
+  o G4BGGPionInelasticXS, G4BGGPionElasticXS: use coherent low-energy limit
+    of 1 MeV.
+  o G4HadronNucleonXsc: fixed K+p and K+n parameterisations.
+  o G4NeutronElasticXS: implemented isotope cross-section.
+  o G4UPiNuclearCrossSection: optimised interpolation method; moved two run
+    time methods to inline, improve low-energy parameterisation. Code clean-up.
+  o G4NeutronInelasticXS, G4ParticleInelasticXS, G4NeutronElasticXS: added 
+    special method for tritium and He3 targets (addressing problem report
+    #2162); upload data only for elements used in geometry. Code clean-up
+    and use of C++11 features.
+  o G4NeutronCaptureXS - code clean-up, use C++11
+  o G4BGGNucleonInelasticXS, G4BGGNucleonElasticXS, G4BGGPionInelasticXS,
+    G4BGGPionElasticXS, G4ComponentBarNucleonNucleusXsc: code clean-up.
+- management (hadr-man-V10-05-04)
+  o G4EnergyRangeManager: added shortcut, if only one model registered 
+    for a process, apply no check. Implemented C++11 patterns.
+    Moved operators to be private, removed obsolete method, removed
+    G4HadronicException; in case of problem return nullptr.
+  o G4HadronicProcess: do not use try/catch pattern to choose hadronic 
+    interaction; decrease limit on check of offshell mass from 1.5 MeV 
+    to 10 keV. Removed unused headers. Addressing problem report #2175.
+- models/coherent_elastic (hadr-cohe-V10-05-04)
+  o G4HadronElastic: added new parameterisation by A.Yeltokov.
+  o G4ElasticHadrNucleusHE: general code clean-up.
+- models/de_excitation (hadr-deex-V10-05-12)
+  o G4GEMChannelVI, G4GEMProbabilityVI: new GEM model.
+  o G4ExcitationHandler: added check on upper limit of excitations; fixed
+    initialisation sequence, reduced memory churn.
+  o G4DeexPrecoParameters: added upper limit 30 MeV on excitation per nucleon.
+  o G4VEvaporationChannel, G4VEmissionProbability, G4VEvaporationFactory,
+    G4EvaporationGEMFactory, G4EvaporationGEMFactoryVI, G4GEMChannelVI,
+    G4EvaporationDefaultGEMFactory, G4EvaporationFactory, G4EvaporationChannel,
+    G4EvaporationProbability, G4EvaporationProbabilityVI: modified internal
+    interfaces to allow for reuse of code established for evaporation in the
+    new GEM evaporation model; use of more C++11 patterns.
+  o G4FermiFragmentsPoolVI, G4NuclearLevelData: reduced number of locks at
+    initialisation; use of more C++11 patterns.
+  o Code clean-up.
+- models/lepto_nuclear (hadr-lepnuc-V10-05-03)
+  o Fixed bug in G4NuMuNucelusCc(Nc)Model, m->e in nucleon 4-vectors, when
+    nucleon move, iTeMax->100.
+- models/management (hadr-modman-V10-05-01)
+  o G4HadronicInteraction: fixed definition of model per element and material.
+    Use of C++11 patterns.
+  o G4HadronicInteractionRegistry: use of C++11 patterns.
+- models/particle_hp (hadr-hpp-V10-05-07)
+  o G4ParticleHPInelasticBaseFS: re-calculate Q value in BaseApply() in case
+    of no data in library.
+  o Added protection against maxE<0 in G4ParticleHPNBodyPhaseSpace::Sample().
+- models/parton_string/diffraction (hadr-string-diff-V10-05-03)
+  o G4FTFModel: minor improvement in the annihilation at rest of light
+    anti-ions, to avoid the unphysical production of target and projectile
+    fragments at rest.
+- models/pre_equilibrium (hadr-pre-V10-05-03)
+  o G4PreCompoundModel: added check on excitation energy per nucleon
+    for initial fragment (30 MeV) and send highly excited fragment to
+    de-excitation module. Code clean-up.
+- models/radioactive_decay (radioactive_decay-V10-05-08)
+  o G4RadioactiveDecayBase: in LoadDecayTable() added correction for code
+    which was accidentally deleted when class was created from
+    G4RadioactiveDecay. Now giving correct decay branching ratios.
+    Split off unbiased decay part of DecayIt() and make it protected method
+    called DecayAnalog(). Move 'dkmap' to protected.
+  o G4Radioactivation: corrected bug in which AtRestDoIt() and PostStepDoIt()
+    both incorrectly were calling base class method DecayIt(). Removed control
+    of verbosity as already in the base class. Removed G4cerr printouts from
+    G4Radioactivation and G4RadioactiveDecayBase; replaced with G4cout.
+- models/util (hadr-mod-util-V10-05-02)
+  o G4NuclearRadii: added extra utility methods.
+- stopping (hadr-stopping-V10-05-01)
+  o G4HadronicAbsorptionFritofWithBinaryCascade: new class for handling
+    anti-proton and anti-neutron annihilation at rest using Fritiof coupled
+    with Binary cascade, instead of directly with pre-compound, as in the
+    class G4HadronicAbsorptionFritiof.
+- util (hadr-util-V10-05-02)
+  o G4HadronicParameters: extended to the recommended (default) energy
+    transition regions between FTF and cascade models (BERT and/or BIC) and
+    between strings models (QGS and FTF).
+
+processes/optical                                op-V10-05-01
+-----------------
+- Fixed Coverity reported defect in G4OpBoundaryProcess:
+
+processes/transportation                         transport-V10-05-00
+------------------------
+- G4Transportation, G4CoupledTransportation: fixed issues related to resetting
+  of looper flag and other state for field propagation. Replaced check for
+  'Global' field with check for any field; this is needed to ensure that
+  propagator-in-field state is reset when the setup inludes only local fields.
+  Ensure that looping flag is reset (false) when a force is not exerted in
+  G4CoupledTransportation::AlongStepGetPhysicalInteractionLength(); before it
+  was overwritten afterwards. Addressing problem report #2144.
+
+run                                              run-V10-05-04
+---
+- G4RunManager, G4RunManagerKernel: addressing cases in which the GDML parser
+  directly replaces the world volume without changing the user detector
+  construction.
+
+visualization                                    vis-V10-05-24
+-------------
+- management (visman-V10-05-11):
+  o Reworked '/vis/scene/add/eventID' command: just writes a summary at end
+    of run; except when reviewing, kept events one by one, in which case it
+    writes run and event no for each event.
+  o Ensure '/vis/drawTree' works even if vis is disabled.
+  o Clear if scene contains no run duration models (e.g., after geometry has
+    changed).
+  o Add G4TessellatedSolid to list of solids that may be specially treated.
+  o Augment G4VUserVisAction.
+- modeling (modeling-V10-05-08):
+  o G4CallbackModel: include modeling parameters in passed arguments.
+- FukuiRenderer (DAWN-V10-05-00):
+- gMocren (gMocren-V10-05-01):
+- HepRep (vis-HepRep-V10-05-00):
+  o Add G4TessellatedSolid to list of solids that may be specially treated.
+- OpenGL (OpenGL-V10-05-08):
+  o Revert previously introduced fix in OpenGL-V10-05-05.
+- VRML (VRML-V10-05-00):
+- XXX (visXXX-V10-05-03):
+  o Add G4TessellatedSolid to list of solids that may be specially treated.
+
+data sets:
+---------
+- G4PARTICLEXS-2.1:
+  o regenerated n, p, d, t, He3, He4, gamma data, providing smoother
+    cross-section shape.
+
+examples                                         examples-V10-05-08
+--------
+- Updated documentation and reference outputs.
+- advanced/doiPET (doiPET-V10-05-01)
+- advanced/eRosita (eRosita-V10-05-01)
+- advanced/hadrontherapy (hadrontherapy-V10-05-01)
+- advanced/gammaknife (gammaknife-V10-05-00)
+- advanced/microelectronics (microelectronics-V10-05-00)
+- advanced/undergound_physics (DMX-V10-05-02)
+- advanced/xray_fluorescence (XRayFluo-V10-05-01)
+- advanced/xray_telescope (xraytel-V10-05-00)
+  o Removed presence of G4VIS_USE and G4_UI_USE flags in main().
+- extended/electromagnetic/TestEm0 (testem0-V10-05-00)
+- extended/electromagnetic/TestEm1 (testem1-V10-05-01)
+  o PhysicsList: disabled GeneralProcess for EM physics.
+- extended/hadronic/Hadr00 (exhadr00-V10-05-00)
+  o Cleaned-up macro files.
+- extended/hadronic/Hadr01 (exhadr01-V10-05-01)
+  o DetectorConstruction: added "Battery" material and new macro
+    test_battery.in. Addressing problem report #2175.
+- extended/hadronic/Hadr02 (exhadr02-V10-05-03)
+  o HadronPhysicsCRMC_FTFP_BERT: use G4HadronicParameters for the energy
+    transition region between FTF and BERT models.
+- extended/optical/OpNovice2 (OpNovice2-V10-05-00)
+  o Added surface roughness and polish commands.
+  o Recording scintillation photon creation time.
+  o Updated macros.
+- extended/persistency/gdml/G01 (G01-V10-05-04)
+  o Corrected CMake script to install otherwise missing GDML sample file.
+
+tests                                            tests-V10-05-08
+-----
+- Updated reference outputs and tools.
+- tests/test19 (test19-V10-05-02)
+  o Get rid of shadowing warnings from ROOT, detected on clang-8.
+- tests/test23 (test23-V10-05-05)
+  o Removed use of G4DataQuestionaire, following cleanup in physics-lists.
+  o Get rid of shadowing warnings from ROOT, detected on clang-8.
+- tests/test28 (test28-V10-05-01)
+  o Tst28PhysicsList: use Glauber-Gribov cross-sections for ion nuclear
+    interactions; disable multi-fragmentation de-excitation; fixed EM physics.
+- tests/test30 (test30-V10-05-02)
+  o Use default initialisation of pre-compounsd model and excitation handler.
+- tests/test37 (test37-V10-05-02)
+  o More functional and clean way to get MFP.
+- tests/test38 (test38-V10-05-00)
+- tests/test46 (test46-V10-05-00)
+  o Removed use of G4DataQuestionaire, following cleanup in physics-lists.
+- tests/test47 (test47-V10-05-02)
+- tests/test75 (test75-V10-05-02)
+  o Get rid of shadowing warnings from ROOT, detected on clang-8.

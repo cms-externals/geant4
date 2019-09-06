@@ -1,0 +1,636 @@
+
+**************************************************************
+ Geant4 version Name: geant4-10-05-ref-07    (17-July-2019)
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+/run/verbose 1
+#
+##/testhadr/det/setAbsorMat BeO
+##/testhadr/det/setContMat Stainless-Steel
+##/testhadr/det/setAbsorRadius 15 mm
+##/testhadr/det/setAbsorLength 60 mm
+##/testhadr/det/setContThick  2.4 mm
+#
+/run/initialize
+
+ The Absorber  is a cylinder of BeO  radius = 1.5 cm   length = 6 cm 
+ The Container is a cylinder of Stainless-Steel  thickness = 2.4 mm 
+
+ Material:      BeO    density:  3.050 g/cm3   RadL:  13.542 cm   Nucl.Int.Length:  26.874 cm 
+                       Imean:  83.150 eV   temperature: 293.15 K  pressure:   1.00 atm
+
+   --->  Element: Beryllium (Be)   Z =  4.0   N =     9   A =  9.010 g/mole
+         --->  Isotope:   Be9   Z =  4   N =   9   A =   9.01 g/mole   abundance: 100.000 %
+          ElmMassFraction:  36.03 %  ElmAbundance  50.00 % 
+
+   --->  Element: Oxygen (O)   Z =  8.0   N =    16   A = 16.000 g/mole
+         --->  Isotope:   O16   Z =  8   N =  16   A =  15.99 g/mole   abundance: 99.757 %
+         --->  Isotope:   O17   Z =  8   N =  17   A =  17.00 g/mole   abundance:  0.038 %
+         --->  Isotope:   O18   Z =  8   N =  18   A =  18.00 g/mole   abundance:  0.205 %
+          ElmMassFraction:  63.97 %  ElmAbundance  50.00 % 
+
+
+ Material: Stainless-Steel    density:  8.000 g/cm3   RadL:   1.740 cm   Nucl.Int.Length:  16.672 cm 
+                       Imean: 282.530 eV   temperature: 293.15 K  pressure:   1.00 atm
+
+   --->  Element: Iron (Fe)   Z = 26.0   N =    56   A = 55.840 g/mole
+         --->  Isotope:  Fe54   Z = 26   N =  54   A =  53.94 g/mole   abundance:  5.845 %
+         --->  Isotope:  Fe56   Z = 26   N =  56   A =  55.93 g/mole   abundance: 91.754 %
+         --->  Isotope:  Fe57   Z = 26   N =  57   A =  56.94 g/mole   abundance:  2.119 %
+         --->  Isotope:  Fe58   Z = 26   N =  58   A =  57.93 g/mole   abundance:  0.282 %
+          ElmMassFraction:  74.00 %  ElmAbundance  73.31 % 
+
+   --->  Element: Chromium (Cr)   Z = 24.0   N =    52   A = 51.990 g/mole
+         --->  Isotope:  Cr50   Z = 24   N =  50   A =  49.95 g/mole   abundance:  4.345 %
+         --->  Isotope:  Cr52   Z = 24   N =  52   A =  51.94 g/mole   abundance: 83.789 %
+         --->  Isotope:  Cr53   Z = 24   N =  53   A =  52.94 g/mole   abundance:  9.501 %
+         --->  Isotope:  Cr54   Z = 24   N =  54   A =  53.94 g/mole   abundance:  2.365 %
+          ElmMassFraction:  18.00 %  ElmAbundance  19.15 % 
+
+   --->  Element: Nickel (Ni)   Z = 28.0   N =    59   A = 58.690 g/mole
+         --->  Isotope:  Ni58   Z = 28   N =  58   A =  57.94 g/mole   abundance: 68.077 %
+         --->  Isotope:  Ni60   Z = 28   N =  60   A =  59.93 g/mole   abundance: 26.223 %
+         --->  Isotope:  Ni61   Z = 28   N =  61   A =  60.93 g/mole   abundance:  1.140 %
+         --->  Isotope:  Ni62   Z = 28   N =  62   A =  61.93 g/mole   abundance:  3.635 %
+         --->  Isotope:  Ni64   Z = 28   N =  64   A =  63.93 g/mole   abundance:  0.926 %
+          ElmMassFraction:   8.00 %  ElmAbundance   7.54 % 
+
+/cvmfs/geant4.cern.ch/share/data/G4NDL4.5
+@@@ G4ParticleHPInelastic instantiated for particle neutron data directory variable is G4NEUTRONHPDATA pointing to /cvmfs/geant4.cern.ch/share/data/G4NDL4.5/Inelastic
+@@@ G4ParticleHPInelasticData instantiated for particle neutron data directory variable is G4NEUTRONHPDATA pointing to /cvmfs/geant4.cern.ch/share/data/G4NDL4.5
+NeutronHP: /Capture file for Z = 8, A = 18 is not found and NeutronHP will use /cvmfs/geant4.cern.ch/share/data/G4NDL4.5/Capture/CrossSection/8_17_Oxygen
+NeutronHP: /Elastic file for Z = 8, A = 18 is not found and NeutronHP will use /cvmfs/geant4.cern.ch/share/data/G4NDL4.5/Elastic/CrossSection/8_17_Oxygen
+NeutronHP: /Inelastic file for Z = 8, A = 18 is not found and NeutronHP will use /cvmfs/geant4.cern.ch/share/data/G4NDL4.5/Inelastic/CrossSection/8_17_Oxygen
+
+### ===  Deexcitation model UAtomDeexcitation is activated for 1 region:
+### ===  Auger cascade flag: 1
+### ===  Ignore cuts flag:   0
+#
+/process/list
+     Transportation,         hadElastic,   neutronInelastic,           nCapture
+           nFission,    protonInelastic,       pi+Inelastic,       pi-Inelastic
+     kaon+Inelastic,     kaon-Inelastic,    kaon0LInelastic,    kaon0SInelastic
+    lambdaInelastic,anti-lambdaInelastic,    sigma-Inelastic,anti_sigma-Inelastic
+    sigma+Inelastic,anti_sigma+Inelastic,       xi-Inelastic,  anti_xi-Inelastic
+       xi0Inelastic,  anti_xi0Inelastic,    omega-Inelastic,anti_omega-Inelastic
+anti_protonInelastic,anti_neutronInelastic,anti_deuteronInelastic,anti_tritonInelastic
+  anti_He3Inelastic,anti_alphaInelastic,         ionElastic,         dInelastic
+         tInelastic,       He3Inelastic,     alphaInelastic,       ionInelastic
+      photonNuclear,                msc,              hIoni,            ionIoni
+    nuclearStopping,              eIoni,              eBrem,            annihil
+               phot,              compt,               conv,             muIoni
+            muBrems,         muPairProd,              Decay,RadioactiveDecayBase
+
+/process/inactivate hadElastic
+/run/physicsModified
+#
+/gun/particle ion
+/gun/ion 95 241
+/gun/energy 0. eV
+#
+##/analysis/setFileName NeutronSource
+##/analysis/h1/set 6  60  0. 12.  MeV #neutrons
+#
+/run/printProgress 1000
+#
+/run/beamOn 10000
+======================================================================
+======          Radioactive Decay Physics Parameters           =======
+======================================================================
+Max life time                                     1.4427e+06 ps
+Internal e- conversion flag                       1
+Stored internal conversion coefficients           1
+Enable correlated gamma emission                  0
+Max 2J for sampling of angular correlations       10
+Atomic de-excitation enabled                      1
+Auger electron emission enabled                   1
+Auger cascade enabled                             1
+Check EM cuts disabled for atomic de-excitation   0
+Use Bearden atomic level energies                 0
+======================================================================
+NeutronHP: /Capture file for Z = 8, A = 18 is not found and NeutronHP will use /cvmfs/geant4.cern.ch/share/data/G4NDL4.5/Capture/CrossSection/8_17_Oxygen
+NeutronHP: /Elastic file for Z = 8, A = 18 is not found and NeutronHP will use /cvmfs/geant4.cern.ch/share/data/G4NDL4.5/Elastic/CrossSection/8_17_Oxygen
+NeutronHP: /Inelastic file for Z = 8, A = 18 is not found and NeutronHP will use /cvmfs/geant4.cern.ch/share/data/G4NDL4.5/Inelastic/CrossSection/8_17_Oxygen
+NeutronHP: /Elastic file for Z = 8, A = 18 is not found and NeutronHP will use /cvmfs/geant4.cern.ch/share/data/G4NDL4.5/Elastic/CrossSection/8_17_Oxygen
+@@@ G4ParticleHPInelastic instantiated for particle neutron data directory variable is G4NEUTRONHPDATA pointing to /cvmfs/geant4.cern.ch/share/data/G4NDL4.5/Inelastic
+NeutronHP: /Capture file for Z = 8, A = 18 is not found and NeutronHP will use /cvmfs/geant4.cern.ch/share/data/G4NDL4.5/Capture/CrossSection/8_17_Oxygen
+
+====================================================================
+                  HADRONIC PROCESSES SUMMARY (verbose level 1)
+
+---------------------------------------------------
+                           Hadronic Processes for GenericIon
+
+  Process: ionElastic
+        Model:          NNDiffuseElastic: 0 meV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 meV ---> 100 TeV
+
+  Process: ionInelastic
+        Model:  Binary Light Ion Cascade: 0 meV/n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 meV ---> 100 TeV
+
+  Process: RadioactiveDecayBase
+
+---------------------------------------------------
+                           Hadronic Processes for He3
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 meV ---> 100 TeV
+
+  Process: He3Inelastic
+        Model:  Binary Light Ion Cascade: 0 meV/n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:     G4ParticleInelasticXS: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for alpha
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 meV ---> 100 TeV
+
+  Process: alphaInelastic
+        Model:  Binary Light Ion Cascade: 0 meV/n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:     G4ParticleInelasticXS: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for anti_He3
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV/n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 meV ---> 100 TeV
+
+  Process: anti_He3Inelastic
+        Model:                      FTFP: 0 meV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for anti_alpha
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV/n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 meV ---> 100 TeV
+
+  Process: anti_alphaInelastic
+        Model:                      FTFP: 0 meV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for anti_deuteron
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV/n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 meV ---> 100 TeV
+
+  Process: anti_deuteronInelastic
+        Model:                      FTFP: 0 meV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for anti_neutron
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 meV ---> 100 TeV
+
+  Process: anti_neutronInelastic
+        Model:                      FTFP: 0 meV ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for anti_proton
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV ---> 100.1 MeV
+        Model:              AntiAElastic: 100 MeV ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 meV ---> 100 TeV
+
+  Process: anti_protonInelastic
+        Model:                      FTFP: 0 meV ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for anti_triton
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV/n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 meV ---> 100 TeV
+
+  Process: anti_tritonInelastic
+        Model:                      FTFP: 0 meV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for deuteron
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 meV ---> 100 TeV
+
+  Process: dInelastic
+        Model:  Binary Light Ion Cascade: 0 meV/n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:     G4ParticleInelasticXS: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for gamma
+
+  Process: photonNuclear
+        Model:            BertiniCascade: 0 meV ---> 10 GeV
+     Cr_sctns:            PhotoNuclearXS: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for kaon+
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 meV ---> 100 TeV
+
+  Process: kaon+Inelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            BertiniCascade: 0 meV ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 meV ---> 100 TeV
+     Cr_sctns:  ChipsKaonPlusInelasticXS: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for kaon-
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 meV ---> 100 TeV
+
+  Process: kaon-Inelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            BertiniCascade: 0 meV ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 meV ---> 100 TeV
+     Cr_sctns: ChipsKaonMinusInelasticXS: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for lambda
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 meV ---> 100 TeV
+
+  Process: lambdaInelastic
+        Model:            BertiniCascade: 0 meV ---> 6 GeV
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+     Cr_sctns:   ChipsHyperonInelasticXS: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for neutron
+
+  Process: hadElastic
+        Model:             hElasticCHIPS: 19.5 MeV ---> 100 TeV
+        Model:          NeutronHPElastic: 0 meV ---> 20 MeV
+     Cr_sctns:        NeutronHPElasticXS: 0 meV ---> 20 MeV
+     Cr_sctns:        G4NeutronElasticXS: 0 meV ---> 100 TeV
+
+  Process: neutronInelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            Binary Cascade: 19.9 MeV ---> 6 GeV
+        Model:        NeutronHPInelastic: 0 meV ---> 20 MeV
+     Cr_sctns:      NeutronHPInelasticXS: 0 meV ---> 20 MeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 meV ---> 100 TeV
+
+  Process: nCapture
+        Model:          NeutronHPCapture: 0 meV ---> 20 MeV
+        Model:               nRadCapture: 19.9 MeV ---> 100 TeV
+     Cr_sctns:        NeutronHPCaptureXS: 0 meV ---> 20 MeV
+     Cr_sctns:        G4NeutronCaptureXS: 0 meV ---> 100 TeV
+
+  Process: nFission
+        Model:          NeutronHPFission: 0 meV ---> 20 MeV
+        Model:                G4LFission: 19.9 MeV ---> 100 TeV
+     Cr_sctns:        NeutronHPFissionXS: 0 meV ---> 20 MeV
+     Cr_sctns:          GheishaFissionXS: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for pi+
+
+  Process: hadElastic
+        Model:           hElasticGlauber: 0 meV ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 meV ---> 100 TeV
+
+  Process: pi+Inelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            BertiniCascade: 0 meV ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for pi-
+
+  Process: hadElastic
+        Model:           hElasticGlauber: 0 meV ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 meV ---> 100 TeV
+
+  Process: pi-Inelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            BertiniCascade: 0 meV ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for proton
+
+  Process: hadElastic
+        Model:             hElasticCHIPS: 0 meV ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 meV ---> 100 TeV
+
+  Process: protonInelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            Binary Cascade: 0 meV ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 meV ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for triton
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 meV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 meV ---> 100 TeV
+
+  Process: tInelastic
+        Model:  Binary Light Ion Cascade: 0 meV/n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:     G4ParticleInelasticXS: 0 meV ---> 100 TeV
+
+================================================================
+=======================================================================
+======       Pre-compound/De-excitation Physics Parameters     ========
+=======================================================================
+Type of pre-compound inverse x-section              3
+Pre-compound model active                           1
+Pre-compound excitation low energy (MeV)            0.1
+Pre-compound excitation high energy (MeV)           100
+Type of de-excitation inverse x-section             3
+Type of de-excitation factory                       Evaporation+GEM
+Number of de-excitation channels                    68
+Min excitation energy (keV)                         0.01
+Min energy per nucleon for multifragmentation (MeV) 2e+05
+Limit excitation energy for Fermi BreakUp (MeV)     20
+Level density (1/MeV)                               0.075
+Model of level density flag                         1
+Time limit for long lived isomeres (ns)             1442.7
+Internal e- conversion flag                         1
+Store e- internal conversion data                   1
+Electron internal conversion ID                     0
+Correlated gamma emission flag                      0
+Max 2J for sampling of angular correlations         10
+=======================================================================
+
+========= Table of registered couples ==============================
+
+Index : 0     used in the geometry : Yes
+ Material : Air
+ Range cuts        :  gamma  10 km     e-  10 km     e+  10 km  proton 0 fm 
+ Energy thresholds :  gamma  10 GeV    e-  10 GeV    e+  10 GeV proton 0 meV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : Yes
+ Material : Stainless-Steel
+ Range cuts        :  gamma  10 km     e-  10 km     e+  10 km  proton 0 fm 
+ Energy thresholds :  gamma  10 GeV    e-  10 GeV    e+  10 GeV proton 0 meV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 2     used in the geometry : Yes
+ Material : BeO
+ Range cuts        :  gamma  10 km     e-  10 km     e+  10 km  proton 0 fm 
+ Energy thresholds :  gamma  10 GeV    e-  10 GeV    e+  10 GeV proton 0 meV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+====================================================================
+
+### Run 0 starts.
+
+--------- Ranecu engine status ---------
+ Initial seed (index) = 0
+ Current couple of seeds = 9876, 54321
+----------------------------------------
+--> Event 0 starts.
+--> Event 1000 starts.
+--> Event 2000 starts.
+--> Event 3000 starts.
+--> Event 4000 starts.
+--> Event 5000 starts.
+--> Event 6000 starts.
+--> Event 7000 starts.
+--> Event 8000 starts.
+--> Event 9000 starts.
+ Run terminated.
+Run Summary
+  Number of events processed : 10000
+  User=6.700000s Real=6.856705s Sys=0.010000s
+
+ The run is 10000 Am241 of 0 meV within BeO (D =  3 cm  L = 6 cm )
+
+ Process calls frequency :
+ RadioactiveDecayBase= 235299        Transportation= 188674        alphaInelastic=     19
+              annihil=      1                 compt=  34623                  conv=      1
+                eIoni= 614450               ionIoni= 198768                   msc=  12964
+                 phot=  49257 
+
+ List of generated particles:
+          Ac225:    9999  Emean =  162.31 meV	( 0.61118 meV --> 1.1231 eV )
+  Ac225[120.800]:       3  Emean =  247.17 meV	( 174.3 meV --> 378.12 meV)
+  Ac225[155.650]:       1  Emean =   223.2 meV	( 223.2 meV --> 223.2 meV)
+  Ac225[40.090]:    6992  Emean =  369.43 meV	( 3.4051 meV --> 977.04 meV)
+          At217:    9992  Emean =  116.35 keV	( 106.09 keV --> 117.05 keV)
+  At217[100.250]:     172  Emean =  114.76 keV	( 106.34 keV --> 115.23 keV)
+  At217[218.120]:    1582  Emean =  112.98 keV	( 106.37 keV --> 113.09 keV)
+  At217[272.070]:      19  Emean =  111.83 keV	( 110.32 keV --> 112.11 keV)
+  At217[310.300]:       1  Emean =  111.42 keV	( 111.42 keV --> 111.42 keV)
+  At217[368.230]:      47  Emean =  110.28 keV	( 106.52 keV --> 110.37 keV)
+  At217[382.340]:       6  Emean =  110.11 keV	( 110.11 keV --> 110.11 keV)
+  At217[410.640]:      20  Emean =   109.6 keV	( 109.6 keV --> 109.6 keV)
+  At217[537.500]:       1  Emean =   107.3 keV	( 107.3 keV --> 107.3 keV)
+  At217[568.500]:       1  Emean =  106.73 keV	( 106.73 keV --> 106.73 keV)
+  At217[577.000]:       6  Emean =  106.58 keV	( 106.58 keV --> 106.58 keV)
+            Be9:       4  Emean =  2.2323 MeV	( 568.19 keV --> 3.9837 MeV)
+          Bi209:   10000  Emean =  1.2226 eV 	( 4.2201 meV --> 2.7065 eV )
+          Bi213:    9992  Emean =  132.94 keV	( 127.7 keV --> 132.95 keV)
+  Bi213[257.870]:       3  Emean =  128.18 keV	( 128.18 keV --> 128.18 keV)
+            C12:       5  Emean =  1.1257 MeV	( 245.92 keV --> 2.4134 MeV)
+          Fr221:   10000  Emean =  104.87 keV	( 47.352 meV --> 105.65 keV)
+  Fr221[100.890]:     185  Emean =  102.87 keV	( 98.391 keV --> 103.85 keV)
+  Fr221[108.410]:     471  Emean =   103.1 keV	( 98.47 keV --> 103.72 keV)
+  Fr221[145.910]:       7  Emean =  102.29 keV	( 101.53 keV --> 103.05 keV)
+  Fr221[150.070]:     153  Emean =  102.77 keV	( 98.415 keV --> 102.97 keV)
+  Fr221[195.770]:     440  Emean =  102.13 keV	( 98.67 keV --> 102.16 keV)
+  Fr221[224.640]:     111  Emean =  101.49 keV	( 98.529 keV --> 101.65 keV)
+  Fr221[234.510]:       5  Emean =  101.47 keV	( 101.47 keV --> 101.47 keV)
+  Fr221[253.560]:     118  Emean =  100.21 keV	( 662.34 meV --> 101.13 keV)
+  Fr221[26.000]:     303  Emean =  102.95 keV	( 95.448 keV --> 105.18 keV)
+  Fr221[272.600]:       6  Emean =  100.79 keV	( 100.79 keV --> 100.79 keV)
+  Fr221[279.210]:      10  Emean =  100.08 keV	( 98.561 keV --> 100.67 keV)
+  Fr221[288.080]:       7  Emean =  99.349 keV	( 98.402 keV --> 100.52 keV)
+  Fr221[294.660]:       4  Emean =   100.4 keV	( 100.4 keV --> 100.4 keV)
+  Fr221[36.640]:    2575  Emean =  104.43 keV	( 9.6334 meV --> 105 keV)
+  Fr221[38.540]:    1025  Emean =  104.43 keV	( 95.839 keV --> 104.96 keV)
+  Fr221[393.350]:      18  Emean =  98.641 keV	( 98.641 keV --> 98.641 keV)
+  Fr221[400.750]:       6  Emean =  98.509 keV	( 98.509 keV --> 98.509 keV)
+  Fr221[517.810]:       3  Emean =  96.424 keV	( 96.424 keV --> 96.424 keV)
+  Fr221[552.050]:      24  Emean =  95.814 keV	( 95.814 keV --> 95.814 keV)
+  Fr221[99.620]:     877  Emean =   103.5 keV	( 57.567 meV --> 103.87 keV)
+  Fr221[99.850]:     172  Emean =  103.55 keV	( 96.329 keV --> 103.87 keV)
+           Ne20:       1  Emean =  1.4358 MeV	( 1.4358 MeV --> 1.4358 MeV)
+          Np237:   10000  Emean =   92.57 keV	( 87.709 keV --> 93.678 keV)
+  Np237[102.959]:    1434  Emean =  91.868 keV	( 89.929 keV --> 91.966 keV)
+  Np237[158.497]:     184  Emean =  91.042 keV	( 91.042 keV --> 91.042 keV)
+  Np237[225.957]:       1  Emean =   89.92 keV	( 89.92 keV --> 89.92 keV)
+  Np237[33.196]:    2176  Emean =  92.572 keV	( 87.713 keV --> 93.126 keV)
+  Np237[368.602]:       1  Emean =  87.549 keV	( 87.549 keV --> 87.549 keV)
+  Np237[59.541]:    9935  Emean =  92.564 keV	( 90.057 keV --> 92.688 keV)
+  Np237[75.899]:       6  Emean =  92.416 keV	( 92.416 keV --> 92.416 keV)
+          Pa233:   10000  Emean =  81.958 keV	( 77.225 keV --> 83.776 keV)
+  Pa233[103.635]:    3328  Emean =    81.9 keV	( 77.238 keV --> 82.024 keV)
+  Pa233[109.070]:     929  Emean =  81.855 keV	( 77.248 keV --> 81.932 keV)
+  Pa233[133.200]:       1  Emean =  81.524 keV	( 81.524 keV --> 81.524 keV)
+  Pa233[163.510]:     133  Emean =  80.993 keV	( 78.58 keV --> 81.011 keV)
+  Pa233[169.166]:     137  Emean =  80.916 keV	( 80.916 keV --> 80.916 keV)
+  Pa233[179.000]:      53  Emean =  80.749 keV	( 80.749 keV --> 80.749 keV)
+  Pa233[201.634]:      96  Emean =  79.711 keV	( 78.505 keV --> 79.907 keV)
+  Pa233[212.341]:     356  Emean =  80.178 keV	( 77.355 keV --> 80.186 keV)
+  Pa233[218.000]:      60  Emean =   80.09 keV	( 80.09 keV --> 80.09 keV)
+  Pa233[237.890]:     595  Emean =  79.724 keV	( 78.555 keV --> 79.754 keV)
+  Pa233[257.183]:       6  Emean =  79.428 keV	( 79.428 keV --> 79.428 keV)
+  Pa233[279.720]:      32  Emean =  79.047 keV	( 79.047 keV --> 79.047 keV)
+  Pa233[283.000]:       8  Emean =  78.991 keV	( 78.991 keV --> 78.991 keV)
+  Pa233[300.500]:      32  Emean =  78.695 keV	( 78.695 keV --> 78.695 keV)
+  Pa233[303.590]:       7  Emean =  78.643 keV	( 78.643 keV --> 78.643 keV)
+  Pa233[365.840]:       3  Emean =  77.591 keV	( 77.591 keV --> 77.591 keV)
+  Pa233[57.100]:    7503  Emean =  81.929 keV	( 77.241 keV --> 82.81 keV)
+   Pa233[6.671]:     305  Emean =   81.83 keV	( 78.676 keV --> 83.663 keV)
+  Pa233[70.544]:     265  Emean =  81.978 keV	( 78.869 keV --> 82.583 keV)
+  Pa233[86.468]:    5563  Emean =  81.947 keV	( 77.346 keV --> 82.314 keV)
+  Pa233[94.646]:     723  Emean =  80.048 keV	( 77.404 keV --> 81.123 keV)
+          Pb209:   10000  Emean =  157.29 keV	( 6.309 eV  --> 160.59 keV)
+  Pb209[1567.090]:     205  Emean =  600.37 meV	( 555.82 meV --> 3.5222 eV )
+  Pb209[2032.220]:     203  Emean =  50.498 meV	( 35.303 meV --> 301.34 meV)
+  Pb209[2149.430]:     202  Emean =  6.8054 eV 	( 428.87 meV --> 12.721 eV )
+  Pb209[2315.900]:       1  Emean =  7.8048 eV 	( 7.8048 eV  --> 7.8048 eV )
+  Pb209[2738.000]:       2  Emean =   70.81 meV	( 70.81 meV --> 70.81 meV)
+  Pb209[2904.000]:       2  Emean =  4.6508 eV 	( 4.4634 eV  --> 4.8382 eV )
+  Pb209[3389.090]:       2  Emean =  926.97 meV	( 350.82 meV --> 1.5031 eV )
+          Po213:    9795  Emean =  122.23 eV 	( 16.56 meV --> 145.62 keV)
+  Po213[1003.553]:       7  Emean =  505.83 meV	( 58.12 meV --> 1.3603 eV )
+  Po213[1100.167]:      59  Emean =   371.1 meV	( 14.814 meV --> 972.91 meV)
+  Po213[1119.291]:       3  Emean =  414.25 meV	( 188.88 meV --> 608.56 meV)
+  Po213[292.800]:      61  Emean =  1.9208 eV 	( 54.948 meV --> 4.3728 eV )
+  Po213[440.450]:    3090  Emean =  2.4201 eV 	( 21.188 meV --> 4.9041 eV )
+  Po213[867.980]:       1  Emean =  535.95 meV	( 535.95 meV --> 535.95 meV)
+          Ra221:       8  Emean =  367.92 meV	( 170.64 meV --> 733.01 meV)
+          Ra225:   10000  Emean =   97.32 keV	( 16.997 meV --> 340.57 keV)
+  Ra225[100.500]:    2868  Emean =  96.861 keV	( 1.0709 keV --> 340.48 keV)
+  Ra225[111.600]:    2295  Emean =  96.229 keV	( 2.1835 keV --> 340.49 keV)
+  Ra225[120.360]:      33  Emean =  96.811 keV	( 77.008 keV --> 297.65 keV)
+  Ra225[149.960]:    2462  Emean =  96.935 keV	( 27.881 meV --> 335.19 keV)
+  Ra225[179.750]:    1604  Emean =  98.623 keV	( 94.18 meV --> 337.56 keV)
+  Ra225[203.500]:       4  Emean =  86.805 keV	( 86.805 keV --> 86.805 keV)
+  Ra225[215.800]:       1  Emean =   86.59 keV	( 86.59 keV --> 86.59 keV)
+  Ra225[220.550]:      73  Emean =  105.75 keV	( 41.828 keV --> 334.41 keV)
+  Ra225[225.200]:       3  Emean =  83.001 keV	( 79.723 keV --> 84.655 keV)
+  Ra225[226.900]:      18  Emean =  96.498 keV	( 52.996 keV --> 293.39 keV)
+  Ra225[236.250]:    6065  Emean =  96.549 keV	( 634.74 eV  --> 336.21 keV)
+  Ra225[243.560]:     511  Emean =  97.544 keV	( 2.1751 keV --> 327.63 keV)
+  Ra225[248.500]:      28  Emean =  98.351 keV	( 86.018 keV --> 280.62 keV)
+  Ra225[25.410]:    8170  Emean =  97.503 keV	( 30.937 meV --> 340.09 keV)
+  Ra225[267.920]:     986  Emean =  93.915 keV	( 1.4666 keV --> 334.48 keV)
+  Ra225[272.150]:      57  Emean =  98.144 keV	( 84.533 keV --> 257.68 keV)
+  Ra225[284.490]:     137  Emean =  99.359 keV	( 18.992 keV --> 332.35 keV)
+  Ra225[293.000]:       1  Emean =  83.538 keV	( 83.538 keV --> 83.538 keV)
+  Ra225[31.560]:     494  Emean =  99.422 keV	( 6.6318 keV --> 340.53 keV)
+  Ra225[321.760]:     104  Emean =  93.244 keV	( 24.91 keV --> 299.97 keV)
+  Ra225[328.000]:       6  Emean =  80.171 keV	( 67.904 keV --> 84.627 keV)
+  Ra225[335.000]:       2  Emean =  84.258 keV	( 84.252 keV --> 84.264 keV)
+  Ra225[349.430]:       2  Emean =  84.252 keV	( 84.252 keV --> 84.252 keV)
+  Ra225[390.000]:       9  Emean =  106.65 keV	( 81.967 keV --> 293.13 keV)
+  Ra225[394.720]:      21  Emean =  101.32 keV	( 83.459 keV --> 260.55 keV)
+  Ra225[42.770]:    3856  Emean =  97.501 keV	( 7.9744 meV --> 336.1 keV)
+  Ra225[478.400]:       4  Emean =  81.995 keV	( 81.995 keV --> 81.995 keV)
+  Ra225[487.000]:       2  Emean =  81.845 keV	( 81.845 keV --> 81.845 keV)
+  Ra225[55.160]:      62  Emean =  90.263 keV	( 6.6331 keV --> 241.63 keV)
+  Ra225[603.000]:       2  Emean =  79.815 keV	( 79.815 keV --> 79.815 keV)
+  Ra225[609.000]:       1  Emean =   79.71 keV	( 79.71 keV --> 79.71 keV)
+  Ra225[69.360]:     375  Emean =  97.638 keV	( 14.958 keV --> 340.51 keV)
+          Rn217:       8  Emean =  122.95 keV	( 121.88 keV --> 124.71 keV)
+  Rn217[149.180]:       4  Emean =  122.01 keV	( 122.01 keV --> 122.01 keV)
+  Rn217[88.900]:       1  Emean =   123.1 keV	( 123.1 keV --> 123.1 keV)
+  Rn217[93.020]:       1  Emean =  123.03 keV	( 123.03 keV --> 123.03 keV)
+          Rn221:       1  Emean =  90.714 keV	( 90.714 keV --> 90.714 keV)
+          Th229:    8756  Emean =  84.326 keV	( 80.871 keV --> 84.358 keV)
+   Th229[0.008]:    1244  Emean =  83.504 keV	( 77.746 keV --> 83.995 keV)
+  Th229[125.439]:       8  Emean =   81.34 keV	( 77.849 keV --> 82.201 keV)
+  Th229[146.357]:       2  Emean =  81.841 keV	( 81.841 keV --> 81.841 keV)
+  Th229[163.254]:       7  Emean =  81.551 keV	( 81.551 keV --> 81.551 keV)
+  Th229[212.382]:       2  Emean =  79.286 keV	( 77.866 keV --> 80.706 keV)
+  Th229[255.957]:       1  Emean =  77.817 keV	( 77.817 keV --> 77.817 keV)
+  Th229[288.491]:       1  Emean =  77.858 keV	( 77.858 keV --> 77.858 keV)
+  Th229[29.193]:    1490  Emean =  83.515 keV	( 77.683 keV --> 83.856 keV)
+  Th229[317.173]:       1  Emean =  78.904 keV	( 78.904 keV --> 78.904 keV)
+  Th229[320.548]:       2  Emean =  78.846 keV	( 78.846 keV --> 78.846 keV)
+  Th229[374.815]:       1  Emean =  77.913 keV	( 77.913 keV --> 77.913 keV)
+  Th229[42.435]:    1433  Emean =  83.553 keV	( 78.936 keV --> 83.628 keV)
+  Th229[67.800]:       5  Emean =  83.192 keV	( 83.192 keV --> 83.192 keV)
+  Th229[71.826]:      74  Emean =  82.566 keV	( 77.758 keV --> 83.123 keV)
+  Th229[75.100]:       2  Emean =  83.067 keV	( 83.067 keV --> 83.067 keV)
+  Th229[97.136]:     162  Emean =  82.671 keV	( 81.571 keV --> 82.688 keV)
+          Tl209:     205  Emean =  111.87 keV	( 106.09 keV --> 112.51 keV)
+  Tl209[323.810]:      21  Emean =  106.41 keV	( 106.41 keV --> 106.41 keV)
+           U233:   10000  Emean =  356.55 meV	( 3.4051 meV --> 2.019 eV )
+  U233[155.230]:      48  Emean =  109.45 meV	( 90.833 meV --> 502.89 meV)
+  U233[298.810]:    2300  Emean =  98.547 meV	( 3.9872 meV --> 661.04 meV)
+  U233[301.940]:      28  Emean =  3.8791 meV	( 0.7858 meV --> 6.1991 meV)
+  U233[311.904]:    5238  Emean =  170.19 meV	( 1.1059 meV --> 734.44 meV)
+  U233[320.830]:      29  Emean =    79.5 meV	( 0.90222 meV --> 228.84 meV)
+  U233[340.477]:    2604  Emean =  229.88 meV	( 0.93132 meV --> 620.52 meV)
+  U233[353.790]:    2636  Emean =  116.75 meV	( 98.4 meV --> 150.93 meV)
+  U233[398.496]:    1595  Emean =  156.29 meV	( 0.087311 meV --> 441.1 meV)
+   U233[40.350]:    1427  Emean =  272.17 meV	( 6.17 meV --> 908.77 meV)
+  U233[415.758]:    2655  Emean =  134.95 meV	( 0.32014 meV --> 400.18 meV)
+   U233[92.160]:     171  Emean =  157.77 meV	( 9.1677 meV --> 754.05 meV)
+          alpha:   80016  Emean =  5.9263 MeV	( 194.05 keV --> 8.3755 MeV)
+      anti_nu_e:   40000  Emean =  424.44 keV	( 849.09 eV  --> 1.8071 MeV)
+             e+:       1  Emean =  294.09 keV	( 294.09 keV --> 294.09 keV)
+             e-:  614476  Emean =  23.551 keV	( 2.9045 eV  --> 1.4931 MeV)
+          gamma:   64214  Emean =  96.188 keV	( 218.48 eV  --> 5.7596 MeV)
+        neutron:       9  Emean =  2.7566 MeV	( 119.05 keV --> 7.9022 MeV)
+
+ Mean energy deposit per event = 49.738 MeV  rms = 481.33 keV
+ Mean energy flow per event    = 2.0606 MeV  rms = 512.74 keV
+
+ List of particles emerging from the container :
+      anti_nu_e:   40000  Emean =  424.44 keV	( 849.09 eV  --> 1.8071 MeV) 	Eflow/event = 1.6978 MeV
+             e-:      11  Emean =  185.14 keV	( 36.945 keV --> 1.1451 MeV) 	Eflow/event = 203.65 eV 
+          gamma:   14956  Emean =  240.81 keV	( 40.09 keV --> 5.7596 MeV) 	Eflow/event = 360.16 keV
+        neutron:       9  Emean =  2.7566 MeV	( 119.05 keV --> 7.9022 MeV) 	Eflow/event = 2.4809 keV
+
+--------- Ranecu engine status ---------
+ Initial seed (index) = 0
+ Current couple of seeds = 661508518, 1587599561
+----------------------------------------
+G4 kernel has come to Quit state.
+================== Deleting memory pools ===================
+Number of memory pools allocated: 11 of which, static: 0
+Dynamic pools deleted: 11 / Total memory freed: 0.038 MB
+============================================================
+RunManagerKernel is deleted. Good bye :)

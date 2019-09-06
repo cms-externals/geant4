@@ -1,0 +1,2759 @@
+
+**************************************************************
+ Geant4 version Name: geant4-10-05-ref-07    (17-July-2019)
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
++-------------------------------------------------------+
+|        Constructing sequential run manager            |
++-------------------------------------------------------+
+<<< Geant4 Physics List simulation engine: FTFP_BERT
+
+
+Par01DetectorConstruction....
+
+Declaring region...
+... region declared. Setting it the ghostLogical volume...
+... succes.
+
+--- G4CoupledTransportation is used 
+
+ FTFP_BERT : new threshold between BERT and FTFP is over the interval 
+ for pions :   3 to 6 GeV
+ for kaons :   3 to 6 GeV
+ for proton :  3 to 6 GeV
+ for neutron : 3 to 6 GeV
+
+### Adding tracking cuts for neutron  TimeCut(ns)= 10000  KinEnergyCut(MeV)= 0
+            e+ : fastSimProcess_massGeom[geom:WorldPhysical] 
+            e- : fastSimProcess_massGeom[geom:WorldPhysical] 
+         gamma : fastSimProcess_massGeom[geom:WorldPhysical] 
+           pi+ : fastSimProcess_parallelGeom[geom:pionGhostWorld] 
+           pi- : fastSimProcess_parallelGeom[geom:pionGhostWorld] 
+Instantiating Visualization Manager.......
+Visualization Manager instantiating with verbosity "warnings (3)"...
+Visualization Manager initialising...
+Registering graphics systems...
+
+You have successfully registered the following graphics systems.
+Current available graphics systems are:
+ASCIITree (ATree)
+DAWNFILE (DAWNFILE)
+G4HepRep (HepRepXML)
+G4HepRepFile (HepRepFile)
+RayTracer (RayTracer)
+VRML1FILE (VRML1FILE)
+VRML2FILE (VRML2FILE)
+gMocrenFile (gMocrenFile)
+OpenGLImmediateXm (OGLIXm, OGLI)
+OpenGLStoredXm (OGLSXm, OGL, OGLS)
+OpenGLImmediateX (OGLIX, OGLIXm_FALLBACK)
+OpenGLStoredX (OGLSX, OGLSXm_FALLBACK)
+RayTracerX (RayTracerX)
+
+Registering model factories...
+
+You have successfully registered the following model factories.
+Registered model factories:
+  generic
+  drawByAttribute
+  drawByCharge
+  drawByOriginVolume
+  drawByParticleID
+  drawByEncounteredVolume
+
+Registered filter factories:
+  attributeFilter
+  chargeFilter
+  originVolumeFilter
+  particleFilter
+  encounteredVolumeFilter
+
+You have successfully registered the following user vis actions.
+Run Duration User Vis Actions: none
+End of Event User Vis Actions: none
+End of Run User Vis Actions: none
+
+Some /vis commands (optionally) take a string to specify colour.
+"/vis/list" to see available colours.
+
+phot:  for gamma SubType=12 BuildTable=0
+      LambdaPrime table from 200 keV to 100 TeV in 61 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+ LivermorePhElectric : Emin=    0 eV  Emax=  100 TeV  SauterGavrila Fluo
+
+compt:  for gamma SubType=13 BuildTable=1
+      Lambda table from 100 eV  to 1 MeV, 7 bins/decade, spline: 1
+      LambdaPrime table from 1 MeV to 100 TeV in 56 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+       Klein-Nishina : Emin=    0 eV  Emax=  100 TeV
+
+conv:  for gamma SubType=14 BuildTable=1
+      Lambda table from 1.022 MeV to 100 TeV, 18 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        BetheHeitler : Emin=    0 eV  Emax=   80 GeV  ModifiedTsai
+     BetheHeitlerLPM : Emin=   80 GeV Emax=  100 TeV  ModifiedTsai
+
+Rayl:  for gamma SubType=11 BuildTable=1
+      Lambda table from 100 eV  to 100 keV, 7 bins/decade, spline: 0
+      LambdaPrime table from 100 keV to 100 TeV in 63 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   LivermoreRayleigh : Emin=    0 eV  Emax=  100 TeV  CullenGenerator
+
+msc:  for e-  SubType= 10
+      RangeFactor= 0.04, stepLimType: 1, latDisp: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 MeV Nbins=42 100 eV  - 100 MeV
+        WentzelVIUni : Emin=  100 MeV Emax=  100 TeV Nbins=42 100 MeV - 100 TeV
+
+eIoni:  for e-  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    0 eV  Emax=  100 TeV
+
+eBrem:  for e-  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      LPM flag: 1 for E > 1 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    0 eV  Emax=    1 GeV  ModifiedTsai
+            eBremLPM : Emin=    1 GeV Emax=  100 TeV  ModifiedTsai
+
+CoulombScat:  for e-, integral:1  SubType=1 BuildTable=1
+      Lambda table from 100 MeV to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=  100 MeV Emax=  100 TeV
+
+msc:  for e+  SubType= 10
+      RangeFactor= 0.04, stepLimType: 1, latDisp: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 MeV Nbins=42 100 eV  - 100 MeV
+        WentzelVIUni : Emin=  100 MeV Emax=  100 TeV Nbins=42 100 MeV - 100 TeV
+
+eIoni:  for e+  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    0 eV  Emax=  100 TeV
+
+eBrem:  for e+  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      LPM flag: 1 for E > 1 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    0 eV  Emax=    1 GeV  ModifiedTsai
+            eBremLPM : Emin=    1 GeV Emax=  100 TeV  ModifiedTsai
+
+annihil:  for e+, integral:1  SubType=5 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            eplus2gg : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for e+, integral:1  SubType=1 BuildTable=1
+      Lambda table from 100 MeV to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=  100 MeV Emax=  100 TeV
+
+msc:  for proton  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+hIoni:  for proton  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=    2 MeV
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV
+
+hBrems:  for proton  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV
+
+hPairProd:  for proton  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 17x1001 from 7.50618 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for proton, integral:1  SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for GenericIon  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV
+
+ionIoni:  for GenericIon  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.02
+      Stopping Power data for 17 ion/material pairs
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            BraggIon : Emin=    0 eV  Emax=    2 MeV
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV
+
+msc:  for alpha  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+ionIoni:  for alpha  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.02
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            BraggIon : Emin=    0 eV  Emax=7.9452 MeV
+          BetheBloch : Emin=7.9452 MeV Emax=  100 TeV
+
+msc:  for anti_proton  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+hIoni:  for anti_proton  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=    2 MeV
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV
+
+hBrems:  for anti_proton  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV
+
+hPairProd:  for anti_proton  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 17x1001 from 7.50618 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for anti_proton, integral:1  SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for kaon+  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+hIoni:  for kaon+  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=1.05231 MeV
+          BetheBloch : Emin=1.05231 MeV Emax=  100 TeV
+
+hBrems:  for kaon+  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV
+
+hPairProd:  for kaon+  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 18x1001 from 3.94942 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for kaon+, integral:1  SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for kaon-  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+hIoni:  for kaon-  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=1.05231 MeV
+          BetheBloch : Emin=1.05231 MeV Emax=  100 TeV
+
+hBrems:  for kaon-  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV
+
+hPairProd:  for kaon-  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 18x1001 from 3.94942 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for kaon-, integral:1  SubType=1 BuildTable=1
+      Used Lambda table of kaon+
+      ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for mu+  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0, polarAngLim(deg)= 180
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+muIoni:  for mu+  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=  200 keV
+          BetheBloch : Emin=  200 keV Emax=    1 GeV
+        MuBetheBloch : Emin=    1 GeV Emax=  100 TeV
+
+muBrems:  for mu+  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+              MuBrem : Emin=    0 eV  Emax=  100 TeV
+
+muPairProd:  for mu+  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 21x1001 from 1 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          muPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for mu+, integral:1  SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for mu-  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0, polarAngLim(deg)= 180
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+muIoni:  for mu-  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=  200 keV
+          BetheBloch : Emin=  200 keV Emax=    1 GeV
+        MuBetheBloch : Emin=    1 GeV Emax=  100 TeV
+
+muBrems:  for mu-  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+              MuBrem : Emin=    0 eV  Emax=  100 TeV
+
+muPairProd:  for mu-  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 21x1001 from 1 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          muPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for mu-, integral:1  SubType=1 BuildTable=1
+      Used Lambda table of mu+
+      ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for pi+  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+hIoni:  for pi+  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=297.505 keV
+          BetheBloch : Emin=297.505 keV Emax=  100 TeV
+
+hBrems:  for pi+  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV
+
+hPairProd:  for pi+  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 20x1001 from 1.11656 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for pi+, integral:1  SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for pi-  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+hIoni:  for pi-  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=297.505 keV
+          BetheBloch : Emin=297.505 keV Emax=  100 TeV
+
+hBrems:  for pi-  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV
+
+hPairProd:  for pi-  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 20x1001 from 1.11656 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for pi-, integral:1  SubType=1 BuildTable=1
+      Used Lambda table of pi+
+      ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+====================================================================
+                  HADRONIC PROCESSES SUMMARY (verbose level 1)
+
+---------------------------------------------------
+                           Hadronic Processes for neutron
+
+  Process: hadElastic
+        Model:             hElasticCHIPS: 0 eV  ---> 100 TeV
+     Cr_sctns:        G4NeutronElasticXS: 0 eV  ---> 100 TeV
+
+  Process: neutronInelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:      G4NeutronInelasticXS: 0 eV  ---> 100 TeV
+
+  Process: nCapture
+        Model:               nRadCapture: 0 eV  ---> 100 TeV
+     Cr_sctns:        G4NeutronCaptureXS: 0 eV  ---> 100 TeV
+
+  Process: nKiller
+
+---------------------------------------------------
+                           Hadronic Processes for GenericIon
+
+  Process: ionInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for He3
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+  Process: He3Inelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for alpha
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+  Process: alphaInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for anti_He3
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: anti_He3Inelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_alpha
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: anti_alphaInelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_deuteron
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: anti_deuteronInelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_neutron
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: anti_neutronInelastic
+        Model:                      FTFP: 0 eV  ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_proton
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100.1 MeV
+        Model:              AntiAElastic: 100 MeV ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: anti_protonInelastic
+        Model:                      FTFP: 0 eV  ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_triton
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: anti_tritonInelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for deuteron
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+  Process: dInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for e+
+
+  Process: positronNuclear
+        Model:   G4ElectroVDNuclearModel: 0 eV  ---> 1 PeV
+     Cr_sctns:          ElectroNuclearXS: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for e-
+
+  Process: electronNuclear
+        Model:   G4ElectroVDNuclearModel: 0 eV  ---> 1 PeV
+     Cr_sctns:          ElectroNuclearXS: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for gamma
+
+  Process: photonNuclear
+        Model:            BertiniCascade: 0 eV  ---> 3.5 GeV
+        Model:           TheoFSGenerator: 3 GeV ---> 100 TeV
+     Cr_sctns:            PhotoNuclearXS: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for kaon+
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: kaon+Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+     Cr_sctns:  ChipsKaonPlusInelasticXS: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for kaon-
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: kaon-Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+     Cr_sctns: ChipsKaonMinusInelasticXS: 0 eV  ---> 100 TeV
+
+  Process: hBertiniCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for lambda
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: lambdaInelastic
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+     Cr_sctns:   ChipsHyperonInelasticXS: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for mu+
+
+  Process: muonNuclear
+        Model:      G4MuonVDNuclearModel: 0 eV  ---> 1 PeV
+     Cr_sctns:     KokoulinMuonNuclearXS: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for mu-
+
+  Process: muonNuclear
+        Model:      G4MuonVDNuclearModel: 0 eV  ---> 1 PeV
+     Cr_sctns:     KokoulinMuonNuclearXS: 0 eV  ---> 100 TeV
+
+  Process: muMinusCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for pi+
+
+  Process: hadElastic
+        Model:           hElasticGlauber: 0 eV  ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+  Process: pi+Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for pi-
+
+  Process: hadElastic
+        Model:           hElasticGlauber: 0 eV  ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+  Process: pi-Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+  Process: hBertiniCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for proton
+
+  Process: hadElastic
+        Model:             hElasticCHIPS: 0 eV  ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+  Process: protonInelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for triton
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+  Process: tInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+================================================================
+=======================================================================
+======       Pre-compound/De-excitation Physics Parameters     ========
+=======================================================================
+Type of pre-compound inverse x-section              3
+Pre-compound model active                           1
+Pre-compound excitation low energy (MeV)            0.1
+Pre-compound excitation high energy (MeV)           100
+Type of de-excitation inverse x-section             3
+Type of de-excitation factory                       Evaporation+GEM
+Number of de-excitation channels                    68
+Min excitation energy (keV)                         0.01
+Min energy per nucleon for multifragmentation (MeV) 2e+05
+Limit excitation energy for Fermi BreakUp (MeV)     20
+Level density (1/MeV)                               0.075
+Model of level density flag                         1
+Time limit for long lived isomeres (ns)             1e+12
+Internal e- conversion flag                         1
+Store e- internal conversion data                   0
+Electron internal conversion ID                     2
+Correlated gamma emission flag                      0
+Max 2J for sampling of angular correlations         10
+=======================================================================
+G4VisManager: Using G4TrajectoryDrawByCharge as fallback trajectory model.
+See commands in /vis/modeling/trajectories/ for other options.
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 -0.000253     36.2     60.4     1e+03   0.0138     70.4      70.4 WorldPhysical eBrem
+    2 -0.000405     38.7     64.5     1e+03  0.00221     4.77      75.2 WorldPhysical eIoni
+    3 0.000775       60      100     1e+03   0.0062     41.4       117 DriftChamberPhysical CoupledTransportation
+    4  -0.0159      217      362     1e+03  0.00978      306       423 DriftChamberPhysical eIoni
+    5   -0.023      540      900     1e+03   0.0175      627  1.05e+03 WorldPhysical CoupledTransportation
+    6  -0.0118      600    1e+03     1e+03   0.0219      117  1.17e+03     Crystal CoupledTransportation
+    7  -0.0118      600    1e+03         0    1e+03        0  1.17e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0159      217      362   0.00107        0        0         0 DriftChamberPhysical initStep
+    1   -0.185      217      362         0  0.00107    0.333     0.333 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.000405     38.7     64.5    0.0044        0        0         0 WorldPhysical initStep
+    1   -0.201     38.8     64.4         0   0.0044    0.612     0.612 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = gamma,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.000253     36.2     60.4   0.00616        0        0         0 WorldPhysical initStep
+    1 -0.00297       60      100   0.00616        0     46.2      46.2 DriftChamberPhysical CoupledTransportation
+    2  -0.0578      540      900   0.00616        0      933       979 WorldPhysical CoupledTransportation
+    3  -0.0647      600    1e+03   0.00616        0      117   1.1e+03     Crystal CoupledTransportation
+    4  -0.0647      600    1e+03         0  0.00501 0.000195   1.1e+03     Crystal GammaGeneralProc
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 2
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0647      600    1e+03   0.00115        0        0         0     Crystal initStep
+    1  -0.0647      600    1e+03         0  0.00115  6.6e-05   6.6e-05     Crystal eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1  -0.0001     9.45     15.8     1e+03  0.00595     18.4      18.4 WorldPhysical eIoni
+    2  0.00158     27.1     45.2     1e+03  0.00606     34.4      52.8 WorldPhysical eIoni
+    3   0.0129       60      100     1e+03    0.015     63.9       117 DriftChamberPhysical CoupledTransportation
+    4    0.106      274      457     1e+03    0.011      417       533 DriftChamberPhysical eIoni
+    5     0.23      540      900     1e+03   0.0118      516  1.05e+03 WorldPhysical CoupledTransportation
+    6    0.247      564      940     1e+03  0.00659     46.7   1.1e+03 WorldPhysical eIoni
+    7    0.276      587      978     1e+03   0.0106     43.9  1.14e+03 WorldPhysical eIoni
+    8    0.293      600    1e+03     1e+03  0.00561       26  1.17e+03     Crystal CoupledTransportation
+    9    0.293      600    1e+03         0    1e+03        0  1.17e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.276      587      978   0.00303        0        0         0 WorldPhysical initStep
+    1    0.144      587      978         0  0.00303    0.321     0.321 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.247      564      940    0.0579        0        0         0 WorldPhysical initStep
+    1    -11.7      567      947      0.05    0.008     14.8      14.8 WorldPhysical eIoni
+    2    -18.5      571      954    0.0451  0.00489     11.7      26.5 WorldPhysical eIoni
+    3    -20.9      574      959    0.0379  0.00417     6.49        33 WorldPhysical eIoni
+    4    -23.1      574      964     0.028  0.00692     7.55      40.6 WorldPhysical eIoni
+    5    -24.8      576      968     0.023  0.00491     5.07      45.6 WorldPhysical eIoni
+    6    -24.3      573      969    0.0198  0.00322        4      49.6 WorldPhysical eIoni
+    7    -25.7      571      971    0.0165  0.00336     3.38        53 WorldPhysical eIoni
+    8    -26.4      570      969     0.012  0.00448     2.81      55.8 WorldPhysical eIoni
+    9    -26.9      569      968   0.00921  0.00278     2.13      57.9 WorldPhysical eIoni
+   10    -27.1      568      968   0.00548  0.00372     1.71      59.7 WorldPhysical eIoni
+   11    -27.1      568      968         0  0.00548    0.903      60.6 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 8,   Parent ID = 5
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    -23.1      574      964   0.00297        0        0         0 WorldPhysical initStep
+    1      -23      574      965         0  0.00297     0.31      0.31 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 7,   Parent ID = 5
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    -20.9      574      959   0.00304        0        0         0 WorldPhysical initStep
+    1    -20.8      574      959         0  0.00304    0.321     0.321 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.106      274      457   0.00136        0        0         0 DriftChamberPhysical initStep
+    1   -0.212      274      457         0  0.00136    0.485     0.485 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00158     27.1     45.2   0.00791        0        0         0 WorldPhysical initStep
+    1   -0.309     26.9     45.5   0.00461  0.00167    0.611     0.611 WorldPhysical eIoni
+    2   -0.393     26.7     45.7         0  0.00461    0.663      1.27 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 9,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.309     26.9     45.5   0.00164        0        0         0 WorldPhysical initStep
+    1   -0.283     26.8     45.4         0  0.00164    0.118     0.118 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0001     9.45     15.8   0.00111        0        0         0 WorldPhysical initStep
+    1   0.0241     9.46     15.8         0  0.00111   0.0662    0.0662 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1  0.00013     3.17     5.28     1e+03 0.000565     6.16      6.16 WorldPhysical eIoni
+    2   0.0122     59.8     99.7     1e+03   0.0204      110       116 WorldPhysical eIoni
+    3   0.0122       60      100     1e+03 4.02e-05    0.345       117 DriftChamberPhysical CoupledTransportation
+    4  -0.0601      470      784     1e+03   0.0256      798       914 DriftChamberPhysical eIoni
+    5  -0.0803      540      900     1e+03  0.00604      135  1.05e+03 WorldPhysical CoupledTransportation
+    6  -0.0828      582      970     1e+03   0.0168     81.7  1.13e+03 WorldPhysical eIoni
+    7  -0.0849      600    1e+03     1e+03  0.00832     34.9  1.17e+03     Crystal CoupledTransportation
+    8  -0.0849      600    1e+03         0    1e+03        0  1.17e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0828      582      970     0.016        0        0         0 WorldPhysical initStep
+    1     1.21      581      971    0.0113   0.0047     2.74      2.74 WorldPhysical eIoni
+    2      2.2      581      971   0.00561  0.00205     1.31      4.05 WorldPhysical eIoni
+    3     2.55      581      971         0  0.00561    0.941      4.99 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 5
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0      2.2      581      971   0.00364        0        0         0 WorldPhysical initStep
+    1     2.19      581      971         0  0.00364    0.439     0.439 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0601      470      784   0.00353        0        0         0 DriftChamberPhysical initStep
+    1     1.34      470      784   0.00251  0.00102     1.76      1.76 DriftChamberPhysical eIoni
+    2     1.89      470      784         0  0.00251     1.27      3.03 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0122     59.8     99.7   0.00208        0        0         0 WorldPhysical initStep
+    1   0.0697     59.8     99.7         0  0.00208    0.172     0.172 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00013     3.17     5.28   0.00132        0        0         0 WorldPhysical initStep
+    1   -0.025     3.15     5.29         0  0.00132   0.0853    0.0853 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1  0.00122     22.1     36.9     1e+03   0.0109       43        43 WorldPhysical eIoni
+    2  0.00795       60      100     1e+03    0.017     73.6       117 DriftChamberPhysical CoupledTransportation
+    3  0.00576     66.4      111     1e+03 0.000807     12.5       129 DriftChamberPhysical eIoni
+    4   -0.199      540      900     1e+03    0.025      920  1.05e+03 WorldPhysical CoupledTransportation
+    5   -0.217      571      952     1e+03   0.0131     60.1  1.11e+03 WorldPhysical eIoni
+    6   -0.233      600    1e+03     1e+03   0.0159     56.5  1.17e+03     Crystal CoupledTransportation
+    7   -0.233      600    1e+03         0    1e+03        0  1.17e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.217      571      952   0.00337        0        0         0 WorldPhysical initStep
+    1   -0.158      571      951         0  0.00337    0.384     0.384 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00576     66.4      111   0.00253        0        0         0 DriftChamberPhysical initStep
+    1    0.916     66.7      111         0  0.00253     1.28      1.28 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00122     22.1     36.9    0.0017        0        0         0 WorldPhysical initStep
+    1 -0.00655     22.1     36.9         0   0.0017    0.126     0.126 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1  8.5e-06     3.66      6.1     1e+03  0.00109     7.12      7.12 WorldPhysical eIoni
+    2  -0.0126       60      100     1e+03    0.023      110       117 DriftChamberPhysical CoupledTransportation
+    3   -0.195      540      900     1e+03   0.0322      933  1.05e+03 WorldPhysical CoupledTransportation
+    4     -0.2      553      922     1e+03  0.00473     25.1  1.07e+03 WorldPhysical eIoni
+    5    -0.21      573      955     1e+03   0.0108     38.5  1.11e+03 WorldPhysical eIoni
+    6   -0.223      600    1e+03     1e+03   0.0114       53  1.17e+03     Crystal CoupledTransportation
+    7   -0.223      600    1e+03         0    1e+03        0  1.17e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    -0.21      573      955   0.00192        0        0         0 WorldPhysical initStep
+    1   -0.215      573      955         0  0.00192    0.152     0.152 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     -0.2      553      922   0.00219        0        0         0 WorldPhysical initStep
+    1   -0.133      553      922         0  0.00219    0.187     0.187 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  8.5e-06     3.66      6.1    0.0141        0        0         0 WorldPhysical initStep
+    1     1.64     3.48     6.44   0.00896  0.00514     2.44      2.44 WorldPhysical eIoni
+    2    0.843     3.09     6.59   0.00267   0.0063     1.67      4.11 WorldPhysical eIoni
+    3    0.836     3.09     6.56   0.00151  2.9e-05   0.0289      4.14 WorldPhysical eIoni
+    4    0.846     3.07     6.53         0  0.00151    0.104      4.25 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 2
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.836     3.09     6.56   0.00113        0        0         0 WorldPhysical initStep
+    1    0.821     3.11     6.55         0  0.00113   0.0679    0.0679 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 -0.00881     25.5     84.9     1e+03   0.0124     88.6      88.6 WorldPhysical eIoni
+    2  -0.0111       30      100     1e+03   0.0029     15.8       104 DriftChamberPhysical CoupledTransportation
+    3  -0.0224       56      187     1e+03  0.00232     90.5       195 DriftChamberPhysical eIoni
+    4  -0.0415      147      491     1e+03  0.00715      318       513 DriftChamberPhysical eIoni
+    5  -0.0699      270      900     1e+03   0.0111      426       940 WorldPhysical CoupledTransportation
+    6  -0.0825      300    1e+03     1e+03   0.0183      104  1.04e+03     Crystal CoupledTransportation
+    7  -0.0825      300    1e+03         0    1e+03        0  1.04e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0415      147      491   0.00188        0        0         0 DriftChamberPhysical initStep
+    1 -0.00912      148      491         0  0.00188    0.825     0.825 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0224       56      187    0.0024        0        0         0 DriftChamberPhysical initStep
+    1   -0.631     56.6      187         0   0.0024     1.21      1.21 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.00881     25.5     84.9   0.00183        0        0         0 WorldPhysical initStep
+    1 -0.00822     25.4     84.9         0  0.00183     0.14      0.14 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 -1.33e-06     1.25     4.18     1e+03 0.000229     4.36      4.36 WorldPhysical eIoni
+    2 -0.00212       30      100     1e+03   0.0186      100       104 DriftChamberPhysical CoupledTransportation
+    3   0.0137     51.4      171     1e+03  0.00342     74.6       179 DriftChamberPhysical eIoni
+    4    0.197      270      900     1e+03   0.0206      761       940 WorldPhysical CoupledTransportation
+    5     0.23      300    1e+03     1e+03   0.0161      104  1.04e+03     Crystal CoupledTransportation
+    6     0.23      300    1e+03         0    1e+03        0  1.04e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0137     51.4      171   0.00239        0        0         0 DriftChamberPhysical initStep
+    1   -0.256     50.6      172         0  0.00239      1.2       1.2 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -1.33e-06     1.25     4.18   0.00113        0        0         0 WorldPhysical initStep
+    1   0.0131     1.27     4.17         0  0.00113   0.0677    0.0677 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0       30      100     1e+03   0.0194      104       104 DriftChamberPhysical CoupledTransportation
+    2   0.0787      270      900     1e+03   0.0217      835       940 WorldPhysical CoupledTransportation
+    3   0.0785      270      902     1e+03  0.00028     1.96       942 WorldPhysical eIoni
+    4   0.0778      272      908     1e+03  0.00167     6.44       948 WorldPhysical eIoni
+    5   0.0672      300    1e+03     1e+03   0.0205       96  1.04e+03     Crystal CoupledTransportation
+    6   0.0672      300    1e+03         0    1e+03        0  1.04e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0778      272      908   0.00382        0        0         0 WorldPhysical initStep
+    1   0.0623      272      908         0  0.00382    0.477     0.477 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0785      270      902   0.00305        0        0         0 WorldPhysical initStep
+    1    0.196      270      902         0  0.00305    0.325     0.325 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0       30      100     1e+03   0.0195      104       104 DriftChamberPhysical CoupledTransportation
+    2   -0.184      270      900     1e+03   0.0259      835       940 WorldPhysical CoupledTransportation
+    3   -0.201      300    1e+03     1e+03   0.0165      104  1.04e+03     Crystal CoupledTransportation
+    4   -0.201      300    1e+03         0    1e+03        0  1.04e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1   0.0163     26.4       88     1e+03   0.0164     91.9      91.9 WorldPhysical eIoni
+    2   0.0207     29.7     98.9     1e+03  0.00231     11.4       103 WorldPhysical eIoni
+    3   0.0209     29.8     99.5     1e+03        0    0.585       104 WorldPhysical eIoni
+    4   0.0212       30      100     1e+03        0    0.557       104 DriftChamberPhysical CoupledTransportation
+    5    0.376      270      900     1e+03    0.025      835       940 WorldPhysical CoupledTransportation
+    6    0.384      275      919     1e+03  0.00564     19.4       959 WorldPhysical eIoni
+    7    0.418      300    1e+03     1e+03   0.0179       85  1.04e+03     Crystal CoupledTransportation
+    8    0.418      300    1e+03         0    1e+03        0  1.04e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.384      275      919   0.00102        0        0         0 WorldPhysical initStep
+    1    0.395      275      919         0  0.00102   0.0583    0.0583 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0209     29.8     99.5   0.00139        0        0         0 WorldPhysical initStep
+    1  -0.0146     29.8     99.5         0  0.00139   0.0922    0.0922 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0207     29.7     98.9   0.00124        0        0         0 WorldPhysical initStep
+    1  0.00631     29.6     98.9         0  0.00124   0.0783    0.0783 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0163     26.4       88   0.00381        0        0         0 WorldPhysical initStep
+    1   -0.098     26.5       88         0  0.00381    0.475     0.475 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 -0.000682    -16.7     55.7     1e+03  0.00871     58.1      58.1 WorldPhysical eIoni
+    2 -0.000199      -30      100     1e+03   0.0101     46.3       104 DriftChamberPhysical CoupledTransportation
+    3  -0.0186     -204      679     1e+03   0.0165      605       709 DriftChamberPhysical eIoni
+    4  -0.0466     -270      900     1e+03  0.00602      230       940 WorldPhysical CoupledTransportation
+    5  -0.0549     -294      981     1e+03   0.0157     84.6  1.02e+03 WorldPhysical eIoni
+    6  -0.0558     -300    1e+03     1e+03  0.00523     19.8  1.04e+03     Crystal CoupledTransportation
+    7  -0.0558     -300    1e+03         0    1e+03        0  1.04e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0549     -294      981   0.00156        0        0         0 WorldPhysical initStep
+    1  -0.0399     -294      981         0  0.00156     0.11      0.11 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0186     -204      679     0.002        0        0         0 DriftChamberPhysical initStep
+    1    0.398     -203      679         0    0.002    0.913     0.913 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.000682    -16.7     55.7   0.00154        0        0         0 WorldPhysical initStep
+    1  -0.0387    -16.7     55.7         0  0.00154    0.107     0.107 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0      -30      100     1e+03   0.0227      104       104 DriftChamberPhysical CoupledTransportation
+    2 -0.00562    -52.8      176     1e+03  0.00155     79.5       184 DriftChamberPhysical eIoni
+    3  -0.0273     -203      676     1e+03   0.0135      522       706 DriftChamberPhysical eIoni
+    4   -0.027     -270      900     1e+03  0.00764      234       940 WorldPhysical CoupledTransportation
+    5  -0.0272     -300    1e+03     1e+03     0.02      104  1.04e+03     Crystal CoupledTransportation
+    6  -0.0272     -300    1e+03         0    1e+03        0  1.04e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0273     -203      676   0.00379        0        0         0 DriftChamberPhysical initStep
+    1    -1.21     -204      676   0.00195  0.00185     1.87      1.87 DriftChamberPhysical eIoni
+    2    -1.67     -204      676         0  0.00195    0.872      2.74 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.00562    -52.8      176   0.00998        0        0         0 DriftChamberPhysical initStep
+    1    -3.49    -50.2      177   0.00843  0.00155     4.79      4.79 DriftChamberPhysical eIoni
+    2    -4.72    -47.2      179   0.00687  0.00156     3.91       8.7 DriftChamberPhysical eIoni
+    3    -5.83    -45.2      181   0.00488  0.00199     3.13      11.8 DriftChamberPhysical eIoni
+    4    -6.91    -45.1      183   0.00273  0.00215     2.29      14.1 DriftChamberPhysical eIoni
+    5    -6.97    -44.7      184         0  0.00273     1.39      15.5 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 -0.000269    -5.08     16.9     1e+03  0.00217     17.7      17.7 WorldPhysical eIoni
+    2 -0.00653      -30      100     1e+03   0.0117     86.7       104 DriftChamberPhysical CoupledTransportation
+    3  -0.0108    -85.4      285     1e+03  0.00548      193       297 DriftChamberPhysical eIoni
+    4 -0.00795     -173      576     1e+03   0.0117      305       602 DriftChamberPhysical eIoni
+    5 -0.00277     -270      900     1e+03   0.0115      338       940 WorldPhysical CoupledTransportation
+    6 -0.00451     -300    1e+03     1e+03   0.0223      104  1.04e+03     Crystal CoupledTransportation
+    7 -0.00451     -300    1e+03         0    1e+03        0  1.04e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.00795     -173      576   0.00117        0        0         0 DriftChamberPhysical initStep
+    1     0.25     -173      576         0  0.00117    0.384     0.384 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0108    -85.4      285   0.00117        0        0         0 DriftChamberPhysical initStep
+    1    0.118    -85.6      285         0  0.00117    0.385     0.385 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.000269    -5.08     16.9   0.00748        0        0         0 WorldPhysical initStep
+    1    0.433    -5.58     16.8   0.00226  0.00523     1.41      1.41 WorldPhysical eIoni
+    2    0.388    -5.64     16.9         0  0.00226    0.196       1.6 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1  0.00403    -12.2     40.8     1e+03  0.00988     42.6      42.6 WorldPhysical eIoni
+    2  0.00546    -20.2     67.4     1e+03  0.00491     27.8      70.4 WorldPhysical eIoni
+    3   0.0101      -30      100     1e+03  0.00813       34       104 DriftChamberPhysical CoupledTransportation
+    4   0.0344     -130      434     1e+03  0.00977      349       453 DriftChamberPhysical eIoni
+    5   0.0752     -270      900     1e+03   0.0135      487       940 WorldPhysical CoupledTransportation
+    6   0.0815     -287      956     1e+03   0.0162     58.3       998 WorldPhysical eIoni
+    7   0.0811     -298      993     1e+03  0.00719     38.6  1.04e+03 WorldPhysical eIoni
+    8   0.0828     -300    1e+03     1e+03  0.00355      7.5  1.04e+03     Crystal CoupledTransportation
+    9   0.0828     -300    1e+03         0    1e+03        0  1.04e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0811     -298      993    0.0612        0        0         0 WorldPhysical initStep
+    1   -0.606     -298      993    0.0551 0.000144    0.723     0.723 WorldPhysical eIoni
+    2    -12.5     -301      997    0.0477  0.00737     13.6      14.4 WorldPhysical eIoni
+    3    -16.4     -300      998    0.0419  0.00407     4.13      18.5 WorldPhysical eIoni
+    4    -19.4     -301    1e+03    0.0403  0.00158     4.11      22.6     Crystal CoupledTransportation
+    5    -19.4     -301    1e+03    0.0391  0.00125  0.00049      22.6     Crystal msc
+    6    -19.4     -301    1e+03    0.0369  0.00217 0.000527      22.6     Crystal msc
+    7    -19.4     -301    1e+03    0.0351   0.0018 0.000476      22.6     Crystal msc
+    8    -19.4     -301    1e+03    0.0345 0.000585 0.000569      22.6     Crystal msc
+    9    -19.4     -301    1e+03    0.0343 0.000224 0.000453      22.6     Crystal msc
+   10    -19.4     -301    1e+03     0.034 0.000325 0.000789      22.6     Crystal msc
+   11    -19.4     -301    1e+03    0.0309  0.00307  0.00111      22.6     Crystal msc
+   12    -19.4     -301    1e+03    0.0297  0.00118  0.00116      22.6     Crystal msc
+   13    -19.4     -301    1e+03    0.0288  0.00093  0.00114      22.6     Crystal msc
+   14    -19.4     -301    1e+03    0.0277  0.00109 0.000937      22.6     Crystal msc
+   15    -19.4     -301    1e+03    0.0245  0.00321   0.0012      22.6     Crystal msc
+   16    -19.4     -301    1e+03    0.0223  0.00219  0.00184      22.6     Crystal msc
+   17    -19.4     -301    1e+03    0.0219 0.000415 0.000931      22.6     Crystal msc
+   18    -19.4     -301    1e+03    0.0206  0.00132 0.000671      22.6     Crystal msc
+   19    -19.4     -301    1e+03    0.0187  0.00184 0.000444      22.6     Crystal msc
+   20    -19.4     -301    1e+03    0.0184 0.000359 0.000539      22.6     Crystal msc
+   21    -19.4     -301    1e+03    0.0179  0.00053 0.000446      22.6     Crystal msc
+   22    -19.4     -301    1e+03    0.0171 0.000732   0.0005      22.6     Crystal msc
+   23    -19.4     -301    1e+03    0.0158  0.00128 0.000575      22.6     Crystal msc
+   24    -19.4     -301    1e+03    0.0153 0.000527 0.000515      22.6     Crystal msc
+   25    -19.4     -301    1e+03    0.0116   0.0037 0.000531      22.6     Crystal msc
+   26    -19.4     -301    1e+03   0.00949  0.00213 0.000497      22.6     Crystal msc
+   27    -19.4     -301    1e+03   0.00695  0.00254 0.000557      22.6     Crystal msc
+   28    -19.4     -301    1e+03   0.00558  0.00137 0.000513      22.6     Crystal msc
+   29    -19.4     -301    1e+03   0.00229  0.00329 0.000555      22.6     Crystal msc
+   30    -19.4     -301    1e+03         0  0.00229 0.000165      22.6     Crystal eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 8,   Parent ID = 6
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    -16.4     -300      998   0.00169        0        0         0 WorldPhysical initStep
+    1    -16.4     -300      998         0  0.00169    0.124     0.124 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 7,   Parent ID = 6
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.606     -298      993     0.006        0        0         0 WorldPhysical initStep
+    1   -0.636     -298      993         0    0.006     1.06      1.06 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0815     -287      956   0.00859        0        0         0 WorldPhysical initStep
+    1    0.185     -287      956   0.00672 0.000252    0.178     0.178 WorldPhysical eIoni
+    2    0.322     -286      956   0.00294  0.00378     1.24      1.42 WorldPhysical eIoni
+    3    0.369     -286      956         0  0.00294    0.304      1.72 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 9,   Parent ID = 5
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.185     -287      956   0.00162        0        0         0 WorldPhysical initStep
+    1    0.229     -287      956         0  0.00162    0.117     0.117 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0344     -130      434   0.00139        0        0         0 DriftChamberPhysical initStep
+    1    0.352     -130      434         0  0.00139    0.504     0.504 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00546    -20.2     67.4   0.00487        0        0         0 WorldPhysical initStep
+    1   -0.295    -20.1     67.4         0  0.00487    0.731     0.731 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00403    -12.2     40.8   0.00343        0        0         0 WorldPhysical initStep
+    1    0.119    -12.3     40.7         0  0.00343    0.396     0.396 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 -2.35e-05   -0.971     3.24     1e+03  0.00134     3.38      3.38 WorldPhysical eIoni
+    2 -0.00132    -13.3     44.3     1e+03  0.00819     42.8      46.2 WorldPhysical eIoni
+    3 -0.00202      -26     86.8     1e+03  0.00852     44.4      90.7 WorldPhysical eIoni
+    4 -0.000416      -30      100     1e+03  0.00455     13.7       104 DriftChamberPhysical CoupledTransportation
+    5   0.0133     -121      404     1e+03  0.00905      318       422 DriftChamberPhysical eIoni
+    6   0.0115     -270      900     1e+03   0.0174      517       940 WorldPhysical CoupledTransportation
+    7    0.009     -278      929     1e+03  0.00627     29.9       969 WorldPhysical eIoni
+    8  0.00568     -286      952     1e+03  0.00464     24.9       994 WorldPhysical eIoni
+    9 -0.00118     -299      996     1e+03   0.0104     45.8  1.04e+03 WorldPhysical eIoni
+   10 -0.00192     -300    1e+03     1e+03 0.000857     3.85  1.04e+03     Crystal CoupledTransportation
+   11 -0.00192     -300    1e+03         0    1e+03        0  1.04e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 8,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.00118     -299      996   0.00103        0        0         0 WorldPhysical initStep
+    1   0.0024     -299      996         0  0.00103   0.0598    0.0598 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 7,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00568     -286      952   0.00221        0        0         0 WorldPhysical initStep
+    1 -0.00156     -286      952   0.00105  0.00116   0.0871    0.0871 WorldPhysical eIoni
+    2  -0.0148     -286      952         0  0.00105   0.0613     0.148 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.009     -278      929   0.00287        0        0         0 WorldPhysical initStep
+    1  -0.0915     -278      929         0  0.00287    0.293     0.293 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0133     -121      404   0.00588        0        0         0 DriftChamberPhysical initStep
+    1    0.391     -119      405   0.00286  0.00303      2.7       2.7 DriftChamberPhysical eIoni
+    2    0.376     -118      406         0  0.00286     1.46      4.16 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.00202      -26     86.8   0.00113        0        0         0 WorldPhysical initStep
+    1  -0.0279      -26     86.8         0  0.00113   0.0683    0.0683 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.00132    -13.3     44.3   0.00233        0        0         0 WorldPhysical initStep
+    1   0.0747    -13.2     44.3         0  0.00233    0.207     0.207 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -2.35e-05   -0.971     3.24   0.00169        0        0         0 WorldPhysical initStep
+    1   0.0361       -1     3.23         0  0.00169    0.124     0.124 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 -0.00622    -25.2       42     1e+03   0.0107       49        49 WorldPhysical eIoni
+    2  -0.0206    -55.7     92.9     1e+03   0.0134     59.3       108 WorldPhysical eIoni
+    3  -0.0227      -60      100     1e+03  0.00333     8.33       117 DriftChamberPhysical CoupledTransportation
+    4     -0.3     -540      900     1e+03   0.0289      933  1.05e+03 WorldPhysical CoupledTransportation
+    5    -0.32     -599      999     1e+03   0.0235      116  1.17e+03 WorldPhysical eIoni
+    6   -0.319     -599    1e+03     1e+03 0.000375    0.896  1.17e+03     Crystal CoupledTransportation
+    7   -0.319     -599    1e+03         0    1e+03        0  1.17e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    -0.32     -599      999   0.00496        0        0         0 WorldPhysical initStep
+    1    -0.63     -599      999         0  0.00496    0.756     0.756 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0206    -55.7     92.9   0.00146        0        0         0 WorldPhysical initStep
+    1   0.0108    -55.7     92.9         0  0.00146   0.0994    0.0994 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.00622    -25.2       42   0.00156        0        0         0 WorldPhysical initStep
+    1   0.0175    -25.2       42         0  0.00156     0.11      0.11 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 -0.00133    -35.8     59.6     1e+03   0.0105     69.5      69.5 WorldPhysical eIoni
+    2 -0.00575      -60      100     1e+03  0.00888     47.1       117 DriftChamberPhysical CoupledTransportation
+    3 -0.00619    -68.8      115     1e+03 0.000917     17.1       134 DriftChamberPhysical eIoni
+    4    0.143     -540      900     1e+03   0.0327      916  1.05e+03 WorldPhysical CoupledTransportation
+    5    0.155     -584      973     1e+03    0.018     85.1  1.13e+03 WorldPhysical eIoni
+    6    0.159     -596      993     1e+03   0.0037     23.6  1.16e+03 WorldPhysical eIoni
+    7    0.161     -600    1e+03     1e+03  0.00133     7.88  1.17e+03     Crystal CoupledTransportation
+    8    0.161     -600    1e+03         0    1e+03        0  1.17e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.159     -596      993   0.00231        0        0         0 WorldPhysical initStep
+    1    0.224     -596      993         0  0.00231    0.204     0.204 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.155     -584      973   0.00483        0        0         0 WorldPhysical initStep
+    1    0.115     -584      973         0  0.00483     0.72      0.72 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.00619    -68.8      115    0.0543        0        0         0 DriftChamberPhysical initStep
+    1    -44.9    -32.6      162    0.0476  0.00677     75.7      75.7 DriftChamberPhysical eIoni
+    2    -60.1    -19.6      174    0.0445  0.00138     23.7      99.4 DriftChamberPhysical eIoni
+    3    -94.6    -9.94      212    0.0379  0.00654       53       152 DriftChamberPhysical eIoni
+    4     -114    -9.23      241    0.0327  0.00383     35.8       188 DriftChamberPhysical eIoni
+    5     -128    -10.3      263    0.0277  0.00401     25.8       214 DriftChamberPhysical eIoni
+    6     -141    -14.3      280    0.0253  0.00239     23.1       237 DriftChamberPhysical eIoni
+    7     -154    -23.2      291    0.0226  0.00267     19.8       257 DriftChamberPhysical eIoni
+    8     -159    -30.8      303    0.0178  0.00484     16.4       273 DriftChamberPhysical eIoni
+    9     -162    -35.7      311    0.0146   0.0013     10.2       284 DriftChamberPhysical eIoni
+   10     -161      -36      319    0.0128  0.00181     8.16       292 DriftChamberPhysical eIoni
+   11     -159    -37.7      325    0.0109  0.00195     6.72       298 DriftChamberPhysical eIoni
+   12     -158    -38.9      329    0.0088  0.00207     5.36       304 DriftChamberPhysical eIoni
+   13     -157    -40.1      333   0.00811 0.000682     4.11       308 DriftChamberPhysical eIoni
+   14     -155    -41.2      336   0.00615  0.00196     3.74       312 DriftChamberPhysical eIoni
+   15     -154    -41.7      336   0.00389 0.000622     1.51       313 DriftChamberPhysical eIoni
+   16     -153    -42.6      337   0.00245  0.00143      1.9       315 DriftChamberPhysical eIoni
+   17     -153    -43.1      338         0  0.00245     1.24       316 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 10,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     -154    -41.7      336   0.00164        0        0         0 DriftChamberPhysical initStep
+    1     -153    -41.7      336         0  0.00164    0.658     0.658 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 9,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     -162    -35.7      311   0.00186        0        0         0 DriftChamberPhysical initStep
+    1     -162    -35.3      311         0  0.00186    0.807     0.807 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 8,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     -128    -10.3      263   0.00102        0        0         0 DriftChamberPhysical initStep
+    1     -128    -10.1      263         0  0.00102    0.311     0.311 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 7,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     -114    -9.23      241    0.0014        0        0         0 DriftChamberPhysical initStep
+    1     -114    -8.88      241         0   0.0014    0.508     0.508 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    -60.1    -19.6      174    0.0017        0        0         0 DriftChamberPhysical initStep
+    1    -60.3    -19.3      174         0   0.0017    0.696     0.696 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.00133    -35.8     59.6   0.00357        0        0         0 WorldPhysical initStep
+    1   0.0765    -35.9     59.5         0  0.00357    0.426     0.426 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 -0.000874    -7.31     12.2     1e+03  0.00522     14.2      14.2 WorldPhysical eIoni
+    2  -0.0204    -52.2     87.1     1e+03   0.0127     87.3       102 WorldPhysical eIoni
+    3  -0.0228    -56.5     94.2     1e+03  0.00324     8.33       110 WorldPhysical eIoni
+    4  -0.0267      -60      100     1e+03   0.0013     6.75       117 DriftChamberPhysical CoupledTransportation
+    5   -0.671     -531      886     1e+03   0.0264      916  1.03e+03 DriftChamberPhysical eIoni
+    6   -0.684     -540      900     1e+03 0.000328     16.8  1.05e+03 WorldPhysical CoupledTransportation
+    7   -0.769     -600    1e+03     1e+03   0.0212      117  1.17e+03     Crystal CoupledTransportation
+    8   -0.769     -600    1e+03         0    1e+03        0  1.17e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.671     -531      886   0.00146        0        0         0 DriftChamberPhysical initStep
+    1   -0.884     -531      886         0  0.00146    0.545     0.545 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0228    -56.5     94.2    0.0963        0        0         0 WorldPhysical initStep
+    1     17.6      -73     95.2    0.0872  0.00814     26.6      26.6 WorldPhysical eIoni
+    2     17.3    -76.4     95.4    0.0775 0.000459      3.4        30 WorldPhysical eIoni
+    3     17.5    -79.2     97.3    0.0682  0.00108      3.4      33.4 WorldPhysical eIoni
+    4       20    -84.5     99.3    0.0582  0.00237     6.53      39.9 WorldPhysical eIoni
+    5     23.9    -87.8      100    0.0548  0.00341     5.49      45.4 DriftChamberPhysical CoupledTransportation
+    6     77.9     -135      123    0.0492  0.00556     76.8       122 DriftChamberPhysical eIoni
+    7      106     -162      130    0.0384  0.00414       40       162 DriftChamberPhysical eIoni
+    8      106     -198      148    0.0345  0.00398       41       203 DriftChamberPhysical eIoni
+    9     81.4     -219      155     0.029  0.00541     33.8       237 DriftChamberPhysical eIoni
+   10     62.9     -224      161    0.0235  0.00177     20.2       257 DriftChamberPhysical eIoni
+   11     46.3     -222      157    0.0193  0.00414     17.4       275 DriftChamberPhysical eIoni
+   12     34.7     -219      155    0.0167  0.00262     12.6       287 DriftChamberPhysical eIoni
+   13     28.9     -218      154    0.0118  0.00186     6.17       293 DriftChamberPhysical eIoni
+   14       24     -215      155   0.00908  0.00271     5.98       299 DriftChamberPhysical eIoni
+   15     21.9     -212      156   0.00776  0.00132     4.27       304 DriftChamberPhysical eIoni
+   16     19.5     -210      158   0.00652  0.00124     3.56       307 DriftChamberPhysical eIoni
+   17     17.9     -208      158   0.00494  0.00159     2.97       310 DriftChamberPhysical eIoni
+   18     16.8     -206      158   0.00306  0.00188     2.31       312 DriftChamberPhysical eIoni
+   19     16.2     -205      158   0.00186   0.0012     1.56       314 DriftChamberPhysical eIoni
+   20       16     -205      157         0  0.00186    0.808       315 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 12,   Parent ID = 4
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     28.9     -218      154   0.00305        0        0         0 DriftChamberPhysical initStep
+    1     28.5     -218      153         0  0.00305     1.55      1.55 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 11,   Parent ID = 4
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     62.9     -224      161   0.00381        0        0         0 DriftChamberPhysical initStep
+    1     62.9     -224      162   0.00123  0.00258     1.87      1.87 DriftChamberPhysical eIoni
+    2     62.9     -224      163         0  0.00123    0.414      2.29 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 10,   Parent ID = 4
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0      106     -162      130   0.00665        0        0         0 DriftChamberPhysical initStep
+    1      108     -162      130   0.00482  0.00182     3.03      3.03 DriftChamberPhysical eIoni
+    2      110     -162      128   0.00378  0.00104     2.27       5.3 DriftChamberPhysical eIoni
+    3      111     -163      127   0.00282 0.000963     1.86      7.16 DriftChamberPhysical eIoni
+    4      110     -163      126   0.00106  0.00176     1.44       8.6 DriftChamberPhysical eIoni
+    5      110     -163      126         0  0.00106    0.326      8.93 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 9,   Parent ID = 4
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0       20    -84.5     99.3   0.00766        0        0         0 WorldPhysical initStep
+    1       20    -84.7     99.7   0.00629  0.00137    0.478     0.478 WorldPhysical msc
+    2       20    -84.9     99.7   0.00524  0.00106    0.194     0.672 WorldPhysical msc
+    3       20    -84.9     99.9   0.00455 0.000691    0.187      0.86 WorldPhysical msc
+    4     19.9      -85     99.9   0.00434 0.000203    0.083     0.943 WorldPhysical msc
+    5     19.8      -85     99.9   0.00391 0.000432    0.078      1.02 WorldPhysical msc
+    6     19.8      -85      100   0.00345 0.000459   0.0997      1.12 WorldPhysical msc
+    7     19.7      -85      100   0.00322 0.000231   0.0855      1.21 DriftChamberPhysical CoupledTransportation
+    8     19.4    -85.1      101   0.00212   0.0011     0.83      2.04 DriftChamberPhysical msc
+    9     19.5      -85      101   0.00134 0.000781    0.821      2.86 DriftChamberPhysical msc
+   10     19.8      -85      102         0  0.00134    0.476      3.33 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 8,   Parent ID = 4
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     17.5    -79.2     97.3   0.00818        0        0         0 WorldPhysical initStep
+    1     16.8    -79.3     97.8   0.00447  0.00371     1.54      1.54 WorldPhysical eIoni
+    2     16.8    -79.2       98   0.00234  0.00213    0.565       2.1 WorldPhysical eIoni
+    3     16.7    -79.2       98         0  0.00234    0.208      2.31 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 7,   Parent ID = 4
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     17.3    -76.4     95.4   0.00923        0        0         0 WorldPhysical initStep
+    1     16.6    -76.7     94.9   0.00321  0.00602     1.71      1.71 WorldPhysical eIoni
+    2     16.5    -76.8       95         0  0.00321    0.354      2.07 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 4
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     17.6      -73     95.2   0.00103        0        0         0 WorldPhysical initStep
+    1     17.6      -73     95.3         0  0.00103   0.0597    0.0597 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0204    -52.2     87.1   0.00299        0        0         0 WorldPhysical initStep
+    1   0.0514    -52.3       87         0  0.00299    0.313     0.313 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.000874    -7.31     12.2   0.00271        0        0         0 WorldPhysical initStep
+    1   0.0321     -7.4     12.1         0  0.00271    0.265     0.265 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 0.000201    -14.5     24.2     1e+03   0.0031     28.2      28.2 WorldPhysical eIoni
+    2  0.00049    -19.8       33     1e+03   0.0023     10.3      38.5 WorldPhysical eBrem
+    3 -0.00105    -41.9     69.8     1e+03   0.0112     42.9      81.4 WorldPhysical eIoni
+    4 -0.00624      -60      100     1e+03  0.00579     35.2       117 DriftChamberPhysical CoupledTransportation
+    5   -0.199     -540      900     1e+03   0.0283      933  1.05e+03 WorldPhysical CoupledTransportation
+    6   -0.201     -547      912     1e+03  0.00184     14.5  1.06e+03 WorldPhysical eIoni
+    7   -0.228     -600    1e+03     1e+03   0.0183      102  1.17e+03     Crystal CoupledTransportation
+    8   -0.228     -600    1e+03         0    1e+03        0  1.17e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.201     -547      912   0.00406        0        0         0 WorldPhysical initStep
+    1  -0.0752     -547      912         0  0.00406     0.53      0.53 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.00105    -41.9     69.8    0.0418        0        0         0 WorldPhysical initStep
+    1     3.72    -49.3     69.1    0.0347  0.00715     8.91      8.91 WorldPhysical eIoni
+    2     8.25    -52.5     69.7    0.0292  0.00546     6.78      15.7 WorldPhysical eIoni
+    3        8    -55.5     72.9    0.0256  0.00359     5.37      21.1 WorldPhysical eIoni
+    4     7.29    -58.4       75    0.0217  0.00395     4.55      25.6 WorldPhysical eIoni
+    5     8.53    -60.7     76.3    0.0177  0.00403     3.73      29.3 WorldPhysical eIoni
+    6     8.03    -62.4     77.7    0.0138  0.00386     3.01      32.4 WorldPhysical eIoni
+    7     8.38    -63.5     78.7    0.0103  0.00246     2.19      34.5 WorldPhysical eIoni
+    8     8.09    -62.5       79   0.00851  0.00184     1.89      36.4 WorldPhysical eIoni
+    9      8.7    -61.9     78.9   0.00213  0.00638      1.6        38 WorldPhysical eIoni
+   10     8.68      -62       79         0  0.00213    0.179      38.2 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 4
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     8.38    -63.5     78.7   0.00101        0        0         0 WorldPhysical initStep
+    1     8.36    -63.5     78.7         0  0.00101   0.0579    0.0579 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = gamma,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00049    -19.8       33    0.0226        0        0         0 WorldPhysical initStep
+    1 -0.00679    -59.8      100    0.0226        0       78        78 DriftChamberPhysical CoupledTransportation
+    2  -0.0937     -538      900    0.0226        0      932  1.01e+03 WorldPhysical CoupledTransportation
+    3   -0.105     -598    1e+03    0.0226        0      116  1.13e+03     Crystal CoupledTransportation
+    4   -0.105     -598    1e+03         0  0.00568    0.242  1.13e+03     Crystal GammaGeneralProc
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 7,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.105     -598    1e+03    0.0169        0        0         0     Crystal initStep
+    1   -0.105     -598    1e+03         0   0.0169  0.00321   0.00321     Crystal eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 0.000201    -14.5     24.2   0.00143        0        0         0 WorldPhysical initStep
+    1  -0.0368    -14.5     24.2         0  0.00143   0.0968    0.0968 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 8.54e-05    -4.95     8.24     1e+03  0.00132     9.61      9.61 WorldPhysical eIoni
+    2  0.00112    -22.5     37.5     1e+03  0.00527     34.1      43.7 WorldPhysical eIoni
+    3  0.00362    -54.1     90.3     1e+03   0.0144     61.5       105 WorldPhysical eIoni
+    4  0.00314      -60      100     1e+03  0.00202     11.4       117 DriftChamberPhysical CoupledTransportation
+    5  0.00099    -75.6      126     1e+03 0.000909     30.3       147 DriftChamberPhysical eIoni
+    6 -0.00392     -135      225     1e+03  0.00405      115       262 DriftChamberPhysical eIoni
+    7  -0.0131     -208      347     1e+03  0.00244      142       404 DriftChamberPhysical eIoni
+    8  -0.0208     -280      467     1e+03  0.00462      141       545 DriftChamberPhysical eIoni
+    9  -0.0367     -540      900     1e+03   0.0154      505  1.05e+03 WorldPhysical CoupledTransportation
+   10  -0.0436     -600    1e+03     1e+03   0.0179      117  1.17e+03     Crystal CoupledTransportation
+   11  -0.0436     -600    1e+03         0    1e+03        0  1.17e+03     Crystal fastSimProcess_massGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 8,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0208     -280      467   0.00211        0        0         0 DriftChamberPhysical initStep
+    1   -0.347     -281      467         0  0.00211    0.995     0.995 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 7,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0131     -208      347   0.00158        0        0         0 DriftChamberPhysical initStep
+    1   0.0734     -208      347         0  0.00158    0.619     0.619 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.00392     -135      225   0.00148        0        0         0 DriftChamberPhysical initStep
+    1  -0.0286     -135      224         0  0.00148    0.555     0.555 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00099    -75.6      126   0.00168        0        0         0 DriftChamberPhysical initStep
+    1   -0.389    -75.8      126         0  0.00168    0.683     0.683 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00362    -54.1     90.3   0.00905        0        0         0 WorldPhysical initStep
+    1    0.637    -53.6     90.7   0.00399  0.00507     1.69      1.69 WorldPhysical eIoni
+    2    0.828    -53.6     90.6         0  0.00399    0.515       2.2 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00112    -22.5     37.5   0.00242        0        0         0 WorldPhysical initStep
+    1  -0.0493    -22.4     37.5         0  0.00242     0.22      0.22 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 8.54e-05    -4.95     8.24   0.00245        0        0         0 WorldPhysical initStep
+    1   0.0828    -4.98     8.23         0  0.00245    0.224     0.224 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0       60      100     1e+03   0.0174      117       117 DriftChamberPhysical CoupledTransportation
+    2   -0.205      540      900     1e+03   0.0189      933  1.05e+03 WorldPhysical CoupledTransportation
+    3   -0.219      570      950     1e+03  0.00608     58.3  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+    4   -0.219      570      950         0    1e+03        0  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0       60      100     1e+03    0.015      117       117 DriftChamberPhysical CoupledTransportation
+    2   -0.168      540      900     1e+03   0.0215      933  1.05e+03 WorldPhysical CoupledTransportation
+    3   -0.186      570      950     1e+03   0.0072     58.3  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+    4   -0.186      570      950         0    1e+03        0  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0       60      100     1e+03   0.0152      117       117 DriftChamberPhysical CoupledTransportation
+    2   -0.124      351      586     1e+03  0.00961      567       683 DriftChamberPhysical hIoni
+    3   -0.162      540      900     1e+03  0.00855      366  1.05e+03 WorldPhysical CoupledTransportation
+    4   -0.167      570      950     1e+03  0.00735     58.3  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+    5   -0.167      570      950         0    1e+03        0  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.124      351      586   0.00225        0        0         0 DriftChamberPhysical initStep
+    1   -0.885      351      586         0  0.00225     1.11      1.11 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0     45.6     76.1     1e+03   0.0128     88.7      88.7 WorldPhysical hIoni
+    2  0.00162       60      100     1e+03  0.00405     27.9       117 DriftChamberPhysical CoupledTransportation
+    3   0.0345      277      461     1e+03  0.00901      421       538 DriftChamberPhysical hIoni
+    4 -0.00124      540      900     1e+03   0.0104      512  1.05e+03 WorldPhysical CoupledTransportation
+    5  0.00502      570      950     1e+03   0.0132     58.3  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+    6  0.00502      570      950         0    1e+03        0  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0345      277      461     0.105        0        0         0 DriftChamberPhysical initStep
+    1      149      147      592    0.0909   0.0138      241       241 DriftChamberPhysical eIoni
+    2      193     75.6      649    0.0798  0.00546      102       343 DriftChamberPhysical eIoni
+    3      303     8.94      720    0.0718  0.00805      150       493 DriftChamberPhysical eIoni
+    4      325     1.67      727    0.0693 0.000481       24       517 DriftChamberPhysical eIoni
+    5      424     11.5      749    0.0627  0.00657      104       621 DriftChamberPhysical eIoni
+    6      437     12.7      754    0.0587  0.00127     13.5       634 DriftChamberPhysical eIoni
+    7      479     18.3      762    0.0539  0.00353     44.5       679 DriftChamberPhysical eIoni
+    8      543     51.4      779    0.0494  0.00455     74.7       754 DriftChamberPhysical eIoni
+    9      582     98.1      794    0.0431  0.00629     63.9       817 DriftChamberPhysical eIoni
+   10      628      104      805    0.0287  0.00576       48       865 DriftChamberPhysical eIoni
+   11      648     92.9      810    0.0257  0.00298     24.5       890 DriftChamberPhysical eIoni
+   12      666     87.7      817    0.0225  0.00321     20.3       910 DriftChamberPhysical eIoni
+   13      678     84.2      827    0.0202  0.00224     16.2       926 DriftChamberPhysical eIoni
+   14      686     81.7      837    0.0164  0.00386     13.6       940 DriftChamberPhysical eIoni
+   15      690     79.9      840    0.0159 0.000448     5.13       945 DriftChamberPhysical eIoni
+   16      695       75      845    0.0143  0.00164      9.3       955 DriftChamberPhysical eIoni
+   17      702     71.4      846     0.013  0.00131     7.89       962 DriftChamberPhysical eIoni
+   18      701     70.1      853    0.0105  0.00249     6.85       969 DriftChamberPhysical eIoni
+   19      699     67.4      856   0.00816  0.00233     5.11       974 DriftChamberPhysical eIoni
+   20      698     65.7      859   0.00691  0.00125     3.77       978 DriftChamberPhysical eIoni
+   21      698     64.3      862   0.00375  0.00316     3.15       981 DriftChamberPhysical eIoni
+   22      698     63.5      863   0.00164  0.00212     1.85       983 DriftChamberPhysical eIoni
+   23      698     63.5      863         0  0.00164    0.654       984 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 8,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0      628      104      805   0.00867        0        0         0 DriftChamberPhysical initStep
+    1      628      107      806   0.00722  0.00145     4.04      4.04 DriftChamberPhysical eIoni
+    2      629      108      807   0.00508 0.000715    0.674      4.71 DriftChamberPhysical eIoni
+    3      629      110      808   0.00327  0.00181     2.37      7.08 DriftChamberPhysical eIoni
+    4      629      111      808         0  0.00327     1.65      8.73 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 9,   Parent ID = 8
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0      629      108      807   0.00142        0        0         0 DriftChamberPhysical initStep
+    1      629      108      807         0  0.00142    0.523     0.523 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 7,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0      479     18.3      762   0.00121        0        0         0 DriftChamberPhysical initStep
+    1      480     18.1      762         0  0.00121    0.405     0.405 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0      437     12.7      754   0.00275        0        0         0 DriftChamberPhysical initStep
+    1      436     11.8      755         0  0.00275     1.41      1.41 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0      325     1.67      727     0.002        0        0         0 DriftChamberPhysical initStep
+    1      325     1.06      727         0    0.002    0.911     0.911 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0      193     75.6      649   0.00565        0        0         0 DriftChamberPhysical initStep
+    1      192     73.7      649   0.00472 0.000924      2.6       2.6 DriftChamberPhysical eIoni
+    2      192     71.7      649   0.00248  0.00224     2.23      4.83 DriftChamberPhysical eIoni
+    3      192     70.8      648         0  0.00248     1.25      6.08 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0     45.6     76.1    0.0106        0        0         0 WorldPhysical initStep
+    1    -1.12     45.5     76.3   0.00574  0.00486     1.93      1.93 WorldPhysical eIoni
+    2    -0.74     45.5     76.1         0  0.00574     0.98      2.91 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0       60      100     1e+03   0.0165      117       117 DriftChamberPhysical CoupledTransportation
+    2   0.0291      122      203     1e+03  0.00314      120       237 DriftChamberPhysical hIoni
+    3    0.194      540      900     1e+03    0.015      813  1.05e+03 WorldPhysical CoupledTransportation
+    4    0.195      543      904     1e+03  0.00164     5.22  1.05e+03 WorldPhysical hIoni
+    5    0.197      549      914     1e+03  0.00109     11.5  1.07e+03 WorldPhysical hIoni
+    6    0.199      553      921     1e+03  0.00133     7.58  1.07e+03 WorldPhysical hIoni
+    7    0.209      570      950     1e+03  0.00742     34.1  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+    8    0.209      570      950         0    1e+03        0  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.199      553      921   0.00163        0        0         0 WorldPhysical initStep
+    1    0.158      553      921         0  0.00163    0.118     0.118 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.197      549      914   0.00105        0        0         0 WorldPhysical initStep
+    1    0.176      549      914         0  0.00105   0.0612    0.0612 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.195      543      904   0.00439        0        0         0 WorldPhysical initStep
+    1    0.262      543      905         0  0.00439     0.61      0.61 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0291      122      203   0.00128        0        0         0 DriftChamberPhysical initStep
+    1    0.338      122      203         0  0.00128    0.443     0.443 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0       30      100     1e+03   0.0161      104       104 DriftChamberPhysical CoupledTransportation
+    2   0.0234      256      855     1e+03   0.0144      788       892 DriftChamberPhysical hIoni
+    3   0.0282      270      900     1e+03 0.000574     47.5       940 WorldPhysical CoupledTransportation
+    4   0.0335      285      950     1e+03  0.00829     52.2       992 WorldPhysical fastSimProcess_parallelGeom
+    5   0.0335      285      950         0    1e+03        0       992 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0234      256      855     0.002        0        0         0 DriftChamberPhysical initStep
+    1    0.656      256      855         0    0.002    0.912     0.912 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0       30      100     1e+03   0.0154      104       104 DriftChamberPhysical CoupledTransportation
+    2  -0.0507       69      230     1e+03  0.00377      136       240 DriftChamberPhysical hIoni
+    3   -0.167      160      533     1e+03  0.00501      316       556 DriftChamberPhysical hIoni
+    4   -0.309      231      771     1e+03  0.00572      248       804 DriftChamberPhysical hIoni
+    5   -0.387      270      900     1e+03  0.00309      135       940 WorldPhysical CoupledTransportation
+    6   -0.399      276      920     1e+03   0.0019     21.2       961 WorldPhysical hIoni
+    7   -0.417      285      950     1e+03  0.00746       31       992 WorldPhysical fastSimProcess_parallelGeom
+    8   -0.417      285      950         0    1e+03        0       992 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.399      276      920   0.00219        0        0         0 WorldPhysical initStep
+    1   -0.417      276      920         0  0.00219    0.187     0.187 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.309      231      771   0.00255        0        0         0 DriftChamberPhysical initStep
+    1   -0.439      232      770         0  0.00255     1.29      1.29 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.167      160      533    0.0226        0        0         0 DriftChamberPhysical initStep
+    1     12.5      169      532    0.0198  0.00284     16.4      16.4 DriftChamberPhysical eIoni
+    2     22.6      175      528    0.0173  0.00246     13.1      29.5 DriftChamberPhysical eIoni
+    3     29.4      178      521    0.0154  0.00193     10.6      40.1 DriftChamberPhysical eIoni
+    4     34.3      183      516    0.0132  0.00215     8.81      48.9 DriftChamberPhysical eIoni
+    5     39.6      186      515    0.0109  0.00235     7.04      55.9 DriftChamberPhysical eIoni
+    6       44      189      515   0.00932  0.00156     5.37      61.3 DriftChamberPhysical eIoni
+    7     47.1      192      515   0.00774  0.00159      4.4      65.7 DriftChamberPhysical eIoni
+    8     49.6      194      515   0.00575  0.00199     3.55      69.2 DriftChamberPhysical eIoni
+    9     51.2      195      514   0.00357  0.00108     2.23      71.5 DriftChamberPhysical eIoni
+   10     50.4      194      513   0.00215  0.00142     1.78      73.2 DriftChamberPhysical eIoni
+   11       50      195      513         0  0.00215     1.03      74.3 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     51.2      195      514   0.00109        0        0         0 DriftChamberPhysical initStep
+    1     51.3      195      514         0  0.00109    0.344     0.344 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0507       69      230   0.00761        0        0         0 DriftChamberPhysical initStep
+    1   -0.626     66.1      231   0.00671 0.000892     3.48      3.48 DriftChamberPhysical eIoni
+    2   -0.273     63.4      232   0.00588 0.000837     3.06      6.54 DriftChamberPhysical eIoni
+    3    0.704     61.2      232   0.00212  0.00375     2.69      9.24 DriftChamberPhysical eIoni
+    4    0.882     60.5      232         0  0.00212     1.01      10.2 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 -0.000419     5.03     16.8     1e+03  0.00156     17.5      17.5 WorldPhysical hIoni
+    2 -0.00097     11.5     38.3     1e+03  0.00187     22.4      39.9 WorldPhysical hIoni
+    3 0.000898       30      100     1e+03   0.0107     64.5       104 DriftChamberPhysical CoupledTransportation
+    4   0.0343      145      483     1e+03  0.00879      400       505 DriftChamberPhysical hIoni
+    5   0.0732      270      900     1e+03   0.0115      435       940 WorldPhysical CoupledTransportation
+    6   0.0802      283      944     1e+03  0.00989     45.6       985 WorldPhysical hIoni
+    7    0.081      285      950     1e+03  0.00071     6.65       992 WorldPhysical fastSimProcess_parallelGeom
+    8    0.081      285      950         0    1e+03        0       992 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0802      283      944    0.0032        0        0         0 WorldPhysical initStep
+    1    0.223      283      944         0   0.0032    0.352     0.352 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0343      145      483   0.00482        0        0         0 DriftChamberPhysical initStep
+    1    -1.78      144      484   0.00312   0.0017     2.27      2.27 DriftChamberPhysical eIoni
+    2    -2.81      144      484   0.00177  0.00135     1.59      3.85 DriftChamberPhysical eIoni
+    3    -3.24      144      485         0  0.00177    0.744       4.6 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.00097     11.5     38.3   0.00104        0        0         0 WorldPhysical initStep
+    1  -0.0149     11.5     38.3         0  0.00104   0.0602    0.0602 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.000419     5.03     16.8   0.00246        0        0         0 WorldPhysical initStep
+    1  -0.0527     4.96     16.8         0  0.00246    0.226     0.226 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0     28.6     95.3     1e+03    0.019     99.5      99.5 WorldPhysical hIoni
+    2 0.000121       30      100     1e+03  0.00106     4.95       104 DriftChamberPhysical CoupledTransportation
+    3  0.00933     90.7      302     1e+03  0.00341      211       316 DriftChamberPhysical hIoni
+    4   0.0201      137      456     1e+03  0.00225      160       476 DriftChamberPhysical hIoni
+    5   0.0631      270      900     1e+03   0.0112      464       940 WorldPhysical CoupledTransportation
+    6   0.0734      285      950     1e+03  0.00931     52.2       992 WorldPhysical fastSimProcess_parallelGeom
+    7   0.0734      285      950         0    1e+03        0       992 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0201      137      456   0.00106        0        0         0 DriftChamberPhysical initStep
+    1   -0.142      137      456         0  0.00106    0.326     0.326 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00933     90.7      302   0.00515        0        0         0 DriftChamberPhysical initStep
+    1    0.253     92.8      302   0.00374  0.00141      2.4       2.4 DriftChamberPhysical eIoni
+    2    0.883     94.2      302   0.00228  0.00146     1.85      4.24 DriftChamberPhysical eIoni
+    3     1.35     93.7      302         0  0.00228     1.12      5.36 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0     28.6     95.3   0.00454        0        0         0 WorldPhysical initStep
+    1    0.244     28.7     95.2         0  0.00454    0.645     0.645 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0       30      100     1e+03   0.0143      104       104 DriftChamberPhysical CoupledTransportation
+    2    0.021     61.9      206     1e+03  0.00195      111       216 DriftChamberPhysical hIoni
+    3    0.149      270      900     1e+03   0.0162      724       940 WorldPhysical CoupledTransportation
+    4    0.154      278      926     1e+03  0.00237     27.2       967 WorldPhysical hIoni
+    5    0.159      285      950     1e+03  0.00313       25       992 WorldPhysical fastSimProcess_parallelGeom
+    6    0.159      285      950         0    1e+03        0       992 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.154      278      926   0.00482        0        0         0 WorldPhysical initStep
+    1   -0.127      278      926         0  0.00482    0.717     0.717 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.021     61.9      206    0.0042        0        0         0 DriftChamberPhysical initStep
+    1    0.124     60.3      207   0.00264  0.00157     2.03      2.03 DriftChamberPhysical eIoni
+    2   -0.174     59.5      208         0  0.00264     1.34      3.37 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0    -18.2     60.7     1e+03   0.0108     63.4      63.4 WorldPhysical hIoni
+    2 -0.000259    -24.9     82.9     1e+03  0.00418     23.1      86.5 WorldPhysical hIoni
+    3 -0.000641      -30      100     1e+03  0.00168     17.9       104 DriftChamberPhysical CoupledTransportation
+    4  0.00401     -270      900     1e+03   0.0237      835       940 WorldPhysical CoupledTransportation
+    5   0.0079     -285      950     1e+03  0.00908     52.2       992 WorldPhysical fastSimProcess_parallelGeom
+    6   0.0079     -285      950         0    1e+03        0       992 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.000259    -24.9     82.9   0.00147        0        0         0 WorldPhysical initStep
+    1  -0.0156    -24.9     82.9         0  0.00147    0.101     0.101 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0    -18.2     60.7   0.00208        0        0         0 WorldPhysical initStep
+    1  -0.0499    -18.2     60.7         0  0.00208    0.173     0.173 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0    -28.3     94.5     1e+03    0.013     98.6      98.6 WorldPhysical hIoni
+    2 -0.000954    -29.8     99.2     1e+03 0.000767     4.96       104 WorldPhysical hIoni
+    3 -0.00106      -30      100     1e+03 0.000253    0.818       104 DriftChamberPhysical CoupledTransportation
+    4   -0.108     -270      900     1e+03   0.0154      835       940 WorldPhysical CoupledTransportation
+    5   -0.119     -285      950     1e+03   0.0107     52.2       992 WorldPhysical fastSimProcess_parallelGeom
+    6   -0.119     -285      950         0    1e+03        0       992 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -0.000954    -29.8     99.2   0.00669        0        0         0 WorldPhysical initStep
+    1   -0.342    -30.1     99.4   0.00479  0.00191    0.563     0.563 WorldPhysical msc
+    2   -0.538    -30.4     99.2   0.00363  0.00116    0.443      1.01 WorldPhysical msc
+    3   -0.672    -30.5     99.2         0  0.00363    0.436      1.44 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0    -28.3     94.5   0.00446        0        0         0 WorldPhysical initStep
+    1     0.24    -28.2     94.5         0  0.00446    0.627     0.627 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0      -30      100     1e+03   0.0166      104       104 DriftChamberPhysical CoupledTransportation
+    2  -0.0077    -47.6      159     1e+03  0.00145     61.2       166 DriftChamberPhysical hIoni
+    3  -0.0645     -270      900     1e+03   0.0172      774       939 WorldPhysical CoupledTransportation
+    4  -0.0717     -284      950     1e+03  0.00444     52.2       992 WorldPhysical fastSimProcess_parallelGeom
+    5  -0.0717     -284      950         0    1e+03        0       992 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0077    -47.6      159   0.00828        0        0         0 DriftChamberPhysical initStep
+    1    -2.34    -50.2      158   0.00693  0.00136     3.83      3.83 DriftChamberPhysical eIoni
+    2     -4.5    -52.2      158   0.00535  0.00158     3.16      6.99 DriftChamberPhysical eIoni
+    3       -6    -53.5      159   0.00251  0.00284     2.48      9.47 DriftChamberPhysical eIoni
+    4    -6.79    -53.9      159         0  0.00251     1.27      10.7 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1 -2.31e-06   -0.376     1.25     1e+03 5.01e-05     1.31      1.31 WorldPhysical hIoni
+    2 0.000304      -30      100     1e+03   0.0125      103       104 DriftChamberPhysical CoupledTransportation
+    3    0.109     -167      556     1e+03  0.00816      476       580 DriftChamberPhysical hIoni
+    4     0.12     -179      598     1e+03  0.00124     43.7       624 DriftChamberPhysical hIoni
+    5    0.214     -270      900     1e+03  0.00509      315       940 WorldPhysical CoupledTransportation
+    6    0.228     -285      950     1e+03   0.0073     52.2       992 WorldPhysical fastSimProcess_parallelGeom
+    7    0.228     -285      950         0    1e+03        0       992 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     0.12     -179      598    0.0152        0        0         0 DriftChamberPhysical initStep
+    1    -4.36     -173      601    0.0135  0.00175     8.69      8.69 DriftChamberPhysical eIoni
+    2    -8.44     -168      603    0.0124  0.00107     7.24      15.9 DriftChamberPhysical eIoni
+    3    -10.5     -162      604    0.0109  0.00148     6.43      22.4 DriftChamberPhysical eIoni
+    4    -11.3     -158      604   0.00871  0.00118     4.73      27.1 DriftChamberPhysical eIoni
+    5    -11.7     -154      605   0.00791 0.000795     4.06      31.2 DriftChamberPhysical eIoni
+    6    -11.9     -151      606   0.00599  0.00192     3.64      34.8 DriftChamberPhysical eIoni
+    7    -11.9     -150      606   0.00491 8.44e-05    0.524      35.3 DriftChamberPhysical eIoni
+    8    -12.9     -149      605   0.00387  0.00104      2.3      37.6 DriftChamberPhysical eIoni
+    9    -13.4     -148      605   0.00166  0.00104      1.3      38.9 DriftChamberPhysical eIoni
+   10    -13.4     -147      605         0  0.00166    0.671      39.6 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 7,   Parent ID = 4
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    -13.4     -148      605   0.00117        0        0         0 DriftChamberPhysical initStep
+    1    -13.2     -148      605         0  0.00117    0.385     0.385 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 4
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    -11.9     -150      606  0.000994        0        0         0 DriftChamberPhysical initStep
+    1    -11.8     -150      606         0 0.000994    0.297     0.297 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 4
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    -11.3     -158      604   0.00105        0        0         0 DriftChamberPhysical initStep
+    1    -11.4     -158      604         0  0.00105    0.322     0.322 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.109     -167      556    0.0019        0        0         0 DriftChamberPhysical initStep
+    1    0.705     -167      556         0   0.0019    0.834     0.834 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0 -2.31e-06   -0.376     1.25   0.00118        0        0         0 WorldPhysical initStep
+    1 -0.00434   -0.402     1.25         0  0.00118    0.072     0.072 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0      -30      100     1e+03   0.0125      104       104 DriftChamberPhysical CoupledTransportation
+    2   0.0551    -93.1      310     1e+03  0.00393      220       324 DriftChamberPhysical hIoni
+    3     0.17     -270      900     1e+03   0.0121      616       940 WorldPhysical CoupledTransportation
+    4    0.174     -279      929     1e+03  0.00364     30.1       970 WorldPhysical hIoni
+    5    0.174     -279      930     1e+03 0.000173    0.791       971 WorldPhysical hIoni
+    6    0.178     -285      950     1e+03  0.00478     21.3       992 WorldPhysical fastSimProcess_parallelGeom
+    7    0.178     -285      950         0    1e+03        0       992 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.174     -279      930   0.00136        0        0         0 WorldPhysical initStep
+    1    0.141     -279      930         0  0.00136   0.0891    0.0891 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.174     -279      929    0.0109        0        0         0 WorldPhysical initStep
+    1   -0.961     -279      929   0.00711  0.00382     1.97      1.97 WorldPhysical eIoni
+    2    -1.37     -279      929   0.00391   0.0032     1.33      3.31 WorldPhysical eIoni
+    3    -1.33     -279      929   0.00159  0.00108    0.178      3.48 WorldPhysical eIoni
+    4    -1.37     -279      929         0  0.00159    0.113       3.6 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 3
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    -1.33     -279      929   0.00125        0        0         0 WorldPhysical initStep
+    1    -1.33     -279      929         0  0.00125   0.0788    0.0788 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0551    -93.1      310    0.0117        0        0         0 DriftChamberPhysical initStep
+    1      2.9    -88.7      312    0.0107  0.00108     5.94      5.94 DriftChamberPhysical eIoni
+    2     5.88    -84.8      313   0.00785  0.00282     5.22      11.2 DriftChamberPhysical eIoni
+    3     7.95    -82.4      314   0.00512  0.00272      3.6      14.8 DriftChamberPhysical eIoni
+    4     9.03    -81.1      314   0.00328 0.000697     1.87      16.6 DriftChamberPhysical eIoni
+    5     9.54    -80.3      315   0.00125  0.00203     1.65      18.3 DriftChamberPhysical eIoni
+    6     9.33    -80.3      316         0  0.00125    0.423      18.7 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 2
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0     9.03    -81.1      314   0.00115        0        0         0 DriftChamberPhysical initStep
+    1     9.18      -81      314         0  0.00115    0.372     0.372 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0      -60      100     1e+03    0.016      117       117 DriftChamberPhysical CoupledTransportation
+    2  0.00622     -178      297     1e+03  0.00542      229       346 DriftChamberPhysical hIoni
+    3   0.0878     -540      900     1e+03   0.0149      704  1.05e+03 WorldPhysical CoupledTransportation
+    4   0.0967     -570      950     1e+03  0.00653     58.3  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+    5   0.0967     -570      950         0    1e+03        0  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00622     -178      297   0.00445        0        0         0 DriftChamberPhysical initStep
+    1     -1.2     -177      297    0.0026  0.00185     2.12      2.12 DriftChamberPhysical eIoni
+    2       -2     -176      298         0   0.0026     1.32      3.45 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0    -39.3     65.5     1e+03    0.011     76.3      76.3 WorldPhysical hIoni
+    2  0.00131      -60      100     1e+03   0.0047     40.3       117 DriftChamberPhysical CoupledTransportation
+    3    0.133     -531      885     1e+03   0.0189      915  1.03e+03 DriftChamberPhysical hIoni
+    4    0.134     -540      900     1e+03 0.000141     17.7  1.05e+03 WorldPhysical CoupledTransportation
+    5    0.134     -541      902     1e+03 3.27e-05     2.55  1.05e+03 WorldPhysical hIoni
+    6    0.136     -570      950     1e+03  0.00833     55.8  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+    7    0.136     -570      950         0    1e+03        0  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.134     -541      902   0.00184        0        0         0 WorldPhysical initStep
+    1    0.135     -541      902         0  0.00184    0.142     0.142 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    0.133     -531      885   0.00166        0        0         0 DriftChamberPhysical initStep
+    1  -0.0223     -531      885         0  0.00166    0.668     0.668 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0    -39.3     65.5    0.0258        0        0         0 WorldPhysical initStep
+    1    -3.01    -41.3     64.9    0.0213  0.00459     4.59      4.59 WorldPhysical eIoni
+    2    -3.05    -41.4       65    0.0178 0.000317    0.163      4.75 WorldPhysical eIoni
+    3    -3.93    -42.1     65.9    0.0145  0.00191     1.63      6.38 WorldPhysical eIoni
+    4    -4.79    -43.3     66.8   0.00874  0.00576      2.5      8.88 WorldPhysical eIoni
+    5    -4.26      -44       67   0.00288  0.00587     1.64      10.5 WorldPhysical eIoni
+    6    -4.26      -44     67.1         0  0.00288    0.293      10.8 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 6,   Parent ID = 2
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    -3.93    -42.1     65.9   0.00141        0        0         0 WorldPhysical initStep
+    1    -3.96    -42.1     65.9         0  0.00141    0.094     0.094 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 2
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0    -3.05    -41.4       65   0.00311        0        0         0 WorldPhysical initStep
+    1    -2.95    -41.5     65.1         0  0.00311    0.335     0.335 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0    -17.4       29     1e+03  0.00316     33.9      33.9 WorldPhysical hIoni
+    2 -0.00219      -60      100     1e+03   0.0146     82.7       117 DriftChamberPhysical CoupledTransportation
+    3  0.00439     -119      198     1e+03  0.00141      114       231 DriftChamberPhysical hIoni
+    4   0.0193     -540      900     1e+03    0.019      819  1.05e+03 WorldPhysical CoupledTransportation
+    5   0.0192     -550      917     1e+03  0.00155     20.3  1.07e+03 WorldPhysical hIoni
+    6   0.0243     -570      950     1e+03  0.00545       38  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+    7   0.0243     -570      950         0    1e+03        0  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0192     -550      917   0.00128        0        0         0 WorldPhysical initStep
+    1 -0.00677     -550      917         0  0.00128   0.0816    0.0816 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00439     -119      198   0.00289        0        0         0 DriftChamberPhysical initStep
+    1    0.915     -119      197   0.00142  0.00146     1.47      1.47 DriftChamberPhysical eIoni
+    2    0.819     -119      198         0  0.00142    0.523         2 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0    -17.4       29   0.00144        0        0         0 WorldPhysical initStep
+    1   0.0264    -17.5       29         0  0.00144   0.0975    0.0975 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0      -21       35     1e+03  0.00491     40.8      40.8 WorldPhysical hIoni
+    2  0.00207    -28.8       48     1e+03  0.00177     15.1      55.9 WorldPhysical hIoni
+    3   0.0129      -60      100     1e+03   0.0079     60.7       117 DriftChamberPhysical CoupledTransportation
+    4   0.0672     -240      399     1e+03  0.00588      349       466 DriftChamberPhysical hIoni
+    5   0.0947     -421      701     1e+03  0.00579      352       818 DriftChamberPhysical hIoni
+    6    0.108     -540      900     1e+03  0.00618      232  1.05e+03 WorldPhysical CoupledTransportation
+    7    0.109     -570      950     1e+03  0.00533     58.3  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+    8    0.109     -570      950         0    1e+03        0  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0947     -421      701    0.0031        0        0         0 DriftChamberPhysical initStep
+    1     1.33     -421      701         0   0.0031     1.57      1.57 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   0.0672     -240      399   0.00506        0        0         0 DriftChamberPhysical initStep
+    1    0.119     -238      401   0.00393  0.00113     2.36      2.36 DriftChamberPhysical eIoni
+    2     0.88     -237      402   0.00181  0.00212     1.92      4.28 DriftChamberPhysical eIoni
+    3     1.27     -237      402         0  0.00181    0.772      5.05 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  0.00207    -28.8       48   0.00218        0        0         0 WorldPhysical initStep
+    1  -0.0563    -28.8     47.9         0  0.00218    0.186     0.186 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0      -21       35   0.00232        0        0         0 WorldPhysical initStep
+    1  -0.0797      -21       35         0  0.00232    0.206     0.206 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = pi-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0        0     1e+03        0        0         0 WorldPhysical initStep
+    1        0      -60      100     1e+03   0.0152      117       117 DriftChamberPhysical CoupledTransportation
+    2   -0.003     -103      172     1e+03   0.0015       84       201 DriftChamberPhysical hIoni
+    3   -0.034     -276      460     1e+03   0.0074      336       537 DriftChamberPhysical hIoni
+    4  -0.0398     -293      488     1e+03 0.000363     32.6       569 DriftChamberPhysical hIoni
+    5   -0.148     -540      900     1e+03   0.0105      480  1.05e+03 WorldPhysical CoupledTransportation
+    6   -0.153     -556      926     1e+03  0.00636     30.8  1.08e+03 WorldPhysical hIoni
+    7   -0.159     -570      950     1e+03  0.00405     27.5  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+    8   -0.159     -570      950         0    1e+03        0  1.11e+03 WorldPhysical fastSimProcess_parallelGeom
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 5,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.153     -556      926   0.00375        0        0         0 WorldPhysical initStep
+    1 -0.00321     -556      927         0  0.00375    0.462     0.462 WorldPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 4,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0  -0.0398     -293      488     0.003        0        0         0 DriftChamberPhysical initStep
+    1     1.18     -293      488   0.00165  0.00134     1.53      1.53 DriftChamberPhysical eIoni
+    2      1.5     -293      488         0  0.00165    0.667      2.19 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 3,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.034     -276      460   0.00308        0        0         0 DriftChamberPhysical initStep
+    1     1.06     -277      460    0.0018  0.00128     1.56      1.56 DriftChamberPhysical eIoni
+    2     1.52     -277      460         0   0.0018    0.764      2.33 DriftChamberPhysical eIoni
+
+*********************************************************************************************************
+* G4Track Information:   Particle = e-,   Track ID = 2,   Parent ID = 1
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0   -0.003     -103      172    0.0149        0        0         0 DriftChamberPhysical initStep
+    1     3.83     -110      169    0.0129  0.00197     8.37      8.37 DriftChamberPhysical eIoni
+    2     4.76     -115      166   0.00962  0.00328     6.79      15.2 DriftChamberPhysical eIoni
+    3     1.75     -118      168   0.00856  0.00106     4.58      19.7 DriftChamberPhysical eIoni
+    4    -0.71     -120      169   0.00608  0.00247     3.98      23.7 DriftChamberPhysical eIoni
+    5    -2.83     -120      171    0.0036  0.00249     2.78      26.5 DriftChamberPhysical eIoni
+    6    -4.17     -120      171   0.00211  0.00148     1.79      28.3 DriftChamberPhysical eIoni
+    7    -4.84     -120      172         0  0.00211    0.999      29.3 DriftChamberPhysical eIoni
+Graphics systems deleted.
+Visualization Manager deleting...
