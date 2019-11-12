@@ -1,0 +1,1633 @@
+
+        ############################################
+        !!! WARNING - FPE detection is activated !!!
+        ############################################
+
+**************************************************************
+ Geant4 version Name: geant4-10-05-ref-10 [MT]   (31-October-2019)
+  << in Multi-threaded mode >> 
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+##### Hadr00 started for 2 threads #####
+G4PhysListFactory::GetReferencePhysList <FTFP_BERT>  EMoption= 0
+<<< Geant4 Physics List simulation engine: FTFP_BERT
+
+<<< Reference Physics List FTFP_BERT is built
+
+/run/verbose 1
+/tracking/verbose 0
+/testhadr/TargetMat G4_Al
+/testhadr/targetElm Al
+/testhadr/TargetRadius 1 cm
+/testhadr/TargetLength 10 cm
+/run/printProgress 10
+/run/initialize
+### Target consist of G4_Al disks with R(mm)= 10  fLength(mm)= 100  ###
+
+***** Table : Nb of materials = 2 *****
+
+ Material:    G4_Al    density:  2.699 g/cm3   RadL:   8.896 cm   Nucl.Int.Length:  38.894 cm 
+                       Imean: 166.000 eV   temperature: 293.15 K  pressure:   1.00 atm
+
+   --->  Element: Al (Al)   Z = 13.0   N =    27   A = 26.982 g/mole
+         --->  Isotope:  Al27   Z = 13   N =  27   A =  26.98 g/mole   abundance: 100.000 %
+          ElmMassFraction: 100.00 %  ElmAbundance 100.00 % 
+
+
+ Material: G4_Galactic    density:  0.000 kg/m3   RadL: 204310101.835 pc   Nucl.Int.Length: 113427275.267 pc 
+                       Imean:  21.800 eV   temperature:   2.73 K  pressure:   0.00 atm
+
+   --->  Element: H (H)   Z =  1.0   N =     1   A =  1.008 g/mole
+         --->  Isotope:    H1   Z =  1   N =   1   A =   1.01 g/mole   abundance: 99.989 %
+         --->  Isotope:    H2   Z =  1   N =   2   A =   2.01 g/mole   abundance:  0.011 %
+          ElmMassFraction: 100.00 %  ElmAbundance 100.00 % 
+
+
+
+
+ FTFP_BERT : new threshold between BERT and FTFP is over the interval 
+ for pions :   3 to 6 GeV
+ for kaons :   3 to 6 GeV
+ for proton :  3 to 6 GeV
+ for neutron : 3 to 6 GeV
+
+### Adding tracking cuts for neutron  TimeCut(ns)= 10000  KinEnergyCut(MeV)= 0
+/run/physicsModified
+
+phot:  for gamma SubType=12 BuildTable=0
+      LambdaPrime table from 200 keV to 100 TeV in 61 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+ LivermorePhElectric : Emin=    0 eV  Emax=  100 TeV  SauterGavrila Fluo
+
+compt:  for gamma SubType=13 BuildTable=1
+      Lambda table from 100 eV  to 1 MeV, 7 bins/decade, spline: 1
+      LambdaPrime table from 1 MeV to 100 TeV in 56 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+       Klein-Nishina : Emin=    0 eV  Emax=  100 TeV
+
+conv:  for gamma SubType=14 BuildTable=1
+      Lambda table from 1.022 MeV to 100 TeV, 18 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+     BetheHeitlerLPM : Emin=    0 eV  Emax=  100 TeV  ModifiedTsai
+
+Rayl:  for gamma SubType=11 BuildTable=1
+      Lambda table from 100 eV  to 100 keV, 7 bins/decade, spline: 0
+      LambdaPrime table from 100 keV to 100 TeV in 63 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   LivermoreRayleigh : Emin=    0 eV  Emax=  100 TeV  CullenGenerator
+
+msc:  for e-  SubType= 10
+      RangeFactor= 0.04, stepLimType: 1, latDisp: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 MeV Nbins=42 100 eV  - 100 MeV
+        WentzelVIUni : Emin=  100 MeV Emax=  100 TeV Nbins=42 100 MeV - 100 TeV
+
+eIoni:  for e-  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    0 eV  Emax=  100 TeV
+
+eBrem:  for e-  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      LPM flag: 1 for E > 1 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    0 eV  Emax=    1 GeV  ModifiedTsai
+            eBremLPM : Emin=    1 GeV Emax=  100 TeV  ModifiedTsai
+
+CoulombScat:  for e-, integral:1  SubType=1 BuildTable=1
+      Lambda table from 100 MeV to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180; pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=  100 MeV Emax=  100 TeV
+
+msc:  for e+  SubType= 10
+      RangeFactor= 0.04, stepLimType: 1, latDisp: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 MeV Nbins=42 100 eV  - 100 MeV
+        WentzelVIUni : Emin=  100 MeV Emax=  100 TeV Nbins=42 100 MeV - 100 TeV
+
+eIoni:  for e+  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    0 eV  Emax=  100 TeV
+
+eBrem:  for e+  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      LPM flag: 1 for E > 1 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    0 eV  Emax=    1 GeV  ModifiedTsai
+            eBremLPM : Emin=    1 GeV Emax=  100 TeV  ModifiedTsai
+
+annihil:  for e+, integral:1  SubType=5 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            eplus2gg : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for e+, integral:1  SubType=1 BuildTable=1
+      Lambda table from 100 MeV to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180; pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=  100 MeV Emax=  100 TeV
+
+msc:  for proton  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+hIoni:  for proton  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=    2 MeV
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV
+
+hBrems:  for proton  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV
+
+hPairProd:  for proton  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 17x1001; from 7.50618 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for proton, integral:1  SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180; pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for GenericIon  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV
+
+ionIoni:  for GenericIon  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.02
+      Stopping Power data for 17 ion/material pairs
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            BraggIon : Emin=    0 eV  Emax=    2 MeV
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV
+
+msc:  for alpha  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+ionIoni:  for alpha  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.02
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            BraggIon : Emin=    0 eV  Emax=7.9452 MeV
+          BetheBloch : Emin=7.9452 MeV Emax=  100 TeV
+
+msc:  for anti_proton  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+hIoni:  for anti_proton  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=    2 MeV
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV
+
+hBrems:  for anti_proton  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV
+
+hPairProd:  for anti_proton  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 17x1001; from 7.50618 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for anti_proton, integral:1  SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180; pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for kaon+  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+hIoni:  for kaon+  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=1.05231 MeV
+          BetheBloch : Emin=1.05231 MeV Emax=  100 TeV
+
+hBrems:  for kaon+  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV
+
+hPairProd:  for kaon+  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 18x1001; from 3.94942 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for kaon+, integral:1  SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180; pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for kaon-  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+hIoni:  for kaon-  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=1.05231 MeV
+          BetheBloch : Emin=1.05231 MeV Emax=  100 TeV
+
+hBrems:  for kaon-  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV
+
+hPairProd:  for kaon-  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 18x1001; from 3.94942 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for kaon-, integral:1  SubType=1 BuildTable=1
+      Used Lambda table of kaon+
+      ThetaMin(p) < Theta(degree) < 180; pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for mu+  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0, polarAngLim(deg)= 180
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+muIoni:  for mu+  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=  200 keV
+          BetheBloch : Emin=  200 keV Emax=    1 GeV
+        MuBetheBloch : Emin=    1 GeV Emax=  100 TeV
+
+muBrems:  for mu+  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+              MuBrem : Emin=    0 eV  Emax=  100 TeV
+
+muPairProd:  for mu+  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 21x1001; from 1 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          muPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for mu+, integral:1  SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180; pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for mu-  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0, polarAngLim(deg)= 180
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+muIoni:  for mu-  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=  200 keV
+          BetheBloch : Emin=  200 keV Emax=    1 GeV
+        MuBetheBloch : Emin=    1 GeV Emax=  100 TeV
+
+muBrems:  for mu-  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+              MuBrem : Emin=    0 eV  Emax=  100 TeV
+
+muPairProd:  for mu-  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 21x1001; from 1 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          muPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for mu-, integral:1  SubType=1 BuildTable=1
+      Used Lambda table of mu+
+      ThetaMin(p) < Theta(degree) < 180; pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for pi+  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+hIoni:  for pi+  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=297.505 keV
+          BetheBloch : Emin=297.505 keV Emax=  100 TeV
+
+hBrems:  for pi+  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV
+
+hPairProd:  for pi+  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 20x1001; from 1.11656 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for pi+, integral:1  SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 1
+      ThetaMin(p) < Theta(degree) < 180; pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for pi-  SubType= 10
+      RangeFactor= 0.2, stepLimType: 0, latDisp: 0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+
+hIoni:  for pi-  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=297.505 keV
+          BetheBloch : Emin=297.505 keV Emax=  100 TeV
+
+hBrems:  for pi-  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV
+
+hPairProd:  for pi-  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 20x1001; from 1.11656 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for pi-, integral:1  SubType=1 BuildTable=1
+      Used Lambda table of pi+
+      ThetaMin(p) < Theta(degree) < 180; pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+====================================================================
+                  HADRONIC PROCESSES SUMMARY (verbose level 1)
+
+---------------------------------------------------
+                           Hadronic Processes for neutron
+
+  Process: hadElastic
+        Model:             hElasticCHIPS: 0 eV  ---> 100 TeV
+     Cr_sctns:        G4NeutronElasticXS: 0 eV  ---> 100 TeV
+
+  Process: neutronInelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:      G4NeutronInelasticXS: 0 eV  ---> 100 TeV
+
+  Process: nCapture
+        Model:               nRadCapture: 0 eV  ---> 100 TeV
+     Cr_sctns:        G4NeutronCaptureXS: 0 eV  ---> 100 TeV
+
+  Process: nKiller
+
+---------------------------------------------------
+                           Hadronic Processes for GenericIon
+
+  Process: ionInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for He3
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+  Process: He3Inelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for alpha
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+  Process: alphaInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for anti_He3
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: anti_He3Inelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_alpha
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: anti_alphaInelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_deuteron
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: anti_deuteronInelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_neutron
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100.1 MeV
+        Model:              AntiAElastic: 100 MeV ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: anti_neutronInelastic
+        Model:                      FTFP: 0 eV  ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_proton
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100.1 MeV
+        Model:              AntiAElastic: 100 MeV ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: anti_protonInelastic
+        Model:                      FTFP: 0 eV  ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_triton
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: anti_tritonInelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for deuteron
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+  Process: dInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for e+
+
+  Process: positronNuclear
+        Model:   G4ElectroVDNuclearModel: 0 eV  ---> 1 PeV
+     Cr_sctns:          ElectroNuclearXS: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for e-
+
+  Process: electronNuclear
+        Model:   G4ElectroVDNuclearModel: 0 eV  ---> 1 PeV
+     Cr_sctns:          ElectroNuclearXS: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for gamma
+
+  Process: photonNuclear
+        Model:            BertiniCascade: 0 eV  ---> 3.5 GeV
+        Model:           TheoFSGenerator: 3 GeV ---> 100 TeV
+     Cr_sctns:            PhotoNuclearXS: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for kaon+
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: kaon+Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for kaon-
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: kaon-Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: hBertiniCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for lambda
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: lambdaInelastic
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for mu+
+
+  Process: muonNuclear
+        Model:      G4MuonVDNuclearModel: 0 eV  ---> 1 PeV
+     Cr_sctns:     KokoulinMuonNuclearXS: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for mu-
+
+  Process: muonNuclear
+        Model:      G4MuonVDNuclearModel: 0 eV  ---> 1 PeV
+     Cr_sctns:     KokoulinMuonNuclearXS: 0 eV  ---> 100 TeV
+
+  Process: muMinusCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for pi+
+
+  Process: hadElastic
+        Model:           hElasticGlauber: 0 eV  ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+  Process: pi+Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for pi-
+
+  Process: hadElastic
+        Model:           hElasticGlauber: 0 eV  ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+  Process: pi-Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+  Process: hBertiniCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for proton
+
+  Process: hadElastic
+        Model:             hElasticCHIPS: 0 eV  ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+  Process: protonInelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for triton
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+  Process: tInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 100 TeV
+
+================================================================
+G4WT0 > /run/verbose 1
+G4WT1 > /run/verbose 1
+G4WT0 > /tracking/verbose 0
+G4WT1 > /tracking/verbose 0
+G4WT0 > /testhadr/targetElm Al
+G4WT1 > /testhadr/targetElm Al
+G4WT0 > /run/printProgress 10
+G4WT1 > /run/printProgress 10
+G4WT0 > /run/initialize 
+G4WT1 > /run/initialize 
+G4WT0 > /run/physicsModified 
+G4WT1 > /run/physicsModified 
+=======================================================================
+======       Pre-compound/De-excitation Physics Parameters     ========
+=======================================================================
+Type of pre-compound inverse x-section              3
+Pre-compound model active                           1
+Pre-compound excitation low energy (MeV)            0.1
+Pre-compound excitation high energy (MeV)           100
+Type of de-excitation inverse x-section             3
+Type of de-excitation factory                       Evaporation+GEM
+Number of de-excitation channels                    68
+Min excitation energy (keV)                         0.01
+Min energy per nucleon for multifragmentation (MeV) 2e+05
+Limit excitation energy for Fermi BreakUp (MeV)     20
+Level density (1/MeV)                               0.075
+Use simple level density model                      1
+Use discrete excitation energy of the residual      0
+Time limit for long lived isomeres (ns)             1e+12
+Internal e- conversion flag                         1
+Store e- internal conversion data                   0
+Electron internal conversion ID                     2
+Correlated gamma emission flag                      0
+Max 2J for sampling of angular correlations         10
+Upload data before 1st event for                Z < 9
+=======================================================================
+/process/em/workerVerbose 0
+/run/physicsModified
+/process/em/verbose 0
+/run/physicsModified
+/gun/particle kaon-
+/gun/energy 100. MeV
+/testhadr/particle kaon-
+/testhadr/verbose 1
+/run/beamOn 1
+/run/physicsModified
+
+========= Table of registered couples ==============================
+
+Index : 0     used in the geometry : Yes
+ Material : G4_Galactic
+ Range cuts        :  gamma  700 um     e-  700 um     e+  700 um  proton 700 um 
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 70 keV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : Yes
+ Material : G4_Al
+ Range cuts        :  gamma  700 um     e-  700 um     e+  700 um  proton 700 um 
+ Energy thresholds :  gamma  5.85564 keV    e-  460.395 keV    e+  442.201 keV proton 70 keV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+====================================================================
+
+### Run 0 starts.
+### Run 0 start
+G4WT1 > /process/em/workerVerbose 0
+G4WT1 > /run/physicsModified 
+G4WT1 > /process/em/verbose 0
+G4WT1 > /run/physicsModified 
+G4WT0 > /process/em/workerVerbose 0
+G4WT1 > /gun/particle kaon-
+G4WT0 > /run/physicsModified 
+G4WT0 > /process/em/verbose 0
+G4WT0 > /run/physicsModified 
+G4WT0 > /gun/particle kaon-
+G4WT1 > /gun/energy 100. MeV
+G4WT0 > /gun/energy 100. MeV
+G4WT1 > /testhadr/particle kaon-
+G4WT1 > /testhadr/verbose 1
+G4WT1 > /run/physicsModified 
+G4WT0 > /testhadr/particle kaon-
+G4WT0 > /testhadr/verbose 1
+G4WT0 > /run/physicsModified 
+G4WT1 > ### Run 0 starts on worker thread 1.
+G4WT0 > ### Run 0 starts on worker thread 0.
+G4WT0 > Thread-local run terminated.
+G4WT0 > Run Summary
+G4WT0 >   Number of events processed : 0
+G4WT0 >   User=0.000000s Real=0.000002s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > --> Event 0 starts with initial seeds (13049039,61775110).
+G4WT1 > EventAction: Event # 0 started
+G4WT1 > Thread-local run terminated.
+G4WT1 > Run Summary
+G4WT1 >   Number of events processed : 1
+G4WT1 >   User=0.000000s Real=0.000324s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 1
+  User=0.000000s Real=0.001285s Sys=0.000000s [Cpu=0.0%]
+RunAction: End of run actions are started
+HistoManager: End of run actions are started
+### Fill Cross Sections for kaon- off Al
+-------------------------------------------------------------
+    N     E(MeV)   Elastic(b)   Inelastic(b)   Total(b)
+-------------------------------------------------------------
+    0      0.1012         2.4        2.626        5.026
+    1      0.1035       2.391        2.618         5.01
+    2      0.1059       2.382        2.611        4.993
+    3      0.1084       2.373        2.603        4.977
+    4      0.1109       2.365        2.596         4.96
+    5      0.1135       2.356        2.588        4.944
+    6      0.1161       2.347        2.581        4.928
+    7      0.1189       2.338        2.574        4.911
+    8      0.1216       2.329        2.566        4.895
+    9      0.1245        2.32        2.559        4.879
+   10      0.1274       2.311        2.551        4.862
+   11      0.1303       2.302        2.544        4.846
+   12      0.1334       2.293        2.536         4.83
+   13      0.1365       2.285        2.529        4.813
+   14      0.1396       2.276        2.521        4.797
+   15      0.1429       2.267        2.514        4.781
+   16      0.1462       2.258        2.507        4.764
+   17      0.1496       2.249        2.499        4.748
+   18      0.1531        2.24        2.492        4.732
+   19      0.1567       2.231        2.484        4.715
+   20      0.1603       2.222        2.477        4.699
+   21      0.1641       2.214        2.469        4.683
+   22      0.1679       2.205        2.462        4.666
+   23      0.1718       2.196        2.454         4.65
+   24      0.1758       2.187        2.447        4.634
+   25      0.1799       2.178         2.44        4.618
+   26      0.1841       2.169        2.432        4.601
+   27      0.1884        2.16        2.425        4.585
+   28      0.1928       2.152        2.417        4.569
+   29      0.1972       2.143         2.41        4.552
+   30      0.2018       2.134        2.402        4.536
+   31      0.2065       2.125        2.395         4.52
+   32      0.2113       2.116        2.387        4.504
+   33      0.2163       2.107         2.38        4.487
+   34      0.2213       2.098        2.373        4.471
+   35      0.2265        2.09        2.365        4.455
+   36      0.2317       2.081        2.358        4.439
+   37      0.2371       2.072         2.35        4.422
+   38      0.2427       2.063        2.343        4.406
+   39      0.2483       2.054        2.335         4.39
+   40      0.2541       2.046        2.328        4.374
+   41        0.26       2.037        2.321        4.357
+   42      0.2661       2.028        2.313        4.341
+   43      0.2723       2.019        2.306        4.325
+   44      0.2786        2.01        2.298        4.309
+   45      0.2851       2.001        2.291        4.292
+   46      0.2917       1.993        2.284        4.276
+   47      0.2985       1.984        2.276         4.26
+   48      0.3055       1.975        2.269        4.244
+   49      0.3126       1.966        2.261        4.228
+   50      0.3199       1.958        2.254        4.211
+   51      0.3273       1.949        2.246        4.195
+   52       0.335        1.94        2.239        4.179
+   53      0.3428       1.931        2.232        4.163
+   54      0.3508       1.922        2.224        4.147
+   55      0.3589       1.914        2.217        4.131
+   56      0.3673       1.905        2.209        4.114
+   57      0.3758       1.896        2.202        4.098
+   58      0.3846       1.887        2.195        4.082
+   59      0.3936       1.879        2.187        4.066
+   60      0.4027        1.87         2.18         4.05
+   61      0.4121       1.861        2.172        4.034
+   62      0.4217       1.852        2.165        4.018
+   63      0.4315       1.844        2.158        4.001
+   64      0.4416       1.835         2.15        3.985
+   65      0.4519       1.826        2.143        3.969
+   66      0.4624       1.818        2.136        3.953
+   67      0.4732       1.809        2.128        3.937
+   68      0.4842         1.8        2.121        3.921
+   69      0.4955       1.791        2.113        3.905
+   70       0.507       1.783        2.106        3.889
+   71      0.5188       1.774        2.099        3.873
+   72      0.5309       1.765        2.091        3.857
+   73      0.5433       1.757        2.084        3.841
+   74      0.5559       1.748        2.077        3.824
+   75      0.5689       1.739        2.069        3.808
+   76      0.5821       1.731        2.062        3.792
+   77      0.5957       1.722        2.054        3.776
+   78      0.6095       1.713        2.047         3.76
+   79      0.6237       1.705         2.04        3.744
+   80      0.6383       1.696        2.032        3.728
+   81      0.6531       1.687        2.025        3.712
+   82      0.6683       1.679        2.018        3.696
+   83      0.6839        1.67         2.01         3.68
+   84      0.6998       1.661        2.003        3.664
+   85      0.7161       1.653        1.996        3.649
+   86      0.7328       1.644        1.988        3.633
+   87      0.7499       1.636        1.981        3.617
+   88      0.7674       1.627        1.974        3.601
+   89      0.7852       1.618        1.966        3.585
+   90      0.8035        1.61        1.959        3.569
+   91      0.8222       1.601        1.952        3.553
+   92      0.8414       1.593        1.944        3.537
+   93       0.861       1.584        1.937        3.521
+   94       0.881       1.576         1.93        3.505
+   95      0.9016       1.567        1.922        3.489
+   96      0.9226       1.558        1.915        3.474
+   97      0.9441        1.55        1.908        3.458
+   98      0.9661       1.541          1.9        3.442
+   99      0.9886       1.533        1.893        3.426
+  100       1.012       1.524        1.886         3.41
+  101       1.035       1.516        1.879        3.394
+  102       1.059       1.507        1.871        3.379
+  103       1.084       1.499        1.864        3.363
+  104       1.109        1.49        1.857        3.347
+  105       1.135       1.482        1.849        3.331
+  106       1.161       1.473        1.842        3.316
+  107       1.189       1.465        1.835          3.3
+  108       1.216       1.457        1.828        3.284
+  109       1.245       1.448         1.82        3.269
+  110       1.274        1.44        1.813        3.253
+  111       1.303       1.431        1.806        3.237
+  112       1.334       1.423        1.799        3.221
+  113       1.365       1.414        1.791        3.206
+  114       1.396       1.406        1.784         3.19
+  115       1.429       1.398        1.777        3.175
+  116       1.462       1.389         1.77        3.159
+  117       1.496       1.381        1.762        3.143
+  118       1.531       1.373        1.755        3.128
+  119       1.567       1.364        1.748        3.112
+  120       1.603       1.356        1.741        3.097
+  121       1.641       1.348        1.733        3.081
+  122       1.679       1.339        1.726        3.066
+  123       1.718       1.331        1.719         3.05
+  124       1.758       1.323        1.712        3.035
+  125       1.799       1.314        1.705        3.019
+  126       1.841       1.306        1.697        3.004
+  127       1.884       1.298         1.69        2.988
+  128       1.928        1.29        1.683        2.973
+  129       1.972       1.281        1.676        2.957
+  130       2.018       1.273        1.669        2.942
+  131       2.065       1.265        1.662        2.927
+  132       2.113       1.257        1.654        2.911
+  133       2.163       1.249        1.647        2.896
+  134       2.213       1.241         1.64        2.881
+  135       2.265       1.232        1.633        2.865
+  136       2.317       1.224        1.626         2.85
+  137       2.371       1.216        1.619        2.835
+  138       2.427       1.208        1.612        2.819
+  139       2.483         1.2        1.604        2.804
+  140       2.541       1.192        1.597        2.789
+  141         2.6       1.184         1.59        2.774
+  142       2.661       1.176        1.583        2.759
+  143       2.723       1.168        1.576        2.744
+  144       2.786        1.16        1.569        2.728
+  145       2.851       1.152        1.562        2.713
+  146       2.917       1.144        1.555        2.698
+  147       2.985       1.136        1.548        2.683
+  148       3.055       1.128         1.54        2.668
+  149       3.126        1.12        1.533        2.653
+  150       3.199       1.112        1.526        2.638
+  151       3.273       1.104        1.519        2.623
+  152        3.35       1.096        1.512        2.608
+  153       3.428       1.088        1.505        2.593
+  154       3.508        1.08        1.498        2.578
+  155       3.589       1.072        1.491        2.563
+  156       3.673       1.064        1.484        2.549
+  157       3.758       1.057        1.477        2.534
+  158       3.846       1.049         1.47        2.519
+  159       3.936       1.041        1.463        2.504
+  160       4.027       1.033        1.456        2.489
+  161       4.121       1.025        1.449        2.475
+  162       4.217       1.018        1.442         2.46
+  163       4.315        1.01        1.435        2.445
+  164       4.416       1.002        1.428        2.431
+  165       4.519      0.9946        1.421        2.416
+  166       4.624       0.987        1.414        2.401
+  167       4.732      0.9794        1.407        2.387
+  168       4.842      0.9717        1.401        2.372
+  169       4.955      0.9641        1.394        2.358
+  170        5.07      0.9566        1.387        2.343
+  171       5.188       0.949         1.38        2.329
+  172       5.309      0.9415        1.373        2.314
+  173       5.433      0.9339        1.366          2.3
+  174       5.559      0.9265        1.359        2.286
+  175       5.689       0.919        1.352        2.271
+  176       5.821      0.9115        1.345        2.257
+  177       5.957      0.9041        1.339        2.243
+  178       6.095      0.8967        1.332        2.229
+  179       6.237      0.8893        1.325        2.214
+  180       6.383      0.8819        1.318          2.2
+  181       6.531      0.8746        1.311        2.186
+  182       6.683      0.8673        1.305        2.172
+  183       6.839        0.86        1.298        2.158
+  184       6.998      0.8527        1.291        2.144
+  185       7.161      0.8455        1.284         2.13
+  186       7.328      0.8383        1.278        2.116
+  187       7.499      0.8311        1.271        2.102
+  188       7.674      0.8239        1.264        2.088
+  189       7.852      0.8168        1.257        2.074
+  190       8.035      0.8096        1.251         2.06
+  191       8.222      0.8025        1.244        2.047
+  192       8.414      0.7955        1.237        2.033
+  193        8.61      0.7884        1.231        2.019
+  194        8.81      0.7814        1.224        2.005
+  195       9.016      0.7744        1.217        1.992
+  196       9.226      0.7675        1.211        1.978
+  197       9.441      0.7605        1.204        1.965
+  198       9.661      0.7536        1.197        1.951
+  199       9.886      0.7467        1.191        1.938
+  200       10.12      0.7405        1.185        1.925
+  201       10.35      0.7337        1.178        1.912
+  202       10.59      0.7269        1.172        1.899
+  203       10.84      0.7202        1.165        1.885
+  204       11.09      0.7134        1.159        1.872
+  205       11.35      0.7068        1.152        1.859
+  206       11.61      0.7001        1.146        1.846
+  207       11.89      0.6934        1.139        1.833
+  208       12.16      0.6868        1.133         1.82
+  209       12.45      0.6803        1.126        1.807
+  210       12.74      0.6737         1.12        1.794
+  211       13.03      0.6672        1.113        1.781
+  212       13.34      0.6607        1.107        1.768
+  213       13.65      0.6543        1.101        1.755
+  214       13.96      0.6478        1.094        1.742
+  215       14.29      0.6415        1.088        1.729
+  216       14.62      0.6351        1.082        1.717
+  217       14.96      0.6288        1.075        1.704
+  218       15.31      0.6225        1.069        1.691
+  219       15.67      0.6162        1.063        1.679
+  220       16.03        0.61        1.056        1.666
+  221       16.41      0.6038         1.05        1.654
+  222       16.79      0.5977        1.044        1.642
+  223       17.18      0.5915        1.038        1.629
+  224       17.58      0.5854        1.031        1.617
+  225       17.99      0.5794        1.025        1.605
+  226       18.41      0.5734        1.019        1.592
+  227       18.84      0.5674        1.013         1.58
+  228       19.28      0.5614        1.007        1.568
+  229       19.72      0.5555        1.001        1.556
+  230       20.18      0.5496       0.9946        1.544
+  231       20.65      0.5438       0.9885        1.532
+  232       21.13       0.538       0.9824         1.52
+  233       21.63      0.5322       0.9764        1.509
+  234       22.13      0.5265       0.9704        1.497
+  235       22.65      0.5208       0.9644        1.485
+  236       23.17      0.5151       0.9584        1.474
+  237       23.71      0.5095       0.9524        1.462
+  238       24.27      0.5039       0.9464         1.45
+  239       24.83      0.4984       0.9405        1.439
+  240       25.41      0.4929       0.9346        1.427
+  241          26      0.4874       0.9287        1.416
+  242       26.61       0.482       0.9228        1.405
+  243       27.23      0.4766        0.917        1.394
+  244       27.86      0.4712       0.9112        1.382
+  245       28.51      0.4659       0.9054        1.371
+  246       29.17      0.4606       0.8996         1.36
+  247       29.85      0.4554       0.8938        1.349
+  248       30.55      0.4502       0.8881        1.338
+  249       31.26       0.445       0.8823        1.327
+  250       31.99      0.4399       0.8766        1.317
+  251       32.73      0.4348        0.871        1.306
+  252        33.5      0.4298       0.8653        1.295
+  253       34.28      0.4248       0.8597        1.284
+  254       35.08      0.4198       0.8541        1.274
+  255       35.89      0.4149       0.8485        1.263
+  256       36.73        0.41       0.8429        1.253
+  257       37.58      0.4051       0.8374        1.243
+  258       38.46      0.4003       0.8319        1.232
+  259       39.36      0.3956       0.8264        1.222
+  260       40.27      0.3908       0.8209        1.212
+  261       41.21      0.3862       0.8155        1.202
+  262       42.17      0.3815       0.8101        1.192
+  263       43.15      0.3769       0.8047        1.182
+  264       44.16      0.3724       0.7993        1.172
+  265       45.19      0.3679        0.794        1.162
+  266       46.24      0.3634       0.7887        1.152
+  267       47.32      0.3589       0.7834        1.142
+  268       48.42      0.3545       0.7781        1.133
+  269       49.55      0.3502       0.7729        1.123
+  270        50.7      0.3459       0.7677        1.114
+  271       51.88      0.3416       0.7625        1.104
+  272       53.09      0.3374       0.7573        1.095
+  273       54.33      0.3332       0.7522        1.085
+  274       55.59      0.3291       0.7471        1.076
+  275       56.89       0.325        0.742        1.067
+  276       58.21      0.3209        0.737        1.058
+  277       59.57      0.3169        0.732        1.049
+  278       60.95      0.3129        0.727         1.04
+  279       62.37       0.309        0.722        1.031
+  280       63.83      0.3051       0.7171        1.022
+  281       65.31      0.3012       0.7122        1.013
+  282       66.83      0.2974       0.7074        1.005
+  283       68.39      0.2937       0.7025       0.9962
+  284       69.98      0.2899       0.6977       0.9877
+  285       71.61      0.2863        0.693       0.9792
+  286       73.28      0.2826       0.6882       0.9709
+  287       74.99       0.279       0.6835       0.9625
+  288       76.74      0.2755       0.6788       0.9543
+  289       78.52       0.272       0.6742       0.9462
+  290       80.35      0.2685       0.6696       0.9381
+  291       82.22      0.2651        0.665       0.9301
+  292       84.14      0.2617       0.6605       0.9222
+  293        86.1      0.2584        0.656       0.9143
+  294        88.1      0.2551       0.6515       0.9066
+  295       90.16      0.2518       0.6471       0.8989
+  296       92.26      0.2486       0.6427       0.8913
+  297       94.41      0.2454       0.6383       0.8838
+  298       96.61      0.2423        0.634       0.8763
+  299       98.86      0.2392       0.6297       0.8689
+  300       101.2      0.2362       0.6255       0.8617
+  301       103.5      0.2332       0.6212       0.8545
+  302       105.9      0.2303       0.6171       0.8473
+  303       108.4      0.2274        0.613       0.8403
+  304       110.9      0.2245       0.6089       0.8334
+  305       113.5      0.2217       0.6048       0.8265
+  306       116.1      0.2189       0.6008       0.8197
+  307       118.9      0.2162       0.5969       0.8131
+  308       121.6      0.2135        0.593       0.8065
+  309       124.5      0.2109       0.5891          0.8
+  310       127.4      0.2083       0.5853       0.7935
+  311       130.3      0.2057       0.5815       0.7872
+  312       133.4      0.2032       0.5778        0.781
+  313       136.5      0.2008       0.5741       0.7749
+  314       139.6      0.1984       0.5705       0.7689
+  315       142.9       0.196       0.5669       0.7629
+  316       146.2      0.1937       0.5634       0.7571
+  317       149.6      0.1914       0.5599       0.7514
+  318       153.1      0.1892       0.5565       0.7457
+  319       156.7       0.187       0.5532       0.7402
+  320       160.3      0.1849       0.5499       0.7348
+  321       164.1      0.1829       0.5467       0.7295
+  322       167.9      0.1808       0.5435       0.7244
+  323       171.8      0.1789       0.5404       0.7193
+  324       175.8       0.177       0.5374       0.7144
+  325       179.9      0.1751       0.5345       0.7095
+  326       184.1      0.1733       0.5316       0.7048
+  327       188.4      0.1715       0.5288       0.7003
+  328       192.8      0.1698        0.526       0.6959
+  329       197.2      0.1682       0.5234       0.6916
+  330       201.8      0.1666       0.5208       0.6874
+  331       206.5      0.1651       0.5183       0.6834
+  332       211.3      0.1636       0.5159       0.6795
+  333       216.3      0.1622       0.5136       0.6758
+  334       221.3      0.1608       0.5114       0.6722
+  335       226.5      0.1596       0.5093       0.6689
+  336       231.7      0.1584       0.5073       0.6656
+  337       237.1      0.1572       0.5054       0.6626
+  338       242.7      0.1561       0.5036       0.6597
+  339       248.3      0.1551       0.5019        0.657
+  340       254.1      0.1542       0.5003       0.6545
+  341         260      0.1534       0.4989       0.6523
+  342       266.1      0.1526       0.4976       0.6502
+  343       272.3      0.1519       0.4964       0.6483
+  344       278.6      0.1513       0.4954       0.6467
+  345       285.1      0.1508       0.4945       0.6453
+  346       291.7      0.1504       0.4938       0.6442
+  347       298.5        0.15       0.4933       0.6433
+  348       305.5      0.1498       0.4929       0.6427
+  349       312.6      0.1497       0.4927       0.6424
+  350       319.9      0.1497       0.4927       0.6424
+  351       327.3      0.1498       0.4929       0.6427
+  352         335      0.1501       0.4933       0.6434
+  353       342.8      0.1504        0.494       0.6444
+  354       350.8       0.151       0.4949       0.6458
+  355       358.9      0.1517        0.496       0.6477
+  356       367.3      0.1525       0.4975         0.65
+  357       375.8      0.1535       0.4992       0.6528
+  358       384.6      0.1548       0.5013       0.6561
+  359       393.6      0.1562       0.5037         0.66
+  360       402.7      0.1579       0.5066       0.6645
+  361       412.1      0.1599       0.5098       0.6697
+  362       421.7      0.1621       0.5135       0.6757
+  363       431.5      0.1647       0.5177       0.6825
+  364       441.6      0.1677       0.5226       0.6902
+  365       451.9       0.171        0.528        0.699
+  366       462.4      0.1749       0.5341        0.709
+  367       473.2      0.1793       0.5411       0.7204
+  368       484.2      0.1843       0.5489       0.7332
+  369       495.5        0.19       0.5578       0.7478
+  370         507      0.1965       0.5677       0.7642
+  371       518.8      0.2039       0.5788       0.7828
+  372       530.9      0.2124       0.5913       0.8036
+  373       543.3      0.2218        0.605       0.8268
+  374       555.9      0.2323       0.6199       0.8522
+  375       568.9      0.2435       0.6357       0.8792
+  376       582.1       0.255       0.6514       0.9064
+  377       595.7      0.2657       0.6659       0.9316
+  378       609.5      0.2742       0.6771       0.9513
+  379       623.7      0.2787        0.683       0.9617
+  380       638.3      0.2779        0.682       0.9599
+  381       653.1      0.2717       0.6738       0.9454
+  382       668.3      0.2609       0.6594       0.9203
+  383       683.9      0.2475       0.6411       0.8886
+  384       699.8      0.2331       0.6211       0.8543
+  385       716.1      0.2192       0.6013       0.8205
+  386       732.8      0.2065       0.5826       0.7891
+  387       749.9      0.1952       0.5657        0.761
+  388       767.4      0.1855       0.5508       0.7362
+  389       785.2      0.1771       0.5376       0.7147
+  390       803.5      0.1699       0.5262       0.6961
+  391       822.2      0.1638       0.5162         0.68
+  392       841.4      0.1585       0.5075        0.666
+  393         861       0.154       0.4999       0.6539
+  394         881        0.15       0.4932       0.6433
+  395       901.6      0.1466       0.4874       0.6339
+  396       922.6      0.1435       0.4821       0.6257
+  397       944.1      0.1409       0.4775       0.6183
+  398       966.1      0.1385       0.4733       0.6118
+  399       988.6      0.1364       0.4695       0.6059
+  400        1012      0.1344       0.4661       0.6005
+  401        1035      0.1327        0.463       0.5957
+  402        1059      0.1311       0.4601       0.5912
+  403        1084      0.1296       0.4574       0.5871
+  404        1109      0.1283        0.455       0.5832
+  405        1135       0.127       0.4527       0.5797
+  406        1161      0.1258       0.4505       0.5763
+  407        1189      0.1247       0.4484       0.5731
+  408        1216      0.1236       0.4465       0.5701
+  409        1245      0.1226       0.4446       0.5673
+  410        1274      0.1217       0.4428       0.5645
+  411        1303      0.1208       0.4411       0.5619
+  412        1334      0.1199       0.4395       0.5593
+  413        1365       0.119       0.4379       0.5569
+  414        1396      0.1182       0.4363       0.5545
+  415        1429      0.1174       0.4348       0.5522
+  416        1462      0.1167       0.4333         0.55
+  417        1496      0.1159       0.4319       0.5478
+  418        1531      0.1152       0.4305       0.5456
+  419        1567      0.1144       0.4291       0.5436
+  420        1603      0.1137       0.4278       0.5415
+  421        1641      0.1131       0.4264       0.5395
+  422        1679      0.1124       0.4251       0.5375
+  423        1718      0.1117       0.4238       0.5356
+  424        1758      0.1111       0.4226       0.5337
+  425        1799      0.1104       0.4213       0.5318
+  426        1841      0.1098       0.4201       0.5299
+  427        1884      0.1092       0.4189       0.5281
+  428        1928      0.1086       0.4177       0.5263
+  429        1972       0.108       0.4166       0.5246
+  430        2018      0.1074       0.4154       0.5228
+  431        2065      0.1068       0.4143       0.5211
+  432        2113      0.1063       0.4131       0.5194
+  433        2163      0.1057        0.412       0.5177
+  434        2213      0.1052       0.4109       0.5161
+  435        2265      0.1046       0.4098       0.5145
+  436        2317      0.1041       0.4088       0.5129
+  437        2371      0.1036       0.4077       0.5113
+  438        2427       0.103       0.4067       0.5097
+  439        2483      0.1025       0.4056       0.5082
+  440        2541       0.102       0.4046       0.5067
+  441        2600      0.1015       0.4036       0.5052
+  442        2661      0.1011       0.4026       0.5037
+  443        2723      0.1006       0.4017       0.5022
+  444        2786      0.1001       0.4007       0.5008
+  445        2851     0.09964       0.3998       0.4994
+  446        2917     0.09918       0.3988        0.498
+  447        2985     0.09873       0.3979       0.4966
+  448        3055     0.09828        0.397       0.4953
+  449        3126     0.09785       0.3961       0.4939
+  450        3199     0.09742       0.3952       0.4926
+  451        3273     0.09699       0.3943       0.4913
+  452        3350     0.09657       0.3934         0.49
+  453        3428     0.09616       0.3926       0.4887
+  454        3508     0.09576       0.3917       0.4875
+  455        3589     0.09536       0.3909       0.4863
+  456        3673     0.09497       0.3901       0.4851
+  457        3758     0.09458       0.3893       0.4839
+  458        3846      0.0942       0.3885       0.4827
+  459        3936     0.09383       0.3877       0.4815
+  460        4027     0.09346       0.3869       0.4804
+  461        4121      0.0931       0.3862       0.4793
+  462        4217     0.09274       0.3854       0.4781
+  463        4315     0.09239       0.3847       0.4771
+  464        4416     0.09205       0.3839        0.476
+  465        4519     0.09171       0.3832       0.4749
+  466        4624     0.09137       0.3825       0.4739
+  467        4732     0.09104       0.3818       0.4728
+  468        4842     0.09072       0.3811       0.4718
+  469        4955      0.0904       0.3804       0.4708
+  470        5070     0.09009       0.3797       0.4698
+  471        5188     0.08978       0.3791       0.4689
+  472        5309     0.08947       0.3784       0.4679
+  473        5433     0.08917       0.3778        0.467
+  474        5559     0.08888       0.3771        0.466
+  475        5689     0.08859       0.3765       0.4651
+  476        5821     0.08831       0.3759       0.4642
+  477        5957     0.08803       0.3753       0.4633
+  478        6095     0.08775       0.3747       0.4625
+  479        6237     0.08748       0.3741       0.4616
+  480        6383     0.08721       0.3735       0.4607
+  481        6531     0.08695        0.373       0.4599
+  482        6683     0.08669       0.3724       0.4591
+  483        6839     0.08644       0.3718       0.4583
+  484        6998     0.08619       0.3713       0.4575
+  485        7161     0.08595       0.3708       0.4567
+  486        7328     0.08571       0.3702       0.4559
+  487        7499     0.08547       0.3697       0.4552
+  488        7674     0.08524       0.3692       0.4544
+  489        7852     0.08501       0.3687       0.4537
+  490        8035     0.08478       0.3682        0.453
+  491        8222     0.08456       0.3677       0.4523
+  492        8414     0.08434       0.3672       0.4516
+  493        8610     0.08413       0.3668       0.4509
+  494        8810     0.08392       0.3663       0.4502
+  495        9016     0.08371       0.3658       0.4495
+  496        9226     0.08351       0.3654       0.4489
+  497        9441     0.08331       0.3649       0.4483
+  498        9661     0.08312       0.3645       0.4476
+  499        9886     0.08293       0.3641        0.447
+  500   1.012e+04     0.08274       0.3637       0.4464
+  501   1.035e+04     0.08255       0.3632       0.4458
+  502   1.059e+04     0.08237       0.3628       0.4452
+  503   1.084e+04     0.08219       0.3624       0.4446
+  504   1.109e+04     0.08202       0.3621       0.4441
+  505   1.135e+04     0.08185       0.3617       0.4435
+  506   1.161e+04     0.08168       0.3613        0.443
+  507   1.189e+04     0.08151       0.3609       0.4424
+  508   1.216e+04     0.08135       0.3606       0.4419
+  509   1.245e+04     0.08119       0.3602       0.4414
+  510   1.274e+04     0.08104       0.3598       0.4409
+  511   1.303e+04     0.08089       0.3595       0.4404
+  512   1.334e+04     0.08074       0.3592       0.4399
+  513   1.365e+04     0.08059       0.3588       0.4394
+  514   1.396e+04     0.08045       0.3585        0.439
+  515   1.429e+04     0.08031       0.3582       0.4385
+  516   1.462e+04     0.08017       0.3579       0.4381
+  517   1.496e+04     0.08004       0.3576       0.4376
+  518   1.531e+04     0.07991       0.3573       0.4372
+  519   1.567e+04     0.07978        0.357       0.4368
+  520   1.603e+04     0.07965       0.3567       0.4364
+  521   1.641e+04     0.07953       0.3564        0.436
+  522   1.679e+04     0.07941       0.3562       0.4356
+  523   1.718e+04      0.0793       0.3559       0.4352
+  524   1.758e+04     0.07918       0.3556       0.4348
+  525   1.799e+04     0.07907       0.3554       0.4345
+  526   1.841e+04     0.07896       0.3551       0.4341
+  527   1.884e+04     0.07886       0.3549       0.4338
+  528   1.928e+04     0.07875       0.3547       0.4334
+  529   1.972e+04     0.07865       0.3544       0.4331
+  530   2.018e+04     0.07856       0.3542       0.4328
+  531   2.065e+04     0.07846        0.354       0.4325
+  532   2.113e+04     0.07837       0.3538       0.4322
+  533   2.163e+04     0.07828       0.3536       0.4319
+  534   2.213e+04     0.07819       0.3534       0.4316
+  535   2.265e+04     0.07811       0.3532       0.4313
+  536   2.317e+04     0.07803        0.353        0.431
+  537   2.371e+04     0.07795       0.3528       0.4308
+  538   2.427e+04     0.07787       0.3526       0.4305
+  539   2.483e+04      0.0778       0.3525       0.4303
+  540   2.541e+04     0.07773       0.3523         0.43
+  541     2.6e+04     0.07766       0.3522       0.4298
+  542   2.661e+04     0.07759        0.352       0.4296
+  543   2.723e+04     0.07753       0.3519       0.4294
+  544   2.786e+04     0.07747       0.3517       0.4292
+  545   2.851e+04     0.07741       0.3516        0.429
+  546   2.917e+04     0.07736       0.3515       0.4288
+  547   2.985e+04      0.0773       0.3513       0.4286
+  548   3.055e+04     0.07725       0.3512       0.4285
+  549   3.126e+04      0.0772       0.3511       0.4283
+  550   3.199e+04     0.07716        0.351       0.4281
+  551   3.273e+04     0.07711       0.3509        0.428
+  552    3.35e+04     0.07707       0.3508       0.4279
+  553   3.428e+04     0.07703       0.3507       0.4277
+  554   3.508e+04     0.07699       0.3506       0.4276
+  555   3.589e+04     0.07696       0.3505       0.4275
+  556   3.673e+04     0.07693       0.3505       0.4274
+  557   3.758e+04      0.0769       0.3504       0.4273
+  558   3.846e+04     0.07687       0.3503       0.4272
+  559   3.936e+04     0.07685       0.3503       0.4271
+  560   4.027e+04     0.07682       0.3502       0.4271
+  561   4.121e+04      0.0768       0.3502        0.427
+  562   4.217e+04     0.07679       0.3501       0.4269
+  563   4.315e+04     0.07677       0.3501       0.4269
+  564   4.416e+04     0.07676       0.3501       0.4268
+  565   4.519e+04     0.07675       0.3501       0.4268
+  566   4.624e+04     0.07674         0.35       0.4268
+  567   4.732e+04     0.07673         0.35       0.4267
+  568   4.842e+04     0.07673         0.35       0.4267
+  569   4.955e+04     0.07673         0.35       0.4267
+  570    5.07e+04     0.07673         0.35       0.4267
+  571   5.188e+04     0.07673         0.35       0.4267
+  572   5.309e+04     0.07674         0.35       0.4268
+  573   5.433e+04     0.07674         0.35       0.4268
+  574   5.559e+04     0.07675       0.3501       0.4268
+  575   5.689e+04     0.07677       0.3501       0.4269
+  576   5.821e+04     0.07678       0.3501       0.4269
+  577   5.957e+04      0.0768       0.3502        0.427
+  578   6.095e+04     0.07681       0.3502        0.427
+  579   6.237e+04     0.07684       0.3503       0.4271
+  580   6.383e+04     0.07686       0.3503       0.4272
+  581   6.531e+04     0.07688       0.3504       0.4272
+  582   6.683e+04     0.07691       0.3504       0.4273
+  583   6.839e+04     0.07694       0.3505       0.4274
+  584   6.998e+04     0.07697       0.3506       0.4275
+  585   7.161e+04     0.07701       0.3507       0.4277
+  586   7.328e+04     0.07704       0.3507       0.4278
+  587   7.499e+04     0.07708       0.3508       0.4279
+  588   7.674e+04     0.07712       0.3509        0.428
+  589   7.852e+04     0.07717        0.351       0.4282
+  590   8.035e+04     0.07721       0.3511       0.4283
+  591   8.222e+04     0.07726       0.3512       0.4285
+  592   8.414e+04     0.07731       0.3513       0.4287
+  593    8.61e+04     0.07736       0.3515       0.4288
+  594    8.81e+04     0.07741       0.3516        0.429
+  595   9.016e+04     0.07747       0.3517       0.4292
+  596   9.226e+04     0.07753       0.3518       0.4294
+  597   9.441e+04     0.07759        0.352       0.4296
+  598   9.661e+04     0.07765       0.3521       0.4298
+  599   9.886e+04     0.07771       0.3523         0.43
+  600   1.012e+05     0.07778       0.3524       0.4302
+  601   1.035e+05     0.07785       0.3526       0.4304
+  602   1.059e+05     0.07792       0.3528       0.4307
+  603   1.084e+05     0.07799       0.3529       0.4309
+  604   1.109e+05     0.07807       0.3531       0.4312
+  605   1.135e+05     0.07815       0.3533       0.4314
+  606   1.161e+05     0.07823       0.3535       0.4317
+  607   1.189e+05     0.07831       0.3536        0.432
+  608   1.216e+05     0.07839       0.3538       0.4322
+  609   1.245e+05     0.07848        0.354       0.4325
+  610   1.274e+05     0.07857       0.3542       0.4328
+  611   1.303e+05     0.07866       0.3544       0.4331
+  612   1.334e+05     0.07875       0.3547       0.4334
+  613   1.365e+05     0.07884       0.3549       0.4337
+  614   1.396e+05     0.07894       0.3551        0.434
+  615   1.429e+05     0.07904       0.3553       0.4344
+  616   1.462e+05     0.07914       0.3555       0.4347
+  617   1.496e+05     0.07924       0.3558        0.435
+  618   1.531e+05     0.07935        0.356       0.4354
+  619   1.567e+05     0.07946       0.3563       0.4357
+  620   1.603e+05     0.07956       0.3565       0.4361
+  621   1.641e+05     0.07968       0.3568       0.4364
+  622   1.679e+05     0.07979        0.357       0.4368
+  623   1.718e+05     0.07991       0.3573       0.4372
+  624   1.758e+05     0.08002       0.3576       0.4376
+  625   1.799e+05     0.08014       0.3578        0.438
+  626   1.841e+05     0.08026       0.3581       0.4384
+  627   1.884e+05     0.08039       0.3584       0.4388
+  628   1.928e+05     0.08051       0.3587       0.4392
+  629   1.972e+05     0.08064        0.359       0.4396
+  630   2.018e+05     0.08077       0.3593         0.44
+  631   2.065e+05     0.08091       0.3596       0.4405
+  632   2.113e+05     0.08104       0.3599       0.4409
+  633   2.163e+05     0.08118       0.3602       0.4413
+  634   2.213e+05     0.08132       0.3605       0.4418
+  635   2.265e+05     0.08146       0.3608       0.4422
+  636   2.317e+05      0.0816       0.3611       0.4427
+  637   2.371e+05     0.08174       0.3614       0.4432
+  638   2.427e+05     0.08189       0.3618       0.4437
+  639   2.483e+05     0.08204       0.3621       0.4441
+  640   2.541e+05     0.08219       0.3624       0.4446
+  641     2.6e+05     0.08234       0.3628       0.4451
+  642   2.661e+05      0.0825       0.3631       0.4456
+  643   2.723e+05     0.08266       0.3635       0.4461
+  644   2.786e+05     0.08282       0.3638       0.4467
+  645   2.851e+05     0.08298       0.3642       0.4472
+  646   2.917e+05     0.08314       0.3646       0.4477
+  647   2.985e+05     0.08331       0.3649       0.4482
+  648   3.055e+05     0.08348       0.3653       0.4488
+  649   3.126e+05     0.08365       0.3657       0.4493
+  650   3.199e+05     0.08382       0.3661       0.4499
+  651   3.273e+05     0.08399       0.3665       0.4504
+  652    3.35e+05     0.08417       0.3668        0.451
+  653   3.428e+05     0.08435       0.3672       0.4516
+  654   3.508e+05     0.08453       0.3676       0.4522
+  655   3.589e+05     0.08471        0.368       0.4527
+  656   3.673e+05     0.08489       0.3684       0.4533
+  657   3.758e+05     0.08508       0.3689       0.4539
+  658   3.846e+05     0.08527       0.3693       0.4545
+  659   3.936e+05     0.08546       0.3697       0.4551
+  660   4.027e+05     0.08565       0.3701       0.4558
+  661   4.121e+05     0.08585       0.3705       0.4564
+  662   4.217e+05     0.08604        0.371        0.457
+  663   4.315e+05     0.08624       0.3714       0.4577
+  664   4.416e+05     0.08644       0.3718       0.4583
+  665   4.519e+05     0.08664       0.3723       0.4589
+  666   4.624e+05     0.08685       0.3727       0.4596
+  667   4.732e+05     0.08706       0.3732       0.4602
+  668   4.842e+05     0.08727       0.3736       0.4609
+  669   4.955e+05     0.08748       0.3741       0.4616
+  670    5.07e+05     0.08769       0.3746       0.4623
+  671   5.188e+05     0.08791        0.375       0.4629
+  672   5.309e+05     0.08812       0.3755       0.4636
+  673   5.433e+05     0.08834        0.376       0.4643
+  674   5.559e+05     0.08856       0.3765        0.465
+  675   5.689e+05     0.08879       0.3769       0.4657
+  676   5.821e+05     0.08901       0.3774       0.4664
+  677   5.957e+05     0.08924       0.3779       0.4672
+  678   6.095e+05     0.08947       0.3784       0.4679
+  679   6.237e+05      0.0897       0.3789       0.4686
+  680   6.383e+05     0.08994       0.3794       0.4694
+  681   6.531e+05     0.09017       0.3799       0.4701
+  682   6.683e+05     0.09041       0.3804       0.4708
+  683   6.839e+05     0.09065        0.381       0.4716
+  684   6.998e+05     0.09089       0.3815       0.4724
+  685   7.161e+05     0.09114        0.382       0.4731
+  686   7.328e+05     0.09138       0.3825       0.4739
+  687   7.499e+05     0.09163        0.383       0.4747
+  688   7.674e+05     0.09188       0.3836       0.4755
+  689   7.852e+05     0.09213       0.3841       0.4762
+  690   8.035e+05     0.09239       0.3847        0.477
+  691   8.222e+05     0.09264       0.3852       0.4778
+  692   8.414e+05      0.0929       0.3857       0.4786
+  693    8.61e+05     0.09316       0.3863       0.4795
+  694    8.81e+05     0.09342       0.3868       0.4803
+  695   9.016e+05     0.09369       0.3874       0.4811
+  696   9.226e+05     0.09395        0.388       0.4819
+  697   9.441e+05     0.09422       0.3885       0.4828
+  698   9.661e+05     0.09449       0.3891       0.4836
+  699   9.886e+05     0.09477       0.3897       0.4844
+  700   1.012e+06     0.09578       0.3918       0.4876
+  701   1.035e+06     0.09606       0.3924       0.4884
+  702   1.059e+06     0.09633       0.3929       0.4893
+  703   1.084e+06     0.09661       0.3935       0.4901
+  704   1.109e+06     0.09689       0.3941        0.491
+  705   1.135e+06     0.09717       0.3947       0.4918
+  706   1.161e+06     0.09745       0.3953       0.4927
+  707   1.189e+06     0.09774       0.3958       0.4936
+  708   1.216e+06     0.09802       0.3964       0.4945
+  709   1.245e+06     0.09831        0.397       0.4953
+  710   1.274e+06      0.0986       0.3976       0.4962
+  711   1.303e+06      0.0989       0.3982       0.4971
+  712   1.334e+06     0.09919       0.3988        0.498
+  713   1.365e+06     0.09949       0.3994       0.4989
+  714   1.396e+06     0.09978       0.4001       0.4998
+  715   1.429e+06      0.1001       0.4007       0.5008
+  716   1.462e+06      0.1004       0.4013       0.5017
+  717   1.496e+06      0.1007       0.4019       0.5026
+  718   1.531e+06       0.101       0.4025       0.5035
+  719   1.567e+06      0.1013       0.4031       0.5044
+  720   1.603e+06      0.1016       0.4038       0.5054
+  721   1.641e+06      0.1019       0.4044       0.5063
+  722   1.679e+06      0.1022        0.405       0.5073
+  723   1.718e+06      0.1025       0.4057       0.5082
+  724   1.758e+06      0.1029       0.4063       0.5092
+  725   1.799e+06      0.1032        0.407       0.5101
+  726   1.841e+06      0.1035       0.4076       0.5111
+  727   1.884e+06      0.1038       0.4082       0.5121
+  728   1.928e+06      0.1041       0.4089        0.513
+  729   1.972e+06      0.1045       0.4095        0.514
+  730   2.018e+06      0.1048       0.4102        0.515
+  731   2.065e+06      0.1051       0.4109        0.516
+  732   2.113e+06      0.1055       0.4115        0.517
+  733   2.163e+06      0.1058       0.4122        0.518
+  734   2.213e+06      0.1061       0.4128        0.519
+  735   2.265e+06      0.1065       0.4135         0.52
+  736   2.317e+06      0.1068       0.4142        0.521
+  737   2.371e+06      0.1071       0.4149        0.522
+  738   2.427e+06      0.1075       0.4155        0.523
+  739   2.483e+06      0.1078       0.4162        0.524
+  740   2.541e+06      0.1082       0.4169       0.5251
+  741     2.6e+06      0.1085       0.4176       0.5261
+  742   2.661e+06      0.1089       0.4183       0.5271
+  743   2.723e+06      0.1092       0.4189       0.5282
+  744   2.786e+06      0.1096       0.4196       0.5292
+  745   2.851e+06      0.1099       0.4203       0.5302
+  746   2.917e+06      0.1103        0.421       0.5313
+  747   2.985e+06      0.1106       0.4217       0.5324
+  748   3.055e+06       0.111       0.4224       0.5334
+  749   3.126e+06      0.1114       0.4231       0.5345
+  750   3.199e+06      0.1117       0.4238       0.5355
+  751   3.273e+06      0.1121       0.4245       0.5366
+  752    3.35e+06      0.1124       0.4252       0.5377
+  753   3.428e+06      0.1128        0.426       0.5388
+  754   3.508e+06      0.1132       0.4267       0.5399
+  755   3.589e+06      0.1136       0.4274        0.541
+  756   3.673e+06      0.1139       0.4281        0.542
+  757   3.758e+06      0.1143       0.4288       0.5431
+  758   3.846e+06      0.1147       0.4296       0.5442
+  759   3.936e+06      0.1151       0.4303       0.5453
+  760   4.027e+06      0.1154        0.431       0.5465
+  761   4.121e+06      0.1158       0.4317       0.5476
+  762   4.217e+06      0.1162       0.4325       0.5487
+  763   4.315e+06      0.1166       0.4332       0.5498
+  764   4.416e+06       0.117        0.434       0.5509
+  765   4.519e+06      0.1174       0.4347       0.5521
+  766   4.624e+06      0.1178       0.4354       0.5532
+  767   4.732e+06      0.1182       0.4362       0.5543
+  768   4.842e+06      0.1186       0.4369       0.5555
+  769   4.955e+06      0.1189       0.4377       0.5566
+  770    5.07e+06      0.1193       0.4384       0.5578
+  771   5.188e+06      0.1197       0.4392       0.5589
+  772   5.309e+06      0.1201       0.4399       0.5601
+  773   5.433e+06      0.1206       0.4407       0.5613
+  774   5.559e+06       0.121       0.4415       0.5624
+  775   5.689e+06      0.1214       0.4422       0.5636
+  776   5.821e+06      0.1218        0.443       0.5648
+  777   5.957e+06      0.1222       0.4438       0.5659
+  778   6.095e+06      0.1226       0.4445       0.5671
+  779   6.237e+06       0.123       0.4453       0.5683
+  780   6.383e+06      0.1234       0.4461       0.5695
+  781   6.531e+06      0.1238       0.4468       0.5707
+  782   6.683e+06      0.1243       0.4476       0.5719
+  783   6.839e+06      0.1247       0.4484       0.5731
+  784   6.998e+06      0.1251       0.4492       0.5743
+  785   7.161e+06      0.1255         0.45       0.5755
+  786   7.328e+06       0.126       0.4507       0.5767
+  787   7.499e+06      0.1264       0.4515       0.5779
+  788   7.674e+06      0.1268       0.4523       0.5791
+  789   7.852e+06      0.1272       0.4531       0.5803
+  790   8.035e+06      0.1277       0.4539       0.5816
+  791   8.222e+06      0.1281       0.4547       0.5828
+  792   8.414e+06      0.1285       0.4555        0.584
+  793    8.61e+06       0.129       0.4563       0.5853
+  794    8.81e+06      0.1294       0.4571       0.5865
+  795   9.016e+06      0.1299       0.4579       0.5877
+  796   9.226e+06      0.1303       0.4587        0.589
+  797   9.441e+06      0.1308       0.4595       0.5902
+  798   9.661e+06      0.1312       0.4603       0.5915
+  799   9.886e+06      0.1316       0.4611       0.5927
+-------------------------------------------------------------
+### kaon- 5 GeV on G4_Al xs/X0= 4.90851
+G4WT0 > Destroying WorkerRunManager (0x7fd5c003ecd0)
+G4WT0 > G4 kernel has come to Quit state.
+G4WT0 > ================== Deleting memory pools ===================
+G4WT0 > Number of memory pools allocated: 4; of which, static: 0
+G4WT0 > Dynamic pools deleted: 4 / Total memory freed: 0.0058 MB
+G4WT0 > ============================================================
+G4WT0 > Thread-local UImanager is to be deleted.
+G4WT0 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT1 > Destroying WorkerRunManager (0x7fd5b803ecd0)
+G4WT1 > G4 kernel has come to Quit state.
+G4WT1 > ================== Deleting memory pools ===================
+G4WT1 > Number of memory pools allocated: 9; of which, static: 0
+G4WT1 > Dynamic pools deleted: 9 / Total memory freed: 0.013 MB
+G4WT1 > ============================================================
+G4WT1 > Thread-local UImanager is to be deleted.
+G4WT1 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4 kernel has come to Quit state.
+================== Deleting memory pools ===================
+Number of memory pools allocated: 3; of which, static: 0
+Dynamic pools deleted: 3 / Total memory freed: 0.0048 MB
+============================================================
+RunManagerKernel is deleted. Good bye :)

@@ -1,0 +1,454 @@
+
+                       geant4-10-04-ref-07
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Consolidated use of generic workspace pool class in geometry module.
+ o Fixed case of energy non-conservation in muon decay.
+ o Introduced new class G4GammaSuperProcess, for coherent handling of
+   EM processes on gamma particles.
+ o Extended G4SeltzerBergerModel model with optional sampling tables for
+   faster run time sampling of the emitted photon energy. Measuring 40-60%
+   model speedup.
+ o Improved computation of kaon cross-sections.
+ o Replaced explicit high-energy limit of hadronic physics with the one
+   defined in a new dedicated class G4HadronicParameters.
+ o In all hadronic builders fixed use of data for neutron capture in HP
+   physics-lists.
+ o New data sets G4EMLOW-7.6 and G4INCL-1.0.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(+)  Fixes included in release 10.4.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-04-17
+-----
+- Switched to new data-sets G4EMLOW-7.6 and G4INCL-1.0.
+
+externals                                        externals-V10-04-06
+---------
+- CLHEP: removed not implemented constructor declaration in MixMaxRng.
+
+geometry
+--------
+- magneticfield (field-V10-04-10)
+  o Corrections in calculation of chord distance in G4DormandPrince745
+    (use 4th order interpolation from Shampine 1986 for mid-point).
+  o Revised G4FieldUtils: moved copy() method from steppers, added two new
+    setters for simple & variadic methods.
+  o Fixes to copy input time in ModifiedMidpoint, CashKarp, G4RK547FEq1/2/3
+    Bogacki-Shampine 4/5 and 2/3, Dormand Prince 4/5, 5/6 and 7/8 and
+    Tsitouras steppers.
+  o Trial revision in G4BulirschStoer to reduce number of division
+    operations.
+  o Fix for unitialised pointer in G4FSALIntegrationDriver constructor.
+    Revision of data member variable names.
+- solids/CSG (geom-csg-V10-04-04):
+  o Make G4UTrd wrapper inheriting from vecgeom::GenericUnplacedTrd,
+    following the latest changes in VecGeom.
+- solids/specific (geom-specific-V10-04-12):
+  o Removed G4SolidsWorkspacePool class. Adapted G4SolidsWorkspace to
+    use templated class G4TWorkspacePool.
+  o Make G4UHype wrapper inheriting from vecgeom::GenericUnplacedHype,
+    following the latest changes in VecGeom.
+- volumes (geomvol-V10-04-03):
+  o Removed G4GeometryWorkspacePool class. Adapted G4GeometryWorkspace to
+    use templated class G4TWorkspacePool.
+
+intercoms                                        intercoms-V10-04-04
+---------
+- G4UIcommand: added comparison of two variables.
+  Addressing problem report #2068.
+
+particles                                        particles-V10-04-04
+---------
+- Fixed case of energy non-conservation in muon decay, due to wrong
+  calculation of 2-neutrino system in CM frame for muon decay channel
+  with spin. Addressing problem report #2072.
+
+physics_lists/builders                           phys-builders-V10-04-00
+----------------------
+- Replaced explicit high-energy limit of hadronic physics with the one
+  from the new class G4HadronicParameters.
+
+physics_lists/constructors/decay                 phys-ctor-decay-V10-04-00
+--------------------------------
+- G4RadioactiveDecayPhysics: fixed initialisation ordering of messages to
+  EM physics.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-04-06
+------------------------------------------
+- Added new class G4GammaSuperProcess, for coherent handling of EM processes
+  on gamma particles.
+  G4EmStandardPhysics_option1: enable gamma super process.
+  G4EmStandardPhysics: added possibility to use gamma super process.
+- G4EmLowEPPhysics: added Bremsstrahlung and pair-production for ions.
+
+physics_lists/constructors/gamma_lepto_nuclear   phys-ctor-glnuclear-V10-04-03
+----------------------------------------------
+- G4BertiniElectroNuclearBuilder: replaced explicit high-energy limit
+  of hadronic physics with the one from G4HadronicParameters.
+
+physics_lists/constructors/hadron_elastic        phys-ctor-helastic-V10-04-02
+-----------------------------------------
+- G4HadronElasticPhysicsXS: fixed use of data for neutron capture in HP
+  lists. Addressing problem report #2057.
+- G4HadronElasticPhysics: added service methods GetElasticProcess(),
+  GetElasticModel() and AddXSection(). Code cleanup: use C++11 keywords;
+  removed unnecessary statics.
+- G4HadronElasticPhysicsHP, G4HadronElasticPhysicsPHP, G4HadronElasticPhysicsXS,
+  G4HadronElasticPhysicsLEND: use inheritance from G4HadronElasticPhysics;
+  removed most of static members; use of C++11 keywords.
+- G4HadronDElasticPhysics, G4HadronHElasticPhysics: use of C++11 keywords.
+- G4ChargeExchangePhysics, G4IonElasticPhysics, G4ThermalNeutrons: removed
+  static members; use of C++11 keywords.
+
+physics_lists/constructors/hadron_inelastic      phys-ctor-hinelastic-V10-04-08
+-------------------------------------------
+- Replaced explicit high-energy limit of hadronic physics with the one from
+  G4HadronicParameters.
+- In all hadronic builders fixed use of data for neutron capture in HP
+  lists; fixed configuration of capture and fission models and cross-sections.
+  Addressing problem report #2057.
+- G4HadronInelasticQBBC, G4HadronPhysicsFTFP_BERT, G4HadronPhysicsQGSP_BIC:
+  clean-up model and cross-section configurations for neutrons.
+- Fixed possible double deletion of builders objects at the end of a run.
+- G4HadronPhysicsQGSP_BIC_AllHP: rewritten physics constructor for
+  QGSP_BIC_AllHP, consistently with QGSP_BIC_HP (this fixes the problem
+  of two fully overlapping neutron-capture models).
+- G4HadronPhysicsQGSP_BIC, G4HadronPhysicsQGSP_BIC_HP,
+  G4HadronPhysicsQGSP_BIC_AllHP: fixed C++11 keyword.
+- G4HadronInelasticQBBC, G4HadronPhysicsFTFP_BERT, G4HadronPhysicsQGS_BIC,
+  G4HadronPhysicsQGSP_BIC_AllHP: do not fill internal structure for
+  cross-sections.
+- G4VHadronPhysics: added extra method.
+
+physics_lists/constructors/ions                  phys-ctor-ions-V10-04-02
+-------------------------------
+- G4IonPhysics, G4IonBinaryCascadePhysics, G4IonPhysicsPHP: replaced
+  explicit high-energy limit of hadronic physics with the one from 
+  G4HadronicParameters.
+- G4IonPhysicsXS: new constructor in which ParticleXS cross-sections are used
+  for light ions.
+- G4IonPhysics: clean-up, removed unnecessary statics.
+
+physics_lists/lists                              phys-list-V10-04-01
+-------------------
+- LBE: replaced the explicit high-energy limit of hadronic physics
+  with the one from G4HadronicParameters.
+
+physics_lists/util                               phys-util-V10-04-00
+------------------
+- G4PhysListUtil: added methods GetCaptureProcess() and GetFissionProcess().
+
+processes/electromagnetic/dna                    emdna-V10-04-08
+-----------------------------
+- Included upper energy limit of models.
+- Updated Si mass in G4DNAGenericIonsManager.
+- Added protection in Auger emission.
+
+processes/electromagnetic/lowenergy              emlowen-V10-04-08
+-----------------------------------
+- Added new classes for elastic scattering of gammas by M.Omer and R.Hajima.
+- Updated JAEA elastic model classes.
+- G4LivermoreBremsstrahlungModel: no functional changes. Some base class
+  member names have been changed and these modifications propagated down
+  to the derived class.
+
+processes/electromagnetic/standard               emstand-V10-04-32
+----------------------------------
+- G4BetheHeitler5DModel: inverted CDF for X generation; fixed polarization
+  vector not normalized in coordinate transformation; code cleanup.
+- G4SeltzerBergerModel: extended model with optional sampling tables for fast
+  run time sampling of the emitted photon energy from the Seltzer-Berger scaled
+  DCS, instead of using the rejection. The sampling tables are hadled by the
+  new G4SBBremTable class. Measuring 40-60% model speedup with some additional
+  memory consumption.
+- G4eBremsstrahlungRelModel: improved LPM function approximation; code cleanup
+  and optimization.
+- G4DipBustGenerator: optimisation, speedup; using G4Pow::A13.
+- G4BetheHeitlerModel, G4PairProductionRelModel: code cleanup.
+
+processes/electromagnetic/utils                  emutils-V10-04-15
+-------------------------------
+- G4VEmProcess, G4VEnergyLossProcess: moved few class members from private to
+  protected, introduced check on energy change between steps, allowing skipping
+  of recomputation of cross-section at a step.
+  Attempt to optimise number of calls to cross-sections.
+- G4EmParameters: added extra protection to avoid simulteneous definition of
+  options which should not be enabled together.
+- G4EmParameters, G4EmParameterMessenger, G4LossTableManager: minor update
+  of interfaces; added extra parameters.
+- G4EmDataHandler: added public interfaces.
+- G4VEmProcess: code cleanup in StorePhysicsTable(..) methods; introduced
+  'isTheMaster' flag.
+- G4EmElementSelector: code optimisation.                                    (+)
+
+processes/electromagnetic/xrays                  xrays-V10-04-04
+-------------------------------
+- G4Cerenkov. added protection against infinite loops due to very small      (+)
+  steps. Addressing problem report #1992.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-04-26)
+  o G4NeutronElasticXS, G4PhotoNuclearCrossSection, 
+    G4ElectroNuclearCrossSection: removed GHEISHA cross-section from 
+    data store; use these classes as default.
+    Corrected list of isotope cross-section.
+  o G4NeutronElasticXS: instantiate components in BuildPhysicsTable.
+  o G4HadronNucleonXsc: improved computation of kaon cross-sections,
+    kaon-short and kaon-long cross-sections are computed as half sum of
+    K- and K+. Implemented PDG-2017 parameterisation of total cross-sections.
+    Use G4Pow, G4Exp, G4Log substituting std::pow; added interfaces with
+    G4ParticleDefinition and kinetic energy.
+  o G4CrossSectionElastic, G4CrossSectionInelastic: use new class
+    G4HadronicParameters for definition of max energy.
+  o G4ComponentGGHadronNucleusXsc: general review and speed up without 
+    functional changes; added method ComputeRocssSections(); added cache
+    values.
+  o G4VCrossSectionDataSet, G4BGGPionElasticXS, G4BGGPionInelasticXS:
+    replaced explicit high-energy limit of hadronic physics with
+    the one from G4HadronicParameters.
+  o G4CrossSectionElastic, G4CrossSectionDataSetRegistry,
+    G4CrossSectionInelastic: added safe deletion of G4VComponentCrossSection
+    at end of run.
+  o G4CrossSectionDataSetRegistry, G4VComponentCrossSection: added
+    registration/de-registration of component cross-sections.
+  o G4ComponentGGHadronNucleusXsc: minor code cleanup. 
+  o G4HadronCrossSections: use G4ThreadLocalSingleton pattern
+  o G4HadronElasticDataSet, G4HadronInelasticDataSet: added cache; optimized
+    IsElementApplicable() method.
+  o G4CrossSectionElastic, G4CrossSectionInelastic: set Zmin=1 instead of 0.
+- management (hadr-man-V10-04-07)
+  o Added function GetHadronicModel(modelName) in G4HadronicProcess, which
+    returns a pointer to G4HadronicInteraction.
+- models/abla (hadr-abla-V10-04-04)
+  o Updated ABLA interfaces.
+- models/cascade (hadr-casc-V10-04-06)
+  o G4GDecay3: fixed problem reported by CMS due to wrong kinematics in the  (+)
+    final state by removing loop check; adding protection for low value of
+    mother mass.
+- models/coherent_elastic (hadr-cohe-V10-04-04)
+  o Replaced the explicit high-energy limit of hadronic physics with the
+    one from G4HadronicParameters.
+  o G4AntiNuclElastic: use cross-section component from 
+    G4CrossSectionDataSetRegistry and properly delete it at the end of run.
+- models/de_excitation (hadr-deex-V10-04-04)
+  o G4NeutronRadCapture: replaced the explicit high-energy limit of
+    hadronic physics with the one from G4HadronicParameters.
+  o G4FermiPhaseSpaceDecay: moved long method from inline to source;
+    added a protection for low mass of initial state.
+- models/lepto_nuclear (hadr-lepnuc-V10-04-02)
+  o G4NeutrinoElectronCcModel: replaced the explicit high-energy limit
+    of hadronic physics with the one from G4HadronicParameters.
+- models/particle_hp (hadr-hpp-V10-04-03)                                    (+)
+  o G4ParticleHPElementData: removed unnecessary inheritance from
+    G4HadronicCrossSection.
+- processes (hadr-proc-V10-04-08)
+  o G4HadronCaptureProcess: revised description; added C++11 keywords.
+- stopping (hadr-stopping-V10-04-01)
+  o G4HadronicAbsorptionFritiof: replaced the explicit high-energy limit
+    of hadronic physics with the one from G4HadronicParameters.
+- util (hadr-util-V10-04-03)
+  o Added new singleton class G4HadronicParameters, keeping global hadronic
+    parameters. For the time being, it has only the high-energy limit of
+    hadronic physics (instead of spreading this value in many different
+    files, as done up to now). The default value is set to 100 TeV.
+
+processes/transportation                         transport-V10-04-06
+------------------------
+- Minor code cleanup in G4[Coupled]Transportation classes.
+  Use G4Exception for warnings, instead of streaming to cout/cerr.
+
+run                                              run-V10-04-10
+---
+- G4WorkerThread: use G4GeometryWorkspace and G4SolidsWorkspace the same
+  way as the other workspaces, through the templated worskspace pool class.
+
+visualization                                    vis-V10-04-10
+-------------
+- management (visman-V10-04-15):
+  o /vis/viewer/interpolate: fixed gcc-8 compilation warnings.
+  o /vis/viewer/colourByDensity, changed defaults: Algorithm 1 is default;
+    gm/cm3 is the default unit; subsequent parameters are not omitable.
+  o Removed G4VViewer::G4Spline.
+  o /vis/viewer/set/timeWindow/displayLightFront: changed defaults.
+  o /vis/viewer/colourByDensity: changed defaults.
+  o Small bug fix in G4ViewParameters operator<<().
+- modeling (modeling-V10-04-06):
+  o Fixed Coverity defect.
+- gMocren (gMocren-V10-04-01):
+  o Fixed remaining gcc-8 compilation warnings.
+- OpenGL (opengl-V10-04-08):
+  o Small bug fixes, including light front.
+  o Disable GL_LIGHTING for 3D markers.
+- OpenInventor (openinventor-V10-04-05):
+  o Enable InventorQt driver.
+  o Fixed gcc-8 compilation warnings.
+
+data sets:
+---------
+- G4EMLOW-7.6:
+  o Added new JAEA elastic model data files.
+  o Added new sampling table data for the Seltzer-Berger Bremsstrahlung
+    model under brem_SB/SBTables.
+- G4INCL-1.0:
+  o New data set based on Hartree-Fock-Bogoliubov calculations for radius
+    and diffuseness parameter for the proton and neutron density profiles.
+    The data are used for the INCL++ model, as described in the following
+    publications:
+    - K.Bennaceur and J.Dobaczewski, Comput. Phys. Commun. 168, 96 (2005).
+    - J.L.Rodriguez-Sanchez, J.-C.David, D.Mancusi, A.Boudard, J.Cugnon
+      and S.Leray, Phys. Rev. C 96, 054602 (2017).
+
+examples                                         examples-V10-04-07
+--------
+- Updated documentation and reference outputs.
+- advanced/gammaray_telescope (gammaraytel-V10-04-05)
+  o GammaRayTelHadronPhysics, GammaRayTelIonPhysics: replaced explicit
+    high-energy limit of hadronic physics with the one from
+    G4HadronicParameters.
+- advanced/hadrontherapy (hadrontherapy-V10-04-05)
+  o Added defaultMacro_vis.mac macro file: now, if no macro file is provided,
+    the application will run defaultMacro.mac or defaultMacro_vis.mac depending
+    if visualisation is activated or not.
+  o Added function DefineMaterial() in DetectorConstruction to define materials
+    not contained in the NIST database.
+  o Added the Phase Space; PrimaryGenerator and DetectorSD modified accordingly.
+  o Added HadrontherapyRBE class for RBE calculation.
+  o Removed analysis for LET and dose.
+  o In HadrontherapyDetectorSD, added histograms for the energy deposited
+    and kinetic energy in the phantom slices.
+  o TrentoProtonPassiveBeamLine changed in TIFPAProtonPassiveBeamLine.
+  o Code cleanup.
+- advanced/microbeam (microbeam-V10-04-03)
+  o DetectorConstruction: removed user limits per volume; added protection
+    from double initialisation.
+  o Use default random engine in main().
+  o PhysicsListMessenger: set default step limit to 1 mm.
+  o StepMax: use thread safe class from EM extended examples.
+  o PhysicsList, PhysicsListMessenger: use StepMax. 
+- advanced/nanobeam (nanobeam-V10-04-00)
+  o Relaxed EM field settings.
+- advanced/underground_physics (DMX-V10-04-01)
+  o DMXPhysicsList: replaced explicit high-energy limit of hadronic physics
+    with the one from G4HadronicParameters.
+- extended/analysis/AnaEx01 (AnaEx01-V10-04-01)
+- extended/analysis/AnaEx02 (AnaEx02-V10-04-00)
+- extended/analysis/AnaEx03 (AnaEx03-V10-04-00)
+  o Macro & commands review: removed obsolete /N03 top command directory;
+    added protection against warnings issued from ReinitializeGeometry()
+    if called in PreInit phase; added test for all commands defined in this
+    example; updated README files.
+- extended/biasing/B03 (B03-V10-04-02)
+  o B03PhysicsList: replaced explicit high-energy limit of hadronic physics
+    with the one from G4HadronicParameters
+- extended/electromagnetic/TestEm2 (testem2-V10-04-05)
+  o Run: added protection for division by zero.
+- extended/electromagnetic/TestEm15 (testem15-V10-04-07)
+  o SteppingAction: no conversion case protection, use directly
+    CLHEP::Hep3Vector::orthogonal() for coordinate axis definition.
+  o DetectorConstruction: use G4NistManager to allow predefined materials.
+- extended/exoticphysics/monopole (monopole-V10-04-03)
+  o G4MonopolePhysics: fixed static analyzer warning.
+  o G4MonopoleTransportation: removed several static variables;
+    fixed code layout.
+- extended/field/field01 (fieldex01-V10-04-03)
+- extended/field/field02 (fieldex02-V10-04-02)
+  o Added command '/field/setField Bx By Bz unit'.
+  o Macro review and code clean-up: removed EventAction, RunAction,
+    RunActionMessenger used only for storing random numbers, already
+    available in kernel; separated other than visualization settings
+    from vis.mac in a new init_vis.mac; added test for commands defined
+    in the example at the end of the main input macro; improved visualization
+    of geometry; added "beamOn 10" button in gui.mac; updated README files.
+- extended/field/field03 (fieldex03-V10-04-02)
+  o Added commands '/field/setField Bx By Bz unit' and
+    '/field/setLocalField Bx By Bz unit'.
+  o Macro review and code clean-up: removed EventAction, RunAction,
+    RunActionMessenger used only for storing random numbers, already
+    available in kernel; separated other than visualization settings
+    from vis.mac in a new init_vis.mac; added test for commands defined
+    in the example at the end of the main input macro; improved visualization
+    of geometry; added "beamOn 10" button in gui.mac; updated README files.
+- extended/field/field04 (fieldex04-V10-04-02)
+  o Macro review and code clean-up: modify handling program according to
+    basic examples; separated other than visualization settings from vis.mac
+    in a new init_vis.mac and added 'startPhase' program argument; added test
+    for commands defined in the example at the end of the main input macro;
+    removed SetCut() functions and commands from the physics list and
+    physics list messenger (available in G4 kernel); fixed warnings when
+    geometry parameters are set in PreInit phase; improved visualization
+    of geometry; added "beamOn 10" button in gui.mac; updated README files.
+- extended/field/field05 (fieldex05-V10-04-02)
+- extended/field/field06 (fieldex06-V10-04-01)
+  o Macro review and code clean-up: separated other than visualization
+    settings from vis.mac in a new init_vis.mac; added "beamOn 10" button
+    in gui.mac; updated README files.
+- extended/medical/dna/dnaphysics (dnaphysics-V10-04-02)
+- extended/medical/dna/icsd (exicsd-V10-04-03)
+  o Activated ntuple merging.
+  o Removed use of obsolete RanecuEngine.
+- extended/medical/dna/mfp (mfp-V10-04-02)
+- extended/medical/dna/microdosimetry (microdosimetry-V10-04-01)
+  o Removed use of obsolete RanecuEngine.
+- extended/medical/dna/microyz (microyz-V10-04-01)
+  o Activated ntuple merging.
+  o Removed use of obsolete RanecuEngine.
+- extended/medical/dna/neuron (neuron-V10-04-02)
+- extended/medical/dna/pdb4dna (pdb4dna-V10-04-01)
+- extended/medical/dna/range (range-V10-04-01)
+- extended/medical/dna/slowing (slowing-V10-04-02)
+- extended/medical/dna/splitting (splitting-V10-04-02)
+- extended/medical/dna/spower (spower-V10-04-02)
+- extended/medical/dna/svalue (svalue-V10-04-02)
+- extended/medical/dna/wholeNuclearDNA (wholeNuclearDNA-V10-04-01)
+- extended/medical/dna/wvalue (wvalue-V10-04-01)
+  o Removed use of obsolete RanecuEngine.
+- extended/hadronic/Hadr02 (exhadr02-V10-04-02)
+  o Replaced explicit high-energy limit of hadronic physics with the one
+    from G4HadronicParameters.
+- extended/hadronic/Hadr03 (exhadr03-V10-04-04)
+- extended/hadronic/Hadr04 (exhadr04-V10-04-04)
+- extended/hadronic/Hadr06 (exhadr06-V10-04-03)
+  o envHadronic: added env variables for particleHP.
+- extended/hadronic/Hadr07 (exhadr07-V10-04-04)
+  o envHadronic: added env variables for particleHP.
+- extended/hadronic/NeutronSource (NeutronSource-V10-04-06)
+  o PhysicsList: activated use of GetHadronicModel() in ConstructProcess().
+- extended/optical/OpNovice (OpNovice-V10-04-02)
+  o Macro review: added test for '/OpNovice/phys/cerenkovMaxPhotons' command
+    at the end of OpNovice.in macro; updated README files.
+- extended/radioactivedecay/Activation (activation-V10-04-03)
+  o envHadronic: added env variables for particleHP.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-04-03)
+  o Add timeWindowBiased.mac input macro and data.
+
+tests                                            tests-V10-04-07
+-----
+- Updated reference outputs and tools.
+- tests/test04 (test04-V10-04-00)
+- tests/test11 (test11-V10-04-00)
+- tests/test13 (test13-V10-04-00)
+- tests/test22 (test22-V10-04-01)
+- tests/test23 (test23-V10-04-00)
+- tests/test24 (test24-V10-04-00)
+- tests/test25 (test25-V10-04-00)
+- tests/test27 (test27-V10-04-00)
+- tests/test28 (test28-V10-04-00)
+- tests/test30 (test30-V10-04-00)
+- tests/test33 (test33-V10-04-00)
+- tests/test35 (test35-V10-04-00)
+  o Replaced in physics-list the explicit high-energy limit of hadronic
+    physics with the one from G4HadronicParameters.
+- tests/test37 (test37-V10-04-00)
+  o Added runSS.csh script.
+- tests/test47 (test47-V10-04-00)
+- tests/test61 (test61-V10-04-00)
+- tests/test65 (test65-V10-04-03)
+  o Replaced in physics-list the explicit high-energy limit of hadronic
+    physics with the one from G4HadronicParameters.
