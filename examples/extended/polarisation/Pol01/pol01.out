@@ -1,0 +1,268 @@
+
+        ############################################
+        !!! WARNING - FPE detection is activated !!!
+        ############################################
+
+**************************************************************
+ Geant4 version Name: geant4-10-06-ref-07    (31-July-2020)
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+Visualization Manager instantiating with verbosity "warnings (3)"...
+Visualization Manager initialising...
+Registering graphics systems...
+
+You have successfully registered the following graphics systems.
+Registered graphics systems are:
+  ASCIITree (ATree)
+  DAWNFILE (DAWNFILE)
+  G4HepRep (HepRepXML)
+  G4HepRepFile (HepRepFile)
+  RayTracer (RayTracer)
+  VRML1FILE (VRML1FILE)
+  VRML2FILE (VRML2FILE)
+  gMocrenFile (gMocrenFile)
+  OpenGLImmediateXm (OGLIXm, OGLI)
+  OpenGLStoredXm (OGLSXm, OGL, OGLS)
+  OpenGLImmediateX (OGLIX, OGLIXm_FALLBACK)
+  OpenGLStoredX (OGLSX, OGLSXm_FALLBACK)
+  RayTracerX (RayTracerX)
+
+Registering model factories...
+
+You have successfully registered the following model factories.
+Registered model factories:
+  generic
+  drawByAttribute
+  drawByCharge
+  drawByOriginVolume
+  drawByParticleID
+  drawByEncounteredVolume
+
+Registered models:
+  None
+
+Registered filter factories:
+  attributeFilter
+  chargeFilter
+  originVolumeFilter
+  particleFilter
+  encounteredVolumeFilter
+
+Registered filters:
+  None
+
+You have successfully registered the following user vis actions.
+Run Duration User Vis Actions: none
+End of Event User Vis Actions: none
+End of Run User Vis Actions: none
+
+Some /vis commands (optionally) take a string to specify colour.
+"/vis/list" to see available colours.
+... open Root analysis file : pol01.root - done
+/run/verbose 2
+#
+/testem/det/setMat G4_Fe
+/testem/det/setSizeZ 1.75 mm
+/testem/phys/addPhysics polarized
+PhysicsList::AddPhysicsList: <polarized>
+#/testem/phys/addPhysics standard
+/run/printProgress 5000
+#
+/run/initialize
+userDetector->Construct() start.
+
+ The Box is 5 cm  x 5 cm  x 1.75 mm  of G4_Fe
+World is registered to the default region.
+physicsList->Construct() start.
+physicsList->CheckParticleList() start.
+physicsList->setCut() start.
+/run/setCut 0.1 mm
+#
+/polarization/manager/verbose 1
+/polarization/volume/set theBox 0. 0. 0.08
+ SetVolumePolarization theBox (0,0,0.08)
+/polarization/volume/list
+ Polarization for 1 registered volume(s) : 
+theBox : (0,0,0.08)
+#
+/gun/polarization 0. 0. -1.
+/gun/particle gamma
+#
+/gun/energy 10 MeV
+#
+##/tracking/verbose 1
+/run/beamOn 10000
+ buildBhabha cross section 0
+ buildBhabha cross section 0
+G4PolarizedPEEffectCrossSection() init
+
+pol-phot:  for gamma SubType=12 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+Polarized-PhotoElectric : Emin=    0 eV  Emax=  100 TeV  SauterGavrila
+
+pol-compt:  for gamma SubType=13 BuildTable=1
+      Lambda table from 100 eV  to 1 MeV, 7 bins/decade, spline: 1
+      LambdaPrime table from 1 MeV to 100 TeV in 56 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   Polarized-Compton : Emin=    0 eV  Emax=  100 TeV
+
+pol-conv:  for gamma SubType=14 BuildTable=1
+      Lambda table from 1.022 MeV to 100 TeV, 18 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             polConv : Emin=    0 eV  Emax=  100 TeV  ModifiedTsai
+
+msc:  for e-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+              StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llimit=1
+
+pol-eIoni:  for e-  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+PolarizedMollerBhabha : Emin=    0 eV  Emax=  100 TeV
+
+pol-eBrem:  for e-  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             PolBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedTsai
+
+msc:  for e+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+              StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llimit=1
+
+pol-eIoni:  for e+  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+PolarizedMollerBhabha : Emin=    0 eV  Emax=  100 TeV
+
+pol-eBrem:  for e+  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             PolBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedTsai
+
+pol-annihil:  for e+, integral:1  SubType=5 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+Polarized-Annihilation : Emin=    0 eV  Emax=  100 TeV
+
+Region <DefaultRegionForTheWorld> --  -- appears in <World> world volume
+ This region is in the mass world.
+ Root logical volume(s) : World 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : G4_Galactic G4_Fe 
+ Production cuts :   gamma 100 um      e- 100 um      e+ 100 um  proton 100 um 
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 100 um      e- 100 um      e+ 100 um  proton 100 um 
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : G4_Galactic
+ Range cuts        :  gamma  100 um     e-  100 um     e+  100 um  proton 100 um 
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 10 keV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : Yes
+ Material : G4_Fe
+ Range cuts        :  gamma  100 um     e-  100 um     e+  100 um  proton 100 um 
+ Energy thresholds :  gamma  6.28725 keV    e-  235.568 keV    e+  227.81 keV proton 10 keV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+Start closing geometry.
+G4GeometryManager::ReportVoxelStats -- Voxel Statistics
+
+    Total memory consumed for geometry optimisation:   0 kByte
+    Total CPU time elapsed for geometry optimisation: 0 seconds
+G4VisManager: Using G4TrajectoryDrawByCharge as fallback trajectory model.
+See commands in /vis/modeling/trajectories/ for other options.
+### Run 0 starts.
+### Run 0 start.
+--> Event 0 starts.
+--> Event 5000 starts.
+ Run terminated.
+Run Summary
+  Number of events processed : 10000
+  User=0.140000s Real=0.133584s Sys=0.000000s
+
+ The run consists of 10000 gamma of 10 MeV through 1.75 mm  of G4_Fe (density: 7.874 g/cm3 )
+
+ Process calls frequency --->
+	Transportation = 31168
+	pol-compt = 303
+	pol-eBrem = 345
+	msc = 1647
+	pol-conv = 209
+	pol-eIoni = 699
+	pol-annihil = 64
+	pol-phot = 167
+ Gamma: 
+Mean Number per Event :1.0088
+Mean Energy :9.5723 MeV +- 1.9077 MeV
+Mean Polarization :-0.96469 +- 0.18228
+ Electron: 
+Mean Number per Event :0.0348
+Mean Energy :5.1252 MeV +- 2.6774 MeV
+Mean Polarization :-0.70023 +- 0.3164
+ Positron: 
+Mean Number per Event :0.0148
+Mean Energy :4.5039 MeV +- 2.0015 MeV
+Mean Polarization :-0.65929 +- 0.30545
+... write Root file : pol01.root - done
+... close Root file : pol01.root - done
+
+--------- Ranlux engine status ---------
+ Initial seed = 9876
+ float_seed_table[] = 0.00629342 0.814581 0.106046 0.0918261 0.0304722 0.966738 0.993752 0.13774 0.218905 0.223493 0.195539 0.0768644 0.817023 0.391767 0.721965 0.538303 0.572312 0.461563 0.890598 0.557869 0.87783 0.165196 0.578634 0.634849 
+ i_lag = 0, j_lag = 10
+ carry = 5.96046e-08, count24 = 3
+ luxury = 3 nskip = 199
+----------------------------------------
+#
+Graphics systems deleted.
+Visualization Manager deleting...
+G4 kernel has come to Quit state.
+UserDetectorConstruction deleted.
+UserPhysicsList deleted.
+UserRunAction deleted.
+UserPrimaryGenerator deleted.
+RunManager is deleting RunManagerKernel.
+EventManager deleted.
+Units table cleared.
+TransportationManager deleted.
+Total navigation history collections cleaned: 7
+================== Deleting memory pools ===================
+Pool ID '20G4NavigationLevelRep', size : 0.00769 MB
+Pool ID '24G4ReferenceCountedHandleIvE', size : 0.000961 MB
+Pool ID '7G4Event', size : 0.000961 MB
+Pool ID '15G4PrimaryVertex', size : 0.000961 MB
+Pool ID '17G4PrimaryParticle', size : 0.000961 MB
+Pool ID '17G4DynamicParticle', size : 0.00192 MB
+Pool ID '7G4Track', size : 0.00288 MB
+Pool ID '18G4TouchableHistory', size : 0.000961 MB
+Pool ID '15G4CountedObjectIvE', size : 0.000961 MB
+Number of memory pools allocated: 9 of which, static: 0
+Dynamic pools deleted: 9 / Total memory freed: 0.018 MB
+============================================================
+G4Allocator objects are deleted.
+UImanager deleted.
+StateManager deleted.
+RunManagerKernel is deleted. Good bye :)
