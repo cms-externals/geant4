@@ -1,0 +1,332 @@
+
+                       geant4-10-06-ref-08
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Removed obsolete boost.python indexing suite in G4Py.
+ o Moved optical physics parameters to new G4OpticalParameters class.
+ o Added new flag threshold for muon/hadron bremsstrahlung allowing to
+   stop a track when high energy bremsstrahlung is emitted.
+ o Removed eta and eta_prime from the list of charmed and bottom
+   hadrons; removed the short-lived hadrons whose hadronic interactions
+   can be neglected.
+ o Extended diffractive excitation and quasi-elastic to handle heavy
+   (charm and bottom) hadrons.
+ o Added accessor/modifier methods for cross-section factors separately
+   for nucleons, pions, other hadrons, and leptons in G4HadronicParameters;
+   added high energy limit for low-energy physics.
+ o Replaced where possible use of environmental variables in hadronic
+   models with appropriate UI commands.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+environments/g4py                                geant4g4py-V10-06-01
+-----------------
+- Removed obsolete boost.python indexing suite (which was only required on
+  very old Boost versions <= 1.33). Replace use in client modules by direct
+  inclusion of the needed Boost header.
+- Updated signatures to support const addresses as return values in G4UIcommand.
+
+global                                           global-V10-06-19
+------
+- Added new constructor for G4PhysicsOrderedFreeVector.
+- Updated date and tag-ID for geant4-10-06-ref-08.
+
+graphics_reps                                    greps-V10-06-04
+-------------
+- Fixed minor Coverity defect in BooleanProcessor::assembleFace().
+
+intercoms                                        intercoms-V10-06-03
+---------
+- Revision for c++11 constructs, code cleanup and formatting.
+- Fixed Coverity defect for uninitialised data in G4UImanager.
+
+materials                                        materials-V10-06-05
+---------
+- G4Material: added two new public methods to add elements to a material
+  with new signature, according to ATLAS request.
+- G4MaterialPropertiesTable: added new methods to access/add properties with
+  G4String and std::vector.
+
+particles                                        particles-V10-06-09
+---------
+- G4ShortLivedConstructor: improved constitutent masses of heavy diquarks.
+
+physics_lists/builders                           phys-builders-V10-06-11
+----------------------
+- G4HadronicBuilder: added methods to configure anti light ions.
+  Added a new method, BuildDecayTableForBCHadrons(), to create some decays
+  for heavy (charmed and bottom) hadrons; this method is called by
+  BuildBCHadronsFTFP_BERT() and BuildBCHadronsQGSP_FTFP_BERT() methods only
+  if the flag for heavy hadrons is enabled.
+  Added optional cross-section factor for systematics studies.
+
+physics_lists/constructors/decay                 phys-ctor-decay-V10-06-05
+--------------------------------
+- G4RadioactiveDecayPhysics: defined EM parameters in ConstructProcess(..)
+  instead of definitions inside the constructor.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-06-17
+------------------------------------------
+- G4EmBuilder: substitute hardcoded upper limit by the value from the
+  G4HadronicParameters class.
+- G4OpticalPhysics, G4OpticalPhysicsMessenger, G4OpticalProcessIndex: 
+  moved optical physics parameters to new G4OpticalParameters class.
+  Removed G4OpticalPhysicsMessenger class and replaced by
+  G4OpticalParametersMessenger.
+  Removed G4OpticalProcessIndex class, with code now in G4OpticalParameters.
+
+physics_lists/constructors/hadron_elastic        phys-ctor-helastic-V10-06-04
+-----------------------------------------
+- G4HadronElasticPhysics: added optional cross-section factor for systematics
+  studies. Use G4HadProcesses and G4PhysListUtil.
+
+physics_lists/constructors/hadron_inelastic      phys-ctor-hinelastic-V10-06-09
+-------------------------------------------
+- G4HadronInelasticQBBC: fixed neutron and anti-baryon configurations.
+  Added optional cross-section factor for systematics studies.
+- G4HadronInelasticQGSP_BIC, G4HadronInelasticQGSP_BIC_HP, 
+  G4HadronInelasticQGSP_BIC_AllHP: added optional cross-section factor for
+  systematics studies; added b-, c- physics.
+- G4HadronInelasticQGSP_BERT, G4HadronInelasticQGSP_BERT_HP, 
+  G4HadronInelasticQGSP_FTFP_BERT: added optional cross-section factor for
+  systematics studies; added b-, c- physics; added more c++11 keywords
+- G4VHadronPhysics: removed obsolete methods.
+
+physics_lists/util                               phys-util-V10-06-08
+------------------
+- G4HadParticles: removed eta and eta_prime from the list of charmed and bottom
+  hadrons; removed the short-lived hadrons (Sigma0, etac, JPsi, SigmaC++,
+  SigmaC+, SigmaC0, Upsilon, SigmaB+, SigmaB0, SigmaB-) whose hadronic
+  interactions can be neglected (consistently with what is done currently for
+  pi0 and Sigma0) as they decay too quickly.
+- G4HadProcesses: use G4PhysListUtil to access processes.
+  Added optional Glauber-Gribov nucl-nucl cross-section.
+- G4PhysListUtil: added method to access elastic cross-section.
+
+processes/electromagnetic/standard               emstand-V10-06-13
+----------------------------------
+- G4ICRU49NuclearStoppingModel, G4WentzelOKandVIxSection,
+  G4WentzelVIRelModel, G4SeltzerBergerModel, G4LindhardSorensenIonModel:
+  improved usage of locks - it is defined inside one method with call to
+  any other method; defined deletion of copy constructor and assignment
+  operator.
+
+processes/electromagnetic/utils                  emutils-V10-06-10
+-------------------------------
+- G4OpticalParameters, G4OpticalParametersMessenger: added new files to 
+  control optical parameters, as for G4EmParameters.
+- G4EmParameters, G4EmParametersMessenger: added new flag threshold for
+  muon/hadron bremsstrahlung allowing to stop a track when high energy
+  bremsstrahlung is emitted (CMS request).
+
+processes/electromagnetic/xrays                  xrays-V10-06-04
+-------------------------------
+- G4Cerenkov, G4Scintillation: use new G4OpticalParameters to control
+  simulation parameters.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-06-07)
+  o G4ParticleInelasticXS: fixed header file
+  o G4IonProtonCrossSection: added cross-sections for light ions.
+- management (hadr-man-V10-06-08)
+  o G4HadronicEPTestMessenger, G4HadronicProcess: deprecated three
+    environmental variables G4Hadronic_*Level and corresponding old UI
+    commands "/heptst/*Level", recommending instead the new UI commands
+    "/process/had/heptst/*Level".
+  o G4HadronicProcessStore: use verbosity level from the G4HadronicParameters
+    class, added printout of cross-section factor.
+    Extended default initialisation printout to anti_lambda.
+  o G4HadronicProcess: removed unused flag.
+- models/de_excitation (hadr-deex-V10-06-07)
+  o G4NuclearLevelData: use 'Zmax' for initialisation before the run.
+    Reduced usage of mutex locks; read all level data at beginning of the run.
+  o G4ExcitationHandler: verbose level is defined by G4HadronicParameters
+    class or by the hardcoded local verbose level defined only for
+    debugging. Use 'Zmax+1' instead of 'Zmax' for nuclear level initialisation.
+  o G4DeexPrecoParameters: verbose level is defined by G4HadronicParameters
+    class or by the local verbose level.
+  o G4DeexParametersMessenger: removed obsolete UI command.
+- models/particle_hp (hadr-hpp-V10-06-10)
+  o G4ParticleHPMessenger: added new UI macro command "use_Wendt_fission_model"
+    related to the use of the Wendt fission model; make sure that no more than
+    one fission fragment model is active.
+  o G4ParticleHPManager: added a new variable related to the use of the Wendt
+    fission model; throw a "JustWarning" exception when the environmental
+    variables are used (to remind that they are still valid but deprecated,
+    and will be removed in future version; added new method DumpSetting()
+    which needs to be called somewhere to printout once the values of its
+    parameters.
+  o G4ParticleHPChannel: moved environmental variable related to the use of the
+    Wendt fission model from this class to G4ParticleHPManager.
+- models/parton_string/diffraction (hadr-string-diff-V10-06-03)
+  o G4DiffractiveExcitation: extended to handle heavy (charm and bottom)
+    hadrons; introduced also a new pre-processor option for debugging heavy
+    hadrons, switched off by default.
+    Added protection against inexisting excited hyperon states (Sigma* and Xi*).
+  o G4FTFAnnihilation: removed useless check against inexisting excited
+    hyperon states.
+- models/parton_string/hadronization (had-hadronization-V10-06-04)
+  o G4LundStringFragmentation, G4QGSMFragmentation: if the flag for heavy
+    (charmed and bottom) hadrons is enabled, then non-zero probabilities for
+    c-cbar and b-bbar creation from the vacuum are set, allowing charmed and
+    bottom hadrons to be created during the string fragmentation of ordinary
+    (i.e. not heavy) projectile hadron nuclear reactions.
+  o G4VLongitudinalStringDecay: in the method SetMinMasses(), set the
+    constituent masses of charm and bottom quarks; introduced also a new
+    pre-processor option for debugging heavy hadrons, switched off by
+    default; improved comments.
+  o G4LundStringFragmentation: extension to charm and bottom quarks of the
+    methods Quark_AntiQuark_lastSplitting() and Quark_Diquark_lastSplitting();
+    added protections in the method FragmentString() to avoid rare crashes
+    seen with heavy hadrons.
+  o G4HadronBuilder: fixed condition in the method Barion() to take into
+    account the extension to charm and bottom quarks; moreover, for both
+    Meson() and Barion() methods, we have to force by hand that the heavy
+    hadron produced by the string fragmentation is one of the few available
+    in Geant4 (in particular, all heavy hadron resonances are transformed
+    into close heavy hadron ground states). Introduced also a new pre-processor
+    option for debugging heavy hadrons, switched off by default.
+  o G4ExcitedStringDecay: added protection in the FragmentStrings() method
+    to avoid rare crashes seen with heavy hadrons.
+  o G4QGSMFragmentation : proper exit in the method FragmentString()
+    when the string mass is below the threshold.
+- models/parton_string/management (hadr-partonstring-mgt-V10-06-02)
+  o G4VPartonStringModel: introduced a new pre-processor option for debugging
+    heavy hadrons, switched off by default.
+- models/parton_string/qgsm (hadr-qgsm-V10-06-05)
+  o G4BaryonSplitter: removed inexisting in Geant4 excited hyperon states
+    (Sigma* and Xi*).
+  o G4BaryonSplitter, G4SPBaryon: extension to charmed and bottom
+    baryons and anti-baryons.
+  o G4SingleDiffractiveExcitation, G4QGSDiffractiveExcitation, G4QuarkExchange:
+    in ExciteParticipants() method of these classes, extension to charmed and
+    bottom hadrons by assuming a minimum projectile diffractive mass equal to
+    the PDG mass plus 250 MeV; in G4QuarkExchange, assumed also 50% for the
+    probability of projectile diffraction.
+  o G4Reggeons: in the constructor, replaced Omega_cc (PDG code #4432)
+    with Omega_c (PDG code #4332); added comments.
+- models/quasi_elastic (hadr-qelastic-V10-06-01)
+  o G4QuasiElRatios: extended to charmed and bottom hadrons.
+    The simplified treatment adopted is the following: to treat all heavy
+    mesons having constituent charm or bottom quark as a meson with strange
+    quark, like K-, and all heavy mesons having constituent anti-charm or
+    anti-bottom anti-quark as a meson with anti-strange quark, like K+;
+    for baryons, all heavy baryons are treated as Lambda and all heavy
+    anti-baryons are treated as anti-proton/anti-neutron.
+- models/radioactive_decay (radioactive_decay-V10-06-09)
+  o G4RadioactiveDecayBaseMessenger, G4RadioactiveDecaymessenger,
+    G4RadioactivationMessenger: deprecated old UI commands "/grdm/..." and
+    introduced new corresponding ones, "/process/had/rdm/...".
+- models/theo_high_energy (had-theo-HE-V10-06-02)
+  o G4TheoFSGenerator: introduced temporarily dummy treatment of heavy (charm
+    and bottom) projectile hadrons at low energies (below 100 MeV).
+    Cascade models are currently not applicable for heavy hadrons and string
+    models cannot handle them properly at very low energies, so we return as
+    final state the initial state unchanged.
+    Note that, for most applications, this is a safe simplification, giving
+    that the nearly all slowly moving charm and bottom hadrons decay before
+    any hadronic interaction can occur.
+- processes (hadr-proc-V10-06-02)
+  o Removed the inelastic processes for heavy hadron - nucleus interactions,
+    no longer necessary because similar inelastic processes are created by
+    G4HadronicBuilder.
+- util (hadr-util-V10-06-05)
+  o G4HadronicParametersMessenger: added new macro command to set the max
+    hadronic energy (required by DAMPE/HERD Collaboration).
+  o G4HadronicParameters: added Get/Set methods for cross-section factors
+    separately for nucleons, pions, other hadrons, and leptons; added
+    high energy limit for low-energy physics.
+
+processes/optical                                op-V10-06-04
+-----------------
+- G4OpRayleigh, G4OpAbsorption, G4OpMieHG, G4OpWLS, G4OpWLS2: moved to new
+  G4OpticalParameters class to control simulation parameters.
+
+track                                            track-V10-06-05
+-----
+- Fixed case of non-initialised values in G4Step.
+
+visualization                                    vis-V10-06-06
+-------------
+- management (visman-V10-06-08)
+  o G4VisCommandsScene: removed superfluous/unnecessary SetView() in
+    G4VisCommandSceneNotifyHandlers.
+  o G4VisManager: protected algorithm in NotifyHandlers() with 'IsValidView'.
+  o Removed obsolete G4VIS_USE_STD11 and references to obsolete G4VIS_USE.
+- modeling (modeling-V10-06-03)
+  o Rationalised defaults for PVPaths; make sure all nodes are marked as
+    "not drawn" unless actually chosen for drawing.
+- RayTracer (raytracer-V10-06-02)
+  o Suppressed printing during RayTracer run.
+
+examples                                         examples-V10-06-08
+--------
+- Updated documentation and reference outputs.
+- advanced/brachytherapy (brachy-V10-06-01)
+  o Analysis now fully compliant with g4tools; removed dependency on Root.
+    General cleanup of the code. Implemented RunAction. 
+- advanced/iort_therapy (iort_theraphy-V10-06-01)
+  o Fixed CMake script, removing direct dependency on Root.
+- advanced/underground_physics (DMX-V10-06-00)
+  o Migrated UI commands from "/grdm/..." to "/process/had/rdm/..." in
+    input macros.
+- extended/electromagnetic/TestEm1 (testem1-V10-06-01)
+  o Migrated UI command from "/grdm/nucleusLimits" to
+    "/process/had/rdm/nucleusLimits" in radioactive.mac macro.
+- extended/electromagnetic/TestEm2 (testem2-V10-06-00)
+  o Macro & commands review: removed implementation of command
+    "/testem/histo/setFileName" and replaced its usage with
+    "/analysis/setFileName"; fixed file name in egs4.mac; extended TestEm2.in
+    with a command (missing in testing): "/testem/run/verbose 1".
+  o Added macro descriptions in README
+- extended/electromagnetic/TestEm4 (testem4-V10-06-01)
+  o Updated README.
+- extended/hadronic/FissionFragment (exExtHadFissFrag-V10-06-00)
+  o Replaced deprecated HP environmental variables with corresponding
+    UI commands.
+- extended/hadronic/Hadr03 (exhadr03-V10-06-03)
+  o Removed deprecated HP environmental variables and replaced them with
+    corresponding C++ calls in the main(), and UI commands in the macros. 
+- extended/hadronic/Hadr04 (exhadr04-V10-06-00)
+  o Removed deprecated HP environmental variables and replaced them with
+    corresponding C++ calls in the main().
+- extended/hadronic/Hadr06 (exhadr06-V10-06-02)
+  o Removed deprecated HP environmental variables and replaced them with
+    corresponding C++ calls in the main(), and UI commands in the macros. 
+- extended/hadronic/Hadr07 (exhadr07-V10-06-01)
+- extended/hadronic/NeutronSource (NeutronSource-V10-06-01)
+  o Removed deprecated HP environmental variables and replaced them with
+    corresponding C++ calls in the main().
+- extended/optical/OpNovice (OpNovice-V10-06-00)
+- extended/optical/OpNovice2 (OpNovice2-V10-06-05)
+- extended/optical/wls (WLS-V10-06-00)
+  o Added material properties using new interface with std::vectors.
+- extended/radioactivedecay/Activation (activation-V10-06-02)
+  o Removed deprecated HP environmental variables and replaced them with
+    corresponding C++ calls in the main().
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-06-00)
+- extended/radioactivedecay/rdecay02 (rdecay02-V10-06-00)
+  o Migrated UI commands from "/grdm/..." to "/process/had/rdm/..." in
+    input macros.
+
+tests                                            tests-V10-06-08
+-----
+- Updated reference outputs and tools.
+- tests/test04 (test04-V10-06-00)
+- tests/test11 (test11-V10-06-00)
+  o Replaced deprecated HP environmental variable with a corresponding
+    C++ call in main().
+- tests/test18 (test18-V10-06-00)
+  o Migrated UI commands from "/grdm/..." to "/process/had/rdm/..." in
+    input macros.
+  o RadioactiveDecayGunmessenger: for consistency (although not necessary),
+    migrated the (local) UI command "/grdm/ion" to "/process/had/rdm/ion".
+- tests/test69 (test69-V10-06-00)
+  o Removed deprecated environmental variable G4NEUTRONHP_NEGLECT_DOPPLER
+    from CMake script, and replaced it with a C++ call in main(). 
