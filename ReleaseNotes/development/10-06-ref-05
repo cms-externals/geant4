@@ -1,0 +1,442 @@
+
+                       geant4-10-06-ref-05
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added new EM model for polarized gamma elastic scattering.
+ o Implemented three time constants for G4Scintillation, and allow multiple
+   time constants to work with scintillation by particle type.
+ o Added second wavelength shifting process.
+ o New physics-list builder classes to handle anti_proton and anti_neutron
+   at high energies with QGSP and to allow alternative builders for hyperons
+   and anti-hyperons.
+ o Extended EM physics-list constructors to allow extra available DNA options.
+ o Added new UI messenger for hadronic physics, currently used for controlling
+   verbosity level.
+ o Introducing G4VPrimitivePlotter allowing the user to extend a primitive
+   scorer and directly fill a 1D histogram.
+ o Enabled handling of automatic min/max axes values in case of log scale
+   in analysis tools.
+ o Enabled use of OIQT viewer with Qt UI.
+ o New advanced example showing how to efficiently simulate particle transport
+   through aerosols containing billions of randomly-positioned droplets, using
+   an ordinary workstation.
+ o Added support for modular builds in CMake.
+ o Build option with VecGeom requires VecGeom-1.1.7.
+ o Updated to data-set G4EMLOW-7.11.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in release 10.6.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-06-22
+-----
+- Change shimmed imported target name to VecGeom::vecgeom to match upstream
+  usage and reliably use target when available from VecGeom.
+  Export VecCore_DIR to package cache when set so that Geant4 behaviour is
+  consistent. Co-works with VecGeom-1.1.7.
+- Added GEANT4_USE_NEW_CMAKE option in preparation for testing of modular
+  build updates, OFF by default, to switch between systems. Importing new
+  "target" style API for declaring and composing libraries from modules of
+  source code.
+- Propagate value of CMAKE_DISABLE_FIND_PACKAGE_ROOT down to tests
+  that optionally support Root to allow testing Geant4 with Root support
+  disabled. This is necessary when testing Geant4 with a different C++
+  standard than Root when it's installed. Avoid warnings from propagating
+  the flag down to tests.
+- Added GEANT4_USE_XM to OpenInventor X11 driver code block to correct
+  Xm and Xt link order.
+- Updated to data-set G4EMLOW-7.11.
+
+config                                           config-V10-06-04
+------
+- Corrected setup for use of OpenInventor (Coin).
+- Added missing settings in G4UI_BUILD.gmk script for OIQt and use of UI.
+- Removed deprecated G4USE_STD11 flag settings.
+
+analysis                                         analysis-V10-06-02
+--------
+- Updated to g4tools 5.1.0:
+  o Corrections to handle automatic min/max axes values in case of log scale.
+- Fixed compilation warnings on clang-10 for g4tools.
+
+digits_hits                                      digits_hits-V10-06-02
+-----------
+- Introducing G4VPrimitivePlotter allowing the user to extend a primitive
+  scorer and directly fill 1D histogram.
+- Added two ComputeSolid() method to G4VPrimitiveScorer, to consolidate code.
+- Fixed cases of comparison between int and size_t in templated classes
+  and some cleanup.
+
+event                                            event-V10-06-05
+-----
+- G4GeneralParticleSourceMessenger: command structure clean-up.
+
+externals/zlib                                   zlib-V10-06-00
+--------------
+- Added needed include directories to CMake script when using new CMake system.
+
+g3tog4                                           g3tog4-V10-06-01
+------
+- Fix to CMake script
+
+geometry/management                              geommng-V10-06-04
+-------------------
+- Adopt new convention for location of headers in VecGeom for wrappers.
+- Fix to CMake script to support new CMake system.
+
+geometry/navigation                              geomnav-V10-06-03
+-------------------
+- In G4MultiLevelLocator, added ability to record in a 'whiteboard', under
+  G4DEBUG_FIELD, the start/end steps of integration intervals, to allow
+  identify issues like negative or zero steps occurrences. Includes new
+  classes G4LocatorChangeLogger and G4LocatorChangeRecord.
+- G4PropagationInField: improved ClearPropagatorState() method.
+
+geometry/solids/csg                              geom-csg-V10-06-02
+-------------------
+- Adopt new convention for location of headers in VecGeom for all wrappers.
+
+geometry/solids/specific                         geom-specific-V10-06-08
+------------------------
+- Fixed mismatch in signature of constructors for the G4UExtrudedSolid       (*)
+  wrapper.
+- Adopt new convention for location of headers in VecGeom for all wrappers.
+
+global                                           global-V10-06-14
+------
+- C++11 revision in 'management' and 'HEPNumerics' modules; general
+  code cleanup/formatting.
+- Removed use of deprecated G4USE_STD11 flag.
+- Fix to CMake script to support new CMake system.
+- Updated date and tag-ID for geant4-10-06-ref-05.
+
+intercoms                                        intercoms-V10-06-02
+---------
+- Removed unnecessary use of deprecated G4USE_STD11 flag in G4AnyMethod.
+
+interfaces                                       interfaces-V10-06-04
+----------
+- Use CMake AUTOMOC to automatically generate and compile Moc sources
+  and fixed CMake script to support new CMake system.
+
+materials                                        materials-V10-06-03
+---------
+- G4MaterialPropertiesTable, G4MaterialPropertiesIndex: added new properties
+  for scintillation allowing 3 time constants and a second wavelength shifter
+  in the same material.
+
+particles                                        particles-V10-06-08
+---------
+- Fixed Coverity warning.
+
+physics_lists/builders                           phys-builders-V10-06-05
+----------------------
+- G4QGSPAntiBarionBuilder: created new class to handle anti_proton and
+  anti_neutron at high energies with QGSP. For the light anti-ions
+  (anti_deuteron, anti_triton, anti_He3, and anti_alpha), currently QGSP
+  cannot handle them, therefore FTFP is used.
+- G4VHyperonBuilder, G4HyperonBuilder, G4HyperonQGSPBuilder: new classes
+  to allow alternative builders for hyperons (and anti-hyperons).
+  The class G4HyperonQGSPBuilder uses QGSP model to handle hyperons (and
+  anti-hyperons) at high energies.
+- G4HyperonFTFPBuilder: now it derives from G4VHyperonBuilder (physics behind
+  remains unchanged, i.e. it is still based on BERT and FTFP models).
+- G4HadronicBuilder: new utility class to build kaons, hyperons, and b-,
+  c- particles.
+- Added second wavelength shifter optical process to the
+  OrderingParameterTable.
+- Fix to CMake script to support new CMake system.
+
+physics_lists/constructors/decay                 phys-ctor-decay-V10-06-02
+--------------------------------
+- Fix to CMake script to support new CMake system.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-06-09
+------------------------------------------
+- G4OpticalPhysics, G4OpticalPhysicsMessenger: added settings for
+  G4Scintillation to use 3 time constants. Added second wavelength shifter
+  optical process to constructors.
+- G4EmDNAModelActivator: extended to extra available DNA options (DNA_Opt2,
+  DNA_Opt4, DNA_Opt4a, DNA_Opt6, DNA_Opt6a, DNA_Opt7).
+- G4EmBuilder: new utility class to allow reducing code duplication for
+  standard and low-energy EM physics constructors.
+- G4EmStandardPhysics_option1: swith to use new G4EmBuilder utility; fixed
+  StepFunction definition.
+- G4EmStandardPhysics_option3: swith to use new G4EmBuilder utility; use
+  ICRU90 stopping power data for water and air.
+- Removed duplicate code by using G4EmBuilder in several constructors, fixed
+  definition of StepFunction, use the same flag as hadronic physics to enable
+  EM interaction of b- and c- mesons and baryons.
+- G4LivermorePolarizedPhysics: use inheritance from G4LivermorePhysics.
+
+physics_lists/constructors/factory               phys-ctor-fact-V10-06-00
+----------------------------------
+- Fix to CMake script to support new CMake system.
+
+physics_lists/constructors/gamma_lepto_nuclear   phys-ctor-glnuclear-V10-06-03
+----------------------------------------------
+- G4EmExtraPhysics: extension to anti_nu_mu, nu_e and anti_nu_e
+  processes-models.
+- Fix to CMake script to support new CMake system.
+
+physics_lists/constructors/hadron_elastic        phys-ctor-helastic-V10-06-00
+-----------------------------------------
+- Fix to CMake script to support new CMake system.
+
+physics_lists/constructors/hadron_inelastic      phys-ctor-hinelastic-V10-06-04 (*) [03]
+-------------------------------------------
+- G4HadronPhysicsQGSP_BERT, G4HadronPhysicsQGSP_BIC, G4HadronPhysicsQGS_BIC, 
+  G4HadronPhysicsINCLXX, G4HadronPhysicsQGSP_BIC_HP and
+  G4HadronPhysicsQGSP_BIC_AllHP: use the new builder class
+  G4QGSPAntiBarionBuilder to handle anti_proton and anti_neutron at high
+  energies with QGSP. For the light anti-ions - anti_deuteron, anti_triton,
+  anti_He3 and anti_alpha, currently QGSP cannot handle them, therefore FTFP
+  is used.
+- G4HadronPhysicsFTFP_BERT, G4HadronPhysicsFTF_BIC, G4HadronPhysicsINCLXX,
+  G4HadronPhysicsShielding, G4HadronPhysicsQGS_BIC, G4HadronPhysicsQGSP_BIC,
+  G4HadronPhysicsQGSP_BERT, G4HadronPhysicsShieldingLEND,
+  G4HadronPhysicsQGSP_BIC_HP and G4HadronPhysicsQGSP_BIC_AllHP: in all the
+  inelastic physics constructors which are using the builder
+  G4HyperonFTFPBuilder, introduced the new builder G4HyperonBuilder; moreover,
+  the new builder G4HyperonQGSPBuilder is used now in all QGS-based inelastic
+  physics constructor for hyperons (and anti-hyperons) at high energies,
+  while keeping using G4HyperonFTFPBuilder at lower energies.
+- G4HadronPhysicsFTFP_BERT, G4HadronPhysicsQGSP_BERT, G4HadronInelasticQBBC:
+  added b- and c- particles.
+- G4HadronPhysicsQGSP_BIC_HP, G4HadronPhysicsQGSP_BIC_AllHP: refactoring
+  consistently with all others. For G4HadronPhysicsQGSP_BIC_HP, the physics
+  remain unchanged; for G4HadronPhysicsQGSP_BIC_AllHP, the physics remain
+  unchanged except for the transition region between Binary and ProtonHP
+  which is now 190-200 MeV (instead than 199-200), as for light ions.
+- Fix to CMake script to support new CMake system.
+
+physics_lists/constructors/ions                  phys-ctor-ions-V10-06-01
+-------------------------------
+- Fix to CMake script to support new CMake system.
+
+physics_lists/constructors/limiters              phys-ctor-limiters-V10-06-02
+-----------------------------------
+- G4GenericBiasingPhysics: added missing code for parallel geometries        (*)
+  for all neutral and charged particles.
+- Fix to CMake script to support new CMake system.
+
+physics_lists/constructors/stopping              phys-ctor-stopping-V10-06-01
+-----------------------------------
+- Fix to CMake script to support new CMake system.
+
+physics_lists/lists                              phys-lists-V10-06-01
+-------------------
+- Fix to CMake script to support new CMake system.
+
+physics_lists/util                               phys-util-V10-06-02
+------------------
+- G4HadParticles: new utility providing several lists of PDG codes for kaons,
+  hyperons, b- and c- particles in order to be used for construction of
+  hadronic physics. Updated list of heavy EM particles.
+- Fix to CMake script to support new CMake system.
+
+processes/electromagnetic/dna                    emdna-V10-06-06
+-----------------------------
+- Revised displacement of OH radicals of B1A1 dissociation based on momentum
+  conservation in G4DNAWaterDissociationDisplacer.
+- Fix to CMake script to support new CMake system.
+
+processes/electromagnetic/lowenergy              emlowen-V10-06-04
+-----------------------------------
+- Added new model for polarized gamma elastic scattering, provided by the
+  JAEA group. Updated existing process (G4JAEAElasticScattering) and model
+  (G4JAEAElasticScatteringModel) in order to comply with the new data format.
+  Changed initialisation of JAEA models.
+- Fixed compilation warnings on clang-10.
+
+processes/electromagnetic/standard               emstand-V10-06-11
+----------------------------------
+- G4UrbanMscModel: improved cache data structure. Added e- range cut to the
+  cache data structure and minor improvement to the code.
+- G4UniversalFluctuation: set value for 'a0' to 42 after optimisations.
+- Fixed compilation warnings on clang-10.
+
+processes/electromagnetic/utils                  emutils-V10-06-06
+-------------------------------
+- G4EmParameters, G4EmParametersMessenger, G4EmExtraParametersMessenger,
+  G4VEnergyLossProcess: added two extra sets of StepFunction parameters
+  for light ions and generic ions. Added extra UI commands. Modified
+  interfaces accordingly. Removed old comments.
+- G4LossTableManager: made ResetParameters() method public.
+- G4VAtomicDeexcitation: optimized arrays initialisation.
+
+processes/electromagnetic/xrays                  xrays-V10-06-03
+-------------------------------
+- Implemented three time constants for G4Scintillation, and allow multiple
+  time constants to work with scintillation by particle type.
+  The existing material property names have FAST and SLOW in them, like
+  FASTTIMECONSTANT. This doesn't generalize well. Also YIELDRATIO as a single
+  value doesn't generalize to three time constants. Proposal is to create new
+  names SCINTILLATIONTIMECONSTANT1, SCINTILLATIONTIMECONSTANT2,
+  SCINTILLATIONTIMECONSTANT3, and the same for other parameters.
+  The existing names are kept for backwards compatibility, with the idea
+  to remove them in the next major release.
+  There is a flag in G4Scintillation, with messenger command in the
+  OpticalPhysics list, to use the new method:
+    /process/optical/scintillation/setEnhancedTimeConstants true.
+  Results are unchanged if using same values.
+  Set verbosity levels correctly.
+- Code formatting.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-06-04)
+  o G4HadronNucleonXsc: general clean-up of the code; use PDG number instead
+    of particle pointers; removed instantiation of most of hadrons,
+    optimisation of selection of parameterisations.
+  o Fixed compilation warnings on clang-10.
+- management (hadr-man-V10-06-05)
+  o G4HadronicProcessStore: in the method Dump(), check the internal verbosity
+    level as well as the newly introduced global hadronic verbosity level,
+    returning immediately (without printing anything) if one of these is 0.
+    Extended default initialisation printout to sigma-, D-, B-.
+    Removed check for G4HadronicException, where it cannot be; limit printout
+    on kaon0 in final state.
+  o Removed use of deprecated G4USE_STD11 flag.
+- models/cascade (hadr-casc-V10-06-04)
+  o Fixed compilation warnings on clang-10.
+- models/coherent_elastic (hadr-cohe-V10-06-02)
+  o Fix to CMake script to support new CMake system.
+- models/de_excitation (hadr-deex-V10-06-03)
+  o G4DeexPrecoParameters: in method Dump(), check the global verbosity
+    level of hadronics (if zero, do not print anything).
+  o Fixed compilation warnings on clang-10.
+- models/fission (hadr-fission-V10-06-00)
+- models/gamma_nuclear (hadr-gammanuc-V10-06-00)
+  o Fix to CMake script to support new CMake system.
+- models/inclxx (hadr-inclxx-V10-06-02)
+  o G4INCLXXInterfaceStore: in method EmitBigWarning(), check the global
+    verbosity level of hadronics (if zero, do not print anything).
+  o Fixed compilation warnings on clang-10.
+  o Fix to CMake script to support new CMake system.
+- models/lend (hadr-lend-V10-06-02)
+  o Fix to CMake script to support new CMake system.
+- models/lepto_nuclear (hadr-lepnuc-V10-06-08)
+  o G4NeutrinoNucleusModel: added K+, K- in final state.
+  o Fixed Coverity warnings for defects.
+  o Fix to CMake script to support new CMake system.
+- models/particle_hp (hadr-hpp-V10-06-06)
+  o Allow printout only if the global hadronic verbosity level is not zero.
+  o Fixed compilation errors on clang-10; corrected copy constructor in      (*)
+    G4ParticleHPDataPoint.
+  o Fix to CMake script to support new CMake system.
+- models/radioactive_decay (radioactive_decay-V10-06-08)
+  o G4RadioactiveDecayBase, G4RadioactiveDecay: in method BuildPhysicsTable(),
+    check the global hadronic verbosity level before printing out information.
+- models/util (hadr-mod-util-V10-06-00)
+  o Fixed compilation warnings on clang-10.
+- utils (hadr-util-V10-06-03)
+  o G4HadronicParametersMessenger: created new messenger class for
+    G4HadronicParameters. For the time being it has only the global
+    verbosity level for hadronics.
+  o G4HadronicParameters: added modifiers. Creates the new messenger.
+
+processes/optical                                op-V10-06-03
+-----------------
+- Added second wavelength shifting process, G4OpWLS2.
+- Code cleanup and improved readability.
+
+processes/scoring                                procscore-V10-06-01
+-----------------
+- G4ParallelWorldProcess: make some private methods and data members
+  protected so that this class can be extendable.
+
+processes/solidstate
+--------------------
+- channeling (channeling-V10-06-00)
+- phonon (prophonon-V10-06-00)
+  o Fix to CMake script to support new CMake system.
+
+run                                              run-V10-06-06
+---
+- Added second wavelength shifter process to G4PhysicsListHelper.
+- G4VPhysicsConstructor: added harmless call to G4HadronicParameters in
+  constructors, setting a default parameter; needed to create the instance
+  of the G4HadronicParameters singleton before run initialization.
+- General code formatting.
+
+visualization
+-------------
+- externals/gl2ps (visexternalgl2ps-V10-06-01)
+- gMocren (gMocren-V10-06-01)
+  o Fixed compilation warnings on clang-10.
+- management (visman-V10-06-05)
+  o G4VVisCommand: added CheckView for future utility.
+  o G4VisCommandsScene: improved output layout for "/vis/scene/showExtents".
+- FukuiRenderer (DAWN-V10-06-01)
+- OpenGL (opengl-V10-06-06)
+  o Use CMake AUTOMOC to automatically generate and compile Moc sources
+    and fixed CMake script to support new CMake system.
+- OpenInventor (openinventor-V10-06-07):
+  o Corrections to OIQT viewer and changes for use with Qt UI.
+  o Fixed compilation warnings for unused argument/variable in
+    G4OpenInventorQtExaminerViewer and G4OpenInventorQt respectively.
+  o Use CMake AUTOMOC to automatically generate and compile Moc sources
+    and fixed CMake script to support new CMake system.
+- RayTracer (raytracer-V10-06-01)
+- VRML (VRML-V10-06-01)
+  o Fixed CMake script to support new CMake system.
+
+data sets:
+---------
+- G4EMLOW-7.11:
+  o Added new JAEA elastic polarized gamma scattering data files
+    in compressed format.
+
+examples                                         examples-V10-06-05
+--------
+- Updated documentation and reference outputs.
+- advanced/air_shower (air_shower-V10-06-00)
+  o Added missing include statement in UltraDetectorConstruction.
+- advanced/ChargeExchangeMC (ChargeExchangeMC-V10-06-00)                     (*)
+  o Fixed compilation error on main().
+  o Fixed CMake build script for dependence on Qt libraries.
+- advanced/fastAerosol (fastAerosol-V10-06-00)
+  o New example showing use of FastAerosol geometry classes, allowing to
+    efficiently and accurately simulate particle transport through aerosols
+    containing billions of randomly-positioned droplets, using an ordinary
+    workstation.
+    See: MacFadden, N., Knaian, A., "Efficient Modeling of Particle Transport
+    through Aerosols in Geant4", manuscript in preparation, 2020.
+- extended/biasing/ReverseMC01 (ReverseMC01-V10-06-00)                       (*)
+  o RMC01AnalysisManager: use double for computation of mean and RMS; added
+    protection for sqrt() argument, to avoid a problem due to precision
+    loss in arithmetic computations.
+- extended/hadronic/Hadr02 (exhadr02-V10-06-00)
+  o HadronPhysicsCRMC_FTFP_BERT , HadronPhysicsHIJING , HadronPhysicsUrQMD:
+    introduced the new class G4HyperonBuilder which is now needed when
+    using G4HyperonFTFPBuilder.
+- extended/hadronic/Hadr03 (exhadr03-V10-06-01)
+  o PhysicsList: added G4HadronPhysicsQGSP_BIC, Shielding, RadioactiveDecay.
+  o GammaNuclearPhysics: added G4LowEGammaNuclearModel.
+  o Added GammaNuclearPhysicsLEND.
+  o Modified gamma.mac script; added Au196.mac.
+- extended/hadronic/Hadr06 (exhadr06-V10-06-00)
+- extended/hadronic/Hadr07 (exhadr07-V10-06-00)
+- extended/hadronic/NeutronSource (NeutronSource-V10-06-00)
+  o GammaNuclearPhysics: added G4LowEGammaNuclearModel.
+- extended/optical/OpNovice2 (OpNovice2-V10-06-03)
+  o Use new scintillation time constant parameter.
+  o Added code to generate statistics for wavelength shifting.
+  o Added wls.mac to test WLS and new process WLS2.
+- extended/persistency/gdml/G01 (G01-V10-06-00)
+  o Use [] brackets in loop.gdml sample to show how to index names
+    and dimensions in loops.
+- extended/radioactivedecay/Activation (activation-V10-06-00)
+  o GammaNuclearPhysics: added G4LowEGammaNuclearModel.
+
+tests                                            tests-V10-06-05
+-----
+- Updated reference outputs and tools.
+- tests/test23 (test23-V10-06-01)
+  o HadronPhysicsNuBeam : introduced the new class G4HyperonBuilder
+    which is now needed when using G4HyperonFTFPBuilder.

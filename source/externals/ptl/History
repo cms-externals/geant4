@@ -1,0 +1,64 @@
+-------------------------------------------------------------------
+
+     =========================================================
+     Geant4 - an Object-Oriented Toolkit for Simulation in HEP
+     =========================================================
+
+                      Category History file
+                      ---------------------
+This file should be used by G4 developers and category coordinators
+to briefly summarize all major modifications introduced in the code
+and keep track of all category-tags.
+It DOES NOT substitute the log-message one should put at every
+committal in the code repository !
+
+     ----------------------------------------------------------
+     * Reverse chronological order (last date on top), please *
+     ----------------------------------------------------------
+
+2 Nov 2020 - B.Morgan (ptl-V10-06-08)
+- BUGFIX #2286: Install PTL DLL/archive into appropriate platform dependent
+  locations.
+
+20 Oct 2020 - B.Morgan (ptl-V10-06-07)
+- Export interface targets used by both static and shared variants of
+  PTL to a dedicated file in the build directory. Required to avoid
+  missing/double definitions of targets when building Geant4/PTL with
+  shared/static at the same time.
+
+5 Oct 2020 - J.Madsen(ptl-V10-06-06)
+- Stability fixes for ensuring that stack variables are copied
+  into task-group functions
+
+23 Sept 2020 - J.Madsen (ptl-V10-06-05)
+- All template parameters using leading underscore followed by
+  capital letter have been replaced --> reserved for standard library
+- TaskGroup and TBBTaskGroup support non-aggregating join function
+- Arguments are copied into tuple for tasks
+
+12 Sept 2020 - J.Madsen (ptl-V10-06-04)
+- Fixed issues with PTL::ThreadPool destruction.
+  - For some ill-advised reason, the original impl detached the threads
+    instead of joining them to ensure they were deleted
+- Created generic execute_on_all_threads member function for thread pool
+  - this handles the complexity of performing this operation w/ TBB
+- cleaned up the inconsistent naming in PTL::ThreadPool
+
+23 June 2020 - J.Madsen (ptl-V10-06-03)
+- Tweaked VTaskGroup to use a vector instead of list
+- Declared the default ctor/dtor/assign-op for
+  JoinFunction class in TaskGroup
+
+22 June 2020 - B.Morgan (ptl-V10-06-02)
+- Force use of -pthread on non-Win32 platforms
+
+18 June 2020 - G.Cosmo (ptl-V10-06-01)
+- Adapted files organisation to Geant4 and fixed porting on Windows DLLs.
+- Changed library name to "G4ptl", to distinguish from external installation.
+- Integrated with GNUmake system.
+
+8 May 2020 - J.Madsen (ptl-V10-06-00)
+- New module for built-in Parallel Tasking Library (PTL), a Lightweight
+  C++11 multithreading tasking system featuring thread-pool, task-groups,
+  and lock-free task queue.
+  Original version 0.0.2.

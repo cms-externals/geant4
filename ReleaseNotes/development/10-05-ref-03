@@ -1,0 +1,269 @@
+
+                       geant4-10-05-ref-03
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Reviewed G4PhysicsVector adding an additional Value() method option to
+   propagate down the known log-energy value. This helps avoiding log() calls
+   when log-vector is used.
+ o Added functionality in G4DynamicParticle to provide log-kinetic energy value,
+   computed only on demand if its stored value is not up-to-date with the kinetic
+   energy. Reviewed EM processes to select the target atom by making use of the
+   already known log-energy value in the log-vector access. Providing measurable
+   CPU speedup.
+ o Optimised step limitation in G4UrbanMscModel.
+ o G4HadronElasticPhysics: for deuteron, triton and alpha, use Glauber-Gribov
+   elastic cross-sections, instead of Gheisha ones.
+ o Introducing cloud drawing style in visualization, using kernel algorithms
+   for generating points on the surface of volumes, by-passing polyhedral
+   representations; the solid is being visualised by a polymarker of dots.
+
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.5.p01
+
+Summarised, the list of changes is the following:
+
+analysis                                         analysis-V10-05-00          (o)
+--------
+- Fixed few typos in printouts.
+
+digits_hits                                      digits-hits-V10-05-03       (o)
+-----------
+- Defining unit categories in messengers for UI commands that take units.
+- G4SDManager, G4VSDFilter: cleanly delete all the G4VSDFilter objects at
+  the end of program.
+- Fixed few typos in printouts.
+
+events                                           events-V10-05-02            (o)
+------
+- Fixed typos in printouts in G4GeneralParticleSourceMessenger.
+
+geometry/magneticfield                           field-V10-05-00             (o)
+----------------------
+- Corrected 'RegularStepperName' in G4ChordFinder to refer to the actual
+  default stepper G4DormandPrince745 rather than G4NystromRK4...
+
+geometry/management                              geommng-V10-05-01           (o)
+-------------------
+- G4LogicalVolume: in AddDaughter() avoid propagating pointer to field-manager
+  if this is null. Addressing problem report #2145.
+
+geometry/navigation                              geomnav-V10-05-00           (o)
+-------------------
+- Fixed few typos in printouts in G4NavigationLogger.
+
+geometry/volumes                                 geomvol-V10-05-00           (o)
+----------------
+- Correction in G4AssemblyVolume destructor to avoid deletion of internal
+  physical volumes, as cleanup is taken care by G4PhysicalVolumeStore.
+  Addressing problem report #2140.
+
+global                                           global-V10-05-03
+------
+- G4PhysicsVector: added additional Value() method option to propagate down the
+  known log-energy value (can avoid the log call in case of log-vector).
+- Added new LOG_EKIN_MIN constant as value taken in case of zero kin-energy
+  in templates.hh.
+- Enable FPE detection on MacOS with clang. Addressing problem report #2147. (o)
+- Updated date and tag-ID for geant4-10-05-ref-03.
+
+intercoms                                        intercoms-V10-05-02         (o)
+---------
+- Introducing G4UIUnitParameter class that simplifies the definition of
+  a unit parameter.
+- Fixed few typos in printouts.
+
+materials                                        materials-V10-05-02         (o)
+---------
+- G4NistMaterialBuilder: fixed atomic number value in simple material printout.
+
+particles                                        particles-V10-05-03
+---------
+- G4DynamicParticle: added functionality to provide log-kinetic energy value,
+  computed only on demand if its stored value is not up-to-date with the kinetic
+  energy.
+- Fixed typo in printout in G4NuclideTableMessenger.                         (o)
+
+persistency/gdml                                 gdml-V10-05-00              (o)
+----------------
+- Fix in G4GDMLReadStructure::PhysvolRead() to allow correct import of
+  recursive assembly structures. Addressing problem report #2141.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-05-07
+------------------------------------------
+- G4OpticalPhysics, G4OpticalPhysicsMessenger: put all UI commands into a    (o)
+  messenger class; addressing problem report #2085; deprecated commands with
+  /default/ in command string.
+- G4EmLivermorePhysics, G4EmPenelopePhysics: set multiple-scattering         (o)
+  configuration the same as in Opt4: RangeFactor=0.08, Skin=3,
+  UserSafetyPlus on.
+- G4EmModelActivator: addressing problem report #2106.                       (o)
+- G4EmDNAChemistry constructors: updated to follow emdna changes.
+
+physics_lists/constructors/hadron_elastic       phys-ctor-helastic-V10-05-00 (o)
+-----------------------------------------
+- G4HadronElasticPhysics: for deuteron, triton and alpha, use Glauber-Gribov
+  elastic cross-sections (instead of Gheisha ones, which returns zero).
+
+physics_lists/lists                              phys-lists-V10-05-00        (o)
+-------------------
+- Shielding, QGSP_BIC_HP, QGSP_BIC_AllHP: set cut for proton to zero.
+  Addressing problem report #2150.
+- Minor code clean-up.
+
+processes/biasing                                procbiasing-V10-05-00       (o)
+-----------------
+- Fixed typos in printouts and comments.
+
+processes/cuts                                   procuts-V10-05-00           (o)
+--------------
+- Fixed typos in printouts in G4PhysicsTableHelper and G4ProductionCutsTable.
+
+processes/electromagnetic/adjoint                emadjoint-V10-05-00         (o)
+---------------------------------
+- Fixed typos in printouts and comments.
+
+processes/electromagnetic/dna                    emdna-V10-05-04
+-----------------------------
+- Fixed reaction site issue.
+- Chemistry: clarify pointer ownership. Code cleanup.
+
+processes/electromagnetic/highenergy             emhighenergy-V10-05-01      (o)
+------------------------------------
+- G4mplIonisation, G4mplIonisationWithDeltaModel: added low limit for
+  delta-electron production threshold. Addressing problem report #2126.
+- G4GammaConversionToMuons: fixed low-energy part of the model by adding
+  intermediate limit of 5*MuMass, below which an approximation of the
+  cross-section similar to the Bethe-Heitler model is used; fixed bug
+  in energy sampling for low-energy.
+
+processes/electromagnetic/standard               emstand-V10-05-07
+----------------------------------
+- G4BetheHeitler5DModel, G4BetheHeitlerModel, G4IonCoulombScatteringModel, 
+  G4PAIModel, G4PAIPhotModel, G4PairProductionRelModel, G4SeltzerBergerModel, 
+  G4XrayRayleighModel, G4eBremParametrizedModel, G4eBremsstrahlungRelModel, 
+  G4eCoulombScatteringModel, G4eSingleCoulombScatteringModel: make use of the 
+  new target atom selector that can reuse the already known log-energy value.
+- G4UrbanMscModel, G4WentzelVIModel, G4GoudsmitSaundersonMscModel: make use of 
+  the new base class methods in utils module, utilising the already known 
+  log-energy value, in case of dEdx, range and transport mean free path
+  log-vector table accesses.
+- G4UrbanMscModel: optimised step limitation for 'UseSafetyPlus'
+  and 'UseDistanceToBoundary'. Minor clean-up of step limit method.
+- Code clean-up in G4BetheBlochModel.                                        (o)
+
+processes/electromagnetic/utils                  emutils-V10-05-07
+-------------------------------
+- G4EmElementSelector, G4VEmModel: added extra method to select the target atom
+  by making use of the already known log-energy value in the log-vector access.
+- G4VEmProcess, G4VEnergyLossProcess and G4VMscModel: added extra methods to 
+  access log-vector tables by propagating the already known log-energy value.
+- G4EmParametersMessenger: defining unit categories for UI commands          (o)
+  that take units. Fixed typos in printouts
+- G4EmBiasingManager, G4VEmProcess, G4VEnergyLossProcess: fixed weights for  (o)
+  biasing. Should be like version 10.4 now for range cut, splitting, roulette.
+
+processes/electromagnetic/xrays                  xrays-V10-05-00             (o)
+-------------------------------
+- G4Cerenkov: increase protection against infinite loops.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-05-05)
+  o G4NeutronElasticXS, G4NeutronInelasticXS, G4NeutronCaptureXS: utilise the
+    new Value() method from G4PhysicsVector, that can make use of the already
+    known value of the log-kinetic energy in the cross-sections table log-vector
+    accesses. 
+  o Corrections in G4MuNeutrinoNucleusTotXsc.cc: new name, default 'fCcTotRatio'
+    and high energy parameter 'bb'.
+  o G4ComponentAntiNuclNuclearXS: code clean-up and corrected the description.
+- models/de_excitation (hadr-deex-V10-05-02)                                 (o)
+  o G4PhotonEvaporation: for nuclear levels without decay modes defined
+    perform decay not to the ground state but to the nearest level.
+    Addressing problem report #2123.
+  o G4LevelManager, G4NucLevel: fixed debug and warning printouts.
+- models/parton_string/diffraction (hadr-string-diff-V10-05-01)              (o)
+  o G4FTFModel: fixed a memory leak in G4FTFModel::GetStrings().
+    Addressing problem report #2138.
+
+processes/management                             procman-V10-05-01           (o)
+--------------------
+- Fixed typos in printouts in G4ProcessTableMessenger, G4ProcessManager
+  and G4VRest*Process.
+
+processes/solidstate/channeling                  channeling-V10-05-00        (o)
+-------------------------------
+- Fixed printouts and comments.
+
+run                                              run-V10-05-03               (o)
+---
+- G4UserPhysicsListMessenger.cc: defining unit categories for UI commands
+  that take units.
+- Fixed typos in printouts.
+
+tracking                                         tracking-V10-05-01          (o)
+--------
+- Fixed typos in printouts and comments.
+
+visualization                                    vis-V10-05-16
+-------------
+- management (visman-V10-05-02):
+  o Introduce cloud drawing style.
+    New parameter candidate 'cloud' in "/vis/viewer/set/style".
+    Cloud drawing uses solid->GetPointOnSurface(), i.e., it uses kernel
+    algorithms and by-passes polyhedral representations. The solid is
+    represented by a polymarker of dots. The default number of points is 1000.
+    This can be changed with "/vis/viewer/set/numberOfCloudPoints"; the minimum
+    number is 100.  Note that OpenGL has a fast algorithm for polymarker.
+    This allows us to use cloud style both as a choice or as fallback when the
+    polyhedral representation fails, for example, when BooleanProcessor fails.
+    See management/History for details.
+  o Fixed bug in /vis/viewer/set/sectionPlane.
+  o Corrected few typos in printout/comments.
+- modeling (modeling-V10-05-00):
+  o Fixed bug in /vis/viewer/set/sectionPlane.
+- OpenGL (opengl-V10-05-03):
+  o Fixed bug in /vis/viewer/set/sectionPlane.
+  o Avoid re-using display lists for markers. They may have their own
+    position relative to the overall object transformation.
+- OpenInventor (openinventor-V10-05-02):
+  o Corrected few typos in printout/comments.
+
+examples                                         examples-V10-05-03
+--------
+- Updated documentation and reference outputs.
+- basic/B4 (exampleB4-V10-05-00)                                             (o)
+  o Corrected name of include file: csv.hh.
+- extended/exoticphysics/monopole (monopole-V10-05-00)                       (o)
+  o G4MonopolePhysics: minor code clean-up.
+  o Avoid instantiation of the vis-manager in the main() in the batch mode;
+    set default number of threads to 1.
+  o Run, RunAction: extended histograms and printouts to restricted dEdx and
+    delta-electron cross-section (addressing problem report #2126).
+- extended/medical/dna/chem4 (chem4-V10-05-02)
+- extended/medical/dna/chem5 (chem5-V10-05-01)
+  o Make Species alias of const G4MolecularConfiguration.
+- extended/medical/dna/microdosimetry (microdosimetry-V10-05-00)
+  o Updated plot.C.
+- extended/medical/dna/microprox (microprox-V10-05-00)
+  o New example showing how to compute proximity functions in liquid water
+    using exclusively Geant4-DNA physics processes and models.
+- extended/medical/fanoCavity fano-V10-05-03)
+  o DetectorConstruction: simplification of DefineMaterial().
+- extended/persistency/gdml/G01 (G01-V10-05-00)                              (o)
+  o Added block.gdml sample demonstrating nested assemblies.
+- extended/persistency/P03 (exampleP03-V10-05-00)                            (o)
+  o Fixed compilation warnings on unused local iterators.
+
+tests                                            tests-V10-05-03
+-----
+- Updated reference outputs and tools.
+- test40 (test40-V10-05-00)
+  o Use default random number generator MixMax instead of RanecuEngine.
+- test47 (test47-V10-05-01)
+- test48 (test48-V10-05-01)
+- test75 (test75-V10-05-01)
+  o Syncronised code with old SVN head.

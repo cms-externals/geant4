@@ -1,0 +1,425 @@
+
+                       geant4-10-05-ref-10
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added new option and functions for ntuple merging in analysis module.
+ o Added hooks for capability to navigate in 'external' geometry with
+   custom navigation.
+ o Added G4SextupoleMagField, a standard sextupole magnet implementation.
+ o Changed SetMass() method in G4DynamicParticle to now allow for setting
+   mass of a particle to PDG value.
+ o In G4PairProductionRelModel and G4GammaConversion, extended the high energy
+   model for e-/e+ pair production down to threshold (2mc^2) so that it gives
+   same results to those produced by the low energy model.
+ o Extended method ConstructQuarks() to include diquarks made of charm
+   and/or bottom quarks for short-lived particles construction.
+ o Replaced Chips inelastic cross-sections for hyperons and anti-hyperons
+   with Glauber-Gribov ones, so that elastic and inelastic cross-sections
+   now follow consistently the same approach. Same for default kaon
+   cross-sections.
+ o Consistently added RadioactiveDecay to all physics lists which use
+   NeutronHP.
+ o Implemented option in de_excitation to force a residual nucleus to be
+   among known discrete levels.
+ o Extended binary cascade to include a simple coalescence model for
+   nucleus-nucleus interactions in the interface between string and
+   precompound models. This allows to improve the nucleon spectra and produce
+   fast deuterons in ion-ion collisions.
+ o Extended both Lund and QGS string fragmentation to allow possibility
+   to have charm and/or bottom quarks and diquarks in the strings.
+ o Force adoption of c++17 settings on Windows platforms for support of
+   Visual Studio 2019.
+ o Updated CLHEP version to 2.4.1.3.
+ o Updated to data-sets G4EMLOW-7.9 and G4NDL-4.6.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-05-17
+-----
+- Set minimum required CMake version to 3.8 to fully support C++17 on all
+  systems. Addressing problem report #2044.
+- Updated Intel settings to support use of C++17 with Intel 19 when using
+  CMake-3.8-3.10. Versions from 3.11 fully support Intel 19/C++17.
+- Updated to data-sets G4EMLOW-7.9 and G4NDL-4.6.
+
+config                                           config-V10-05-07
+------
+- Corrected default path for XM in Darwin targets.
+- Force use of c++17 in WIN32 targets.
+
+analysis                                         analysis-V10-05-07
+--------
+- Updated to g4tools 5.0.2:
+  o Handle axis label of format "10^%d?" in case of freetype font.
+  o Root format: restore a "per event/row view" for the ntuple column-wise in
+    MT and MPI.
+  o Batch plotting: fixes to avoid labels overlap when having a grid of
+    plotters.
+  o MPI: fixed a memory leak.
+  o Fix for axis labels with log scale 
+  o Scene graph: have material for interactive plotting.
+  o Include modifications coming from other usage of inlib/exlib, for example,
+    in Root, to be able to read TClonesArray.
+  See History_tools for the complete list of modifications.
+- Added fRowWise data member in G4RootNtupleManager to make the parameter
+  available in MPI.
+- Enhanced the G4VAnalysisManager interface:
+  o Added new option for ntuple merging and updated/added functions for merging:
+    SetNtupleMerging(): removed rowWise and basketSize optional paremeters;
+    SetNtupleRowWise(): added parameter 'rowMode' with a default value;
+    SetBasketSize(), SetBasketEntries(): new methods.
+  o Added functions and UI commands for setting axis log scale for plotting:
+    Set[H,P][1,2,3][X,Y.Z]AxisIsLog() and analogous getters
+    New UI commands /analysis/[h,p][1,2,3]/set[X,Y,Z]axisLog true|false
+
+digits_hits/utils                                detutils-V10-05-04
+-----------------
+- Revised G4ScoringQuantiryMessenger and G4ScoringMessenger to better handle
+  the error cases.
+- Added 'ntuple' subdirectory for score ntuple writer UI commands.
+
+event                                            event-V10-05-05
+-----
+- G4SPSEneDistribution: added protection for potential infinite loop.
+  Addressing problem report #2177.
+
+externals                                        externals-V10-05-04
+---------
+- CLHEP: synchronised with CLHEP-2.4.1.3:
+  o Added move constructor and move assignment operators in Vector and
+    Geometry classes.
+
+geometry/divisions                               geomdiv-V10-05-02
+------------------
+- Added new virtual VolumeType() method in Physical Volume types.
+
+geometry/magneticfield                           field-V10-05-16
+----------------------
+- Added G4SextupoleMagField, a standard sextupole magnet implementation.
+- Fixed case of floating point exception in G4BFieldIntegrationDriver.
+- Remove statistics printouts from destructor of G4BFieldIntegrationDriver.
+- Fixed unitialised data in G4EqMagElectricField and G4EqGravityField,
+  reported by Coverity.
+
+geometry/management                              geommng-V10-05-13
+-------------------
+- Changed G4VPhysicalVolume::VolumeType() to be virtual.
+  Preparing for addition of External Navigation, which adds an 'external'
+  physical volume type (for use with an External sub-Navigator).
+- G4VPhysicalVolume copy constructor and assignment operator are now 'deleted'.
+- Revised G4LogicalVolume to cope with 'external' type of physical volumes.
+  Use stored volume type in CharacteriseDaughters().
+  Note: these revisions are independent and backward compatible.
+  
+geometry/navigation                              geomnav-V10-05-13
+-------------------
+- Added hooks for capability to navigate in 'external' geometry:
+  o New base class G4VExternalNavigation for external 'sub'-navigator;
+  o New type of 'External' physical volume, to flag volumes for
+    external sub-navigator;
+  o Revisions to G4Navigator to dispatch logical volumes with daughters which
+    are of 'external' physical-volume type.
+  An 'external' sub-navigator can be registered with G4Navigator; 'placement'
+  and 'external' physical volumes cannot be currently mixed inside the same
+  logical volume.
+- Added Clone() method in G4Navigator, to allow for 'cloning' the navigator
+  for G4VIntersectionLocator's 'helper', and potentially for worker threads.
+
+geometry/solids/specific                         geom-specific-V10-05-19
+------------------------
+- G4TesselatedSolid: fixed minor Coverity defect.
+
+geometry/volumes                                 geomvol-V10-05-07
+----------------
+- Added enablers for external navigation capability.
+  Added new virtual base class G4VExternalPhysicalVolume.
+- Added new virtual VolumeType() method in Physical Volume types.
+- Fixed registration of G4PVParameterised daughter in mother volume to
+  enable its true volume type (kParameterised) to be recognised and registered
+  in mother logical volume.
+
+global                                           global-V10-05-20
+------
+- Added 'External' (physical) volume type to geomdefs.hh.
+- Updated date and tag-ID for geant4-10-05-ref-10.
+
+intercoms                                        intercoms-V10-05-06
+---------
+- Eliminated global-scope enum in G4UItokenNum.
+
+interfaces                                       interfaces-V10-05-02
+----------
+- Declared Win32 a GUI, i.e., it's clickable and can have buttons.
+- Fixed deprecation compilation warning on Visual Studio 2019 in G4UIWin32.
+
+graphics_reps                                    greps-V10-05-05
+-------------
+- HepPolyhedron::SetSideFacets(): fixed defect reported by Coverity.
+
+materials                                        materials-V10-05-09
+---------
+- G4IonisParamMat: set mass limit of a single element to 90%.
+- G4IonStoppingData: fixed typo in ICRU90 material names.
+
+particles                                        particles-V10-05-09
+---------
+- G4DynamicParticle: changed SetMass() method, now inlined and allowing
+  setting mass of a particle to PDG value, which is needed in order to recover
+  secondary hadrons to the mass shell.
+  Marked "inline" all inline methods in the header.
+- G4ShortLivedConstructor: extended method ConstructQuarks() to include
+  diquarks made of charm and/or bottom quarks. The new, heavy diquarks
+  and anti-diquarks have been defined with basic, rough properties (just
+  those currently needed by the hadronic string models): future refinements
+  are expected.
+
+persistency/ascii                                ascii-V10-05-01
+-----------------
+- Fixed printout syntax in G4tgrUtils::GetDouble().
+
+physics_lists/builders                           phys-builders-V10-05-02
+----------------------
+- G4HyperonFTFPBuilder: replaced Chips inelastic cross-sections for hyperons
+  and anti-hyperons with Glauber-Gribov ones; in this way, elastic and inelastic
+  cross-sections follow consistently the same approach.
+- G4BertiniKaonBuilder, G4BertiniPiKBuilder: replaced Chips inelastic
+  cross-sections with Glauber-Gribov ones as default kaon cross-sections.
+- G4FTFBinaryKaonBuilder, G4QGSBinaryKaonBuilder, G4QGSBinaryPiKBuilder,
+  G4QGSPPiKBuilder, G4QGSPKaonBuilder: removed kaon cross-sections, already
+  set by the Bertini's builder, which is always needed.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-05-17
+------------------------------------------
+- Added new ELSEPA elastic model for Geant4-DNA in G4EmDNAPhysics_option2.
+
+physics_lists/constructors/hadron_elastic        phys-ctor-helastic-V10-05-03
+-----------------------------------------
+- G4HadronElasticPhysics, G4HadronDElasticPhysics: use Glauber-Gribov elastic
+  cross-section for anti-baryons also for anti-neutron; extended to sigma0,
+  anti_sigma0 and xi0.
+- G4HadronHElasticPhysics: use Glauber-Gribov elastic cross-section for
+  anti-hyperons (instead of Chips).
+- Updated README.
+
+physics_lists/constructors/hadron_inelastic      phys-ctor-hinelastic-V10-05-02
+-------------------------------------------
+- G4HadronPhysicsFTFP_BERT_TRV: removed special treatment of hadronic
+  inelastic cross-sections of hyperons and anti-hyperons; now it is the
+  default in G4HyperonFTFPBuilder.
+- G4HadronInelasticFTFQGSP_BERT, G4HadronInelasticQBBC: use Glauber-Gribov
+  inelastic cross-sections instead of Chips ones, for hyperons and
+  anti-hyperons.
+- G4HadronPhysicsFTF_BIC, G4HadronPhysicsFTFP_BERT_HP,
+  G4HadronPhysicsFTFP_BERT_TRV, G4HadronPhysicsFTFQGSP_BERT,
+  G4HadronPhysicsQGS_BIC, G4HadronPhysicsQGSP_BERT,
+  G4HadronPhysicsQGSP_BERT_HP, G4HadronPhysicsQGSP_BIC, 
+  G4HadronPhysicsQGSP_BIC_HP, G4HadronPhysicsQGSP_BIC_AllHP,
+  G4HadronInelasticQBBC, G4HadronPhysicsINCLXX: removed special treatment
+  of hadronic inelastic cross-sections of kaons (now default).
+
+physics_lists/constructors/stopping              phys-ctor-stopping-V10-05-02
+-----------------------------------
+- Updated README.
+
+physics_lists/lists                              phys-lists-V10-05-04
+-------------------
+- FTFP_BERT_HP, QGSP_BERT_HP, INCLXXPhysicsListHelper: consistently added
+  RadioactiveDecay to all physics lists which use NeutronHP; the rationale
+  is that precision is more valuable than speed for these physics lists.
+  To note that, among the reference physics lists with NeutronHP, only 
+  FTFP_BERT_HP, QGSP_BERT_HP, FTFP_INCLXX_HP and QGSP_INCLXX_HP did not have
+  RadioactiveDecay activated by default.
+
+processes/electromagnetic/dna                    emdna-V10-05-09
+-----------------------------
+- Added Kreipl and Meesungnoen amorphous ice models.
+- Added new model G4DNAELSEPAElasticModel.
+- Updated G4DNAWaterDissociationDisplacer* classes.
+- Enabled G4ItNavigator{1,2} to flag if it encounters new type of external
+  physical volume (meant for adapting external navigators).
+
+processes/electromagnetic/lowenergy              emlowen-V10-05-01
+-----------------------------------
+- G4LivermorePhotoElectricModel: use std::getenv; slightly speed-up.
+- G4IonParametrisedLossModel - use std::getenv; allowed ICRU90 option.
+
+processes/electromagnetic/highenergy             emhighenergy-V10-05-05
+------------------------------------
+- G4GammaConversionToMuons: fixed DeRegister(); added initialisation and 
+  optional possibility to use 5D model for the sampling of the final state.
+
+processes/electromagnetic/standard               emstand-V10-05-23
+----------------------------------
+- G4PairProductionRelModel, G4GammaConversion: extended the high energy model
+  for e-/e+ pair production down to threshold (2mc^2) such that it gives results
+  (both x-section and final state) identical to those produced by the low energy
+  model (G4BetheHeitlerModel). Since this new version of the high energy model
+  can describe e-/e+ pair production from threshold up to PeV (LPM effects are
+  included) the G4BetheHeitlerModel was removed from the G4GammaConversion
+  process. 
+- G4BetheHeitler5DModel: new parameters set for muon (30% speed up), nuclear
+  threshold calculation. Added gamma conversion to mu+ mu- mode.
+- G4eplusAnnihilation: set secondary weight correctly using bias manager.
+- G4UrbanMscModel, G4GoudsmitSaundersonMscModel, G4WentzelVIModel: use
+  'lambdalimit' and 'facsafety' parameters from the base class G4VMscModel.
+  Minor code cleanup in G4UrbanMscModel, which should not affect results.
+
+processes/electromagnetic/utils                  emutils-V10-05-22
+-------------------------------
+- G4EmParameters, G4EmParametersMessenger: added new parameters for multiple-
+  scattering 'FactorSafety' and 'LambdaLimit'; now users can customise these 
+  values, default values used are the same as in release 10.5.
+- G4VMscModel, G4VMultipleScattering: added new method InitialiseParameters(),
+  make multiple-scattering specific methods pure virtual.
+- DummyModel: added methods to be consistent with above modifications.
+- G4EmParameters, G4EmParametersMessenger: added new parameter.
+- G4LossTableManager: use std::getenv().
+- G4EmSaturation: do not apply saturation for zero step length, as this is
+  possible only if a tracking cut is applied.
+- G4DNAModelSubType: added Kreipl and Meesungnoen amorphous ice models.
+  G4EmLowEParametersMessenger: added corresponding commands.
+- G4EmBiasingManager: delete non-tracked particles.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-05-28)
+  o G4BGGPionInelasticXS, G4BGGPionElasticXS: clean-up pi+ cross-section 
+    below 20 MeV.
+- management (hadr-man-V10-05-06)
+  o G4HadronicProcess: for particles out of mass shell correct kinetic energy
+    such that it is always above 10 keV.
+    Use std::getenv() recommended for concurrency.
+- models/binary_cascade (had-binary-V10-05-00)
+  o G4GeneratorPrecompoundInterface: extended to include a simple coalescence
+    model for nucleus-nucleus interactions in the interface between string and
+    precompound models. This allows to improve the nucleon spectra and produce
+    fast deuterons in ion-ion collisions.
+- models/coherent_elastic (hadr-cohe-V10-05-05)
+  o G4hadronElastic: new method for s-,c-,b- particle.
+  o First modifications to ds/dt slope.
+- models/de_excitation (hadr-deex-V10-05-17)
+  o G4VEmissionProbability: implemented option to force a residual nucleus to
+    be among known discrete levels.
+  o G4ExcitationHandler: removed warning on high excitation.
+  o G4ExcitationHandler, G4Evaporation: minor speedup improvement.  
+  o G4NuclearLevelData: added new public interface to enable upload of nuclear
+    level data before first event.
+  o G4LevelReader: small reduction of memory churn.
+  o G4DeexParametersMessenger: added UI command.
+  o G4DeexPrecoParameters: added two new parameters
+  o G4UnstableFragmentBreakUp: allowed only residual fragments, which are
+    present in the nuclear level DB; those fragments which are not in the DB
+    are forced to decay on fragments from the DB. Improved debug printout.
+  o G4FermiFragmentsPoolVI: removed unphysical fragments and corresponding 
+    data structures.
+  o G4FermiBreakUpVI: cleanup internal data after decay loop and not before.
+  o G4FermiFragment: removed unused Boolean members.
+- models/lepto_nuclear (hadr-lepnuc-V10-05-05)
+  o G4NuMuNucleusCcModel: 1p1h momentum sampling according to AS model;
+    added precompound interface.
+  o G4NeutrinoNucleusModel: added two methods for excitation energy and
+    nucleon momentum sampling.
+- models/particle_hp (hadr-hpp-V10-05-08)
+  o G4ParticleHPNames: removed restriction of using isotopes with Z > 92,
+    therefore removing the environmental variable "AllowForHeavyElements".
+- models/parton_string/hadronization (had-hadronization-V10-05-00)
+  o Extended both Lund and QGS string fragmentation to allow the possibility
+    to have charm and/or bottom quarks and diquarks in the strings. As a result
+    of the hadronization of strings having heavy (c, b) quarks, charmed and
+    bottom hadrons can be produced: only heavy mesons and baryons that can fly
+    macroscopic distances are considered as candidate final states.
+    Note: this extension has required also to extend the list of diquarks
+    available in Geant4, to add those made with charm and bottom quarks.
+  o Removed unused class G4VKinkyStringDecay.
+- models/util (hadr-mod-util-V10-05-03)
+  o G4NuclearRadii: added extra utility method RadiusECS().
+
+processes/optical                                op-V10-05-02
+-----------------
+- G4OpWLS: call SetNumberOfSecondaries() from G4VParticleChange only once.
+  Addressing problem report #2200.
+- Improved diagnostics printout.
+
+run                                              run-V10-05-07
+---
+- Properly initialise luxury level for Ranlux* engines in MT mode.
+  Addressing problem report #2184.
+- G4RunMessenger: propelry enable "/run/storeRndmStatToEvent 3" UI command.
+  Addressing problem report #2198.
+
+visualization
+-------------
+- management (visman-V10-05-14):
+  o Replaced use of std::experimental::filesystem with std::filesystem for
+    WIN32 target in G4VisCommandsViewer. Forcing c++17 default builds on
+    Windows and allow for porting on Visual Studio 2019.
+- OpenGL (OpenGL-V10-05-10):
+  o Rationalise headers inclusion in G4OpenGLQtViewer.
+
+data sets:
+---------
+- G4EMLOW-7.9:
+  o Added ELSEPA elastic model for Geant4-DNA.
+- G4NDL-4.6:
+  o New neutron cross-sections and final states obtained from JEFF-3.3
+    (previous were based mainly on ENDF/B-VII.1). Files not coming from
+    JEFF-3.3 and corresponding to previous G4NDL version are: JENDL_HE,
+    IsotopeProduction, ThermalScattering, Inelastic/Gammas, Fission/FF.
+    Information concerning the conversion process of JEFF-3.3 to the
+    G4NDL format can be found in: E.Mendoza and D.Cano-Ott, IAEA technical
+    report INDC(NDS)-0758, Vienna, 2018.
+
+examples                                         examples-V10-05-10
+--------
+- Updated documentation and reference outputs.
+- advanced/eRosita (eRosita-V10-05-02)
+- advanced/hadrontherapy (hadrontherapy-V10-05-01)
+- advanced/radioprotection (radioprotection-V10-05-01)
+  o Avoid "using namespace std" in headers.
+- basic/B3 (exampleB3-V10-05-01)
+  o Updated comments in main() for modified score n-tuple writer UI commands.
+- basic/B4 (exampleB4-V10-05-02)
+  o Updated B4d/run2.mac and comments in B4d main() for modified score n-tuple
+    writer UI commands.
+- extended/electromagnetic/TestEm0 (testem0-V10-05-02)
+  o PhysicsList: define options, specific for this example after new EM physics
+    is selected; cleaned-up constructor; Opt0 is the default.
+- extended/electromagnetic/TestEm1 (testem1-V10-05-03)
+  o PhysicsList: cleanup in initialisation.
+- extended/optical/LXe (LXe-V10-05-02)
+  o Update PMT positions when changing number of PMTs.
+  o Set fewer particles in wls.mac and cerenkov.mac input macros.
+  o Use unique analysis filenames.
+- extended/optical/OpNovice (OpNovice-V10-05-00)
+  o Use G4OpticalPhysics and G4SteppingVerbose.
+  o Removed unused surface parameters.
+- extended/optical/OpNovice2 (OpNovice2-V10-05-01)
+  o Use unique analysis filenames.
+- extended/optical/wls (WLS-V10-05-01)
+  o Avoid storing random number seeds.
+  o Use G4OpticalPhysics and G4SteppingVerbose.
+- extended/parallel/MPI (MPI-V10-05-02)
+  o Fixed exMPI03, exMPI04; compilation of G4MPIscorerMerger was broken after
+    changes in scorers.
+  o Added new option 'rowMode' for ntuple merging; changed the default merging
+    mode to the new one (column-wise with preserved rows) and updated the
+    analysis code.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-05-05)
+  o Documented timeWindowBiased.mac input macro.
+
+tests                                            tests-V10-05-10
+-----
+- Updated reference outputs and tools.
+- tests/test03 (test03-V10-05-00)
+  o Updated based on changes in G4VAnalysisManager: added NtupleRowMode
+    application parameter; added test03-Root-writeRwextra to test row-wise
+    mode with an extra branch which became optional now; added two histograms
+    to test plotting with log axis scale.
+- tests/test46 (test46-V10-05-03)
+  o Use kinetic energy instead of total energy deposit in ElectronLimiter.
+  o Specify primary particle in pi-{5,6,7,8,9}gev.in macros.
