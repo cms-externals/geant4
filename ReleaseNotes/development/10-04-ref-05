@@ -1,0 +1,519 @@
+
+                       geant4-10-04-ref-05
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Introduced full support for MT-mode on Windows systems with DLLs.
+ o Porting of code to compile without warnings on gcc-8.1.0.
+ o New ion ionisation model, G4AtimaEnergyLossModel and G4AtimaFluctuations.
+ o Adopting faster lateral displacement by default in G4UrbanMscModel.
+ o New versions of G4BetheHeitlerModel and G4PairProductionRelModel with
+   improved screening function approximation, improved LPM function
+   approximation and efficiency.
+ o New data sets G4RealSurface-2.1.1 and G4NEUTRONXS-2.0.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.4.p02
+(+)  Fixes included in release 10.4.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-04-10
+-----
+- Removed warning about building MT DLLs on Windows, as these are now
+  fully supported.
+- Updated data sets to use G4RealSurface-2.1.1.                              (o)
+- Updated data sets to use G4NEUTRONXS-2.0.
+
+analysis                                         analysis-V10-04-02          (+)
+--------
+- Updated to g4tools 4.2.3: fixed compilation warnings on gcc-8.1.0.
+  See History_tools for the complete list of modifications.
+
+digits_hits                                      digits_hits-V10-04-01
+-----------
+- Updated use of thread-local static variables to function returning
+  a thread-local static reference. New model for allowing support of
+  multi-threading on Windows DLLs.
+
+event                                            event-V10-04-07
+-----
+- Updated use of thread-local static variables to function returning
+  a thread-local static reference. New model for allowing support of
+  multi-threading on Windows DLLs.
+
+externals                                        externals-V10-04-05
+---------
+- CLHEP: fixed compilation warnings from gcc-8.1.0 when using
+  -Woverloaded-virtual compilation option (default in Geant4).
+
+geometry
+--------
+- management (geommng-V10-04-05):
+  o G4AffineTransform: added explicit copy constructor, assignment and
+    destructor; InverseProduct() has been optimised, now it does 36
+    multiplications instead of 45; optimised also for the case of pure
+    translation; added methods for inverse transformation:
+    InverseTransformPoint(), InverseTransformAxis(), InverseNetRotation()
+    and InverseNetTranslation().
+  o G4GeomSplitter: replaced use or realloc()/free() and memcpy() with
+    normal allocation/deallocation through G4Allocator. Also addressing
+    compilation warnings on gcc-8.1.0.
+- navigation (geomnav-V10-04-06):
+  o G4Navigator::GetLocalExitNormal(): fix for normal calculated at the      (o)
+    endpoint of current step, on a 'candidate' next volume. Adds missing
+    transformation to the frame of the current volume.
+    Addresses problem report #2054.
+  o G4Navigator::ComputeLocalAxis(): removed unnecessary check for IsRotated().
+  o Replaced use of Inverse() from G4AffineTransform with new dedicated
+    methods, to avoid creation of temporaries in G4RegularNavigation,
+    G4Navigator and G4ReplicaNavigation.
+- solids/Boolean (geom-bool-V10-04-04):
+  o G4MultiUnion: added protection for normal initialisation in
+    DistanceToOutVoxels(). Minor optimisation in DistanceToOut(p,v,..).
+- solids/CSG (geom-csg-V10-04-03):
+  o Make G4UCons wrapper inheriting from vecgeom::GenericUnplacedCone,
+    following the latest changes in VecGeom.
+- solids/specific (geom-specific-V10-04-09):
+  o Updated use of thread-local static variables to function returning
+    a thread-local static reference. New model for allowing support of
+    multi-threading on Windows DLLs.
+- volumes (geomvol-V10-04-02):
+  o Replaced use of Inverse() from G4AffineTransform with new dedicated
+    methods, to avoid creation of temporaries in G4TouchableHistory,
+    G4PVPlacement and G4PVParameterised.
+  o Updated use of thread-local static variables to function returning
+    a thread-local static reference. New model for allowing support of
+    multi-threading on Windows DLLs.
+  o G4PVPlacement: added copy number to G4Exception printing in CheckOverlaps().
+
+global                                           global-V10-04-17
+------
+- Updated use of thread-local static variables to function returning
+  a thread-local static reference. New model for allowing support of
+  multi-threading on Windows DLLs.
+- Moved G4Exception functions to inline and extracted banner front/end
+  strings for use in Qt parsing.
+
+graphics_reps                                    greps-V10-04-05
+-------------
+- Disabled deprecated static data member G4VisAttributes::Invisible for
+  Windows systems.
+
+intercoms                                        intercoms-V10-04-02
+---------
+- Updated use of thread-local static variables to function returning
+  a thread-local static reference. New model for allowing support of
+  multi-threading on Windows DLLs.
+
+interfaces                                       interfaces-V10-04-05        (o)
+----------
+- G4UIQt: fixed bug with command guidance including HTML tags (<, > and &)
+  for "critical errors" message.
+
+particles                                        particles-V10-04-03
+---------
+- Updated use of thread-local static variables to function returning
+  a thread-local static reference. New model for allowing support of
+  multi-threading on Windows DLLs.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-04-03)
+  o G4EmModelActivator: fixed GS and Opt3 configurations.                    (o)
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V10-04-00)
+  o G4HadronInelasticQBBC: use G4ParticleInelasticXS both for neutrons
+    and protons.
+
+processes/biasing                                procbiasing-V10-04-03
+-----------------
+- Updated use of thread-local static variables to function returning
+  a thread-local static reference. New model for allowing support of
+  multi-threading on Windows DLLs.
+
+processes/electromagnetic/dna                    emdna-V10-04-03
+-----------------------------
+- Updates for chemistry.
+
+processes/electromagnetic/muons                  emmuons-V10-04-02
+-------------------------------
+- Added minor protection in G4MuPairProductionModel.
+
+processes/electromagnetic/standard               emstand-V10-04-24
+----------------------------------
+- G4AtimaEnergyLossModel, G4AtimaFluctuations: new ion ionisation
+  model developed by J.L.R.Sanchez.
+- G4UrbanMscModel: adopting faster lateral displacement by default.
+- G4ScreeningMottCrossSection: added extra method for more effective 
+  computation of the Mott correction.
+- G4WentzelOKandVIxSection: added Mott corrections to e+-.
+- G4BetheHeitlerModel, G4PairProductionRelModel, G4BetheHeitler5DModel: new 
+  versions with improved screening function approximation, improved LPM
+  function approximation, efficiency, documentation and cleanup.
+  Corrected call to selecting target atom in final state sampling.
+  Follow up changes in the derived G4BetheHeitler5DModel. 
+- G4PairProductionRelModel, G4BetheHeitlerModel: use G4ModifiedTsai angular
+  generator.
+- G4DipBustGenerator, G4ModifiedTsai: implemented new interface for directions
+  of e+e- pair.
+- G4GoudsmitSaundersonTable: fixed gcc-8.1.0 compilation warnings.           (+)
+- G4LindhardSorensenData: fixed Coverity defect.
+- G4NISTStoppingData: code cleanup.
+
+processes/electromagnetic/utils                  emutils-V10-04-11
+-------------------------------
+- G4VEmAngularDistribution: added SamplePairDirections() method for sampling
+  of e+e- pair production.
+- G4EmParameters, G4EmParametersMessenger: added extra DNA UI directory
+  and command; improved dump of EM parameters.
+- Added new enumerator G4DNAModelSubType.
+- G4EmCorrections: minor optimisation and cleanup.
+- G4LossTableManager: moved inline run time method to source.
+- Minor code cleanup in G4VMscModel and G4VEmModel.
+
+processes/electromagnetic/xrays                  xrays-V10-04-03
+-------------------------------
+- Updated use of thread-local static variables to function returning
+  a thread-local static reference. New model for allowing support of
+  multi-threading on Windows DLLs.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-04-11)
+  o G4PiNuclearCrossSection: for transuranic elements, scale the cross-sections
+    from those of Uranium (using the ratio of atomic_weights), instead of using
+    directly the latter (as done before).
+  o G4NeutronElasticXS, G4NeutronInelasticXS, G4NeutronCaptureXS:
+    adopting new data structure from G4NEUTRONXS-2.0 data set, incompatible
+    with previous.
+    Reduced number of type conversions and branches.
+  o G4ParticleInelasticXS: new inelastic crossxi- sections for neutrons, 
+    protons and light ions based on G4NEUTRONXS-2.0. 
+  o G4CrossSectionDataStore: added new method ComputeCrossSection(); reduced
+    number of type conversions, number of computation of cross-sections and
+    code branches; use const pointers to G4Material, G4Element and G4Isotope.
+    Expected hadronic tracking to be faster.
+  o G4VCrossSectionDataSet: added new flag 'isForAllAtomsAndEnergies' and 
+    get/set methods allowing to reduce the list of cross-sections per particle.
+- management (hadr-man-V10-04-03)
+  o G4HadronicProcess: fixed compilation warnings on gcc-8.1.0 regarding     (+)
+    catching polymorphic type by value, instead of by reference.
+  o Use const pointers and "nullptr" for G4Material and G4Element; use
+    ComputeCrossSection() method; removed creation of new materials at run-
+    time inside GetElementCrossSection(), all materials should be created in
+    the user code!
+  o G4HadronicProcess, G4VLeadingParticleBiasing, G4HadLeadBias:             (+)
+    fixed compilation warning with gcc-7.
+  o Code cleanup in G4HadronicProcess and G4HadronInelasticProcess: added
+    keyword "override"; cleanup of cross-section scale factor and weights;
+    G4HadronicProcessStore: use "nullptr" and added flag 'buildXSTable'
+    with get/set methods.
+- models/abla (hadr-abla-V10-04-03)
+  o Updated some parameters; code cleanup.
+- models/cascade (hadr-casc-V10-04-04)
+  o Fixes in G4ElementaryParticleCollider methods generateSCMpionAbsorption()
+    and generateSCMmuonAbsorption(), as they did not produce correct nucleon
+    pairs when pion or muon was absorbed. Added quantum number conservation
+    test added to method collide().
+- models/lepto_nuclear (hadr-lepnuc-V10-04-01)
+  o G4NeutrinoElectronCcModel: fixed Coverity defect.
+- models/particle_hp (hadr-hpp-V10-04-02)                                    (+)
+  o G4ENDFTapeRead, G4FissionProductYieldDist: fixed compilation warnings
+    on gcc 8.1.0, regarding catching polymorphic type by value, instead of
+    by reference.
+- models/parton_string/diffraction (hadr-string-diff-V10-04-06)
+  o G4FTFModel: code reviewd and improved for AdjustNucleons() method.
+    No functional changes.
+  o G4DiffractiveExcitation: code reviewd and improved for ExciteParticipants()
+    method. No functional changes.
+- models/radioactive_decay (radioactive_decay-V10-04-03)
+  o G4ECCapture, G4RadioactiveDecay, G4RadioactiveDecayMode: added electron
+    capture channel from the N Shell.
+  o G4ECCapture: added tables of PL2/PL1 PM2/PM1 and PN2/PN1 based on bound
+    electrons radial wave amplitudes, taken from Bambynek et al., Rev. Mod.
+    Phys., vol. 49, 1977.
+    Compute partial probabilities of subshells PL1,PL2,PM1,PM2,PN1,PN2 from 
+    the tables PL2/PL1, PM2/PM1, and PN2/PN1. Valid for allowed transitions.
+- models/rpg (hadr-rpg-V10-04-00)                                            (+)
+  o G4RPGAntiKZeroInelastic, G4RPGInelastic: fixed compilation warnings on
+    gcc-8.1.0, regarding catching polymorphic type by value, instead of by
+    reference.
+- models/util (hadr-mod-util-V10-04-03)
+  o Updated use of thread-local static variables to function returning
+    a thread-local static reference. New model for allowing support of
+    multi-threading on Windows DLLs.
+- processes (hadr-proc-V10-04-07)
+  o G4HadronElasticProcess, G4NeutrinoElectronProcess: fixed compilation     (+)
+    warnings on gcc 8.1.0, regarding catching polymorphic type by value,
+    instead of by reference.
+  o G4HadronElasticProcess, G4NeutrinoElectronProcess: use const pointers
+    and "nullptr" for G4Material and G4Element.
+- stopping (hadr-stopping-V10-04-00)                                         (+)
+  o G4HadronStoppingProcess, G4MuonicAtomDecay: fixed compilation warnings on
+    gcc 8.1.0, regarding catching polymorphic type by value, instead of by
+    reference.
+- util (hadr-util-V10-04-02)
+  o Updated use of thread-local static variables to function returning
+    a thread-local static reference. New model for allowing support of
+    multi-threading on Windows DLLs.
+
+processes/optical                                op-V10-04-00
+-----------------
+- G4OpMieHG: changed GetProperty() to use enum indeces instead of strings.
+
+processes/scoring                                procscore-V10-04-00
+-----------------
+- Updated use of thread-local static variables to function returning
+  a thread-local static reference. New model for allowing support of
+  multi-threading on Windows DLLs.
+
+run                                              run-V10-04-07
+---
+- Updated use of thread-local static variables to function returning
+  a thread-local static reference. New model for allowing support of
+  multi-threading on Windows DLLs.
+
+track                                            track-V10-04-00
+-----
+- Updated use of thread-local static variables to function returning
+  a thread-local static reference. New model for allowing support of
+  multi-threading on Windows DLLs.
+
+tracking                                         tracking-V10-04-01
+--------
+- Updated use of thread-local static variables to function returning
+  a thread-local static reference. New model for allowing support of
+  multi-threading on Windows DLLs.
+
+visualization                                    vis-V10-04-06
+-------------
+- Fixed some compilation warnings on gcc-8.1.0.
+- management (visman-V10-04-11):
+  o Introduced UI command "/vis/drawLogicalVolume", synonymous with
+    "/vis/specify". Both commands create a new scene and invoke
+    "/vis/scene/add/logicalVolume". Include overlap checking.
+- modeling (modeling-V10-04-05):
+  o G4LogicalVolumeModel: added overlap checking.
+- OpenGL (opengl-V10-04-06),
+- OpenInventor (openinventor-V10-04-02):
+  o Implemented kernel visit for "colour by density".
+- RayTracer (raytracer-V10-04-01):
+  o Updated use of thread-local static variables to function returning
+    a thread-local static reference. New model for allowing support of
+    multi-threading on Windows DLLs.
+- XXX (visXXX-V10-04-00):
+  o Implemented kernel visit for "colour by density".
+
+data sets:
+---------
+- G4NEUTRONSX-2.0:
+  o Updated data from G4NDL-4.5 for neutrons and from G4TENDL-1.3.2 for
+    p, d, t, He3, He4. New data structure.
+- G4RealSurface-2.1.1:                                                       (o)
+  o Merged LBNL LUTs data introduced in 2.0 with the Davis LUTs.
+    Addressing problem report #2043.
+
+examples                                         examples-V10-04-05
+--------
+- Updated documentation and reference outputs.
+- advanced/airshower (airshower-V10-04-00)
+- advanced/amsEcal (amsEcal-V10-04-02)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- advanced/gammaray_telescope (gammaraytel-V10-04-04)
+  o Fixed issues reported by Valgrind.
+    Addressing problem report #1981.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+  o Fixed compilation warning on gcc-8.1.0.
+- advanced/brachytherapy (brachy-V10-04-00)
+- advanced/gammaknife (gammaknife-V10-04-00)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- advanced/hadrontherapy (hadrontherapy-V10-04-00)
+  o Replaced obsolete use if G4VisAttributes::Invisible with
+    G4VisAttributes::GetInvisible().
+- advanced/lAr_calorimeter (lAr_calorimeter-V10-04-00)
+- advanced/microbeam (microbeam-V10-04-00)
+- advanced/microelectronics (microelectronics-V10-04-00)
+- advanced/purging_magnet (purmag-V10-04-00)
+- advanced/underground_physics (DMX-V10-04-00)
+- advanced/xray_fluorescence (XrayFluo-V10-04-00)
+- advanced/xray_telescope (xraytel-V10-04-00)
+- basic/B3 (exampleB3-V10-04-00)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- basic/B4 (exampleB4-V10-04-00)
+  o Replaced deprecated "/vis/ogl/set/" with "/vis/viewer/set/timeWindow/"
+    command in visualization macros.
+- basic/B5 (exampleB5-V10-04-01)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/analysis/B1Con (B1Con-V10-04-01)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+- extended/biasing/B01 (B01-V10-04-00)
+- extended/biasing/B02 (B02-V10-04-00)
+- extended/biasing/B03 (B03-V10-04-01)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/biasing/GB01 (GB01-V10-04-01)
+- extended/biasing/GB02 (GB02-V10-04-01)
+- extended/biasing/GB03 (GB03-V10-04-01)
+- extended/biasing/GB04 (GB04-V10-04-01)
+- extended/biasing/GB05 (GB05-V10-04-01)
+- extended/biasing/GB06 (GB06-V10-04-01)
+- extended/biasing/ReverseMC01 (ReverseMC01-V10-04-00)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+- extended/electromagnetic/TestEm1 (testem1-V10-04-02)
+- extended/electromagnetic/TestEm3 (testem3-V10-04-06)
+- extended/electromagnetic/TestEm4 (testem4-V10-04-02)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/electromagnetic/TestEm5 (testem5-V10-04-06)
+  o Added test of new ion ionisation model, which is included in the new
+    physics constructor PhysListEm19DStandard; added atima.mac macro file
+    to compare results with known data.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/electromagnetic/TestEm8 (testem8-V10-04-05)
+- extended/electromagnetic/TestEm9 (testem9-V10-04-04)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+- extended/electromagnetic/TestEm11 (testem11-V10-04-02)
+- extended/electromagnetic/TestEm12 (testem12-V10-04-02)
+- extended/electromagnetic/TestEm13 (testem13-V10-04-03)
+- extended/electromagnetic/TestEm14 (testem14-V10-04-03)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/electromagnetic/TestEm15 (testem15-V10-04-05)
+  o Use G4RotationMatrix to convert to gamma reference system.
+  o Use default random number generator.
+- extended/electromagnetic/TestEm16 (testem16-V10-04-02)
+- extended/eventgenerator/particleGun (particleGunExample-V10-04-02)
+- extended/eventgenerator/exgps (exgps-V10-04-02)
+- extended/exoticphysics/channeling (channelingExample-V10-04-00)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/exoticphysics/dmparticle (dmparticle-V10-04-01)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+- extended/exoticphysics/monopole (monopole-V10-04-02)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/exoticphysics/phonon (phononExample-V10-04-01)
+- extended/exoticphysics/ucn (ExUCN-V10-04-00)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+- extended/field/BlineTracer (BlineTracer-V10-04-00)                         (+)
+  o Fixed compilation error for missing header inclusion.
+- extended/field/field01 (fieldex01-V10-04-01)
+- extended/field/field02 (fieldex02-V10-04-01)
+- extended/field/field03 (fieldex03-V10-04-01)
+- extended/field/field04 (fieldex04-V10-04-01)
+- extended/field/field05 (fieldex05-V10-04-01)
+- extended/field/field06 (fieldex06-V10-04-00)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/hadronic/FissionFragment (exExtFissFrag-V10-04-01)
+- extended/hadronic/Hadr00 (exhadr00-V10-04-03)
+- extended/hadronic/Hadr01 (exhadr01-V10-04-03)
+- extended/hadronic/Hadr02 (exhadr02-V10-04-01)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+- extended/hadronic/Hadr03 (exhadr03-V10-04-03)
+- extended/hadronic/Hadr04 (exhadr04-V10-04-03)
+- extended/hadronic/Hadr06 (exhadr06-V10-04-02)
+- extended/hadronic/Hadr07 (exhadr07-V10-04-02)
+- extended/hadronic/NeutronSource (NeutronSource-V10-04-02)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/medical/DICOM (DICOM-V10-04-02)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/medical/dna/dnaphysics (dnaphysics-V10-04-00)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/medical/dna/icsd (exicsd-V10-04-01)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/medical/dna/mfp (mfp-V10-04-01)
+- extended/medical/dna/microdosimetry (microdosimetry-V10-04-00)
+- extended/medical/dna/neuron (neuron-V10-04-01)
+- extended/medical/dna/range (range-V10-04-00)
+- extended/medical/dna/slowing (slowing-V10-04-00)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/medical/dna/splitting (splitting-V10-04-01)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/medical/dna/spower (spower-V10-04-01)
+- extended/medical/dna/svalue (svalue-V10-04-00)
+- extended/medical/dna/wholeNuclearDNA (wholeNuclearDNA-V10-04-00)
+- extended/medical/dna/wvalue (wvalue-V10-04-00)
+- extended/medical/electronScattering (electronScattering-V10-04-02)
+- extended/medical/electronScattering2 (exampleES2-V10-04-03)
+- extended/medical/fanoCavity (fano-V10-04-03)
+- extended/medical/fanoCavity2 (fano2-V10-04-02)
+- extended/medical/GammaTherapy (gtherapy-V10-04-02)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/optical (exOptical-V10-04-00)
+  o Added new example OpNovice2 for investigation of optical properties and
+    parameters. Details of optical photon boundary interactions on a surface
+    are recorded, as well as the details of optical photon generation and
+    transport.
+- extended/optical/LXe (LXe-V10-04-08)
+  o Replaced local physics with FTFP_BERT + G4OpticalPhysics; deleted
+    custom lists LXeEMPhysics, LXeGeneralPhysics, LXeMuonPhysics and
+    LXePhysicsList; use G4EmStandard_option4 EM physics.
+  o Added LXeRun to record and print results at the end.
+  o Removed LXeSteppingVerbose and cleanup of macros.
+  o Removed LXeUserEventInformation, use LXeEventAction instead;
+    removed LXeRecorderBase, replaced with LXeHistoManager.
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/optical/OpNovice (OpNovice-V10-04-01)
+- extended/optical/wls (WLS-V10-04-01)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/parallel/ThreadsafeScorers (ThreadsafeScorers-V10-04-01)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/parameterisations/gflash (exgflash-V10-04-00)
+- extended/parameterisations/Par01 (expar01-V10-04-00)
+- extended/parameterisations/Par02 (expar02-V10-04-00)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/persistency/gdml/G02 (G02-V10-04-00)
+- extended/persistency/gdml/G03 (G03-V10-04-00)
+  o RunAction: removed visualisation command.
+- extended/persistency/P01 (exampleP01-V10-04-00)
+- extended/persistency/P02 (exampleP02-V10-04-00)
+- extended/persistency/P03 (exampleP03-V10-04-00)
+- extended/polarisation/Pol01 (expol01-V10-04-00)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/radioactivedecay/Activation (activation-V10-04-02)
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-04-02)
+- extended/radioactivedecay/rdecay02 (rdecay02-V10-04-03)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/runAndEvent/RE01 (exampleRE01-V10-04-01)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/runAndEvent/RE02 (exampleRE02-V10-04-01)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+- extended/runAndEvent/RE03 (exampleRE03-V10-04-01)
+  o Added batchrun1.mac input macro for batch jobs and updated CMake script.
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/runAndEvent/RE04 (exampleRE04-V10-04-01)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- extended/runAndEvent/RE05 (exampleRE05-V10-04-02)
+  o RE05PrimaryGeneratorAction: fixed potential rare race condition issue.
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+- extended/runAndEvent/RE06 (exampleRE06-V10-04-01)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+
+tests                                            tests-V10-04-05
+-----
+- Updated reference outputs and tools.
+- tests/test15 (test15-V10-04-17)
+  o Removed G4VIS_USE and G4UI_USE and updated visualization setup.
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- tests/test18 (test18-V10-04-01)
+- tests/test53 (test53-V10-04-00)
+- tests/test54 (test54-V10-04-00)
+- tests/test55 (test55-V10-04-00)
+- tests/test56 (test56-V10-04-00)
+  o Added inclusion of G4Types.hh in files for self-consistency.
+- tests/test65 (test65-V10-04-02)
+  o Changed download file for LEND data to new path/name.
+  o Fixes to enable alternative download when download from LLNL fails.
+- tests/test67 (test67-V10-04-00)
+  o Added inclusion of G4Types.hh in files for self-consistency.

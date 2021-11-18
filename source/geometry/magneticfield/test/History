@@ -1,0 +1,228 @@
+-------------------------------------------------------------------
+
+     =========================================================
+     Geant4 - an Object-Oriented Toolkit for Simulation in HEP
+     =========================================================
+
+                      Category History file
+                      ---------------------
+This file should be used by G4 developers and category coordinators
+to briefly summarize all major modifications introduced in the code
+and keep track of all category-tags.
+It DOES NOT substitute the  CVS log-message one should put at every
+committal in the CVS repository !
+
+     ----------------------------------------------------------
+     * Reverse chronological order (last date on top), please *
+     ----------------------------------------------------------
+November 26, 2020 J.Apostolakis                   
+-------------------------------  - part of field-V10-06-09
+- testPropagateMagField:
+    Added method with code from draft documentation
+      - Adds test of G4InterpolationDriver with G4TDormandPrince45    
+      - Currently it is used to compile the verbatim code.
+        In future could extend to use the specific code in at least one case.  (TO DO)
+
+    Also cases with stepper Id:    
+     - 245: G4TDormandPrince45 with G4InterpolationDriver
+     - 100: G4RKF45FEq1 with templated G4IntegrationDriver
+     - 201: BFieldIntegrationDriver with G4IntegrationDriver<G4RK547FEq2> for small steps
+
+    Labelled output
+      - column with field evaluations (not calls -> to change)
+      - statistics of field calls & evaluations after each particle are cumulative.
+                     
+
+October 8, 2020  J.Apostolakis
+------------------------------   - part of field-V10-06-07
+- testPropagateMagField:
+    Add options to use/test templated steppers.
+
+  test.sh: re-enable automation for testPropagateMagField
+
+  Add output files for templated stepper options (101,102,103,104,345)
+
+October 8, 2020  J.Apostolakis
+------------------------------   - part of field-V10-06-06
+testTemplatedStepper: 
+- New test to check Templated Steppers (with fewer choices)
+   and do some simple timing tests.
+   (derived from testPropagateMagField.cc )
+   Run codes 21-25 for templated steppers 
+   * Templated Cash/Karp     (run code:  25 ) -  G4TCashKarpRKF45
+   * Templated ClassicalRK4  (run code:  24 ) -  G4TClassicalRK4
+   * Templated Simple Heum   (run code:  23 ) 
+   * Templated Simple Runge  (run code:  22 )
+   * Templated Explicit Euler(run code:  21 )
+
+testProElectroMagField:
+- Added options to test new Templated Steppers with different Drivers:
+   * Templated Cash/Karp      (run code: 108) -  G4TCashKarpRKF45 
+   * Templated Dormand/Prince (run code: 345) -  G4TDormandPrince45
+   * FSAL Integration driver using Dormand/Prince (245) 
+    
+- Added cases added for existing FSAL driver / stepper pairs:
+   * G4RKF547FEq1 (241)  5th order 'equilibrium' RK of Higham & Hall
+   * G4RKF547FEq2 (242)   >>  similar / stepper 2 of Higham & Hall 
+   * G4RKF547FEq3 (243)   >>  similar / stepper 3 of Higham & Hall
+
+
+March  24, 2020  J.Apostolakis
+------------------------------   - part of field-V10-06-04
+testPropagateMagField:
+- reinstated use of simpleQuadrupole field (cached) in order to compare 
+   with older test runs  ( especially with the output stored in git. )
+- fix: consistently set chord-finder parameter(s) - especially delta_chord 
+    for different driver/stepper choice
+- new code to store and set values for delta-chord and delta-intersection 
+    (potential incompatibility with old results. )
+- improved printing code, including new method to ReportPositionDirection.
+
+CMakeLists.txt:  allow both build of 'G4TARGET' and building via installation option to build tests.
+
+January  22, 2020 G.Cosmo
+-------------------------
+- Fixed compilation errors and configuration for field07 unit test.
+
+November  29, 2019 J.Apostolakis
+--------------------------------
+- Revised testPropagateMagField: 
+  * Fixed stepper/driver choices (suppressed ones that don't work with
+      InterpolationStepper).
+  * Added use of SetIterationsToIncreaseChordDistance' testPropagateMagField.cc
+
+November  15, 2019 J.Apostolakis
+--------------------------------
+- Revised testPropagateMagField to test BFieldIntegratorDriver with
+   DormandPrince745.   Test case '105'
+
+- testPropagateMagField & testPropProElectroMagField: 
+  * Fix at start of test function: call Navigator to reset.
+    Reset Navigator at test start needed in case of change to geometry voxels.
+
+September 19, 2018 J.Apostolakis
+----------------------------------------
+- Renamed 'testNTST' in its CMakeLists.txt to 'altTestNTST', to avoid
+  clash with target in benchmarks/calorimeter/NTST
+
+April     30, 2018 J.Apostolakis
+----------------------------------------     - part of field-V10-04-04
+- testProElectroMagField:
+Delete unused steppers for case of new (templated) drivers
+
+February 14, 2018 J.Apostolakis & D.Sorokin  - part of field-V10-04-02
+-------------------------------------------  
+- Added cross check of Dormand-Prince 4/5 against boost implementation
+to validate its implementation and investigate deviations seen in
+tests (and inquiry from mu2e.)   
+
+- Revised testPropagateMagField to add Bulirsch-Stoer method (#99),
+to check the modulus of momentum output in integration, and to report
+more information in case of problem with overlong end-position.
+
+November 2, 2017 J.Apostolakis
+----------------------------------------     - part of field-V10-03-YY
+Moved output of all tests to a new subdirectory. (suggested by Dmitry)
+Added RK547FEq1,2 and 3 to testPropagateMagField.cc
+
+November 2, 2017 J.Apostolakis               
+------------------------------               - part of field-V10-03-21
+Several improvements in test.sh (checking error out better, formatting.)
+New perl script to check output for points displaced further than step
+ size.
+
+November 1, 2017 J.Apostolakis               - fieldtest-V10-03-02
+------------------------------               - part of field-V10-03-20
+Updated testProElectroMagField.out45 (had outdated output)
+
+October 23, 2017 J.Apostolakis               - fieldtest-V10-03-01
+------------------------------               - part of field-V10-03-18
+testProElectroMagField.cc
+- Added new type of Integration Driver -- templated on the type of the Stepper.
+     Run extra cases (both old type and new type of driver.)
+- Output results with higher precision.
+   ( Updated output results for test runs. )
+
+June  2, 2017 J.Apostolakis                  - fieldtest-V10-03-00
+---------------------------                  - part of field-V10-03-05
+- Revised test.sh, adapting it for use of Make with CMake - calling 
+     build in external directory
+- Updated test outputs
+
+June  3, 2016 J.Apostolakis                  - part of field-V10-02-18
+---------------------------
+- Added option for new embedded steppers to remaining sub-system tests:
+        testProElectroMagField.cc
+        testProPerpSpin.cc
+        testPropagateSpin.cc
+
+- Added output for new steppers for new steppers for the tests:
+        testPropagateMagField.cc
+        testProElectroMagField.cc
+	
+June  3, 2016 J.Apostolakis                  - part of field-V10-02-17
+---------------------------
+- Added runs for new steppers to all tests in test.sh !!
+
+- Several changes in testPropagateMagField.cc:
+    Supress setting of min/max Eps in SetupPropagator - instead print them.
+    Changed to using Quad field as default.
+    Choice of type of magnetic field can be done at runtime - in argv[5]
+
+June  1, 2016 J.Apostolakis                  - part of field-V10-02-16
+---------------------------
+- Deleted RkTestRun - 
+   Reason: to alleviate cmake problem with "validate-sources"
+ 
+   **** Start Error report for reference: ****
+   Problems detected in /mnt/build/jenkins/workspace/g4-cont-slc6-gcc51-MT/continuous/RelWithDebInfo/g4tags-dev/g4tags-dev/source/geometry/magneticfield/test/RkTestRun:
+Sources on disk but not listed in sources.cmake:
+  RKTest.hh
+  RKTest.cc
+CMake Error at geant4_validate_sources.cmake:148 (message):
+  Inconsistent Geant4 build detected!
+   **** End   Error report for reference  ****
+
+
+June  1, 2016 J.Apostolakis                  - part of field-V10-02-14
+------------------------------------------
+- RkTestRun: renamed CMakeLists.txt to Old-CMakeLists.txt 
+    trying to fix Ctest error about sources.
+
+- Fixes to RkTestRun - renamed base and conrete stepper classes.
+
+May 26, 2016 J.Apostolakis & Som. Banerjee   - part of field-V10-02-11
+------------------------------------------
+- Added RkTestRun (first of Somnath's final tests for steppers)
+
+
+Sept  21st,  2015 J.Apostolakis
+----------------------------------
+-Fixed compilation issues in testProElectricMagField.cc
+Configuration
+-Revised CMakeLists.txt file in this directory (added field07 as subdirectory)
+-Created draft CMakeLists.txt file in field07
+Cleanup
+-Removed additional files  and all subdirectories in field03
+
+March 14th,  2014 J.Apostolakis
+----------------------------------
+Updated interface to use field manager to set charge momentum, mass' testProElectroMagField.cc
+Deleted directory field03 - its contents were input files for another example (copies from TestEm5).
+
+March 12th,  2013 J.Apostolakis
+----------------------------------
+Deleted directory field02 - it has been moved to examples/extended/field/field02 (like field01)
+
+June 13th, 2012 G.Cosmo
+-----------------------
+Fixed compilation errors and warnings (except in field* directories...).
+
+February  3rd,  2011 J.Apostolakis
+----------------------------------
+testPropagateMagField.cc
+  Migrated Exception to new signature.
+
+February  2nd,  2011 J.Apostolakis
+----------------------------------
+Added field07 test to check for getting stuck on surfaces.

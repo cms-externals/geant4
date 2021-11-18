@@ -1,0 +1,282 @@
+
+                       geant4-10-07-ref-06
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o More fixes in PTL addressing potential crashed at job's closure.
+ o Revised GetCubicVolume() method in G4UnionSolid and G4SubtractionSolid,
+   to use cubic volume of constituent volume(s) and an intersection solid;
+   providing more accurate calculation.
+ o Introducing G4Mesh, a light class that encapsulates and validates
+   visualisation of a nested parameterisation.
+ o New example demonstrating interface with VecGeom navigator.
+   Co-working with VecGeom-1.1.16 or higher.
+ o Updated data-set to G4EMLOW-7.17.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.7.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-07-28
+-----
+- Added GEANT4_USE_PTL_LOCKS option to forward to internal PTL as PTL_USE_LOCKS.
+  Removed explicit setting of PTL_ cmake options.
+- Implemented build/test script in Python to check for cycles in the declared
+  source module dependency graph.
+- Added FindPythia8.cmake script.
+- Updated data-set to G4EMLOW-7.17.
+
+config                                           config-V10-07-05
+------
+- Moved default to C++17 Standard.
+
+event                                            event-V10-07-03
+-----
+- G4GeneralParticleSourceMessenger: fixed default value of                   (o)
+  "/gps/ang/maxphi" UI command. Addressing problem report #2383.
+
+externals                                        externals-V10-07-05
+---------
+- ptl (ptl-V10-07-07)
+  o Fix to TaskRunManager::Terminate() + nullptr to m_thread_pool
+    responsible for segmentation-fault when ui/vis initialised, but not
+    run manager.
+  o Hide PTL_... options from clients building Geant4.
+    Forward relevant Geant4 options to PTL: TBB, sanitizer, locks.
+
+geometry/management                              geommng-V10-07-04
+-------------------
+- G4UAdapter: added operator<<() to fix clash between similar methods
+  for G4VSolid and VecGeom UnplacedVolume.
+
+geometry/solids/Boolean                          geom-bool-V10-07-02
+-----------------------
+- In G4UnionSolid and G4SubtractionSolid, revised GetCubicVolume() method
+  to use cubic volume of constituent volume(s) and an intersection solid.
+  Test cases show the potential for improvement: factors of 40-3000.
+  Cases with small overlap will improve most. Not all cases will improve. 
+
+geometry/solids/CSG                              geom-csg-V10-07-03
+-------------------
+- G4Trap, G4Para and wrappers: added accessors to retrieve/calculate original
+  values for alpha, theta, phi.
+
+geometry/solids/specific                         geom-specific-V10-07-06
+------------------------
+- Added missing accessor in G4UTet.
+
+geometry/volumes                                 geomvol-V10-07-03
+----------------
+- G4ReflectionFactory: added Clean() method for clearing the internal maps on
+  user request and removed problematic Reset() function.
+
+global                                           global-V10-07-16
+------
+- Updated G4SIUnits and G4PhysicalConstants to include new symbols
+  (minute, hour, day, year and millielectronvolt) and new constants
+  (Bohr_magneton and nuclear_magneton), based on CLHEP-2.4.4.2.
+- Added protection for WIN32 in G4BackTrace.
+- Updated date and tag-ID for geant4-10-07-ref-06.
+
+graphics_reps                                    greps-V10-07-07
+-------------
+- G4VGraphicsScene: introduced new pure virtual function AddCompound().
+- G4VisAttributes: improved message in SetForceNumberOfCloudPoints().
+- HepPolyhedron: fixed calculation of number of faces in a polyhedron object
+  in RotateContourAroundZ(). In some cases, 'Nfaces' was computed incorrectly,
+  resulting in more memory being allocated than required; this did not create
+  problems for rendering, but used to generate warning messages in some cases.
+
+particles                                        particles-V10-07-02
+---------
+- Fixed shadowing compilation warning in G4Triton.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-07-14)
+  o G4EmLivermorePhysics: use G4LivermorePolarizedComptonModel if polarisation
+    is enabled.
+  o Removed obsolete G4EmLEPTSPhysics, and code cleanup in G4EmDNAPhysics
+    and G4EmDNAPhysics_stationary.
+  o G4EmLivermorePhysics, G4EmPenelopePhysics_option1,
+    G4EmStandardPhysics_option3, G4EmStandardPhysics_option4,
+    G4EmLowEPhysics, G4EmStandardPhysicsSS: instantiate G4ePairProduction
+    process after ionisation and bremsstrahlung; does not change physics
+    but helps to have clearer debug printouts.
+
+processes/electromagnetic/dna                    emdna-V10-07-08
+-----------------------------
+- Added new models: G4DNADiracRMatrixExcitationModel,
+  G4DNAQuinnPlasmonExcitationModel, G4DNARelativisticIonisationModel and
+  G4DNAPlasmonExcitation.
+- Modified G4DNAELSEPAElasticModel for gold material.
+
+processes/electromagnetic/lowenergy              emlowen-V10-07-16
+-----------------------------------
+- G4LivermorePolarizedComptonModel: corrected reference to the Quantum
+  Entanglement paper.
+
+processes/electromagnetic/muons                  emmuons-V10-07-07
+-------------------------------
+- G4EnergyLossForExtrapolator, G4TablesForExtrapolator: added                (o)
+  more thread safety for initialisation of the next runs.
+
+processes/electromagnetic/standard               emstand-V10-07-14
+----------------------------------
+- G4eplusAnnihilation: instantiate clipboard only if Quantum Entanglement
+  is requested.
+
+processes/electromagnetic/utils                  emutils-V10-07-22
+-------------------------------
+- G4VEmProcess, G4VEnergyLossProcess: fixed computation of cross-section and
+  range if base material approach is used; recover Fano cavity test results;
+  improved initialisation.
+- G4VEmProcess, G4VEnergyLossProcess: attempt to improve integral option.
+- G4LossTableBuilder: fixed debug printout.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-07-13)
+  o G4UPiNuclearCrossSection: disabled Spline interpolation.
+- management (hadr-man-V10-07-07)
+  o G4HadronicProcess: made public the method GetHadronicInteraction().
+    This can be useful for users to access at run-time some information
+    available from a hadronic final-state model.
+- models/theo_high_energy (had-theo-HE-V10-07-02)
+  o G4TheoFSGenerator: added accessors for the corresponding modifier methods
+    already existing. This can be useful for users to access at run-time some
+    information available from a hadronic final-state model.
+
+tasking                                          tasking-V10-07-05
+-------
+- G4TaskRunManager: check for valid threadPool pointer in method
+  RequestWorkersProcessCommandsStack() to fix occasional segmentation
+  fault at exit.
+
+tracking                                         tracking-V10-07-12
+--------
+- G4SteppingVerbose: added explicit virtual keyword for virtual methods
+  and destructor.
+- Fixed printout format in G4VSteppingVerboseWithUnits.
+
+visualization                                    vis-V10-07-07
+-------------
+- Migrated CMake scripts to modular CMake API.
+- management (visman-V10-07-10):
+  o Introducing "Special Mesh Rendering", with new commands: 
+    /vis/viewer/set/specialMeshRendering
+    /vis/viewer/set/specialMeshVolumes
+    Only available with OpenGL drivers at present.
+  o Implemented a default AddCompound(const G4Mesh&) method: just draws the
+    "container" volume and prints a G4Exception with guidance.
+  o Added new data members to view parameters.
+  o Exploit C++17 to parse saved files in /vis/viewer/interpolate,
+    to use <filesystem>.
+- modeling (modeling-V10-07-10):
+  o Introducing G4Mesh, a light class that encapsulates and validates a
+    nested parameterisation, called a "mesh". If a valid mesh cannot be
+    created out of a G4VPhysicalVolume, it will have a type "invalid".
+    The overhead of an invalid attempt is expected to be small, all the
+    same it should only be invoked if the user specifies mesh rendering.
+  o G4ModelingParameters: added new data members and access functions.
+  o G4PhysicalVolumeModel: added code for special mesh rendering, under
+    control of user flag. If flag is set by the above commands, and if a
+    volume is a "mesh" (a container for a nested parameterisation), invoke
+    new method AddCompound(const G4Mesh&).
+  o G4PhysicalVolumeModel: moved fFullPVPath.push_back earlier, addressing
+    a bug in visualisation of touchables.
+- FukuiRenderer (DAWN-V10-07-01):
+- gMocren (gMocren-V10-07-01):
+- HepRep (vis-HepRep-V10-07-01):
+  o Fixed hidden function warning.
+- OpenGL (opengl-V10-07-09):
+  o Implemented AddCompound(const G4Mesh&) method: turns nested
+    parameterisations into polymarkers of dots - much improved speed.
+- OpenInventor (openinventor-V10-07-04):
+- Qt3D (visQt3D-V10-07-05):
+  o Force kernel visit if special mesh rendering parameters change.
+  o Fixed hidden function warning.
+- ToolsGS (vis_toolsg-V10-07-05):
+  o Force kernel visit if special mesh rendering parameters change.
+  o Minor improvement to error message in the case of unexpected number
+    of edges in AddPrimitive().
+- VRML (VRML-V10-07-01):
+  o Fixed hidden function warning.
+
+data sets:
+---------
+- G4EMLOW-7.17:
+  o Fixed problem in file sigmadiff_cumulated_ionisation_e_RBEBV_Z79.dat.
+
+examples                                         examples-V10-07-06
+--------
+- Updated documentation and reference outputs.
+- advanced/HGCal_testbeam (exhgcaltb-V10-07-02)
+  o SiliconPixelHit, SiPMHit: fixed problem in handling of NIEL energy
+    deposition.
+  o CMSHadronPhysicsFTFP_BERT: added class from CMS.
+  o Removed obsolete class CMSEmStandardPhysicsHcal.
+  o FTFPCMS_BERT_EMM: use correct combination of physics constructors.
+- advanced/microbeam (microbeam-V10-07-03)
+  o In main() do not initialize run and number of threads, let 
+    these be done in macro microbeam.mac.
+  o DetectorConstruction: use CLHEP::twopi. Avoid having 'fField' pointer
+    as class member, use G4AutoDelete registration instead.
+  o CellParameterisation: initilize all data members.
+- advanced/STCyclotron (STCyclotron-V10-07-04)
+  o Use new CLHEP units for minute, hour, day, year in STCyclotronPhysicsList.
+- basic/B1 (exampleB1-V10-07-01)
+- basic/B2 (exampleB2-V10-07-01)
+- basic/B3 (exampleB3-V10-07-01)
+- basic/B4 (exampleB4-V10-07-03)
+- basic/B5 (exampleB5-V10-07-01)
+  o Migrated to use G4SteppingVerboseWithUnits.
+  o Use nullptr instead of 0.
+  o Cleaned trailing whitespaces from all files.
+- extended/eventgenerator/pythia/py8decayer (p8decayer-V10-07-02)
+  o New example demonstrating how to outfit Pythia8-based decay features 
+    to those resonances in Geant4 where decay tables are not implemented
+    by default. In addition, it shows how to replace existing
+    Geant4 decay tables to such resonances as tau+/- or B+/- with 
+    the Pythia8-based ones.
+- extended/geometry (exGeometry-V10-07-02)
+  o Updated scripts.
+- extended/geometry/transforms (exTransforms-V10-07-02)
+  o Added cleaning of the reflection factory.
+- extended/geometry/VecGeomNavigation (VecGeomNavigation-V10-07-01)
+  o New example demonstrating integration of VecGeom navigation, based on
+    the prototype package G4VecGeomNav, being integrated in the example at
+    build time.
+- extended/hadronic/FissionFragment (exExtHadFissFrag-V10-07-01)
+  o Fixed CMake build script to define target properly.
+- extended/hadronic/Hadr06 (exhadr06-V10-07-09)
+- extended/hadronic/Hadr07 (exhadr07-V10-07-07)
+- extended/hadronic/NeutronSource (NeutronSource-V10-07-06)
+  o Use new CLHEP units for minute, hour, day, year and millielectronvolt
+    in PhysicsList.
+- extended/medical/dna/AuNP (AuNP-V10-07-01)
+  o New example simulating the track-structure of electrons in microscopic
+    gold volume. Also simulating that in liquid water medium surrounding the
+    gold volume.
+- extended/medical/dna/dnadamage1 (dnadamage1-V10-07-00)
+  o Fixed SSD file typos.
+- extended/optical/OpNovice (OpNovice-V10-07-03)
+  o Added option to define detector via a GDML file.
+  o Added outer world volume to avoid surfaces including world volume.
+    Addressing problem report #2373.
+- extended/radioactivedecay/Activation (activation-V10-07-05)
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-07-01)
+- extended/radioactivedecay/rdecay02 (rdecay02-V10-07-01)
+  o Use new CLHEP units for minute, hour, day, year and millielectronvolt
+    in PhysicsList.
+
+tests                                            tests-V10-07-06
+-----
+- Updated reference outputs and tools.
+- tests/test15 (test15-V10-07-03)
+  o Test15RunAction: more safe use of standard mathematical functions.
+- tests/test65 (test65-V10-07-04)
+  o Fixed printout on download status in CMake script.
