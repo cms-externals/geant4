@@ -242,22 +242,21 @@ void G4VMultipleScattering::BuildPhysicsTable(const G4ParticleDefinition& part)
     */
     emManager->BuildPhysicsTable(firstParticle);
 
-    if(!master) {
       // initialisation of models
       /*
       std::cout << "### G4VMultipleScattering::BuildPhysicsTable() for "
                 << GetProcessName() << " and particle " << num
 		<< " Nmod= " << mscModels.size() << " NOT master" << std::endl;
       */
-      baseMat = masterProcess->UseBaseMaterial();
-      for(G4int i=0; i<numberOfModels; ++i) {
-	G4VMscModel* msc = GetModelByIndex(i);
-	if(nullptr == msc) { continue; }
-        G4VMscModel* msc0 = masterProcess->GetModelByIndex(i);
-        msc->SetUseBaseMaterials(baseMat);
-        msc->SetCrossSectionTable(msc0->GetCrossSectionTable(), false);
-        msc->InitialiseLocal(firstParticle, msc0);
-      }
+    baseMat = masterProcess->UseBaseMaterial();
+    for(G4int i=0; i<numberOfModels; ++i) {
+      G4VMscModel* msc = GetModelByIndex(i);
+      if(nullptr == msc) { continue; }
+      G4VMscModel* msc0 = masterProcess->GetModelByIndex(i);
+      msc->SetUseBaseMaterials(baseMat);
+      msc->SetCrossSectionTable(msc0->GetCrossSectionTable(), false);
+      msc->InitialiseLocal(firstParticle, msc0);
+      msc->SetIonisation(fIonisation, currParticle);
     }
   }
   // protection against double printout
@@ -312,7 +311,8 @@ void G4VMultipleScattering::StartTracking(G4Track* track)
          << G4LossTableManager::Instance()->IsMaster() 
          << G4endl;
   */
-  for(auto & msc : mscModels) {
+  for(G4int i=0; i<numberOfModels; ++i) {
+    G4VMscModel* msc = GetModelByIndex(i);
     /*
       G4cout << "Next model " << msc 
       << " Emin= " << msc->LowEnergyLimit() 
