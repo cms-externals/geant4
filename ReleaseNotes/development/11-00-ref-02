@@ -1,0 +1,291 @@
+
+                       geant4-11-00-ref-02
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added support for Intel-icpx/icx compiler.
+ o Added ability to optionally check for overlaps in parallel geometries
+   through the "/geometry/run/test" UI command.
+ o New utility class G4EmDNABuilder, providing instantiation of standard
+   and DNA processes/models in physics lists. Made G4EmDNAPhysics the base
+   class for DNA physics constructors.
+ o Optimised IRT-syn DNA model.
+ o In G4UniversalFluctuation and G4UrbanFluctuation, updated model parameters
+   to provide similar fluctuation results for small steps in thin layers as in
+   version 10.7.
+ o Introducing 'FALLBACK' visualisation drivers for TSGQt and VTKQt and new
+   commands to facilitate the drawing of plots at the end of a run.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in patch release 11.0.1
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-00-08
+-----
+- Added support for Intel-icpx/icx compiler and updated compilation flags
+  for all Intel compilers.
+- Enable ToolsSG and backends based on use of external libraries (Qt, X11,
+  Xm, Win32). Backends made non-mutally exclusive; removed GEANT4_USE_TOOLSSG
+  public CMake option.
+- Avoid setting LD_LIBRARY_PATH configuration on MacOS; adding paths to DLL
+  into PATH on Windows.
+- Adding missing G4ptl and G4tasking libraries to link list in geant4-config (*)
+  script. Addressing GitHub PR#37 (https://github.com/Geant4/geant4/pull/37).
+
+config                                           config-V11-00-02
+------
+- Added Linux-icx.gmk configuration for Intel OneAPI DPC++ compiler.
+  Updated compilation flags for Intel icc/icx compilers.
+- Enable -pthread only for MT builds in other configurations.
+
+analysis                                         analysis-V11-00-02
+--------
+- Added "getVector" UI commands (for visualization),
+  "/analysis/hn|pn/getVector".
+- Updated CMake build scripts.
+
+externals                                        externals-V11-00-01
+---------
+- Export built-in PTL include directory to build directory include path      (*)
+  list. Allows use of geant4-config from build directory.
+- clhep (clhep-V11-00-01)
+  o Fixed compilation warnings for shadowing data member in RandPoisson.
+- g4tools (g4tools-V11-00-02)
+  o Updated to version 5.6.2.
+  o Fixed compilation warnings on Intel compiler and Coverity defects.
+
+geometry/management                              geommng-V11-00-02
+-------------------
+- Get rid of heap allocations in G4BoundingEnvelope.
+
+geometry/navigation                              geomnav-V11-00-03
+-------------------
+- The "/geometry/run/test" UI command can now check for overlaps in parallel
+  worlds if "/geometry/run/check_parallel" is set to true.
+- G4VIntersectionLocator: fixed compilation warning on Intel-icx compiler
+  for unused data.
+
+geometry/solids/specific                         geom-specific-V11-00-07
+------------------------
+- G4VTwistedFaceted: used numerical evaluation of a single
+  integral to calculate lateral face surface area
+- G4ExtrudedSolid, G4UExtrudedSolid: added default values for parameters in
+  the constructor with two z-sections. Added default constructor to ZSection.
+  
+global                                           global-V11-00-07
+------
+- G4String: provide overload G4String::operator[](int) to workaround MSVC    (*)
+  compiler error C2666. Addressing problem report #2463.
+- Fixed compilation warnings for shadowing variables in G4String.
+- Applied set of clang-tidy modernize, readability and performance fixes.
+- Updated CMake build scripts.
+- Updated date and tag-ID for geant4-11-00-ref-02.
+
+interfaces                                       interfaces-V11-00-03
+----------
+- G4InteractorMessenger: prevent propagation of "/gui/*" commands to workers.
+- Fixed compilation warning on Intel compiler for shadowing data.
+
+materials                                        materials-V11-00-05
+---------
+- G4MaterialPropertyVector, G4OpticalMaterialProperties: insist material
+  property vectors are in increasing order of energy.
+  Modified from GitHub PR#42 (https://github.com/Geant4/geant4/pull/42).
+- G4SandiaTable: fixed compilation warning on unused variable.               (*)
+
+particles                                        particles-V11-00-03
+---------
+- Fixed compilation warnings on Intel compiler for unused variables.
+
+persistency/gdml                                 gdml-V11-00-01
+----------------
+- Addressing to the case of solid/volume name duplication when reading
+  more than one GDML files.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-00-04)
+  o G4EmModelActivator: fixed mechanism to define PAI model per region.
+  o G4EmDNABuilder: new utility class, which provides instantiation of 
+    standard and DNA processes/models; this reduces code duplication for DNA
+    physics, energy intervals for DNA models are defined in one place.
+    Added option4 configuration.
+  o Made G4EmDNAPhysics the base class for DNA physics constructors.
+    Added interface to G4EmDNABuilder.
+  o G4EmDNAPhysics_option4: use G4EmDNABuilder.
+  o Simplified code in G4EmDNAPhysics_option1, G4EmDNAPhysics_stationary,
+    G4EmDNAPhysics_option5 and G4EmDNAPhysics_stationary_option4.
+- constructors/limiters (phys-ctor-limiters-V11-00-01)
+  o G4SpecialCuts: added setting of process type 'fGeneral' and sub type.
+  o G4MinEkineCuts: removed setting of process type 'fUserDefined'.
+
+processes/electromagnetic/dna                    emdna-V11-00-07
+-----------------------------
+- Optimised IRT-syn model, use reaction radius and reaction type from the
+  reaction table.
+- Deleted G4VReactionType, G4DNAReactionTypeManager, G4DNAIRT_geometries,
+  G4DNATotallyDiffusionControlled and G4DNAPartiallyDiffusionControlled
+- G4ITTransportation: Make PrepareState() more function-like, expect semicolon.
+- G4DNAPolyNucleotideReactionProcess: moved 'PrepareState' and 'State' macros
+  in source file; made PrepareState() more function-like, expect semicolon;
+  moved variable 'pMoleculeA' under G4VERBOSE.
+- Added condition of water material for the OUTSIDE_OF_MOTHER_VOLUME
+  warning in G4DNAMolecularDissociation::DecayIt().
+- Modified the macro in G4Molecule and G4ITType for linker problems on Windows.
+
+processes/electromagnetic/lowenergy              emlowen-V11-00-04
+-----------------------------------
+- G4MicroElecInelasticModel_new: changed interpolate() method; making a      (*)
+  choice between log-log, lin-log, and lin-lin interpolations and added a
+  protection for zero input energy. When sampling transition, the choice is
+  implemented for transition from atomic level and Fermi level.
+  Should fix rare crash observed in this model.
+- G4hIonEffChargeSquare, G4PenelopeRayleighModel, G4PenelopeRayleighModelMI: (*)
+  fixed compilation warning on unused variable.
+
+processes/electromagnetic/standard               emstand-V11-00-04
+----------------------------------
+- G4UniversalFluctuation, G4UrbanFluctuation: use the same fw=4 and a0=42    (*)
+  parameters of the model providing similar fluctuation results for small
+  steps in thin layers as in version 10.7.
+  Addressing problem report #2466.
+- G4UniversalFluctuation: introduced a new protected method SampleGlandz(),  (*)
+  which provides sampling of non-Gauss fluctuations; improved arithmetics;
+  same results as in release 11.0.0.
+- G4UrbanFluctuation: reorganized version of fluctuation model from release  (*)
+  10.7 in SampleGlandz() method.
+- G4LossFluctuationDummy: new class with zero fluctuations                   (*)
+- G4UrbanMscModel: minor optimisation of arithmetics.                        (*)
+
+processes/electromagnetic/utils                  emutils-V11-00-05
+-------------------------------
+- G4EmParametersMessenger: improved instantion order of UI directories;
+  directories are created only in the master thread.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-00-02)
+  o G4HadronNucleonXsc: fixed compilation warning on unused variable.
+- models/abla (hadr-abla-V11-00-01)
+  o Fixed compilation warnings on Intel compilers for unused variables.
+- models/cascade (hadr-casc-V11-00-01)
+  o Fixed compilation warnings on Intel compilers for unused variables.
+  o Use const iterator in G4InuclEvaporation::BreakItUp(..).
+- models/coherent_elastic (hadr-cohe-V11-00-02)
+  o G4ElasticHadrNucleusHE, G4NeutronElectronElModel, G4NeutrinoElectronNcModel:
+    fixed compilation warnings on unused variables; removed commented lines;
+    use Energy() method of G4PhysicsVector instead of obsolete
+    GetLowEdgeEnergy().
+- models/de_excitation (hadr-deex-V11-00-03)
+  o G4PhotonEvaporation: fixed situation when excited fragments are created
+    with excitation energy not corresponding to level energies from
+    G4LEVELGAMMADATA. Addressing problem report #2434.
+    Also fixing event non-reproducibility for the case when radioactive decay
+    is enabled on top of any physics list.
+  o G4VEmissionProbability: updated sampling of the emitted fragment energy
+    needed. Addressing proble report #2443.
+  o G4LevelManager: use correct type.
+- models/inclxx (hadr-inclxx-V11-00-01)
+  o Fixed compilation warnings on Intel compilers for shadowing of variables
+    and not used variable.
+- models/lend (hadr-lend-V11-00-01)
+  o Fixed compilation warning on Intel compilers for unused variable.
+- models/lepto_nuclear (hadr-lepnuc-V11-00-02)
+  o G4NeutrinoNucleusModel: fixed memory leak reported by Coverity.
+  o Fixed compilation warning on Intel compilers for unused variables.
+- models/particle_hp (hadr-hpp-V11-00-01)
+  o Fixed compilation warnings on Intel compilers for deprecated use of
+    operator=() in G4ParticleHPDataPoint.
+- models/parton_string/management (hadr-partonstring-mgt-V11-00-01)
+- models/parton_string/qgsm (hadr-qgsm-V11-00-01)
+- processes (hadr-proc-V11-00-02)
+  o Fixed compilation warning on Intel compilers for unused variables.
+- util (hadr-util-V11-00-02)
+  o Fixed compilation warning on Intel compilers for unused variables
+    and deprecated declaration of operator=().
+
+run                                              run-V11-00-04
+---
+- Adding verbosity control to some printouts to standard output.             (*)
+  Addressing problem report #2397.
+
+tasking                                          tasking-V11-00-03
+-------
+- Adding verbosity control to some printouts to standard output.             (*)
+  Addressing problem report #2397.
+
+visualization
+-------------
+- management (visman-V11-00-06):
+  o In G4VisExecutive, introducing 'FALLBACK' drivers for TSGQt and VTKQt.
+    A FALLBACK vis driver is selected if the user chooses a UI session that
+    is not compatible with the requested driver. For example, if the user
+    has built Geant4 with Qt, the TSGQt driver will be available and be
+    the "default" driver, so `/vis/open TSG` will attempt to open TSGQt. But
+    if the user has chosen a dumb terminal session, the vis manager selects
+    TSGX11, for example, instead.
+  o Improved messaging for the case that a driver is not found in the
+    candidate list.
+  o Introduced compound command: "/vis/plot <h1|h2> <id>".
+    This is the first part of a programme to facilitate the drawing of
+    plots (if any have been registered with the analysis manager) at the
+    end of a run. At the moment only the ToolsSG vis driver can offer this,
+    so the vis manager issues appropriate messages. 
+    Later, we hope to introduce something like "/vis/reviewPlots", which will
+    allow the user to view all available plots in sequence.
+  o G4VisManager: added access method: IsEnabled(). Register the new commands.
+    In EndOfEvent(), protect view checking with mutex lock in MT mode, and
+    deal better with the case of scene requesting no kept events (greatly
+    speeds plotting).
+  o G4VisCommandsSceneAdd: new command "/vis/scene/add/plotter", to add
+    G4PlotterModel to end-of-run list.
+  o G4VisCommandsViewer: introducing "/vis/viewer/resetCameraParameters"
+    command, resetting *only* the camera parameters (view direction, etc.).
+  o G4VisCommandsCompound: introducing "/vis/plot <h1|h2> <id>" command.
+  o G4VisCommandsViewer: simply re-order alphabetically.
+  o G4Scene: redefined IsEmpty().
+- OpenInventor (openinventor-V11-00-03)
+  o G4OpenInventorQtExaminerViewer: fixed compilation warning on Intel
+    compiler for shadowing data.
+- ToolsGS (vis_toolsg-V11-00-04):
+  o G4ToolsSGViewer: at the moment, the ToolsSG viewer cannot draw trajectories
+    *during* in MT mode, so in function SwitchToMasterThread() we draw any
+    events that have been kept by the vis manager.
+    It fixes an issue where plots were being drawn twice.
+  o G4ToolsSGSceneHandler: adding warning message if plot cannot be found.
+  o Access G4VVisCommand::G4VisManager pointer through static function
+    GetVisManager() to prevent DLL issues on Windows.
+- Vtk (visVtk-V11-00-02)
+  o Updated CMake build scripts.
+- externals (visexternals-V11-00-01)
+  o Fixed Coverity warnings in gl2ps.
+
+examples                                         examples-V11-00-02
+--------
+- Updated documentation and reference outputs.
+- advanced/air_shower (air_shower-V11-00-01)
+  o Define all material properties in order of increasing energy.
+- advanced/composite_calorimeter (ccal-V11-00-01)
+- advanced/eRosita (eRosita-V11-00-01)
+- advanced/xray_fluorescence (XRayFluo-V11-00-01)
+  o Fixed compilation warnings on Intel-icx compiler for unused variables.
+- extended/electromagnetic/TestEm6 (testem6-V11-00-01)
+  o Fixed compilation warning in RunAction.
+- extended/electromagnetic/TestEm15 (testem15-V11-00-02)
+  o Added description of UI commands to control G4BetheHeitler5DModel.
+  o Updated README.gamma.
+- extended/medical/dna/chem6 (chem6-V11-00-01)
+  o Adding condition for only one event, to avoid potential FPE crash.
+- extended/medical/dna/moleculardna (molecularDNA-V11-00-01)
+  o New example showing how to simulate physics, physico-chemistry and
+    chemistry processes in DNA geometries, for simulating DNA damage.
+
+tests                                            tests-V11-00-02
+-----
+- Updated reference outputs and tools.
+- tests/test07 (test07-V11-00-01)
+- tests/test68 (test68-V11-00-01)
+  o Fixed compilation warning on Intel compiler for unused variables.

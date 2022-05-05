@@ -1,0 +1,343 @@
+
+                       geant4-11-00-ref-01
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Improved computation of surface area and cubic volume in specific solids.
+ o Revised implementation of G4CoupledTransportation: now inheriting from
+   G4Transportation and removed duplicated variables and methods.
+ o Added flush() method to the fast simulation models, allowing to process the
+   input buffer of the fast simulation model before the end of an event;
+   triggered inside the event loop of G4EventManager, when the stack is empty.
+ o In G4EmStandardPhysics_option3, use options providing more accurate 
+   simulation without loss of CPU performance; significantly improving
+   fanoCavity results.
+ o Extended cross-sections for computation of light anti-nuclei on hydrogen.
+ o In G4Evaporation and G4UnstableFragmentBreakUp, completed fix about
+   production of unphysical fragments.
+ o Implemented Twinkling in visualization, i.e, the rhythmic variation of
+   brightness of given touchables.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in patch release 11.0.1
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-00-01
+-----
+- Corrected logic error in checking whether module is already composed.
+- Deprecated tags `geant4_define_module` and `geant4_global_library_target`;
+  decouples the source code organisation and the module/library composition
+  commands; implementation reduced to emitting a CMake warning message on
+  what to replace with.
+- Updated CMake build scripts in all modules, by replacing
+  `geant4_global_library_target` with direct file inclusion and call to
+  `geant4_add_category` to define library build from source modules.
+- Reorganised DLL import/export flags for single-module categories.
+
+digits_hits                                      digits_hits-V11-00-02
+-----------
+- Canonicalize implementations of custom new() and delete() operators that
+  use G4Allocator. Removed un-needed/duplicated checks on static allocator
+  creation in member functions.
+
+event                                            event-V11-00-04
+-----
+- Added call to G4GlobalFastSimulationManager::Flush() method in the event loop.
+- Canonicalize implementations of custom new() and delete() operators that
+  use G4Allocator.
+
+geometry/management                              geommng-V11-00-01
+-------------------
+- G4ReflectedSolid: added GetCubicVolume(), GetSurfaceArea().
+
+geometry/navigation                              geomnav-V11-00-01
+-------------------
+- Added constant 'kMassNavigatorId' in G4TransportationManager and make use
+  of it in G4SafetyHelper.
+
+geometry/solids/Boolean                          geom-bool-V11-00-02
+-----------------------
+- In G4MultiUnion, added alternative signature for AddNode() taking a        (*)
+  pointer to solid. Added 'const' qualification to transformation passed
+  as argument. Addressing problem report #2457.
+- G4DisplacedSolid: added GetCubicVolume(), GetSurfaceArea().
+
+geometry/solids/specific                         geom-specific-V11-00-05
+------------------------
+- G4GenericTrap: implemented calculation of volume using analytical expression
+  in GetCubicVolume(); in GetSurfaceArea(), improved calculation of the area of
+  lateral faces; removed private function GetFaceCubicVolume(); private
+  functions GetFaceSurfaceArea(), GetTwistedFaceSurfaceArea() replaced with
+  private function GetLateralFaceArea().
+- G4Ellipsoid: in LateralSurfaceArea(), enhanced calculation of the lateral
+  surface area.
+- G4VTwistedFaceted, G4TwistedBox, G4TwistedTrd: optimized calculation of
+  volume and surface area.
+- G4VTwistedFaceted: fCubicVolume, fSurfaceArea made protected; GetCubicVolume()
+  and GetSurfaceArea() no longer inlined and moved to source.
+- G4TwistedTubs: implemented GetSurfaceArea() based on analytical expressions;
+  added private functions GetLateralArea() and GetPhiCutArea().
+- G4Hype: use analytical expression in GetCubicVolume() and GetSurfaceArea().
+
+global                                           global-V11-00-03
+------
+- Define G4lrint as std::lrint; removed unused G4lint and G4rint.
+- Updated date and tag-ID for geant4-11-00-ref-01.
+
+graphics_reps                                    greps-V11-00-03
+-------------
+- Revised HepPolyhedronEllipsoid, fixed visibility of edges in case of cut
+  ellipsoid.
+- G4VisExtent: in Transform(), use const auto& to avoid copying.
+
+intercoms                                        intercoms-V11-00-02
+---------
+- Check and set proper argument types for each individual argument when      (*)
+  G4GenericMessenger::DeclareMethod() is used.
+  Addressing problem report #2420.
+
+materials                                        materials-V11-00-03         (*)
+---------
+- G4MaterialPropertiesTable: set G4MaterialPropertyVector verbosity to 1.
+- G4DensityEffectData: fixed typos in the density effect data table for 8
+  materials; the most significant fix is for G4_Tm; of minor entity for
+  G4_Be, G4_Mg, G4_Fe, and G4_Y. Addressing problem report #2423.
+
+parameterisations                                gpara-V11-00-01
+-----------------
+- Added flush() method to the fast simulation models. This method allows to
+  process the input buffer of the fast simulation model before the end of an
+  event. It is used when particles are grouped together before the processing.
+  The 'flush' is triggered inside the event loop of G4EventManager, when the
+  stack is empty. The fast simulation model may add secondaries to the stack,
+  which will then be processed by Geant4.
+
+particles                                        particles-V11-00-02
+---------
+- Minor code formatting.
+
+persistency                                      persistency-V11-00-01
+-----------
+- ascii (ascii-V11-00-01):
+  o Corrected wrong automatic conversion degree-radian for G4Polycone phi    (*)
+    angle parameter. Based on GitHub PR#36.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-00-01)                      (*)
+  o G4EmStandardPhysics_option3: use options providing more accurate 
+    simulation without loss of CPU performance: set RangeFactor to 0.03;
+    use 'SafetyPlus' step limitation instead of 'DistanceToBoundary'.
+    Significantly improving fanoCavity results.
+
+processes/cuts                                   proccuts-V11-00-01          (*)
+--------------
+- G4VRangeToEnergyConverter: fixed construction/destruction of static data.
+
+processes/electromagnetic/dna                    emdna-V11-00-03
+-----------------------------
+- Added G4DNAPolyNucleotideReactionProcess and G4VDNAHitModel classes for
+  DNA damage applications.
+- Prefer pointer to 'const G4Material' where possible.
+  Removed useless 'const_cast' of G4VSensitiveDetector.
+
+processes/electromagnetic/lowenergy              emlowen-V11-00-01
+-----------------------------------
+- Prefer pointer to 'const G4Material' where possible.                       (*)
+
+processes/electromagnetic/polarisation           empolar-V11-00-01
+--------------------------------------
+- Prefer pointer to 'const G4Material' where possible.
+
+processes/electromagnetic/standard               emstand-V11-00-02
+----------------------------------
+- G4UrbanMscModel: removed multiple initialisation of the cache data         (*)
+  structure and possible data race.
+- G4CoulombScattering: for single scattering used in restricted interval     (*)
+  of large angles, use 'fEmIncreasing' type of cross-section shape.
+
+processes/electromagnetic/utils                  emutils-V11-00-04
+-------------------------------
+- Completed internal re-design started in 2021, results are identical.
+- G4EmTableType: added 3d peak energy in the data structure needed for
+  Bremsstrahlung.
+- G4VEnergyLossProcess: fill data structure for Bremsstrahlung type of
+  cross-section only in the master thread; do not repeat in each thread;
+  removed ineffective cache from run time computation of cross-section.
+- G4VMscModel, G4VEmProcess: move few methods and header files from header   (*)
+  to source in order to reduce dependencies between packages.
+- G4VEmProcess: fixed methods where implementation is based on assumption    (*)
+  that the lambda table is defined for full energy range:
+  LambdaPhysicsVector(..), CrossSEctionPerVolume(..), FindLambdaMax(..).
+  No change is expected for the default physics configuration; fix mainly
+  affecting positron annihilation processes at high energies. 
+- G4EmParametersMessenger: added forgotten UI command to enable              (*)
+  polarisation.
+- Added info in 'setMaxBetaChange' command description.                      (*)
+
+processes/electromagnetic/xrays                  xrays-V11-00-03
+-------------------------------
+- Fix in 'MaxBetaChange' value in Cerenkov process.                          (*)
+  Addressing problem report #2456.
+- G4Scintillation: removed unused 'YieldFactor' declarations.                (*)
+  Addressing problem report #2470.
+- Minor code formatting 
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-00-01)
+  o G4ComponentAntiNuclNuclearXS: correct treatment of the cross-sections of (*)
+    light anti-nuclei on hydrogen target. This relies on the isospin symmetry
+    assumption, according to which the properties of the reactions between
+    anti-proton and light nuclei are equivalent to those between light
+    anti-nuclei and hydrogen.
+- models/coherent_elastic (hadr-cohe-V11-00-01)
+  o G4AntiNuclElastic: correction in SampleInvariantT() method of the        (*)
+    highest momentum transfer (which was causing the cosine of the polar angle
+    in the center-of-mass system to be larger than 1 in some cases).
+    Addressing problem report #2204.
+- models/de_excitation (hadr-deex-V11-00-01)
+  o G4Evaporation, G4UnstableFragmentBreakUp: completed fix about production 
+    of unphysical fragments; improved debug printout.
+    Addressing problem report #2355.
+  o G4ExcitationHandler: use IsLongLived() flag from G4Fragment to decide
+    if de-excitation of the fragment should be stopped.
+  o G4VEmissionProbability: limit number of bins for numerical integration
+    to 50.
+- processes (hadr-proc-V11-00-01)
+  o Prefer pointer to 'const G4Material' where possible.
+- util (hadr-util-V11-00-01)
+  o G4Fragment: added 'IsLongLived' flag and Get/Set methods needed for the
+    de-excitation module; clean-up inline methods.
+
+processes/optical                                op-V11-00-02
+-----------------
+- Removed G4lrint/G4lint to calculate angle bin for Davis/LBNL LUT; fixes    (*)
+  crash when angle = 0.
+- Prefer pointer to 'const G4Material' where possible.
+
+processes/parameterisation                       param-V11-00-01
+--------------------------
+- Added flush() method to the fast simulation models. This method allows to
+  process the input buffer of the fast simulation model before the end of an
+  event. It is used when particles are grouped together before the processing.
+  The 'flush' is triggered inside the event loop of G4EventManager, when the
+  stack is empty. The fast simulation model may add secondaries to the stack,
+  which will then be processed by Geant4.
+
+processes/transportation                         transport-V11-00-02
+------------------------
+- Revised implementation of G4CoupledTransportation: now inheriting from
+  G4Transportation and removed duplicated variables and methods; use new
+  constant 'kMassNavigatorId' from G4TransportationManager.
+- Removed useless 'const_cast' of G4VSensitiveDetector.
+
+run                                              run-V11-00-03
+---
+- Fixed missing 'AnnihToTauTau' entry from default physics list ordering     (*)
+  that would cause a fatal exception if 'EmExtra' is used with
+  PositronToMuMu=True.
+- Prefer pointer to 'const G4Material' where possible.
+
+tasking                                          tasking-V11-00-02
+-------
+- Fixing number of seeds to be generated for the case when seeds from master (*)
+  are seeded only once per task. A G4Exception would have occurred if
+  G4TaskingRunManager is used and '/run/eventModulo 0 1' is set, while the
+  total number of events is rather small.
+
+track                                            track-V11-00-02
+-----
+- In G4ParticleChangeForTransport, simplified UpdateStepForAlongStep(),
+  assuming that transportation is always the first process.
+
+visualization
+-------------
+- management (visman-V11-00-04):
+  o Implemented Twinkling, i.e, the rhythmic variation of brightness of
+    given touchables: in G4VVisCommand added Twinkle() method; exploit
+    twinkling in UI commands in G4VisCommandsTouchable and G4VisCommandsViewer.
+  o G4VisCommandsViewer: '/vis/viewer/centreOn' and ;centreAndZoomInOn':
+    only fly and twinkle if 'KernelVisitElapsedTimeSeconds < 0.1'. It is
+    not feasible for complex scenes; in that case go straight to requested
+    volume without flying and twinkling.
+  o G4VSceneHandler: added utility function Draw3DRectMeshAsDots(..); for a
+    rectangular 3-D mesh, draw as coloured dots, one dot randomly placed in
+    each visible cell. Tidy Draw3DRectMeshAsDots().
+  o Ensure X-geometry string is copied correctly to a new viewer.
+  o G4VisCommandsCompound: improved command guidance of '/vis/open'.
+  o G4VisCommandsViewer: improved command guidance of '/vis/viewer/create'.
+  o G4VisParameters: added new accessors IsWindowLocationHintX/YNegative().
+  o G4VisCommandsTouchable: augment '/vis/touchable/draw', added Boolean
+    argument: if true, draw the extent (bounding box); Default false.
+    In '/vis/touchable/dump', fix missing dump of vis attributes.
+  o G4VViewer: added data member and access method for
+    'KernelVisitElapsedTimeSeconds'. This is measured in ProcessView().
+- modeling (modeling-V11-00-03):
+  o G4Mesh: augmented available data for 3D rectangular mesh.
+  o G4PhysicalVolumeModel: added 'LocalExtent' and 'GlobalExtent' to
+    method GetAttDefs(). In TouchableProperties, added 'fTouchableFullPVPath'.
+  o Migrated G4PhysicalVolumesSearchScene and G4TouchablePropertiesScene
+    to use 'fTouchableFullPVPath'.
+- OpenGL (opengl-V11-00-03):
+  o G4OpenGLSceneHandler: in AddCompound(..), use base class utility
+    G4VSceneHandler::Draw3DRectMeshAsDots(..); added missing return statement
+    for unimplemented cases; code tidy.
+- OpenInventor (openinventor-V11-00-02)
+  o G4OpenInventorViewer: removed misleading obsolete comment regarding
+    kernel visit in the case of a change in vis attribute modifiers.
+- Qt3D (visQt3D-V11-00-03)
+  o G4Qt3DViewer: re-implemented wheelEvent() for perspective projection; now
+    taking into account the extent of the scene.
+  o G4Qt3DSceneHandler:in AddCompound(..), use base class utility
+    G4VSceneHandler::Draw3DRectMeshAsDots(..).
+- ToolsGS (vis_toolsg-V11-00-02):
+  o G4ToolsSGViewer: reimplement wheel_rotate() for perspective projection; now
+    taking into account the extent of the scene.
+  o Reactivate G4ToolsSGQtGLES::IsUISessionCompatible(), paves way for
+    permitted instantiation of multiple TSG drivers.
+
+examples                                         examples-V11-00-01
+--------
+- Updated documentation and reference outputs.
+- advanced/amsEcal (amsEcal-V11-00-01)
+- advanced/hadrontherapy (hadrontherapy-V11-00-01)
+- extended/electromagnetic/TestEm3 (testem3-V11-00-01)
+  o Prefer pointer to 'const G4Material' where possible.
+- extended/electromagnetic/TestEm15 (testem15-V11-00-01)
+  o Updated READMEs and CMake build script.
+- extended/eventgenerator/particleGun (particleGunExample-V11-00-01)
+  o Updated reference in PrimaryGeneratorAction2.
+- extended/exoticphysics/monopole (monopole-V11-00-01)
+  o Removed useless 'const_cast' of G4VSensitiveDetector.
+- extended/hadronic/Hadr05 (exhadr05-V11-00-01)
+  o Prefer pointer to 'const G4Material' where possible.
+- extended/medical/fanoCavity (fano-V11-00-01)                               (*)
+- extended/medical/fanoCavity2 (fano2-V11-00-01)                             (*)
+  o Make PhysicsLists of the example coherent with main physics_list library.
+- extended/optical/OpNovice (OpNovice-V11-00-01)
+  o Fixed incorrect call to G4MaterialPropertiesTable::AddProperty().        (*)
+    Added comments explaining use.
+- extended/parameterisations/Par04 (expar04-V11-00-01)
+  o Fixed warnings and lwtnn macro.
+
+tests                                            tests-V11-00-01
+-----
+- Updated reference outputs and tools.
+- tests/test14 (test14-V11-00-01)
+  o Prefer pointer to 'const G4Material' where possible.
+- tests/test30 (test30-V11-00-01)
+- tests/test31 (test31-V11-00-01)
+- tests/test35 (test35-V11-00-01)
+  o Clean-up histograms and code.
+- tests/test36 (test36-V11-00-01)
+  o Prefer pointer to 'const G4Material' where possible.
+- tests/test45 (test45-V11-00-01)
+  o Clean-up histograms and code.
+- tests/test53 (test53-V11-00-01)
+  o Prefer pointer to 'const G4Material' where possible.
+- tests/test202 (test202-V11-00-01)
+  o Added G4Torus.

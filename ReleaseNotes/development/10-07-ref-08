@@ -1,0 +1,339 @@
+
+                       geant4-10-07-ref-08
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Changed default build settings, MT mode is now set ON by default.
+ o Added new Ranlux++ engine to the list of supported random engines.
+ o Use G4Allocator to dynamically allocate nodes and proxies for the voxels
+   optimisation structure. Should help reducing memory fragmentation.
+ o Reviewed EM part of G4PhysicsModelCatalog to adopt new numbering convention.
+   Created new enum for low-energy electromagnetic process sub-types.
+ o Fixes in GFlashSamplingShowerParameterisation in the parameters definition.
+ o Removed obsolete GAG/Gain/MOMO and HepRep(WIRED) modules/driver.
+ o CLHEP-2.4.5.1 required as minimum version.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(+)  Fixes included in release 10.7.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-07-39
+-----
+- Changed default build settings, GEANT4_BUILD_MULTITHREADED is now set ON
+  by default.
+- Ensure installation path when building examples; also ensure adoption of
+  same compiler when building tests.
+  Create separate build/run tests when asked to do both, to support
+  Valgrind/Memcheck runs.
+- Removed obsolete geant4_{executable,link_library} options.
+- Set CLHEP-2.4.5.1 as the required minimum version.
+
+config                                           config-V10-07-07
+------
+- Removed obsolete GAG/Gain configuration.
+
+environments                                     envs-V10-07-00
+------------
+- Removed obsolete MOMO module.
+- g4py (geant4py-V10-07-04)
+  o Removed setup for obsolete HepRep(WIRED) driver.
+  o Removed binding to obsolete member functions of G4Sphere and G4Tubs.     (+)
+
+analysis                                         analysis-V10-07-18
+--------
+- Fixed evaluation of result of deleting empty file in G4RootAnalysisManager,
+  causing wrong warnings.
+- Added support for n-tuple columns of string vectors via new public functions
+  in G4VAnalysisManager and G4VAnalysisReader.
+- Remove 'default' in switch for GetMergeFunction() to prevent accidental fall
+  through on Windows.
+- Applied clang-tidy performance fixes:
+  o use const auto&, std::move where appropriate
+  o revisited passing by std::shared_ptr
+- Applied clang-tidy modernize fixes:
+  o use make_unique, nullptr, auto, emplace_back, using
+  o use default for disabled constructors and destructors,
+    delete for private member functions not implemented.
+- Removed explicit for constructors with more than 1 parameters.
+- Code clean-up: review of static data members; changed 'static const' to
+  'static constexpr' where possible or inline static const otherwise (for
+  G4String); declare static data members inline and moved their initialization
+  in header file. Removed redundant includes and consistency fixes.
+
+digits_hits
+-----------
+- scorer (detscorer-V10-07-01)
+- utils (detutil-V10-07-05)
+  o Fixed indexing of cylindrical scoring mesh commands.
+    Addressing problem report #2418.
+
+externals                                        externals-V10-07-07
+---------
+- CLHEP
+  o Synchronised with CLHEP-2.4.5.1:
+    Added new random engine RANLUX++ and related helper classes.
+    RANLUX++ is an extension of RANLUX and uses the equivalent LCG to
+    offer a much higher luxury level at better performance. It inherits
+    the excellent statistical properties and passes the full BigCrush.
+- ptl (ptl-V10-07-08)
+  o Fixed compilation warnings when C++20 Standard enabled.
+
+geometry/divisions                               geomdiv-V10-07-02
+------------------
+- Fixed bug in G4ParameterisationTrd for positioning calculation.            (+)
+  Debug messages cleanup.
+
+geometry/management                              geommng-V10-07-07
+-------------------
+- Use G4Allocator to dynamically allocate nodes and proxies for the voxels
+  optimisation structure. Should help reducing memory fragmentation.
+- Provide operator<<() as a free function for G4UAdapter to support          (+)
+  Geant4Py.
+- Make operator<<() for G4VSolid a free function.
+- Basic clang-tidy review of code.
+
+geometry/navigation                              geomnav-V10-07-05
+-------------------
+- G4PhantomParameterisation: reduce warning messages in GetReplicaNo()       (+)
+  function; issue warning only when difference is bigger than 'kCarTolerance'.
+  Addressing problem report #2314.
+- G4[Partial]PhantomParameterisation: renamed Get/SetNoVoxel*() accessors to
+  Get/SetNoVoxels*() for coherence. Migrated code in G4RegularNavigation
+  accordingly. NOTE: might imply user code migration.
+
+geometry/solids/CSG                              geom-csg-V10-07-04
+-------------------
+- Removed deprecated accessors in G4Sphere and G4Tubs.
+
+geometry/solids/specific                         geom-specific-V10-07-10
+------------------------
+- In G4TesselatedSolid, implemented GetFacetIndex(p) and CheckStructure().
+  Optimised code in SetExtremeFacets(): shuffle of vertices and checking
+  of six extreme vertices.
+- Added 'degeneracyFlag' to the list of parameters of G4Tet::SetVertices().
+  Addressing problem report #2427.
+
+global                                           global-V10-07-27
+------
+- Reviewed EM part of G4PhysicsModelCatalog to adopt new numbering convention.
+- G4PhysicsVector: optimisation in G4PhysicsVector::Interpolation().
+  Fix in G4PhysicsVector::GetMinEnergy(). Minor code formatting.
+- G4BestUnit: review printout of unit; print "eV" instead of "meV" for zero
+  energy. 
+- Updated date and tag-ID for geant4-10-07-ref-08.
+
+graphics_reps                                    greps-V10-07-11
+-------------
+- Add G4VMarker::operator==().
+- Adapted code according to visualisation models revision.
+
+intercoms                                        intercoms-V10-07-10
+---------
+- G4UIparameter: in CandidateCheck(), when candidate not found, print list
+  of candidates.
+
+interfaces                                       interfaces-V10-07-14
+----------
+- Removed no longer supported GAG/Gain UI classes and settings.
+- Fixed compilation warnings when C++20 Standard enabled.
+
+materials                                        materials-V10-07-19
+---------
+- Corrected calculations in G4DensityEffectCalculator.                       (+)
+  Addressing problem report #2330.
+- G4MaterialPropertiesTable: use std::vector for material properties and
+  material const properties, rather than std::map. Use Boolean flag with
+  material const property to indicate whether it is defined; renaming of
+  variables: fist letter lower case, class variables start with 'f'; removed
+  iterators to material property vectors (use C++11 iteration).
+  Fix AddConstProperty() with new key; fix RemoveConstProperty; make
+  exception codes unique.
+
+parameterisations/gflash                         gflash-V10-07-01
+------------------------
+- Fixes in GFlashSamplingShowerParameterisation in the parameters            (+)
+  definition.
+
+persistency/gdml                                 gdml-V10-07-11
+----------------
+- G4GDMLReadMaterials, G4GDMLReadSolids: added parameter 'createNewKey=true'
+  to call to G4Material[Const]PropertiesTable::AddProperty().
+- G4GDMLWriteStructure: added fatal exception in AssemblyWrite() for the     (+)
+  case of nested assemblies, not yet supported for exporting.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-07-17)
+  o G4EmBuilder: use more optimal order of instantiation of processes;
+    not affecting any result but useful for debugging.
+  o G4OpticalPhysics: applied clang-format style guidelines.
+
+processes/cuts                                   proccuts-V10-07-04
+--------------
+- G4VRangeToEnergyConverter, G4RToEConvForPositron, G4RToEConvForElectron,
+  G4RToEConvForGamma, G4RToEConvForProton: simplified the design; do not use
+  G4PhysicsTable and G4PhysicsVector but convert range cut to production
+  threshold directly; expected memory reduction for big detectors and some
+  speed-up of initialisation.
+
+processes/electromagnetic/dna                    emdna-V10-07-12
+-----------------------------
+- Replaced hardwired process-sub-types with enum values introduced in the
+  new class G4LowEnergyEmProcessSubType.
+
+processes/electromagnetic/lowenergy              emlowen-V10-07-20
+-----------------------------------
+- G4MicroElecSurface: replaced hardwired process-sub-type 25 with (already
+  existing) 'fSurfaceReflection'.
+- G4MicroElecElastic, G4MicroElecLOPhononScattering, G4MicroElecInelastic:
+  replaced hardwired process-sub-types 51 and 53 with new enum values
+  'fLowEnergyElastic' and 'fLowEnergyIonisation'.
+
+processes/electromagnetic/muons                  emmuons-V10-07-09
+-------------------------------
+- G4MuPairProduction, G4ePairProduction, G4MuBremsstrahlung: disabled
+  Spline interpolation by default.
+
+processes/electromagnetic/standard               emstand-V10-07-23
+----------------------------------
+- G4PEEffectFluoModel: optimised cross-section computation with reciprocals
+  and Horners scheme.
+- G4BetheBlochModel: fixed computation of dedx for alpha if ICRU90 data are  (+)
+  used. Addressing problem report #2414.
+- G4BraggIonModel: fixed computation of dedx for alpha if
+  ICRU90 data are used. Improved method signatures and code cleanup.
+- G4hIonisation, G4ionIonisation: He3 dedx derived from alpha dedx;
+  pi, K, proton, pbar, GenericIon have their own dedx and other tables;
+  other hadrons derived from K, protons, pbar; ions derived from GenericIon.
+- G4ASTARStopping: improved method signatures.
+
+processes/electromagnetic/utils                  emutils-V10-07-30
+-------------------------------
+- G4LowEnergyEmProcessSubType: created new enum for low-energy electromagnetic
+  process sub-types.
+- G4EmElementSelector: change computation for upper energy limit, fixing
+  occasional crashes in some applications.
+- G4OpticalParameters: removed deprecated function declarations.
+- G4OpticalParameters, G4OpticalParametersMessenger: apply clang-format
+  style guidelines.
+
+processes/electromagnetic/xrays                  xrays-V10-07-07
+-------------------------------
+- G4GaussXTRadiator, G4VXTRenergyLoss: added Gauss-distributed regular       (+)
+  radiator and accessors for angle distribution range.
+- G4Cerenkov: added protection against too small steps (still addressing     (+)
+  problem report #1992).
+
+processes/hadronic
+------------------
+- management (hadr-man-V10-07-09)
+  o G4HadronicProcessType: added new enum value (fEMDissociation = 310)
+    for EM dissociation process.
+
+run                                              run-V10-07-09
+---
+- Added new Ranlux++ engine to the list of supported random engines in
+  G4UserWorkerThreadInitialization. Requires CLHEP-2.4.5.1.
+
+tasking                                          tasking-V10-07-06
+-------
+- Added new Ranlux++ engine to the list of supported random engines in
+  G4UserTaskThreadInitialization. Requires CLHEP-2.4.5.1.
+
+track                                            track-V10-07-06
+-----
+- G4Step: avoid accessing G4Track data via long pointer chains.
+- G4Track: get material property using index rather than string.
+- G4ParticleChangeForMSC, G4ParticleChangeForTransport: disable 'debugFlag'
+  which was left enabled by mistake.
+
+visualization
+-------------
+- management (visman-V10-07-20):
+  o G4VVisCommand, G4VisCommandsSceneHandler and G4VisCommandsViewer: preserve
+    view parameters of any existing viewer and use them in the creation of a
+    new viewer. So, if the user requests a new viewer of the same or a new
+    graphics system, the upcoming view will inherit the view parameters of
+    the previously existing viewer. The idea is that it makes the response a
+    command "/vis/viewer/open" (or "/vis/viewer/create") more natural.
+    The first "/vis/open" is not affected.
+  o Removed obsolete HepRep(WIRED) driver.
+- gMocren (gMocren-V10-07-02):
+  o Use updated renamed method GetNoVoxels() in G4PhantomParameterisation
+    instead of GetNoVoxel(), now removed.
+- HepRep (vis-HepRep-V10-07-04):
+  o Removed obsolete HepRep(WIRED) driver and associated files.
+- OpenGL (opengl-V10-07-19):
+  o G4OpenGLImmediateQtViewer and G4OpenGLStoredQtViewer: set jpg as default
+    export format for Qt viewers, for use with "/vis/ogl/export"; jpg is only
+    available for Qt viewers, pdf is the default for other OpenGL viewers.
+  o Fix in G4OpenGLViewer for C++20 warnings.
+- Qt3D (visQt3D-V10-07-08):
+  o G4Qt3DSceneHandler: raise G4Exception if no available node.
+  o G4Qt3DViewer: protect against illegal call to show(); it may only be
+    called from the master thread.
+- RayTracer (raytracer-V10-07-02):
+  o Make RayTracerX viewers "auto refresh". This means the ray tracer will
+    start tracing immediately on opening ("/vis/open RayTracerX") and on any
+    change of view parameters. Only affecting RayTracerX; plain RayTracer is
+    not affected. It is possible to switch this feature off with
+    "/vis/viewer/set/auto-refresh false".
+- ToolsGS (vis_toolsg-V10-07-07):
+  o Store default background in view parameters.
+
+examples                                         examples-V10-07-08
+--------
+- Updated documentation and reference outputs.
+- advanced/brachytherapy (brachy-V10-07-03)
+  o Replaced string RadioactiveDecayBase with RadioactiveDecay in
+    BrachySteppingAction::UserSteppingAction(); RadioactiveDecayBase
+    soon to disappear.
+- advanced/STCyclotron (STCyclotron-V10-07-06)
+  o Added protection against potential division by zero in function          (+)
+    STCyclotronRun::EndOfRun().
+- advanced/underground_physics (DMX-V10-07-08)
+  o Replaced G4RadioactiveDecayBase with G4RadioactiveDecay in DMXPhysicsList.
+    Part of name migration and removal of deprecated G4RadioactiveDecayBase.
+- extended/electromagnetic/TestEm1 (testem1-V10-07-05)
+  o PhysicsList: replace G4RadioactiveDecayBase with G4RadioactiveDecay.
+- extended/electromagnetic/TestEm7 (testem7-V10-07-06)
+  o Fix to build with C++20 Standard enabled.
+- extended/eventgenerator/exgps (exgps-V10-07-01)
+  o Tidy up CTests definition file.
+- extended/exoticphysics/channeling (channelingExample-V10-07-02)
+  o Move test definition to test category.
+- extended/hadronic/Hadr05 (exhadr05-V10-07-04)
+  o Run: removed unused flag.
+- extended/medical/DICOM (DICOM-V10-07-01)
+  o Use updated renamed method GetNoVoxels() in G4PhantomParameterisation
+    instead of GetNoVoxel(), now removed.
+- extended/optical/wls (WLS-V10-07-02)
+  o Added visualisation attributes.
+  o Fixed bug preventing cladding being built.
+  o Fixed counting of detector hits.
+  o Added histograms.
+  o Use G4OpBoundaryProcess::invokeSD() rather than ProcessHits_boundary()
+    call in SteppingAction.
+  o Remove StringToRotation; removed Sr90.mac; added electron.mac.
+- extended/persistency/gdml/G01 (G01-V10-07-02)                              (+)
+  o Fixed minor overlaps in assembly.gdml and axes.gdml samples.
+
+tests                                            tests-V10-07-08
+-----
+- Updated reference outputs and tools.
+- Modernised CMake scripts in all tests, allowing tests to be built in system
+  testing or as a standalone project.
+- tests/test03 (test03-V10-07-07)
+  o Activated test for n-tuple columns of string type and added test for
+    n-tuple columns of string vector type
+  o Added application parameters: NtupleStringVector, for switching off new
+    test for Hdf5, Xml outputs where n-tuple columns of string vector type are
+    not yet supported in tools; FileName, to better handle file names in Root
+    test with many n-tuple merging options.
+  o Set only parameters with non-default values in CMake tests.
+  o Restore back dependencies of read tests on write tests and the
+    test03-Root-write-mt-merge-max test.
+  o Reorganise code as single project.

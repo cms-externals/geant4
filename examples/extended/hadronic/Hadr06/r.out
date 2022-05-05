@@ -1,0 +1,925 @@
+
+        ############################################
+        !!! WARNING - FPE detection is activated !!!
+        ############################################
+
+**************************************************************
+ Geant4 version Name: geant4-11-00-ref-03 [MT]   (31-March-2022)
+  << in Multi-threaded mode >> 
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+###/control/cout/ignoreThreadsExcept 0
+###/run/numberOfThreads 2
+/run/verbose 1
+#
+/testhadr/det/setIsotopeMat Li7 3 7 1.85 g/cm3
+/testhadr/det/setRadius 30 cm
+/run/reinitializeGeometry
+#
+/process/em/verbose 0
+/process/had/verbose 1
+#
+/run/initialize
+
+==========================================================================================
+G4TaskRunManager :: Using G4ThreadPool...
+==========================================================================================
+
+
+ The Absorber is 30 cm  of Li7
+ 
+ Material:      Li7    density:  1.850 g/cm3   RadL:  45.229 cm   Nucl.Int.Length:  36.218 cm 
+                       Imean:  40.000 eV   temperature: 293.15 K  pressure:   1.00 atm
+
+   --->  Element: Li7 (Li7)   Z =  3.0   N =     7   A =  7.016 g/mole
+         --->  Isotope:   Li7   Z =  3   N =   7   A =   7.02 g/mole   abundance: 100.000 %
+          ElmMassFraction: 100.00 %  ElmAbundance 100.00 % 
+
+/run/physicsModified
+======================================================================
+======          Radioactive Decay Physics Parameters           =======
+======================================================================
+min MeanLife (from G4NuclideTable)                1 ns 
+Max life time (from G4DeexPrecoParameters)        1 ns 
+Internal e- conversion flag                       1
+Stored internal conversion coefficients           1
+Enable correlated gamma emission                  0
+Max 2J for sampling of angular correlations       10
+Atomic de-excitation enabled                      0
+Auger electron emission enabled                   0
+Check EM cuts disabled for atomic de-excitation   0
+Use Bearden atomic level energies                 0
+Use ANSTO fluorescence model                      0
+Threshold for very long decay time at rest        3.171e+10 y  
+======================================================================
+NeutronHP: /Capture file for Z = 6, A = 12 is not found and NeutronHP will use /cvmfs/geant4.cern.ch/share/data/G4NDL4.6/Capture/CrossSection/6_nat_Carbon
+NeutronHP: /Elastic file for Z = 6, A = 12 is not found and NeutronHP will use /cvmfs/geant4.cern.ch/share/data/G4NDL4.6/Elastic/CrossSection/6_nat_Carbon
+NeutronHP: /Inelastic file for Z = 6, A = 12 is not found and NeutronHP will use /cvmfs/geant4.cern.ch/share/data/G4NDL4.6/Inelastic/CrossSection/6_nat_Carbon
+NeutronHP: /Elastic file for Z = 6, A = 12 is not found and NeutronHP will use /cvmfs/geant4.cern.ch/share/data/G4NDL4.6/Elastic/CrossSection/6_nat_Carbon
+
+====================================================================
+                  HADRONIC PROCESSES SUMMARY (verbose level 1)
+
+---------------------------------------------------
+                           Hadronic Processes for GenericIon
+
+  Process: ionElastic
+        Model:          NNDiffuseElastic: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+
+  Process: ionInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+
+  Process: Radioactivation
+
+---------------------------------------------------
+                           Hadronic Processes for He3
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+
+  Process: He3Inelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:     G4ParticleInelasticXS: 0 eV  ---> 25.6 PeV
+
+---------------------------------------------------
+                           Hadronic Processes for alpha
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+
+  Process: alphaInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:     G4ParticleInelasticXS: 0 eV  ---> 25.6 PeV
+
+---------------------------------------------------
+                           Hadronic Processes for anti_He3
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+
+  Process: anti_He3Inelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_alpha
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+
+  Process: anti_alphaInelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_deuteron
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+
+  Process: anti_deuteronInelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_lambda
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: anti_lambdaInelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 0 eV  ---> 25 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_neutron
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100.1 MeV
+        Model:              AntiAElastic: 100 MeV ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+
+  Process: anti_neutronInelastic
+        Model:                      FTFP: 0 eV  ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_proton
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100.1 MeV
+        Model:              AntiAElastic: 100 MeV ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+
+  Process: anti_protonInelastic
+        Model:                      FTFP: 0 eV  ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for anti_triton
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+
+  Process: anti_tritonInelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+
+  Process: hFritiofCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for deuteron
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+
+  Process: dInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:     G4ParticleInelasticXS: 0 eV  ---> 25.6 PeV
+
+---------------------------------------------------
+                           Hadronic Processes for gamma
+
+  Process: photonNuclear
+        Model:               GammaNPreco: 0 eV  ---> 200 MeV
+        Model:            BertiniCascade: 199 MeV ---> 10 GeV
+     Cr_sctns:            PhotoNuclearXS: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for kaon+
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: kaon+Inelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for kaon-
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: kaon-Inelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: hBertiniCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for lambda
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: lambdaInelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for mu-
+
+  Process: muMinusCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for neutron
+
+  Process: hadElastic
+        Model:             hElasticCHIPS: 19.5 MeV ---> 100 TeV
+        Model:          NeutronHPElastic: 0 eV  ---> 20 MeV
+     Cr_sctns:        NeutronHPElasticXS: 0 eV  ---> 20 MeV
+     Cr_sctns:        G4NeutronElasticXS: 0 eV  ---> 100 TeV
+
+  Process: neutronInelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            Binary Cascade: 0 eV  ---> 6 GeV
+     Cr_sctns:      G4NeutronInelasticXS: 0 eV  ---> 100 TeV
+
+  Process: nCapture
+        Model:               nRadCapture: 0 eV  ---> 100 TeV
+     Cr_sctns:        G4NeutronCaptureXS: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for pi+
+
+  Process: hadElastic
+        Model:           hElasticGlauber: 0 eV  ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+  Process: pi+Inelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for pi-
+
+  Process: hadElastic
+        Model:           hElasticGlauber: 0 eV  ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+  Process: pi-Inelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+  Process: hBertiniCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for proton
+
+  Process: hadElastic
+        Model:             hElasticCHIPS: 0 eV  ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+  Process: protonInelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            Binary Cascade: 0 eV  ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+
+---------------------------------------------------
+                           Hadronic Processes for sigma-
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: sigma-Inelastic
+        Model:                      QGSP: 12 GeV ---> 100 TeV
+        Model:                      FTFP: 3 GeV ---> 25 GeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+
+  Process: hBertiniCaptureAtRest
+
+---------------------------------------------------
+                           Hadronic Processes for triton
+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+
+  Process: tInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:     G4ParticleInelasticXS: 0 eV  ---> 25.6 PeV
+
+================================================================
+=======================================================================
+======       Pre-compound/De-excitation Physics Parameters     ========
+=======================================================================
+Type of pre-compound inverse x-section              3
+Pre-compound model active                           1
+Pre-compound excitation low energy (MeV)            0.1
+Pre-compound excitation high energy (MeV)           30
+Type of de-excitation inverse x-section             3
+Type of de-excitation factory                       Evaporation+GEM
+Number of de-excitation channels                    68
+Min excitation energy (keV)                         0.01
+Min energy per nucleon for multifragmentation (MeV) 2e+05
+Limit excitation energy for Fermi BreakUp (MeV)     20
+Level density (1/MeV)                               0.075
+Use simple level density model                      1
+Use discrete excitation energy of the residual      1
+Time limit for long lived isomeres (ns)             1
+Isomer production flag                              1
+Internal e- conversion flag                         1
+Store e- internal conversion data                   1
+Correlated gamma emission flag                      0
+Max 2J for sampling of angular correlations         10
+=======================================================================
+
+=========================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Initializing workers...
+=========================================================================
+
+G4WT1 > /run/verbose 1
+G4WT1 > /run/reinitializeGeometry 
+G4WT1 > /process/had/verbose 1
+G4WT1 > /run/initialize 
+G4WT1 > /run/physicsModified 
+G4WT1 > /control/verbose 2
+G4WT1 > /run/verbose 1
+G4WT1 > /run/reinitializeGeometry 
+G4WT1 > /process/had/verbose 1
+G4WT1 > /run/initialize 
+G4WT1 > /run/physicsModified 
+G4WT2 > /run/verbose 1
+G4WT2 > /run/reinitializeGeometry 
+G4WT2 > /process/had/verbose 1
+G4WT2 > /run/initialize 
+G4WT2 > /run/physicsModified 
+G4WT2 > /control/verbose 2
+G4WT2 > /run/verbose 1
+G4WT2 > /run/reinitializeGeometry 
+G4WT2 > /process/had/verbose 1
+G4WT2 > /run/initialize 
+G4WT2 > /run/physicsModified 
+G4WT0 > /run/verbose 1
+G4WT0 > /run/reinitializeGeometry 
+G4WT0 > /process/had/verbose 1
+G4WT0 > /run/initialize 
+G4WT0 > /run/physicsModified 
+G4WT0 > /control/verbose 2
+G4WT0 > /run/verbose 1
+G4WT0 > /run/reinitializeGeometry 
+G4WT0 > /process/had/verbose 1
+G4WT0 > /run/initialize 
+G4WT0 > /run/physicsModified 
+G4WT12 > /run/verbose 1
+G4WT12 > /run/reinitializeGeometry 
+G4WT12 > /process/had/verbose 1
+G4WT12 > /run/initialize 
+G4WT12 > /run/physicsModified 
+G4WT12 > /control/verbose 2
+G4WT12 > /run/verbose 1
+G4WT12 > /run/reinitializeGeometry 
+G4WT12 > /process/had/verbose 1
+G4WT12 > /run/initialize 
+G4WT12 > /run/physicsModified 
+G4WT10 > /run/verbose 1
+G4WT10 > /run/reinitializeGeometry 
+G4WT10 > /process/had/verbose 1
+G4WT10 > /run/initialize 
+G4WT10 > /run/physicsModified 
+G4WT10 > /control/verbose 2
+G4WT10 > /run/verbose 1
+G4WT10 > /run/reinitializeGeometry 
+G4WT10 > /process/had/verbose 1
+G4WT10 > /run/initialize 
+G4WT10 > /run/physicsModified 
+G4WT13 > /run/verbose 1
+G4WT13 > /run/reinitializeGeometry 
+G4WT13 > /process/had/verbose 1
+G4WT13 > /run/initialize 
+G4WT13 > /run/physicsModified 
+G4WT13 > /control/verbose 2
+G4WT13 > /run/verbose 1
+G4WT13 > /run/reinitializeGeometry 
+G4WT13 > /process/had/verbose 1
+G4WT13 > /run/initialize 
+G4WT13 > /run/physicsModified 
+G4WT5 > /run/verbose 1
+G4WT5 > /run/reinitializeGeometry 
+G4WT5 > /process/had/verbose 1
+G4WT5 > /run/initialize 
+G4WT5 > /run/physicsModified 
+G4WT5 > /control/verbose 2
+G4WT5 > /run/verbose 1
+G4WT5 > /run/reinitializeGeometry 
+G4WT5 > /process/had/verbose 1
+G4WT5 > /run/initialize 
+G4WT5 > /run/physicsModified 
+G4WT11 > /run/verbose 1
+G4WT11 > /run/reinitializeGeometry 
+G4WT11 > /process/had/verbose 1
+G4WT11 > /run/initialize 
+G4WT11 > /run/physicsModified 
+G4WT11 > /control/verbose 2
+G4WT11 > /run/verbose 1
+G4WT11 > /run/reinitializeGeometry 
+G4WT11 > /process/had/verbose 1
+G4WT11 > /run/initialize 
+G4WT11 > /run/physicsModified 
+G4WT9 > /run/verbose 1
+G4WT9 > /run/reinitializeGeometry 
+G4WT9 > /process/had/verbose 1
+G4WT9 > /run/initialize 
+G4WT9 > /run/physicsModified 
+G4WT9 > /control/verbose 2
+G4WT9 > /run/verbose 1
+G4WT9 > /run/reinitializeGeometry 
+G4WT9 > /process/had/verbose 1
+G4WT9 > /run/initialize 
+G4WT9 > /run/physicsModified 
+G4WT8 > /run/verbose 1
+G4WT8 > /run/reinitializeGeometry 
+G4WT8 > /process/had/verbose 1
+G4WT8 > /run/initialize 
+G4WT8 > /run/physicsModified 
+G4WT8 > /control/verbose 2
+G4WT8 > /run/verbose 1
+G4WT8 > /run/reinitializeGeometry 
+G4WT8 > /process/had/verbose 1
+G4WT8 > /run/initialize 
+G4WT8 > /run/physicsModified 
+G4WT15 > /run/verbose 1
+G4WT15 > /run/reinitializeGeometry 
+G4WT15 > /process/had/verbose 1
+G4WT15 > /run/initialize 
+G4WT15 > /run/physicsModified 
+G4WT15 > /control/verbose 2
+G4WT15 > /run/verbose 1
+G4WT15 > /run/reinitializeGeometry 
+G4WT15 > /process/had/verbose 1
+G4WT15 > /run/initialize 
+G4WT15 > /run/physicsModified 
+G4WT6 > /run/verbose 1
+G4WT6 > /run/reinitializeGeometry 
+G4WT6 > /process/had/verbose 1
+G4WT6 > /run/initialize 
+G4WT6 > /run/physicsModified 
+G4WT6 > /control/verbose 2
+G4WT6 > /run/verbose 1
+G4WT6 > /run/reinitializeGeometry 
+G4WT6 > /process/had/verbose 1
+G4WT6 > /run/initialize 
+G4WT6 > /run/physicsModified 
+G4WT3 > /run/verbose 1
+G4WT3 > /run/reinitializeGeometry 
+G4WT3 > /process/had/verbose 1
+G4WT3 > /run/initialize 
+G4WT3 > /run/physicsModified 
+G4WT3 > /control/verbose 2
+G4WT3 > /run/verbose 1
+G4WT3 > /run/reinitializeGeometry 
+G4WT3 > /process/had/verbose 1
+G4WT3 > /run/initialize 
+G4WT3 > /run/physicsModified 
+G4WT4 > /run/verbose 1
+G4WT4 > /run/reinitializeGeometry 
+G4WT4 > /process/had/verbose 1
+G4WT4 > /run/initialize 
+G4WT4 > /run/physicsModified 
+G4WT4 > /control/verbose 2
+G4WT4 > /run/verbose 1
+G4WT4 > /run/reinitializeGeometry 
+G4WT4 > /process/had/verbose 1
+G4WT4 > /run/initialize 
+G4WT4 > /run/physicsModified 
+G4WT7 > /run/verbose 1
+G4WT7 > /run/reinitializeGeometry 
+G4WT7 > /process/had/verbose 1
+G4WT7 > /run/initialize 
+G4WT7 > /run/physicsModified 
+G4WT7 > /control/verbose 2
+G4WT7 > /run/verbose 1
+G4WT7 > /run/reinitializeGeometry 
+G4WT7 > /process/had/verbose 1
+G4WT7 > /run/initialize 
+G4WT7 > /run/physicsModified 
+G4WT14 > /run/verbose 1
+G4WT14 > /run/reinitializeGeometry 
+G4WT14 > /process/had/verbose 1
+G4WT14 > /run/initialize 
+G4WT14 > /run/physicsModified 
+G4WT14 > /control/verbose 2
+G4WT14 > /run/verbose 1
+G4WT14 > /run/reinitializeGeometry 
+G4WT14 > /process/had/verbose 1
+G4WT14 > /run/initialize 
+G4WT14 > /run/physicsModified 
+#
+/gun/particle neutron
+/gun/energy 14.1 MeV
+#
+/run/printProgress 1000
+/run/beamOn 10000
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Galactic
+ Range cuts        :  gamma  10 km     e-  10 km     e+  10 km  proton 0 fm 
+ Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 0 eV 
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : Yes
+ Material : Li7
+ Range cuts        :  gamma  10 km     e-  10 km     e+  10 km  proton 0 fm 
+ Energy thresholds :  gamma  9.54993 GeV    e-  9.54993 GeV    e+  9.54993 GeV proton 0 eV 
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 0 starts.
+
+--------- Ranecu engine status ---------
+ Initial seed (index) = 0
+ Current couple of seeds = 9876, 54321
+----------------------------------------
+G4WT1 > /gun/particle neutron
+G4WT2 > /gun/particle neutron
+G4WT1 > /gun/energy 14.1 MeV
+G4WT0 > /gun/particle neutron
+G4WT12 > /gun/particle neutron
+G4WT2 > /gun/energy 14.1 MeV
+G4WT1 > /run/printProgress 1000
+G4WT10 > /gun/particle neutron
+G4WT0 > /gun/energy 14.1 MeV
+G4WT2 > /run/printProgress 1000
+G4WT12 > /gun/energy 14.1 MeV
+G4WT0 > /run/printProgress 1000
+G4WT12 > /run/printProgress 1000
+G4WT10 > /gun/energy 14.1 MeV
+G4WT10 > /run/printProgress 1000
+G4WT13 > /gun/particle neutron
+G4WT13 > /gun/energy 14.1 MeV
+G4WT13 > /run/printProgress 1000
+G4WT5 > /gun/particle neutron
+G4WT5 > /gun/energy 14.1 MeV
+G4WT5 > /run/printProgress 1000
+G4WT11 > /gun/particle neutron
+G4WT11 > /gun/energy 14.1 MeV
+G4WT11 > /run/printProgress 1000
+G4WT9 > /gun/particle neutron
+G4WT9 > /gun/energy 14.1 MeV
+G4WT9 > /run/printProgress 1000
+G4WT8 > /gun/particle neutron
+G4WT8 > /gun/energy 14.1 MeV
+G4WT8 > /run/printProgress 1000
+G4WT15 > /gun/particle neutron
+G4WT15 > /gun/energy 14.1 MeV
+G4WT15 > /run/printProgress 1000
+G4WT6 > /gun/particle neutron
+G4WT6 > /gun/energy 14.1 MeV
+G4WT6 > /run/printProgress 1000
+G4WT3 > /gun/particle neutron
+G4WT3 > /gun/energy 14.1 MeV
+G4WT3 > /run/printProgress 1000
+G4WT4 > /gun/particle neutron
+G4WT4 > /gun/energy 14.1 MeV
+G4WT4 > /run/printProgress 1000
+G4WT7 > /gun/particle neutron
+G4WT7 > /gun/energy 14.1 MeV
+G4WT7 > /run/printProgress 1000
+G4WT14 > /gun/particle neutron
+G4WT14 > /gun/energy 14.1 MeV
+G4WT14 > /run/printProgress 1000
+
+============================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 100 tasks with 100 events/task...
+============================================================================================
+
+G4WT8 > ### Run 0 starts on worker thread 8.
+G4WT8 > --> Event 0 starts with initial seeds (15470735,58711377).
+G4WT3 > ### Run 0 starts on worker thread 3.
+G4WT6 > ### Run 0 starts on worker thread 6.
+G4WT2 > ### Run 0 starts on worker thread 2.
+G4WT9 > ### Run 0 starts on worker thread 9.
+G4WT12 > ### Run 0 starts on worker thread 12.
+G4WT7 > ### Run 0 starts on worker thread 7.
+G4WT11 > ### Run 0 starts on worker thread 11.
+G4WT14 > ### Run 0 starts on worker thread 14.
+G4WT13 > ### Run 0 starts on worker thread 13.
+G4WT1 > ### Run 0 starts on worker thread 1.
+G4WT10 > ### Run 0 starts on worker thread 10.
+G4WT0 > ### Run 0 starts on worker thread 0.
+G4WT5 > ### Run 0 starts on worker thread 5.
+G4WT4 > ### Run 0 starts on worker thread 4.
+G4WT1 > --> Event 1000 starts with initial seeds (71728658,19690414).
+G4WT15 > ### Run 0 starts on worker thread 15.
+G4WT3 > --> Event 2000 starts with initial seeds (59292523,12515448).
+G4WT11 > --> Event 3000 starts with initial seeds (57770541,22981628).
+G4WT4 > --> Event 4000 starts with initial seeds (44982723,4235798).
+G4WT14 > --> Event 5000 starts with initial seeds (90368858,11678699).
+G4WT7 > --> Event 6000 starts with initial seeds (92754086,12398389).
+G4WT13 > --> Event 7000 starts with initial seeds (90074305,33510513).
+G4WT3 > --> Event 8000 starts with initial seeds (70735303,48908849).
+G4WT5 > --> Event 9000 starts with initial seeds (75762242,76481623).
+G4WT9 > [thread 9] Thread-local run terminated.
+G4WT9 > [thread 9] Run Summary
+G4WT9 > [thread 9]   Number of events processed : 600
+G4WT9 > [thread 9]   User=0.240000s Real=0.029104s Sys=0.000000s [Cpu=824.6%]
+G4WT10 > [thread 10] Thread-local run terminated.
+G4WT10 > [thread 10] Run Summary
+G4WT10 > [thread 10]   Number of events processed : 600
+G4WT10 > [thread 10]   User=3.050000s Real=0.214659s Sys=0.000000s [Cpu=1420.9%]
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 600
+G4WT1 > [thread 1]   User=3.050000s Real=0.214759s Sys=0.000000s [Cpu=1420.2%]
+G4WT15 > [thread 15] Thread-local run terminated.
+G4WT15 > [thread 15] Run Summary
+G4WT15 > [thread 15]   Number of events processed : 600
+G4WT15 > [thread 15]   User=3.050000s Real=0.214197s Sys=0.000000s [Cpu=1423.9%]
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 600
+G4WT2 > [thread 2]   User=3.120000s Real=0.226511s Sys=0.010000s [Cpu=1381.8%]
+G4WT13 > [thread 13] Thread-local run terminated.
+G4WT13 > [thread 13] Run Summary
+G4WT13 > [thread 13]   Number of events processed : 600
+G4WT13 > [thread 13]   User=3.050000s Real=0.214974s Sys=0.000000s [Cpu=1418.8%]
+G4WT5 > [thread 5] Thread-local run terminated.
+G4WT5 > [thread 5] Run Summary
+G4WT5 > [thread 5]   Number of events processed : 600
+G4WT5 > [thread 5]   User=3.050000s Real=0.214759s Sys=0.000000s [Cpu=1420.2%]
+G4WT11 > [thread 11] Thread-local run terminated.
+G4WT11 > [thread 11] Run Summary
+G4WT11 > [thread 11]   Number of events processed : 600
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 700
+G4WT11 > [thread 11]   User=3.050000s Real=0.215121s Sys=0.000000s [Cpu=1417.8%]
+G4WT3 > [thread 3]   User=3.130000s Real=0.229530s Sys=0.030000s [Cpu=1376.7%]
+G4WT7 > [thread 7] Thread-local run terminated.
+G4WT7 > [thread 7] Run Summary
+G4WT7 > [thread 7]   Number of events processed : 600
+G4WT7 > [thread 7]   User=3.080000s Real=0.216926s Sys=0.000000s [Cpu=1419.8%]
+G4WT4 > [thread 4] Thread-local run terminated.
+G4WT4 > [thread 4] Run Summary
+G4WT4 > [thread 4]   Number of events processed : 600
+G4WT4 > [thread 4]   User=3.060000s Real=0.214978s Sys=0.000000s [Cpu=1423.4%]
+G4WT6 > [thread 6] Thread-local run terminated.
+G4WT6 > [thread 6] Run Summary
+G4WT6 > [thread 6]   Number of events processed : 700
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 600
+G4WT6 > [thread 6]   User=3.130000s Real=0.227241s Sys=0.010000s [Cpu=1381.8%]
+G4WT0 > [thread 0]   User=3.060000s Real=0.215302s Sys=0.000000s [Cpu=1421.3%]
+G4WT8 > [thread 8] Thread-local run terminated.
+G4WT8 > [thread 8] Run Summary
+G4WT14 > [thread 14] Thread-local run terminated.
+G4WT8 > [thread 8]   Number of events processed : 600
+G4WT12 > [thread 12] Thread-local run terminated.
+G4WT8 > [thread 8]   User=3.150000s Real=0.231387s Sys=0.040000s [Cpu=1378.6%]
+G4WT12 > [thread 12] Run Summary
+G4WT14 > [thread 14] Run Summary
+G4WT14 > [thread 14]   Number of events processed : 700
+G4WT12 > [thread 12]   Number of events processed : 700
+G4WT14 > [thread 14]   User=3.060000s Real=0.215551s Sys=0.000000s [Cpu=1419.6%]
+G4WT12 > [thread 12]   User=3.110000s Real=0.221904s Sys=0.010000s [Cpu=1406.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 10000
+  User=3.740000s Real=0.299990s Sys=0.110000s [Cpu=1283.4%]
+
+ The run is 10000 neutron of 14.1 MeV through 30 cm  of Li7 (density: 1.85 g/cm3 )
+
+ Process calls frequency :
+                Decay=   8152             NoProcess= 179490       Radioactivation=     50
+                 Rayl=   2242        Transportation=  23730        alphaInelastic=      2
+                compt=  40360                 eIoni=  44618                 hIoni=  36248
+           hadElastic= 171283          ionInelastic=      1               ionIoni= 191462
+                  msc=      4              nCapture=     25      neutronInelastic=  16361
+                 phot=    848            tInelastic=      6 
+
+ Mean energy deposit per event = 11.065 MeV;  rms = 2.5927 MeV
+ Mean energy leakage per event = 1.0402 MeV;  rms = 2.8686 MeV
+
+ total energy: Edep + Eleak = 12.105 MeV
+
+ List of particles at creation :
+            B11:       1  Emean =  1.1745 MeV	( 1.1745 MeV --> 1.1745 MeV)	stable
+  Be8[3030.000]:      25  Emean =  7.3077 keV	( 273.54 eV  --> 11.038 keV)	mean life = 0 ps 
+            Be9:       1  Emean =   3.213 MeV	( 3.213 MeV --> 3.213 MeV)	stable
+            Li6:      47  Emean =  1.6945 MeV	( 187.88 keV --> 3.7482 MeV)	stable
+            Li7:  179441  Emean =  305.67 keV	( 0.029392 meV --> 6.225 MeV)	stable
+            Li8:      25  Emean =  2.3992 keV	( 2.4947 eV  --> 25.042 keV)	mean life = 1.2117 s  
+          alpha:    8216  Emean =  2.7487 MeV	( 22.204 keV --> 8.7836 MeV)	stable
+      anti_nu_e:      25  Emean =  7.1467 MeV	( 2.8096 MeV --> 11.729 MeV)	stable
+             e-:   40005  Emean =  29.381 keV	( 100.05 eV  --> 10.156 MeV)	stable
+          gamma:    2655  Emean =  493.54 keV	( 459.77 keV --> 5.5924 MeV)	stable
+        neutron:   16417  Emean =  3.5969 MeV	( 4.3582 keV --> 14.086 MeV)	mean life = 14.67 min
+         triton:    8157  Emean =  3.9217 MeV	( 11.56 keV --> 10.251 MeV)	mean life = 12.32 y  
+
+ List of particles emerging from the absorber :
+      anti_nu_e:      25  Emean =  7.1467 MeV	( 2.8096 MeV --> 11.729 MeV) 	Eleak/event = 17.867 keV
+             e-:       2  Emean =  1.1362 MeV	( 126.7 keV --> 2.1457 MeV) 	Eleak/event = 227.24 eV 
+          gamma:    1807  Emean =  155.14 keV	( 13.701 keV --> 5.0869 MeV) 	Eleak/event = 28.034 keV
+        neutron:   10031  Emean =  990.96 keV	( 32.913 meV --> 14.1 MeV) 	Eleak/event = 994.03 keV
+
+--------- Ranecu engine status ---------
+ Initial seed (index) = 0
+ Current couple of seeds = 1982454223, 1571101230
+----------------------------------------
+G4WT7 > Destroying WorkerRunManager (0x7f8fc004b9b0)
+G4WT7 > G4 kernel has come to Quit state.
+G4WT8 > Destroying WorkerRunManager (0x7f8fbc04bac0)
+G4WT9 > Destroying WorkerRunManager (0x7f8fb804b9b0)
+G4WT9 > G4 kernel has come to Quit state.
+G4WT1 > Destroying WorkerRunManager (0x7f8fd804b9c0)
+G4WT1 > G4 kernel has come to Quit state.
+G4WT12 > Destroying WorkerRunManager (0x7f8fa804b9b0)
+G4WT12 > G4 kernel has come to Quit state.
+G4WT8 > G4 kernel has come to Quit state.
+G4WT15 > Destroying WorkerRunManager (0x7f8fa404b9b0)
+G4WT6 > Destroying WorkerRunManager (0x7f8fcc04b9b0)
+G4WT3 > Destroying WorkerRunManager (0x7f8fd004b9b0)
+G4WT10 > Destroying WorkerRunManager (0x7f8fb004b9b0)
+G4WT15 > G4 kernel has come to Quit state.
+G4WT14 > Destroying WorkerRunManager (0x7f8fa004b9b0)
+G4WT14 > G4 kernel has come to Quit state.
+G4WT6 > G4 kernel has come to Quit state.
+G4WT3 > G4 kernel has come to Quit state.
+G4WT10 > G4 kernel has come to Quit state.
+G4WT13 > Destroying WorkerRunManager (0x7f8fac04b9b0)
+G4WT13 > G4 kernel has come to Quit state.
+G4WT2 > Destroying WorkerRunManager (0x7f8fdc04b9b0)
+G4WT0 > Destroying WorkerRunManager (0x7f8fe004b9b0)
+G4WT9 > ================== Deleting memory pools ===================
+G4WT11 > Destroying WorkerRunManager (0x7f8fb404b9b0)
+G4WT7 > ================== Deleting memory pools ===================
+G4WT2 > G4 kernel has come to Quit state.
+G4WT5 > Destroying WorkerRunManager (0x7f8fc804b9b0)
+G4WT12 > ================== Deleting memory pools ===================
+G4WT5 > G4 kernel has come to Quit state.
+G4WT12 > Number of memory pools allocated: 11; of which, static: 0
+G4WT8 > ================== Deleting memory pools ===================
+G4WT12 > Dynamic pools deleted: 11 / Total memory freed: 0.05 MB
+G4WT7 > Number of memory pools allocated: 11; of which, static: 0
+G4WT8 > Number of memory pools allocated: 11; of which, static: 0
+G4WT7 > Dynamic pools deleted: 11 / Total memory freed: 0.052 MB
+G4WT1 > ================== Deleting memory pools ===================
+G4WT9 > Number of memory pools allocated: 11; of which, static: 0
+G4WT11 > G4 kernel has come to Quit state.
+G4WT1 > Number of memory pools allocated: 11; of which, static: 0
+G4WT4 > Destroying WorkerRunManager (0x7f8fd404b9c0)
+G4WT1 > Dynamic pools deleted: 11 / Total memory freed: 0.056 MB
+G4WT4 > G4 kernel has come to Quit state.
+G4WT1 > ============================================================
+G4WT6 > ================== Deleting memory pools ===================
+G4WT1 > Thread-local UImanager is to be deleted.
+G4WT10 > ================== Deleting memory pools ===================
+G4WT0 > G4 kernel has come to Quit state.
+G4WT6 > Number of memory pools allocated: 11; of which, static: 0
+G4WT9 > Dynamic pools deleted: 11 / Total memory freed: 0.054 MB
+G4WT6 > Dynamic pools deleted: 11 / Total memory freed: 0.056 MB
+G4WT14 > ================== Deleting memory pools ===================
+G4WT6 > ============================================================
+G4WT3 > ================== Deleting memory pools ===================
+G4WT14 > Number of memory pools allocated: 11; of which, static: 0
+G4WT14 > Dynamic pools deleted: 11 / Total memory freed: 0.052 MB
+G4WT3 > Number of memory pools allocated: 11; of which, static: 0
+G4WT3 > Dynamic pools deleted: 11 / Total memory freed: 0.059 MB
+G4WT3 > ============================================================
+G4WT3 > Thread-local UImanager is to be deleted.
+G4WT10 > Number of memory pools allocated: 11; of which, static: 0
+G4WT5 > ================== Deleting memory pools ===================
+G4WT11 > ================== Deleting memory pools ===================
+G4WT5 > Number of memory pools allocated: 11; of which, static: 0
+G4WT5 > Dynamic pools deleted: 11 / Total memory freed: 0.056 MB
+G4WT9 > ============================================================
+G4WT9 > Thread-local UImanager is to be deleted.
+G4WT9 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT2 > ================== Deleting memory pools ===================
+G4WT0 > ================== Deleting memory pools ===================
+G4WT8 > Dynamic pools deleted: 11 / Total memory freed: 0.051 MB
+G4WT8 > ============================================================
+G4WT8 > Thread-local UImanager is to be deleted.
+G4WT8 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT14 > ============================================================
+G4WT14 > Thread-local UImanager is to be deleted.
+G4WT14 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT7 > ============================================================
+G4WT7 > Thread-local UImanager is to be deleted.
+G4WT7 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT10 > Dynamic pools deleted: 11 / Total memory freed: 0.063 MB
+G4WT10 > ============================================================
+G4WT10 > Thread-local UImanager is to be deleted.
+G4WT12 > ============================================================
+G4WT10 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT13 > ================== Deleting memory pools ===================
+G4WT5 > ============================================================
+G4WT13 > Number of memory pools allocated: 11; of which, static: 0
+G4WT13 > Dynamic pools deleted: 11 / Total memory freed: 0.055 MB
+G4WT5 > Thread-local UImanager is to be deleted.
+G4WT4 > ================== Deleting memory pools ===================
+G4WT5 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT2 > Number of memory pools allocated: 11; of which, static: 0
+G4WT4 > Number of memory pools allocated: 11; of which, static: 0
+G4WT6 > Thread-local UImanager is to be deleted.
+G4WT2 > Dynamic pools deleted: 11 / Total memory freed: 0.051 MB
+G4WT4 > Dynamic pools deleted: 11 / Total memory freed: 0.053 MB
+G4WT6 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT12 > Thread-local UImanager is to be deleted.
+G4WT13 > ============================================================
+G4WT12 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT13 > Thread-local UImanager is to be deleted.
+G4WT13 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT3 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT2 > ============================================================
+G4WT4 > ============================================================
+G4WT11 > Number of memory pools allocated: 11; of which, static: 0
+G4WT4 > Thread-local UImanager is to be deleted.
+G4WT4 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT15 > ================== Deleting memory pools ===================
+G4WT2 > Thread-local UImanager is to be deleted.
+G4WT15 > Number of memory pools allocated: 11; of which, static: 0
+G4WT2 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT15 > Dynamic pools deleted: 11 / Total memory freed: 0.049 MB
+G4WT15 > ============================================================
+G4WT15 > Thread-local UImanager is to be deleted.
+G4WT15 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT11 > Dynamic pools deleted: 11 / Total memory freed: 0.047 MB
+G4WT1 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT0 > Number of memory pools allocated: 11; of which, static: 0
+G4WT11 > ============================================================
+G4WT11 > Thread-local UImanager is to be deleted.
+G4WT11 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT0 > Dynamic pools deleted: 11 / Total memory freed: 0.051 MB
+G4WT0 > ============================================================
+G4WT0 > Thread-local UImanager is to be deleted.
+G4WT0 > There should not be any thread-local G4cout/G4cerr hereafter.
+Deleting G4ThreadLocalSingletons for type G4GeometryTolerance ...
+Deleting G4ThreadLocalSingletons for type G4ProcessTable ...
+Deleting G4ThreadLocalSingletons for type G4PhysicsListHelper ...
+Deleting G4ThreadLocalSingletons for type G4GenericAnalysisManager ...
+Deleting G4ThreadLocalSingletons for type G4HadronicInteractionRegistry ...
+Deleting G4ThreadLocalSingletons for type G4CrossSectionDataSetRegistry ...
+Deleting G4ThreadLocalSingletons for type G4CascadeParameters ...
+Deleting G4ThreadLocalSingletons for type G4LossTableManager ...
+Deleting G4ThreadLocalSingletons for type G4ParticleHPThreadLocalManager ...
+Deleting G4ThreadLocalSingletons for type G4String ...
+Deleting G4ThreadLocalSingletons for type std::__cxx11::basic_ostringstream<char, std::char_traits<char>, std::allocator<char> > ...
+ThreadPool destroyed
+G4 kernel has come to Quit state.
+================== Deleting memory pools ===================
+Number of memory pools allocated: 3; of which, static: 0
+Dynamic pools deleted: 3 / Total memory freed: 0.0048 MB
+============================================================
+RunManagerKernel is deleted. Good bye :)

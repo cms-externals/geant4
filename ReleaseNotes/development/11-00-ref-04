@@ -1,0 +1,402 @@
+
+                       geant4-11-00-ref-04
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o In G4UrbanMscModel, moving safety computation before step limitation
+   algorithms in order to save few instructions; should not affect results.
+ o New G4TransportationWithMsc specialised tranportation process for
+   multiple-scattering, enabled by default with G4EmStandardPhysics_option1.
+ o Use G4LinhardSorensenIonModel for GenericIonIn in physics-lists for
+   G4EmStandardPhysics_option3 and G4EmStandardPhysics_option4.
+ o Fixed instantiation of DNA elastic scattering and ionisation for e-
+   and updated physics-list options.
+ o in hadronic de_excitation, added limitation (A < 30) on decay of unphysical
+   fragment, allowing for removal of light unphysical states and providing
+   improved isotope production for the spallation fragments.
+ o Improved graphics representation for meshes support.
+ o Allowing for multiple meshes in a single screen; relevant
+   for special mesh rendering in visualization.
+ o New data set G4NDL-4.7 with new TermalScattering data.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-00-26
+-----
+- Allow library composition to be overriden in developer builds.
+- Do not use "readlink -f" to support pre-Monterey macOS systems.
+- Adding -Og to GNU/Clang default debug flags.
+- Don't add CLHEP_INCLUDE_DIRS directly through include_directories to prevent
+  potential issues with it holding relative paths.
+- Copy .clang-tidy file to build directory to assist run-clang-tidy reporting.
+- In G4ConfigurePkgConfigHelpers.cmake, geant4-config.in for geant4-config
+  generation: adding new flag "--features" (add vtk and qt3d features); allow
+  use of md5sun if openssl missing; canonicalise prefix path.
+- In G4ConfigureGNUMakeHelpers.cmake for geant4.[c]sh, geant4.bat generation:
+  allow full path source in zsh, sh; unset local variables at the end;
+  introducing GEANT4_DATA_DIR, with all data-set paths relative to this.
+- Added commands for working with categories analagous to module commands.
+- New dataset G4NDL-4.7 with new TermalScattering data.
+
+analysis                                         analysis-V11-00-04
+--------
+- Use geant4_category_modules in CMake script to optionally add G4hdf5 module
+  to category.
+
+externals/g4tools                                g4tools-V11-00-04
+-----------------
+- Updated to version 5.7.0.
+- Use thread-safe version of gl2ps-1.4.2.
+
+geometry/management                              geommng-V11-00-04
+-------------------
+- Corrected list of granular dependencies in CMake script.
+
+geometry/solids/Boolean                          geom-bool-V11-00-03
+-----------------------
+- G4UnionSolid: add surface tolerance in Inside(p) for check on Z.
+  Minor optimisation in caching half-tolerance.
+
+global                                           global-V11-00-14
+------
+- In G4PhysicsModelCatalog, fixed two typos in Bremsstrahlung models name.
+- Updated date and tag-ID for geant4-11-00-ref-04.
+
+graphics_reps                                    greps-V11-00-08
+-------------
+- HepPolyhedron, G4Polyhedron: added new constructors taking verteces and faces;
+  added derived classes HepPolyhedronTetMesh, G4PolyhedronTetMesh; added
+  SetVertex(), SetFacet() functions and made SetReferences() and InvertFacets()
+  public methods. Implemented JoinCoplanarFacets() function, move constructor
+  and move assignment operator.
+- G4Visible: added "user" data member 'fInfo', with access and operator<<
+  functions, intended to offer the user/developer a way of communicating
+  information.
+- G4VMarker: moved data member 'fInfo' to G4Visible.
+
+interfaces                                       interfaces-V11-00-05
+----------
+- Added dependency on Qt5 Widgets to "common" sub-module CMake script.
+
+materials                                        materials-V11-00-08
+---------
+- G4DensityEffectData, G4IonisParamMat: fixed density effect correction
+  for liquid hydrogen. Addressing problem report #2346. Some code clean-up.
+- G4Material: reorganised AddElement(..) and AddMaterial(..) methods;
+  using temporary vector to allow addition of the same elements during
+  initialisation, once addition is completed the vector of elements and arrays
+  of fractions are created, filled and temporary vectors are deleted, as a
+  result the code become more transparent. Addressing problem report #2486.
+  Fixed exception messages; moved G4Exp, G4Log headers from include to source.
+- G4NistMaterialBuilder: fixed mean ionisation potentilal of carbon to the
+  current NIST value from 81 eV to 78 eV. Addressing problem report #2474.
+- G4NistManager, G4NistMaterialBuilder, G4NistElementBuilder: use G4AutoLock
+  for code simplification.
+
+persistency                                      persistency-V11-00-02
+-----------
+- Use geant4_category_modules to optionaly add "gdml" module to category
+  in CMake script.
+- gdml (gdml-V11-00-04)
+  o In G4GDMLReadMaterials, fixed default temperature to 20°C (NTP_Temperature).
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-00-16)
+  o In G4EmStandardPhysics_option3 and G4EmStandardPhysics_option4, use
+    G4LinhardSorensenIonModel for GenericIon.
+  o Adding possibility to enable new G4TransportationWithMsc for
+    multiple-scattering. Enable it by default in G4EmStandardPhysics_option1.
+  o Fixed dependencies in build scripts.
+  o G4EmDNABuilder, G4EmDNAPhysicsActivator: fixed instantiation of DNA elastic
+    scattering and ionisation for e-; fixed Opt4 and Opt5  configurations
+    according to prescription.
+  o G4EmDNABuilder, G4EmDNAPhysicsActivator, and DNA constructors: updated 
+    configuration for Opt2.
+- constructors/limiters (phys-ctor-limiters-V11-00-02)
+  o Moved G4UserSpecialCuts class from "transportation" module.
+
+processes/electromagnetic/dna                    emdna-V11-00-14
+-----------------------------
+- Save local instances for recurrent access to particle definition in 
+  G4DNAMillerGreenExcitationModel, G4DNARuddIonisationExtendedModel and
+  G4DNARuddIonisationModel.
+- Revised code to use G4Pow and G4Log consistently.
+- In G4DNARuddIonisationExtendedModel, do not include ions that are not
+  defined in G4DNAGenericIonsManager.
+- Fix in G4KDTree algorithm. Addressing problem report #2235.
+  Minor code cleanup.
+- Added G4VUserBrownianAction class, being used in G4DNABrownianTransportation
+  and in G4DNAMolecularDissociation.
+- Use int64_t for molecules width integer types.
+- Added 'fResetScavenger' data member in G4SchedulerMessenger.
+
+processes/electromagnetic/lowenergy              emlowen-V11-00-05
+-----------------------------------
+- Removed Latin-1 characters from description in banners.
+
+processes/electromagnetic/standard               emstand-V11-00-10
+----------------------------------
+- G4UrbanMscModel: moving safety computation before step limitation algorithms
+  in order to save few instructions; should not affect results.
+  Improved code comments.
+- G4PairProductionRelModel, G4eBremsstrahlungRelModel, G4PairProductionRelModel
+  and G4eBremsstrahlungRelModel: added inclusion of headers of G4Exp, G4Pow to
+  to make translation unit self-consistent.
+- In G4WentzelVIRelModel, G4WentzelOKandVIxSection, G4LindhardSorensenIonModel
+  and G4ICRU49NuclearStoppingModel, use G4AutoLock.
+- G4BetheHeitler5DModel: do not instantiate G4MuonPlus, G4MuonMinus inside the
+  model to allow usage of this class in physics lists without muons.
+- G4hIonisation: improved initialisation.
+- Added missing granular dependencies in CMake script.
+
+processes/electromagnetic/utils                  emutils-V11-00-17
+-------------------------------
+- New G4TransportationWithMsc specialised tranportation process; added related
+  flag to G4EmParameters.
+- G4EmConfigurator implemented model per region for G4TransportationWithMsc.
+  Updated interfaces
+- G4VEnergyLossProcess, G4VEmProcess: use G4EmUtility to compute cross-section
+  shape parameters.
+- G4VMultipleScattering: fixed problem responsible for energy deposition
+  shift in custom CMS Physics List. Addressing problem report #2480.
+- G4VMultipleScattering: updated arguments for AddEmModel(..), SetEmModel(..),
+  and EmModel(..) methods from G4VEmModel* to G4VMscModel*.
+- G4EmUtility: added new static methods to prepare data structures for integral
+  method using EM tables or using GetCrossSection(..) method from the
+  G4VDiscreteProcess based class; this will allow using it for hadronics.
+- G4VEnergyLossProcess, G4VEmProcess, G4VMultipleScattering: minor clean-up.
+- Fixed typo in Bremsstrahlung model names.
+- G4LowEnergyEmProcessSubType: added sub-type ID (66) for DNAScavenger process.
+- Code cleanup with clang-tidy: use default constructors; nullptr, auto and
+  using keywords.
+- Updated build scripts dependencies.
+
+processes/electromagnetic/xrays                  xrays-V11-00-04
+-------------------------------
+- Code cleanup with clang-tidy: use default constructors; nullptr and
+  auto keywords.
+
+processes/hadronic
+------------------
+- models/abla (hadr-abla-V11-00-03)
+  o G4Abla: fixed compilation warnings for potentially uninitialised variables.
+  o Added missing granular dependencies in CMake script.
+- models/de_excitation (hadr-deex-V11-00-09)
+  o G4EvaporationChannel, G4Evaporation: added limitation (A < 30) on decay
+    of unphysical fragment, allowing for removal of light unphysical states
+    and providing improved isotope production for the spallation fragments.
+  o G4VEmissionProbability: more strong limit on accuracy of integrated
+    probability; improved debug printout.
+  o G4VEvaporationChannel, G4EvaporationChannel, G4VEvaporation,
+    G4EvaporationProbability, G4PhotonEvaporation: added extra public
+    interfaces to be used in unit tests.
+  o G4NuclearLevelData: use G4AutoLock.
+  o Use G4BestUnit in G4DeexPrecoParameters::StreamInfo().
+  o G4EvaporationChannel, G4EvaporationProbability, G4VEmissionProbability,
+    G4VCoulombBarrier, G4CoulombBarrier: use new method from G4Fragment.
+  o Code cleanup.
+- models/em_dissociation (hadr-emd-V11-00-01)
+  o G4EMDissociation: updated according to G4Fragment modifications.
+- models/lend (hadr-lend-V11-00-03)
+  o Fixed compilation warnings for potentially uninitialised variables.
+- models/lepto_nuclear (hadr-lepnuc-V11-00-03)
+  o G4MuonVDNuclearModel: fixed compilation warnings for potentially
+    uninitialised variables.
+- models/particle_hp (hadr-hpp-V11-00-04)
+  o G4ParticleHPThermalScatteringNames: updated to use new ThermalScattering
+    data in G4NDL-4.7.
+  o Fixed compilation warnings for potentially uninitialised variables.
+- models/radioactive_decay radioactive_decay-V11-00-02)
+  o G4RadioactiveDecay: fixed memory leak (due to decay products that were
+    not deleted) in the case of a radioactive decay happening later than the
+    time threshold.
+  o Cosmetics in G4RadioactiveDecay::StreamInfo().
+- stopping (hadr-stopping-V11-00-01)
+  o Added missing granular dependencies in CMake script.
+- util (hadr-util-V11-00-03)
+  o G4Fragment: fixed computation of binding energy for hypernuclei; added
+    a new private method to recompute ground state mass, excitation energy
+    and to check consistency of input; left inlined only simple methods;
+    added new methods SetZAandMomentum(..) and RecomputeGroundStateMass();
+    improved comments and warning messages.
+
+processes/management                             procman-V11-00-02
+--------------------
+- G4VDiscreteProcess: added virtual method MinPrimaryEnergy(..) for 
+  implementation of integral approach.
+
+processes/optical                                op-V11-00-05
+-----------------
+- Code cleanup with clang-tidy: use default constructors; auto keyword;
+  remove 'void' function argument; don't check for nullptr before delete;
+  use operator==() for string comparisons.
+- G4OpBoundaryProcess: check for nullptr before dereferencing.
+  Addressing problem report #2471.
+- G4OpWLS2: fix incorrect call to set time profile.
+  Addressing problem report #2482.
+
+processes/scoring                                procscore-V11-00-01
+-----------------
+- Added missing granular dependencies in CMake script.
+
+processes/transportation                         transport-V11-00-04
+------------------------
+- G4CoupledTransportation: set flags from G4Transportation: replaced
+  'fFirstStepInAnyVolume' with 'fFirstStepInVolume'; replaced
+  'fAnyGeometryLimitedStep' with 'fGeometryLimitedStep'; removed wrong check
+  in case of zero steps.
+- G4Transportation: removed wrong check in case of zero steps; set step status
+  on volume boundary.
+- Moved G4UserSpecialCuts to "physics_lists/constructors/limiters" module.
+- Updated dependencies in build scripts.
+
+run                                              run-V11-00-07
+---
+- Added new G4DNAScavenger in PhysicsListHelper for DNA processes.
+- Updated granular dependencies in CMake build script.
+
+track                                            track-V11-00-03
+-----
+- G4ParticleChangeForTransport: apply proposed step length; further simplified
+  UpdateStepForAlongStep() method, assuming that transportation is always the
+  first process.
+
+tracking                                         tracking-V11-00-02
+--------
+- Only set step status of 'fGeomBoundary' when on volume boundary.
+
+visualization                                    vis-V11-00-01
+-------------
+- management (visman-V11-00-15):
+  o G4VSceneHandler: allow for multiple meshes in a single screen; relevant
+    for special mesh rendering.
+    Renamed 'PseudoSceneFor3DRectMeshAsDots' to
+    'PseudoSceneFor3DRectMeshPositions'; serves both dots and surfaces.
+    Added 'Draw3DRectMeshAsSurfaces'.
+    Make sure dots (markers) are treated as "hidden", i.e., use the z-buffer
+    like other primitives (the default is "non-hidden").
+    Make sure dots and vertices are in local coordinate system and ask the
+    rendering train to transform them to world coordinates in the normal
+    way through BeginPrimitives(..).
+    Replaced 'NameAndColour' by 'NameAndVisAtts'.
+    Exploit move operator when creating polyhedra for Special Mesh Rendering.
+    Numerous improvements to comments and messaging.
+  o Re-worked and rationalised special mesh rendering utilities.
+    The idea is that these are "standard" functions that are optional.
+    They are optimised for OpenGL but they also work fine for ToolsSG and Qt3D.
+    An attempt to draw a mesh with any other driver will result in a warning
+    and only the container will be drawn. Other drivers will have to implement
+    their own AddCompound(...G4Mesh...) function or choose to use the standard
+    functions or some thereof.
+  o Take advantage of recent developments in HepPolyhedron for rendering:
+    conversion of tetrahedra to enclosing polyhedron removing inner surfaces;
+    conversion of boxes to enclosing polyhedron removing inner surfaces.
+    Also take advantage of developments in G4PhysicalVolumeModel:
+    when a mesh has been found, an artificial node is created and added
+    to the PVPath whose physical volume points to the parameterisation.
+    It is used in G4VSceneHandler to transmit the material name so that,
+    for example, the Qt viewer scene tree shows items by material. In the
+    case of a medical phantom, the materials are usually given the name
+    of the organ, so users can select on them.
+  o G4VisCommandsSceneAdd: adapted "/vis/scene/add/volume" UI command to
+    new G4PhysicalVolumesSearchScene.
+- modeling (modeling-V11-00-08)
+  o Retired G4BoundingSphereScene and G4PhysicalVolumeSearchScene.
+    G4BoundingSphereScene accumulated blinding spheres and often overestimated
+    the extent of the scene; it is now superseded by G4BoundingExtentScene.
+    G4BoundingExtentScene deals directly with extents, which makes it neater
+    and more tightly estimates the overall extent of the scene.
+  o G4PhysicalVolumeSearchScene is superseded by G4PhysicalVolumesSearchScene
+    G4PhysicalVolumesSearchScene finds all occurrences of a physical volume
+    and returns a "findings vector". Removed last ambiguous and misleading
+    argument in the constructor.
+  o G4Mesh: added 'fpParameterisedVolume' pointer and accessor.
+  o G4PhysicalVolumeModel: added modifiers; for AddCompound(mesh), provide
+    an artificial node as an (optional) hook for anything that might be
+    generated.
+  o G4PseudoScene: added AddCompound(const G4Mesh&) method; if special mesh
+    rendering is set, this catches mesh candidates (certain types of
+    parameterisations) and avoids descending into the parameterisations.
+  o G4PhysicalVolumeModel: added SetSpecialMeshRendering(true) to avoid
+    traversing (certain types of) parameterisations (see above).
+  o G4PhysicalVolumeModel: eliminated goto statements.
+- gMocren (gMocren-V11-00-02)
+  o G4GMocrenFileSceneHandler: removed redundant header inclusion.
+- OpenGL (opengl-V11-00-10)
+  o Added G4gl2ps, a class frontend to tools/gl2ps intended to be used by
+    OpenGL and OpenInventor; does not depend directly of OpenGL.
+  o Have G4OpenGLViewer use the thread safe tools/gl2ps.
+  o Use StandardSpecialMeshRendering(mesh).
+- OpenInventor (openinventor-V11-00-06)
+  o Have G4OpenGLOpenInventorViewer and SoGL2PSAction using the thread safe
+    tools/gl2ps.
+- Qt3D (visQt3D-V11-00-05)
+  o G4Qt3DSceneHandler: updated AddPrimitive(..) to current usage.
+    Commented out line elimination in AddPrimitive(..), as too expensive for
+    a large polyhedron; allow the graphics-reps utilities to optimise this.
+    Use StandardSpecialMeshRendering(mesh).
+- RayTracer (raytracer-V11-00-03)
+  o Fixed granular dependencies in build scripts.
+- ToolsGS (vis_toolsg-V11-00-09):
+  o G4ToolsSGSceneHandler: in AddPrimitive(..), comment out common line
+    elimination, as too expensive for a large polyhedron; allow the
+    graphics-reps utilities to optimise this.
+    Use StandardSpecialMeshRendering(mesh).
+  o Added missing granular dependencies in CMake build script.
+
+data
+----
+- G4NDL-4.7:
+  o Updated "ThermalScattering" component, obtained from thermal scattering
+    data from JEFF-3.3, and adding the ENDF/BVIII-0 materials not in JEFF-3.3,
+    coupled to JEFF-3.3 nuclear cross-sections.
+
+examples                                         examples-V11-00-04
+--------
+- Updated documentation and reference outputs.
+- extended/electromagnetic/TestEm5 (testem5-V11-00-01)
+  o Allow changing the gun position via UI command.
+- extended/exoticphysics/monopole (monopole-V11-00-02)
+  o G4MonopoleTransportation: set step status on volume boundary.
+- extended/geometry/vecGeomNavigation (VecGeomNavigation-V11-00-02)
+  o Enable use with static libraries; build g4vecgeomnav as a static library
+    if only Geant4 static libraries are available.
+- extended/hadronic/Hadr03 (exhadr03-V11-00-01)
+- extended/hadronic/Hadr05 (exhadr05-V11-00-02)
+- extended/hadronic/Hadr06 (exhadr06-V11-00-01)
+  o PhysicsList: added G4NuclideTable::SetThresholdOfHalfLife(1ns*log2).
+- extended/hadronic/Hadr07 (exhadr07-V11-00-01)
+  o TrackingAction: print ions with zero meanLife.
+  o PhysicsList: added G4NuclideTable::SetThresholdOfHalfLife(1ns*log2).
+- extended/hadronic/NeutronSource (NeutronSource-V11-00-01)
+  o PhysicsList: added G4NuclideTable::SetThresholdOfHalfLife(1ns*log2).
+- extended/medical/dna/moleculardna (molecularDNA-V11-00-03)
+  o Corrected minor mistake in AnalysisManager.
+  o Added Complexity Frequency in cylinder.C.
+  o Added human_cell.C macro file.
+- extended/optical/OpNovice2 (OpNovice2-V11-00-01)
+  o Added new macro complexRindex.mac, using dielectric-metal surface with
+    the surface having a complex index of refraction.
+  o Added new histograms to record separately Fresnel reflection, TIR,
+    absorption, etc.
+  o Use new histos to plot spike reflection/absorption vs angle on surface
+    (useful for complex refractive index).
+  o PrimaryGeneratorMessenger: fixed command "/opnovice2/gun/randomDirection".
+    Based on GitHub PR#33 (https://github.com/Geant4/geant4/pull/33)
+- extended/radioactivedecay/Activation (activation-V11-00-01)
+- extended/radioactivedecay/rdecay01 (rdecay01-V11-00-01)
+  o PhysicsList: added G4NuclideTable::SetThresholdOfHalfLife(1ns*log2).
+
+tests                                            tests-V11-00-04
+-----
+- Updated reference outputs and tools.
+- tests/test30 (test30-V11-00-02)
+  o Added extra verbosity options
+- tests/test46 (test46-V11-00-02)
+  o CMSEmStandardPhysicsHcal: updated according to recent CMS code.
+  o Updated scripts, histograms, and messengers.
