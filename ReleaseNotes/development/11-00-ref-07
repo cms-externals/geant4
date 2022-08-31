@@ -1,0 +1,316 @@
+
+                       geant4-11-00-ref-07
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Refactored analysis manager methods for file handling.
+ o Fixes for transportation of hypernuclei and anti-hypernuclei.
+ o General code clean-up of ParticleChange classes.
+ o G4GammaGeneralProcess: fixed problem of Compton scattering selection.
+ o New model and process for muon pair production by muon.
+ o New singleton class G4FTFTunings to allow to specify alternative sets
+   of FTF parameters, called "tunes"; added also specific UI messenger.
+ o New G4NeutronGeneralProcess combined process; enabled in QBBC physics-list.
+ o New advanced example implementing a ICRP145 human phantom.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-00-34
+-----
+- Update extraction of include paths from VecGeom to use imported target
+  property. Addressing problem report #2485.
+- Removed obsolete and now longer built G4gl2ps target
+
+config                                           config-V11-00-04
+------
+- Removed obsolete G4gl2ps module and library from build.
+
+environments/zmq                                 zmq-V11-00-01
+----------------
+- Use G4StrUtil functions replacing deprecated G4String member functions.
+
+analysis                                         analysis-V11-00-12
+--------
+- Added G4RootRFile type = a tuple for the Root read file including its
+  directories, analogue to G4RootRFile for Root output, used now in the
+  G4RootRfileManager::fRFiles map instead of tools::rroot::file.
+  This allows deleting file directories in the class destructor, and should
+  fix a reported Coverity defect.
+- Refactored analysis manager methods for file handling from the output
+  specific managers in the common implementation in G4ToolsAnalysisManger. 
+  Besides code simplification, this guaranties identical behavior with generic
+  analysis manager.
+- Reviewed/fixed resetting of data when postponed after CloseFile() (for
+  plotting).
+- Fixes in deleting files: do not delete (not empty) main n-tuple files with
+  generic analysis manager, delete empty n-tuple csv and xml files created on
+  the main thread.
+  Fix in deleting files (root): do not delete the final (merged) file when
+  only n-tuples are present.
+- Fix for reported Coverity defect: use auto& to avoid copying of shared_ptr
+  and pair objects.
+- Applied clang-tidy fixes.
+- Fixed compilation warning on gcc-12.1.
+
+geometry/management                              geommng-V11-00-06
+-------------------
+- Added protection in G4GeometryManager for Open/CloseGeometry() to
+  be executed only by master thread. Addressing problem report #2502.
+- Added headers for directly used classes from global/HEPGeometry.
+
+global                                           global-V11-00-26
+------
+- Additional clang-tidy fixes for header-only code.
+- Moved implementation details of G4Exception to source file.
+  Removed obsolete re-declaration of G4Exception in G4Timer.
+- Updated date and tag-ID for geant4-11-00-ref-07.
+
+particles                                        particles-V11-00-06
+---------
+- Fixes for transportation of hypernuclei and anti-hypernuclei: in G4Ion,
+  set (forgotten) 'isGeneralIon' to false for hypernuclei and anti-hypernuclei,
+  to avoid they get assigned same processes as 'GenericIon'.
+  In G4DoubleHyperDoubleNeutron and G4AntiDoubleHyperDoubleNeutron, added
+  (forgotten) call to SetDecayTable(), to have the decay table defined for
+  these particles.
+  In G4ParticleDefinition, protect methods GetNumberOfLambdasInHypernucleus()
+  and GetNumberOfAntiLambdasInAntiHypernucleus() against baryonic resonances
+  with high spins (such as N(2220), N(2250) and their anti-particles) which
+  have 8-digits PDG codes, but which are not hypernuclei or anti-hypernuclei.
+- Removed obsolete and unused G4DynamicParticleFastVector type alias.
+
+persistency/mctruth                              mctruth-V11-00-01
+-------------------
+- Added headers for directly used classes from global/HEPGeometry.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-00-27)
+  o G4GammaGeneralProcess: fixed problem of Compton scattering selection
+    in the low energy interval < 150 keV; apply Spline interpolation for
+    tables at low energy (<150 keV) and at high energy (> 100 MeV).
+  o G4EmBuilder, G4EmDNAPhysics: instantiate singletons for physics.
+- constructors/decay (phys-ctor-decay-V11-00-02)
+  o G4DecayPhysics: added instantiation of singletons for physics.
+  o Added internal dependency on 'physics_lists/util' module.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V11-00-03)
+  o G4EmExtraPhysics, G4EmMessenger: added muon to muon pair process; moved
+    initialisation class members to the headers.
+  o Added internal dependency to 'electromagnetic/muons' module.
+- constructors/hadron_elastic (phys-ctor-helastic-V11-00-01)
+  o G4HadronElasticPhysics: use G4HadProcesses utility to build neutron 
+    elastic, which allows to use an option of neutron general process.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V11-00-01)
+  o G4HadronInelasticQBBC: use G4HadProcesses utility to build neutron 
+    elastic, which allows to use an option of neutron general process.
+- constructors/limiters (phys-ctor-limiters-V11-00-05)
+  o G4NeutronTrackingCut: use enumerator for neutron general process instead
+    of hard-coded number. Added check if G4NeutronGeneralProcess is defined to
+    avoid double instantiation of the same cut.
+  o Added internal dependency on 'physics_lists/util' module.
+- util (phys-util-V11-00-07)
+  o G4PhysListUtil, G4HadProcesses: added extra methods needed for neutron
+    general process initialisation. Use enumerator for neutron general process
+    instead of hard-coded number in G4PhysListUtil.
+  o G4PhysListUtil: in the method InitialiseParameters(), call the singleton
+    G4FTFTunings::Instance() to allow the setting of a FTF tune via UI commands
+    at 'PreInit' state. Extended InitialiseParameters() method.
+  o Added internal dependencies on 'hadronic/deexcitation/photon_evaporation',
+    'run' and 'processes/management' modules.
+
+processes/cuts                                   proccuts-V11-00-05
+--------------
+- G4VRangeToEnergyConverter: do not set lock inside private static method;
+  code clean-up.
+- G4ProductionCuts: removed unnecessary thread-local variables; code clean-up
+  and simplified.
+
+processes/electromagnetic/highenergy             emhighenergy-V11-00-01
+------------------------------------
+- G4hPairProduction, G4hPairProductionModel: removed not needed methods.
+
+processes/electromagnetic/lowenergy              emlowen-V11-00-10
+-----------------------------------
+- G4Rayleigh scattering moved boundary between low and high energy
+  table from 100 keV to 150 keV to be coherent with G4GammaGeneralProcess.
+- Fixed exception printout in Livermore models.
+- Fixed Coverity warnings in G4VCrossSectionHandler.
+
+processes/electromagnetic/muons                  emmuons-V11-00-06
+-------------------------------
+- G4MuonToMuonPairProductionModel, G4MuonToMuonPairProduction: new 
+  model and process for muon pair production by muon.
+- G4MuPairProductionModel, G4MuPairProduction: reorganised methods; use G4lrint.
+- G4MuonToMuonPairProductionModel: added extra constant and improved formulas.
+  Code clean-up.
+
+processes/electromagnetic/standard               emstand-V11-00-14
+----------------------------------
+- G4UrbanMscModel: optimized code; no functional changes.
+
+processes/electromagnetic/utils                  emutils-V11-00-33
+-------------------------------
+- G4EmParameters, G4EmParametersMessenger: added extra Boolean flag for
+  sampling of photoeffect below K-shell, which was introduced in ATLAS.
+- G4EmProcessSubType: added extra types for muon pair production by muons
+  and dark particles Bremsstrahlung.
+- G4EmExtraParameters: safe definition of StepFuction for G4GenericIon.
+  Addressing problem report #2495.
+- Fix in G4TransportationWithMsc: StartTracking() now calls corresponding
+  method of G4Transportation, to initialise values used for propagation in
+  field.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-00-07)
+  o G4CrossSectionDataStore, G4NeutronElasticXS, G4NeutronInelasticXS:
+    added interfaces needed for G4NeutronGeneralProcess.
+    Implemented new interfaces in G4NeutronCaptureXS.
+  o G4NeutronElasticXS, G4NeutronInelasticXS, G4NeutronCaptureXS: code cleanup;
+    use G4AutoLock.
+  o G4VCrossSectionDataSet: added extra interfaces with G4ParticleDefinition
+    and kinetic energy.
+  o G4ComponentAntiNuclNuclearXS: fixed Coverity warning, added checks
+    against nullptr pointers.
+- management (hadr-man-V11-00-03)
+  o G4HadronicProcess: removed temporary check and protection introduced
+    previously, as no longer needed after replacing the threshold used for
+    checking the absolute energy non-conservation from DLB_MAX to 350 GeV;
+    this value allows for cases where the residual nucleus is not produced,
+    even when super-heavy nuclides are involved.
+    Make access to target nucleus public needed for neutron general process.
+  o G4HadronicProcessType: added 'fNeutronGeneral'.
+- models/cascade (hadr-casc-V11-00-03)
+  o Fixed compilation warning on gcc-12.1 in G4CascadeParamMessenger.
+- models/de_excitation (hadr-deex-V11-00-14)
+  o G4PhotonEvaporation: improved use of mutex. Fixed Coverity warning.
+  o G4StatMFChannel: fixes in multi-fragmentation equation of motion solver.
+  o G4StatMF: code clean-up.
+- models/fission (hadr-fission-V11-00-01)
+  o G4FissLib, G4LFission: use consistent thresholds for relative (10% instead
+    of 5%) and absolute (350 GeV instead of 250 GeV) energy non-conservation
+    check.
+- models/particle_hp (hadr-hpp-V11-00-14)
+  o G4ParticleHPInelastic, G4ParticleHPCapture, G4ParticleHPFission,
+    G4ParticleHPElastic, G4ParticleHPThermalScattering: replaced the threshold
+    used for checking the absolute energy non-conservation from DLB_MAX
+    (implying no checking at all) to 350 GeV (this value allows for cases
+    where the residual nucleus is not produced, even when super-heavy
+    nuclides are involved).
+  o G4ParticleHPContAngularPar: removed unneeded check, reported by Coverity.
+  o G4ParticleHPThermalScattering: fixed Coverity report for uninitialized
+    variable.
+  o Removed unneeded include of G4FastVector.hh header.
+- models/parton_string/diffraction (hadr-string-diff-V11-00-05)
+  o G4FTFTuningsMessenger: new messenger class for G4FTFTunings.
+  o G4FTFTunings: new singleton class to allow the possibility to specify
+    alternative sets of FTF parameters, called "tunes".
+    Moved into this class some special, internal classes, useful for tuning
+    of parameters, that were originally in G4FTFParameters.
+    Updated to use G4FTFTuningsMessenger instead of G4HadronicParameterMessenger.
+  o G4FTFParameters: use of the new G4FTFTunings class; instead of having
+    one, single set of parameters, it has now an array of set of parameters,
+    with each element corresponding to one specific "tune".
+    Clean-up of the class by moving to G4FTFTunings some code originally
+    present in G4FTFParameters.
+  o Added missing internal dependency on 'intercoms' module.
+- models/parton_string/hadronization (had-hadronization-V11-00-02)
+  o G4VLongitudinalStringDecay: brought back the value (0.5) of the mixing
+    between (rho0 and omega) vector mesons as it was originally before version
+    10.0. This should describe better NA61/SHINE experimental data.
+    The change might affect hadronic showers, giving that the various
+    vector mesons have different decay rates into neutral pions.
+- processes (hadr-proc-V11-00-06)
+  o G4NeutronGeneralProcess: new combined process; make it work with QBBC
+    physics-list.
+  o G4HadronElasticProcess: extended debug printout.
+  o G4NeutronCaptureProcess: avoid double instantiation of the cross-section.
+- util (hadr-util-V11-00-11)
+  o G4HadronicParameters: added flag to enable general neutron process.
+  o G4HadDataHandler: new data class.
+  o G4NuclearPolarization: fixed Coverity warning.
+
+processes/parameterisation                       param-V11-00-02
+--------------------------
+- G4FastStep: code clean-up; delete copy constructor and operator=().
+
+track                                            track-V11-00-04
+-----
+- General clean-up of all ParticleChange classes: delete copy constructors
+  and operator=(); removed unused methods; removed tracking cut to 1 eV
+  implemented in G4ParticleChangeForLoss; make more effective handling of
+  secondary tracks; substitute G4ParticleChangeForRadDecay with
+  G4ParticleChangeForDecay; make all derived classes/methods final;
+  removed commented code and corrected comments; removed duplicated code.
+
+visualization                                    vis-V11-00-02
+-------------
+- Removed obsolete 'gl2ps' subcategory and 'externals' module.
+- management (visman-V11-00-21):
+  o Back out code that forces '/vis/verbose' and '/control/verbose'.
+  o G4VisCommandsCompound, G4VisCommandsSceneAdd, G4VisCommandsTouchable,
+    G4VisCommandsViewer: fixed control of verbosity.
+- OpenGL (opengl-V11-00-13)
+  o Fixed compiler warnings in the use of G4OpenGLQtViewer::toggleProjection.
+- OpenInventor (openinventor-V11-00-08)
+  o Fixed compilation error for missing inclusion of G4Types.hh
+    in G4OpenInventorTransform3D header, induced by recent changes
+    in 'global' category.
+
+examples                                         examples-V11-00-07
+--------
+- Updated documentation and reference outputs.
+- advanced/ICRP145_HumanPhantoms (ICRP145Phantoms-V11-00-00)
+  o New example implementing a ICRP145 human phantom, based on:
+    https://www.icrp.org/publication.asp?id=ICRP%20Publication%20145.
+- advanced/human_phantom (human_phantom-V11-00-02)
+  o Fixed GDML description of the phantom.
+  o Code review.
+- basic (exbasic-V11-00-01)
+  o Applied clang-tidy checks.
+- extended/electromagnetic/TestEm1 (testem1-V11-00-01)
+  o Added three new macros to play with StepFunction(): pRange,
+    alphaRange, ionRange.
+- extended/electromagnetic/TestEm5 (testem5-V11-00-02)
+  o Added summary on gamma processes.
+- extended/electromagnetic/TestEm16 (testem16-V11-00-01)
+  o Minor cleanup in vis.mac and run01.mac to make MT output more readable.
+- electromagnetic/TestEm17 (testem17-V11-00-01)
+  o Added new process of muon pair production by muons; extended analysis
+    and added new histograms.
+- extended/eventgenerator/pythia/py8decayer (p8decayer-V11-00-02)
+  o Added ActionInitialization class.
+  o Updated pythia8_decayer to use ActionInitialization.
+    Code cleanup to avoid potential misleading.
+  o Updated README to reflect use of Pythia8.3.0.7.
+- extended/field/field04 (fieldex04-V11-00-01)
+  o Fixed compilation warning on gcc-12.1.
+- extended/hadronic/ParticleFluence/Calo (exhadrParticleFluenceCalo-V11-00-01)
+- extended/hadronic/ParticleFluence/ConcentricSpheres (exhadrParticleFluenceConcentricSpheres-V11-00-01)
+- extended/hadronic/ParticleFluence/Layer (exhadrParticleFluenceLayer-V11-00-01)
+- extended/hadronic/ParticleFluence/Sphere (exhadrParticleFluenceSphere-V11-00-01)
+  o In SteppingAction, introduced protection on the value of the array index.
+    Fixing compilation warnings on gcc-12.1.
+- extended/medical/dna/moleculardna (molecularDNA-V11-00-07)
+  o Fixed smart pointer warning on gcc 12.1.
+  o Fixed typo in human_cell.C.
+  o In ecoli.C fixed minor bug on filename.
+- extended/optical/LXe (LXe-V11-00-01)
+  o Modified LXeSteppingAction: removed thread-local variable; use PDG code
+    instead of particle name; added more checks on pointers; extended printout
+    before fatal exception.
+- extended/optical/wls (WLS-V11-00-01)
+- extended/radioactivedecay/rdecay01 (rdecay01-V11-00-02)
+  o Fixed compilation warning on gcc-12.1.
+
+tests                                            tests-V11-00-07
+-----
+- Updated reference outputs and tools.
+- tests/test23 (test23-V11-00-01)
+  o Tst23NA61Histo: fixed write out of the bounds.
+- tests/test30 (test30-V11-00-03)
+  o Fixed run-time warning.

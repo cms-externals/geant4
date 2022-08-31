@@ -1,0 +1,312 @@
+
+                       geant4-11-00-ref-05
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Preliminary configuration support for Qt5 and Qt6.
+ o Added required configuration to be able to generate DEB/RPM packages
+   with CPack.
+ o Dataset environment variables are now optional in CMake builds.
+ o Updated tasking system to upstream PTL version 2.3.3.
+ o New integral method for hadronic processes.
+ o In G4DNA, incorporated model based on RPWBA to transport protons at
+   100-300 MeV and updated data structure to improve performance of the
+   mesoscopic model.
+ o Added possibility to select the model for energy loss fluctuations.
+ o Added possibility of internal stepping in G4TransportationWithMsc.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.0.2
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-00-29
+-----
+- Preliminary configuration support for Qt5 and Qt6.
+- Added required configuration to be able to generate DEB/RPM packages
+  with CPack.
+- Use more standard install location for CMake files.
+- Remove version from default installation directories.
+- Added source validation exception for G4FindDataDir generated header.
+
+analysis                                         analysis-V11-00-05
+--------
+- Changed namespace for g4tools code from "tools" to "toolx" for externals.
+
+digits_hits/utils                                detutil-V11-00-01
+-----------------
+- Added missing virtual keywords in G4VScoringMesh.                          (o)
+
+externals
+---------
+- g4tools (g4tools-V11-00-06)
+  o Updated to version 6.0.0.
+  o gl2ps: in gl2psPrintPostScriptPixmap(): pass greyscale, nbit in arguments
+    to avoid a dead code issue; in gl2psPDFgroupListInit(), fixed issue for
+    uninitialized pointer read; removed commented out code.
+  o sg/text: corrections in update_sg() due to copy-paste error.
+  o Moved g4tools code externals from "tools" to "toolx" module.
+    Concerns code related to Qt, Windows, X11, Xt, OpenGL, hdf5, expat,
+    mpi, zlib.
+- ptl (ptl-V11-00-01)
+  o Updated to upstream PTL version 2.3.3:
+    + New/improved support for initialization and finalization routines
+      in ThreadPool.
+    + Threading: fix in GetNumberOfPhysicalCpus(), to never return zero.
+    + Fixed verbose message to cerr to be protected within verbosity level.
+    + Fixes for C++20 compilation warnings and updates to build scripts.
+    + Removed outdated TiMemory implementation.
+    + Code formatting.
+  o Minor fixes for macOS/Clang and use as a subproject.
+
+geometry/navigation                              geomnav-V11-00-05
+-------------------
+- G4Navigator: minor code improvements in ComputeSafety(), ComputeStep(),
+  and LocateGlobalPointAndSetup().
+
+geometry/solids/Boolean                          geom-bool-V11-00-05
+-----------------------
+- G4UnionSolid: added missing data initialisation in copy-ctr and            (o)
+  operator=().
+- Cleanup in G4UnionSolid constructors.                                      (o)
+- Minor cleanup in headers.
+
+global                                           global-V11-00-17
+------
+- Make dataset environment variables optional in CMake builds.
+- Corrected G4ErrorPropagatorData destructor.
+- Updated date and tag-ID for geant4-11-00-ref-05.
+
+graphics_reps                                    greps-V11-00-09
+-------------
+- Implemented faster version of HepPolyhedronTetMesh.
+
+interfaces                                       interfaces-V11-00-06
+----------
+- Preliminary build support for Qt5 and Qt6.
+
+materials                                        materials-V11-00-11
+---------
+- Replaced getenv() calls for data variables with G4FindDataDir() in
+  G4IonStoppingData, G4MicroElecMaterialStructure and G4OpticalSurface.
+- Corrected G4UCNMicroRoughnessHelper destructor.
+- G4Material: fixed trivial Coverity warnings.
+
+particles                                        particles-V11-00-04
+---------
+- In G4NuclieTable, replaced getenv() calls for data variables with
+  G4FindDataDir().
+
+physics_lists
+-------------
+- constructors (phys-ctor-V11-00-01)
+  o Replaced getenv() calls for data variables with G4FindDataDir() in data
+    readers.
+- constructors/electromagnetic (phys-ctor-em-V11-00-23)
+  o G4EmLivermorePhysics, G4EmPenelopePhysics, G4EmStandardPhysicsSS: use 
+    G4LinhardSorensenIonModel for GenericIon.
+  o G4EmLivermorePhysics, G4EmPenelopePhysics, G4EmStandardPhysics_option4:
+    adopt identical configuration for msc, muon, hadron, and ion physics.
+  o G4EmLivermorePhysics, G4EmPenelopePhysics, G4EmStandardPhysics_option4,
+    G4EmStandardPhysics: selection of the model for energy loss fluctuation
+    is included in ionisation processes according to the type defined in
+    G4EmParameters.
+  o G4EmStandardPhysics, G4EmStandardPhysics_option3,
+    G4EmStandardPhysics_option4: use G4GammaGeneralProcess by default.
+  o G4GammaGeneralProcess: implemented new method GetCreatorProcess().
+  o G4EmBuilder: enable internal stepping in G4TransportationWithMsc
+    if requested.
+  o Removed unnecessary dependency on magnetic-field module and
+    updated dependencies on hadronic modules.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V11-00-02)
+  o Updated dependencies in build scripts. 
+
+processes/electromagnetic/dna                    emdna-V11-00-20
+-----------------------------
+- Incorporation of model based on RPWBA to transport protons at 100-300 MeV.
+- Added G4DNARPWBAExcitationModel and G4DNARPWBAIonisationModel.
+- Updated data structure to improve performance of the mesoscopic model.
+- Change scavenging filter of the IRT beyond 1 us.
+- G4ITTransportation: fixed misuse of bitwise '|' operator instead of        (o)
+  logical.
+- Use thread-local flag in G4VMoleculeCounter.
+- Replaced getenv() calls for data variables with G4FindDataDir() in data
+  readers.
+- Added missing headers inclusions for self-consistency.
+
+processes/electromagnetic/lowenergy              emlowen-V11-00-07
+-----------------------------------
+- G4LivermoreGammaConversionModel, G4LivermorePhotoElectricModel and
+  G4LivermoreGammaConversion5DModel: set Spline interpolation for EPDL97.
+- Fixed use of potential uninitialised pointer in
+  G4AtomicDeexcitation::GenerateParticles(..).
+- G4eIonisation, G4hIonisation, G4ionIonisation: added selection of the
+  model for energy loss fluctuations.
+- Replaced getenv() calls for data variables with G4FindDataDir() in data
+  readers.
+
+processes/electromagnetic/muons                  emmuons-V11-00-01
+-------------------------------
+- G4MuIonisation: added selection of the model for energy loss fluctuations.
+
+processes/electromagnetic/standard               emstand-V11-00-13
+----------------------------------
+- G4UrbanMscModel: extended cache data with 5 variables for positrons;
+  removed used headers; minor saving of instructions.
+  Results should be unchanged.
+- G4eBremsstrahlungRelModel, G4eBremParametrizedModel: code cosmetics.
+- Run clang-tidy, use nullptr, default and auto keywords; removed unneeded
+  nullptr checks when deleting.
+- Replaced getenv() calls for data variables with G4FindDataDir() in data
+  readers.
+
+processes/electromagnetic/utils                  emutils-V11-00-24
+-------------------------------
+- G4EmTableUtil: new utility to perform common computations at initialisation.
+- G4EmUtility: added methods to sample isotopes or elements.
+  Fixed precision lost in energy value at initialisation of integral method.
+- G4VEmModel, G4EmCalculator, G4EmConfigurator: use G4EmUtility.
+- G4VEmModel, G4VEmProcess, G4VEnergyLossProcess, G4VMultipleScattering and
+  G4LossTableManager: use new utiity methods; updated sampling of random
+  elements in compounds and random isotopes; code cleanup.
+- G4VMultipleScattering: use G4EmTableUtil and fixed Coverity warnings.
+- G4EmLowEParameters: change default photon database to EPICS2017.
+- G4VEmProcess, G4VEnergyLossProcess: for integral method, use master thread
+  cross-section type and pointers directly; simplifing initialisation.
+- G4TransportationWithMsc: added possibility of internal stepping.
+- G4EmParameters: update flag to tristate for enabling it.
+  Added extra parameter: type of fluctuation model.
+- G4EmConfigurator, G4VEnergyLossProcess: fixed Coverity warnings.
+- Remove unnecessary dependency on magnetic-field module.
+
+processes/hadronic                               hadr-V11-00-01
+------------------
+- Replaced getenv() calls for data variables with G4FindDataDir() in data
+  readers.
+- cross_sections (hadr-cross-V11-00-03)
+  o G4CrossSectionDataStore, G4VCrossSectionDataSet: preparation for integral
+    method; removed unused methods.
+- management (hadr-man-V11-00-01)
+  o G4HadronicProcess: implemented integral method.
+  o G4HadXSTypes, G4HadXSHelper: new helper classes.
+- models/cascade (hadr-casc-V11-00-02)
+  o Fixed wrong comparison between two arrays in findCrossSection(..) for
+    G4CascadePPChannel, G4CascadeNPChanneland G4CascadeNNChannel.
+- models/de_excitation (hadr-deex-V11-00-10)
+  o G4VEvaporationChannel, G4EvaporationChannel, G4VEmissionProbability
+    and G4EvaporationProbability: improved inverse cross-section
+    parameterisation at threshold; code cleanup.
+- models/inclxx (hadr-inclxx-V11-00-03)
+  o Fixed misuse of bitwise '|' operator instead of logical in               (o)
+    INCL::postCascade() and in INCL::makeCompoundNucleus().
+- models/lend (hadr-lend-V11-00-04)
+  o Fixed potential use of pointer after free in nf_utilities/nfu_realloc(..)
+    function.
+- models/particle_hp (hadr-hpp-V11-00-06)
+  o Fixed issue for photons too high in energy generated from                (o)
+    G4NDL/Capture/FSMF6 data. Addressing problem report #2468.
+  o Code cleanup in G4ParticleHPContEnergyAngular and                        (o)
+    G4ParticleHPContAngularPar: removed debug and commented out code,
+    indentation of loops and if branches.
+- models/parton_string/qgsm (hadr-qgsm-V11-00-02)
+  o G4QGSParticipants: do not print warning in the case of precision loss;   (o)
+    a confusing exception message was observed in CMS simulation, observed
+    in high energy gamma-nuclear interaction.
+- util (hadr-util-V11-00-05)
+  o G4HadronicParameters: added integral flags for elastic and inelastic
+    processes; by default enabled for inelastic. Moved G4Threading header
+    to source.
+
+processes/management                             procman-V11-00-03
+--------------------
+- G4VProcess: introduced new virtual method GetCreatorProcess().
+
+processes/solidstate                             solidstate-V11-00-01
+--------------------
+- In G4LatticeReader, replaced getenv() calls for data variables with
+  G4FindDataDir().
+
+processes/transportation                         transport-V11-00-06
+------------------------
+- G4Transportation: removed non-working check for any field.
+- G4Transportation, G4CoupledTransportation: fixed misuse of bitwise '|'     (o)
+  operator instead of logical.
+- Removed public dependency on magnetic-field and navigation modules
+  in CMake script.
+
+run                                              run-V11-00-08
+---
+- In G4RunManagerKernel, check for correct state in default exception        (o)
+  handler before trying to access manager classes that may be nullptr
+  in other states. Don't create a default exception manager if one exists
+  already.
+
+tracking                                         tracking-V11-00-04
+--------
+- In G4SteppingManager, refactor and simplify processing of secondaries;
+  use new virtual method GetCreatorProcess() when processing secondaries.
+  Corrected 'ProcessDefinedStep' for AtRest case.
+
+visualization
+-------------
+- management (visman-V11-00-18):
+  o G4VSceneHandler: improved special mesh rendering; store vis attributes
+    by value; handling parameterised volumes of any depth (up to 3).
+    Fixed Coverity warnings.
+  o G4PlotterManager: removed not used inclusion of <tools/xml/xml_style>.
+- modeling (modeling-V11-00-09)
+  o Simplified G4Mesh; wow finding 1-deep rectangular meshes such as
+    G4PhantomParameterisation. Improved comments.
+- OpenGL (opengl-V11-00-12)
+  o Preliminary build support for Qt5 and Qt6.
+  o Fixed GNUmakefile for missing compilation of G4gl2ps.
+- OpenInventor (openinventor-V11-00-07)
+- Qt3D (visQt3D-V11-00-06)
+  o Preliminary build support for Qt5 and Qt6.
+- ToolsGS (vis_toolsg-V11-00-11):
+  o Preliminary build support for Qt5 and Qt6.
+  o Changed namespace for g4tools code from "tools" to "toolx" for externals.
+
+examples                                         examples-V11-00-05
+--------
+- Updated documentation and reference outputs.
+- advanced/ChargeExchangeMC (ChargeExchangeMC-V11-00-01)
+  o CexmcHadronicProcess: disabled integral method, as not applicable to
+    this example.
+- advanced/eRosita (eRosita-V11-00-02)
+  o Replaced getenv() calls for data variables with G4FindDataDir().
+- basic/B2 (exampleB2-V11-00-01)
+  o Restored top UI commands directory name ("B2") in                        (o)
+    B2a::DetectorMessenger removed by mistake.
+    Based on GitHub PR#46 (https://github.com/Geant4/geant4/pull/46).
+- extended/electromagnetic/TestEm9 (testem9-V11-00-01)
+  o Updated all user actions: more correct count of creator processes;
+    use C++11 keywords; removed not needed headers; moved ScoreNewTrack(..)
+    from Tracking to Stepping action class.
+- extended/eventgenerator/HepMC/HepMCEx01 (HepMCEx01-V11-00-01)
+  o Fixed compilation due to G4String changes in release 11.0.               (o)
+    Part of the GitHub PR #45 (https://github.com/Geant4/geant4/pull/45).
+- extended/medical/dna/chem4 (chem4-V11-00-04)
+- extended/medical/dna/chem5 (chem5-V11-00-01)
+- extended/medical/dna/chem6 (chem6-V11-00-05)
+  o Use thread-local flag in G4VMoleculeCounter.
+- extended/medical/dna/microyz (microyz-V11-00-01)
+  o Added UI commands for TrackerSD radius selection.
+- extended/medical/dna/moleculardna (molecularDNA-V11-00-04)
+  o Added ecoli.C and human_cell.C macro files and createSDD.py.
+  o Added Complexity Frequency in cylinder.C.
+  o Corrected minor mistake in AnalysisManager.
+- extended/medical/dna/scavenger (scavenger-V11-00-01)
+  o Use thread-local flag in G4VMoleculeCounter.
+- extended/optical/OpNovice2 (OpNovice2-V11-00-02)
+  o Added local SteppingVerbose to print velocity with /tracking/verbose 1.
+- extended/parallel/MPI (MPI-V11-00-02)
+  o Changed namespace for g4tools code from "tools::mpi" to "toolx::mpi".
+
+tests                                            tests-V11-00-05
+-----
+- Updated reference outputs and tools.
+- tests/test70 (test70-V11-00-01)
+  o Use thread-local flag in G4VMoleculeCounter.
