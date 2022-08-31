@@ -144,7 +144,7 @@ class G4FTFTunings {
 
     G4FTFTuningsMessenger* fMessenger;
 
-    const std::array< G4String, sNumberOfTunes > fNameOfTunes = {
+  const std::array< G4String, sNumberOfTunes > fNameOfTunes = { {
       "default",        // 0th tuning: default set
       "tune2022-v0",    // 1st tuning: name from Julia Yarba's presentation on 20-Jul-2022
       "second-dummy",   // 2nd tuning: dummy
@@ -155,10 +155,10 @@ class G4FTFTunings {
       "seventh-dummy",  // 7th tuning: dummy
       "eighth-dummy",   // 8th tuning: dummy
       "nineth-dummy"    // 9th tuning: dummy
-    };
+    } };
     // The names of tunes can be useful for debugging.
   
-    std::array< G4int, sNumberOfTunes > fApplicabilityOfTunes = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  std::array< G4int, sNumberOfTunes > fApplicabilityOfTunes = { { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
     // Each tune has an integer that specifies its applicability.
     // For the time being, there only two values:
     //   0 : tune is switched off (i.e. not applicable);
