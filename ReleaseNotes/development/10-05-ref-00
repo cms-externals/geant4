@@ -1,0 +1,460 @@
+
+                       geant4-10-05-ref-00
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Restored original default energy thresholds for looper particles; adjusted
+   killing of looping particles, to apply only to stable particles.
+   Unstable particles are propagated indefinitely.
+ o For FTF/QGS/INCLXX physics-lists builders, use Barashenkov-Glauber-Gribov
+   inelastic cross-section for pions, avoiding to use Gheisha cross-sections
+   for pion inelastic on Hydrogen target.
+ o Fixed track velocity of optical photons for the first step in a layered
+   mass geometry.
+ o New data set G4PARTICLEXS-1.1, replacing G4NEUTRONXS.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(+)  Fixes included in release 10.4.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-04-27
+-----
+- Added new data-set G4PARTICLEXS-1.1.
+- Removed entry for G4NEUTRONXS data set, no longer necessary.
+
+analysis                                         analysis-V10-04-10
+--------
+- Added function SetNtupleRowWise() to G4RootAnalysisManager, allowing to
+  choose rowWise/columnWise mode also in sequential mode.
+- Added "boolean reset" argument in G4AnalysisManager::CloseFile() function,
+  allowing to close a file without resetting data.
+- Allow overriding of selected functions in G4RootAnalysisManager,
+  G4RootNtupleManager and G4TNtupleManager, needed MPI ntuple merging.
+- Use the same mutex for add_row and end_fill. This should fix occassional
+  failures of tests in MT mode.
+- Fixed creation of n-tuples after OpenFile for other then Root formats.
+
+event                                            event-V10-04-08
+-----
+- Fixed printout typos.
+
+geometry
+--------
+- magneticfield (field-V10-04-17)
+  o Minor fixes for warnings in compilation.
+- solids/CSG (geom-csg-V10-04-07):
+  o G4Orb: improved check if point is too far in DistanceToIn(p,v).
+  o G4Torus: added check if point is too far in DistanceToIn(p,v).
+    Addressing problem report #2100.
+  o G4Cons: fix in GetPointOnSurface() when sampling on inner and outer
+    conical surfaces.
+
+g3tog4                                           g3tog4-V10-04-00
+------
+- G3Division: fixed printout typo.
+
+global                                           global-V10-04-31
+------
+- G4OrderedTable and G4DataVector: fixed store/retrieve of binary
+  data format.
+- G4AllocatorPool: moved copy-ctr and operator=() to public section.
+- G4Cache, G4CacheDetails: minor code cleanup and formatting.
+- Fixes to G4ConvergenceTester to ensure there are no divide-by-zeros
+  when calculating the stat history. Fixed printout typos.
+- Fixed inclusion recursion in G4EnvironmentUtils header.
+- G4Threading: replaced 'typedef' statements with C++11 'using' correspondents.
+- Changed ID for release 10.5.
+
+interfaces                                       interfaces-V10-04-10
+----------
+- Fixed parse error for empty lines.
+- Fixed printout typos.
+
+particles                                        particles-V10-04-12
+---------
+- G4PrimaryVertex: fixed typo in class description.
+
+physics_lists/builders                           phys-builders-V10-04-03
+----------------------
+- In G4QGSBinaryPionBuilder, G4QGSBinaryPiKBuilder, G4QGSPPiKBuilder, 
+  G4FTFPPionBuilder, G4BertiniPiKBuilder, G4FTFPPiKBuilder,
+  G4BertiniPionBuilder, G4FTFBinaryPiKBuilder, G4BinaryPiKBuilder,
+  G4INCLXXPionBuilder, G4FTFBinaryPionBuilder, G4BinaryPionBuilder,
+  G4QGSPPionBuilder, use Barashenkov-Glauber-Gribov inelastic cross-section
+  for pions. This allows to avoid to use Gheisha cross-sections for pion
+  inelastic on Hydrogen target.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-04-21
+------------------------------------------
+- G4EmStandardPhysics_option4, G4EmStandardPhysics_option3: cleaned up
+  definition of nuclear stopping process.
+- G4EmStandardPhysics_option2: use the same models and parameters as in LHCb
+  EM physics constructor.
+- G4EmStandardPhysicsWVI: use Opt3 parameters; use new ATENA ion stopping model.
+- G4EmLowEPPhysics: use Opt3 parameters; use Lindhard-Sorensen ion stopping
+  model; use ICRU90 stopping for protons and alpha.
+- G4EmStandardPhysics_option3: use Alg96 lateral displacement sampling
+  (addresses issue reported in EM processes HyperNews Forum #1516)
+- G4EmLivermorePhysics: return back 5D gamma conversion model.
+- G4EmDNAPhysics_option7: fix for electron models combination.
+- G4EmDNAChemistry, G4EmDNAChemistry_option1: fixed typo in headers.
+
+physics_lists/constructors/gamma_lepto_nuclear   phys-ctor-glnuclear-V10-04-08
+----------------------------------------------
+- G4EmMessenger: fixed destructor.
+
+physics_lists/constructors/hadron_elastic        phys-ctor-helastic-V10-04-05
+-----------------------------------------
+- G4HadronElasticPhysics, G4HadronElasticPhysicsXS: use G4BGGNucleonElasticXS
+  cross-section for protons.
+- Updated README.
+
+physics_lists/constructors/hadron_inelastic      phys-ctor-hinelastic-V10-04-14
+-------------------------------------------
+- G4HadronPhysicsFTFQGSP_BERT: use BGG pion cross-section consistently
+  with all other physics lists.
+- G4HadronInelasticQBBC: use BGG proton inelastic; fixed neutron cross-section.
+- G4HadronPhysicsShielding, G4HadronPhysicsShieldingLEND: rewritten
+  to cure memory leaks.
+
+physics_lists/lists                              phys-list-V10-04-07
+-------------------
+- PhysListFactory: added extra EM options "WVI" and "_EM".
+- Shielding: replaced use of env variable G4NEUTRONHP_PRODUCE_FISSION_FRAGMENTS
+  with a call to G4ParticleHPManager::SetProduceFissionFragments().
+  Resolving Valgrind memory run-time errors.
+
+physics_lists/util                               phys-util-V10-04-01
+------------------
+- G4DataQuestionaire: substituted G4NEUTRONXSDATA with G4PARTICLEXSDATA.
+
+processes/electromagnetic/standard               emstand-V10-04-54
+----------------------------------
+- G4eplusTo2GammaOKVIModel, G4eplusTo3GammaOKVIModel: make consistent
+  definition of cross-section for 2-gamma and 3-gamma models; use cuts
+  for gamma in sampling of 3-gamma final state.
+- G4SeltzerBergerModel, G4eBremsstrahlungRelModel: use by default
+  G4ModifiedTsai generator instead of G4DipBustGenerator.
+- G4BetheHeitler5DModel: added protection to boost computation responsible
+  for numerical problem.
+- G4WentzelOKandVIxSection: fixed destructor.
+- G4eplusTo2GammaOKVIModel: fixed Coverity defect.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-04-40)
+  o G4BGGNucleonElasticXS, G4BGGNucleonInelasticXS, G4BGGPionElasticXS, 
+    G4BGGPionInelasticXS: use only Barashenkov cross-section, Glauber-Gribov
+    cross-section for target Z>1 and G4HadronNucleonXscNS for target Z=1.
+    G4BGGPionElasticXS: limit cross-section below 20 MeV.
+  o G4PhotoNuclearCrossSection: added two new methods, IsIsoApplicable()
+    and GetIsoCrossSection() to allow photo-nuclear reactions on deuterium.
+    Addressing problem report #2092.
+  o G4ComponentGGNuclNuclXsc: fixed nuclear radius parameterisation.
+  o G4ComponentGGHadronNucleusXsc: choose NS parameterisation for kaon 
+    scattering off Hydrogen.
+  o G4BGGPionElasticXS, G4BGGPionInelasticXS, G4BGGNucleonInelasticXS: use
+    SAID cross-section at low energy. Use NS parameterisation for cross-sections
+    on Hydrogen. G4BGGNucleonElasticXS: limit elastic cross-section off proton
+    at low energy.
+  o G4ComponentSAIDTotalXS - make class thread safe 
+  o G4HadronNucleonXsc: use PDG2016 parameterisation for protons.
+    Smooth kaon cross-section. Kaon cross-section with 10.4 parameterisation.
+    Added extra method for kaons fully based on NS parameterisation.
+  o G4NucleonNuclearCrossSection: fixed typo in inelastic cross-section.
+  o G4NeutronCaptureXS, G4NeutronElasticXS, G4NeutronInelasticXS
+    G4ParticleInelasticXS: replaced environment variable G4NEUTRONXSDATA
+    with G4PARTICLEXSDATA; use full list of isotopic cross-sections available
+    in G4PARTICLEXS.
+  o G4CrossSectionFactoryRegistry: fixed printout typo.
+- management (hadr-man-V10-04-12)
+  o G4HadronicProcess: added check if secondary particle is on the mass      (+)
+    shell; if its mass differ from the PDG mass more for 1.5 MeV then mass
+    is forced to the mass shell, energy conserved, but momentum is changed.
+- models/binary_cascade (had-binary-V10-04-00)                               (+)
+  o G4GeneratorPrecompoundInterface: fixed printout typo.
+- models/cascade (hadr-casc-V10-04-12)
+  o Fix in G4PreCompoundDeexcitation::deExcite() to do not use const reference
+    as input since G4PreCompound can change the fragment and upset the energy
+    balance. In G4CollisionOutput::getTotalCharge(), subtract electron charges
+    in case of internal conversion in G4PreCompound.
+    In G4CascadeCheckBalance::collide(), convert fragment momentum given in
+    MeV to GeV (Bertini units) and remove electrom masses from energy balance
+    when internal conversion occurs.
+    Addesses problem report #2096 for energy non-conservation.
+  o Fixed few printout typos.
+- models/coherent_elastic (hadr-cohe-V10-04-08)
+  o G4HadronElastic: fixed numberical instability when final kinetic energy
+    of projectile is nearly zero.
+- models/de_excitation (hadr-deex-V10-04-19)
+  o G4LevelReader: changed 'fAlphaMax' from 1.e+6 to 1.e+15 for correct      (+)
+    IC probability of some isotopes.
+  o G4ExcitationHandler: added protection to verbosity printouts in
+    SetDeexChannelsType() and Initialise() methods.
+  o G4UnstableFragmentBreakUp: fixed Coverity defect.
+  o G4PhotonEvaporation: improved debug printout
+  o Fixed few printout typos.
+- models/inclxx (hadr-inclxx-V10-04-06)
+  o Changed Adapter::operator()() in G4INCLRandom to make direct use of
+    G4RandFlat::shootInt(n). Fixes FPE errors occurring in MT mode optimised.
+  o Fixed few printout typos.
+- models/lend (hadr-lend-V10-04-00)
+  o MCGIDI_misc: fixed printout typo.
+- models/management (hadr-modman-V10-04-00)
+  o G4V3DNucleus: fixed printout typo.
+- models/particle_hp (hadr-hpp-V10-04-11)                                    (+)
+  o G4ParticleHPElasticFS::ApplyYourself(): use correct reference frames for
+    calculation of projectile and target momenta. Correction made for cases
+    when cos(Theta) is given in lab frame and in center of momentum frame.
+    Partial fix of momentum non-conservation for problem report #1918. 
+  o Fixed potential leaks in G4ParticleHPPhotonDist, G4ParticleHPContAngularPar
+    and G4ParticleHPFinalState for use of pointers cached in G4Cache.
+  o Minor code cleanup and formatting.
+- models/parton_string/diffraction (hadr-string-diff-V10-04-15)
+  o Fix in G4FTFModel::GetStrings() to return a vector with size zero in
+    wrong conditions for FTF.
+  o G4FTFParameter: minor Coverity defect fix.
+  o Fixed few printout typos and minor code cleanup.
+- models/parton_string/hadronization (had-hadronization-V10-04-07)
+  o Minor code cleanup.
+- models/parton_string/management (hadr-partonstring-mgt-V10-04-03)
+  o G4VPartonStringModel: in wrong conditions for QGSM, returning initial
+    particle/nucleus, according to similar fix in FTF.
+  o Minor code cleanup.
+- models/parton_string/qgsm (hadr-qgsm-V10-04-08)
+  o Fixed handling of wrong conditions for QGSM when it cannot generate strings.
+  o Minor code cleanup.
+- models/pre_equilibrium (hadr-pre-V10-04-02)
+  o G4PreCompoundModel: fixed printout typos.
+- models/radioactive_decay (radioactive_decay-V10-04-04)
+  o G4RadioactiveDecay: enable printout of parameters within G4VERBOSE in
+    BuildPhysicsTable().
+- models/util (hadr-mod-util-V10-04-04)
+  o G4KineticTrack, G4PolynomialPDF: fixed printout typos.
+- stopping (hadr-stopping-V10-04-03)
+  o G4MuonMinusBoundDecay: fixed Coverity defect in GetMuonDecayRate();
+    removed forbidden creation of G4Element in any model class.
+
+processes/management                             procman-V10-04-04
+--------------------
+- Fixed Coverity defect in G4ProcessTableMessenger.
+
+processes/scoring                                procscore-V10-04-01
+-----------------
+- G4ParallelWorldProcess: fixed track velocity of optical photons for the    (+)
+  first step in a layered mass geometry.
+
+processes/transportation                         transport-V10-04-13
+------------------------
+- G4Transportation and G4CoupledTransportation: restored old default
+  energy thresholds for loopers, but only stable particles killed.
+  Adjusted killing of looping particles, to apply only to stable particles.
+  Unstable particles will be propagated indefinitely.
+  At object destruction, added printing of the maximum energy and sum of
+  energies of particles 'saved'.
+  Added method SetHighLooperThresholds() to restore old default parameters
+  for killing looping particles (warning energy to 100 MeV - particles below
+  this killed silently; important energy to 250 MeV - above, tracks are given
+  multiple chances. Default constructors now use these high values.
+  New auxiliary methods PushThresholdsToLogger(), ReportMissingLogger().
+  New method SetLowLooperThresholds() for low-E applications.
+  New method ReportLooperThresholds() method to print out the values.
+  Added extra simple statistics at destruction: stats on non-electrons
+  loopers killed (sum E, number, max E & its pdg); stats for non-electron
+  loopers killed (total energy, maximum energy and PDG of the type of that
+  track). Statistics are now printed by a new method and are printed also
+  in non-verbose mode.
+- G4TransportationLogger: added new ReportLooperThresholds() method.
+
+readout                                          readout-V10-04-00
+-------
+- G4DigiManager: fixed printout typos.
+
+run                                              run-V10-04-22
+---
+- G4PhysicsListHelper: added new methods to set low/high 'looper'
+  thresholds in Transportation classes.
+- Removed a debug printing introduced with G4VScoreNtupleWriter.
+- G4RunMessenger, G4WorkerRunManager: fixed printout typos.
+
+track                                            track-V10-04-02
+-----
+- Added protection for potential null pointer dereferencing in G4Track.
+  Addressing problem report #2097.
+
+visualization                                    vis-V10-04-25
+-------------
+- management (visman-V10-04-28):
+  o In "/vis/scene/add/logicalVolume", enable overlap checking
+    text-only output and drawing.
+  o Minor bug fixes in "/vis/scene/add/userAction" and "/vis/drawLogicalVolume".
+- modeling (modeling-V10-04-18):
+  o G4LogicalVolumeModel: enable overlap checking text-only output and
+    drawing.
+  o Fixed Coverity defect.
+- RayTracer (raytracer-V10-04-04):
+  o G4RTMessenger: fixed printout typos.
+
+data sets:
+---------
+- G4PARTICLEXS-1.1:
+  o New data set replacing G4NEUTRONXS; produced from G4NDL4.5 for neutrons,
+    G4TENDL1.3.2 for p, d, t, He3, He4 and LEND1.3 for gamma.
+
+environments                                     envs-V10-04-01
+------------
+- G4Py: updated interfaces for release 10.5.
+  Fixed setting of CMAKE_INSTALL_PREFIX; addresses problem report #1924.
+
+examples                                         examples-V10-05-00
+--------
+- Updated documentation and reference outputs.
+- advanced/air_shower (air_shower-V10-04-04)
+  o Drop detector configuration through preprocessor directives. Use
+    detector messenger instead.
+    Reorganised and simplified code in UltraDetectorConstruction.
+    Geometry can now be changed in the same interactive session.
+    Allow to remove reflecting surface.
+  o New macros for visualisation, replacing preprocessor options.
+    Reorganised macros. Added new macros.
+  o No default PrimaryGeneratorAction in UserActionInitialization.
+- advanced/brachytherapy (brachy-V10-04-07)
+  o Added directory test_macro and included more analysis files.
+- advanced/ChargeExchangeMC (ChargeExchangeMC-V10-04-00)
+  o CexmcException: fixed typo in printout.
+- advanced/composite_calorimeter (ccal-V10-04-07)
+  o General clean-up of the example including user actions and SD classes
+- advanced/hadrontherapy (hadrontherapy-V10-04-09)
+  o HadrontherapyDetectorConstruction: fixed typos in printout.
+- advanced/iort_therapy (iort_therapy-V10-04-06)
+  o IORTDetectorConstruction: fixed initialisation setting of inner
+    radius for "DiscoIORT0" and "DiscoIORT1" components.
+    Fixed typos in printout.
+- advanced/lAr_calorimeter (lAr_calorimeter-V10-04-02)
+  o FCALTBEventAction: fixed typo in printout.
+- advanced/medical_linac (medical_linac-V10-04-08)
+  o Simplified PhysicsList; fixing problems on Windows.
+  o Do not explicitly delete singletons, added extra initialisation.
+  o Do not trigger /run/beamOn during detector construction in
+    ML2AcceleratorConstructionMessenger and ML2PhantomConstructionMessenger.
+- advanced/purging_magnet (purmag-V10-04-02)
+  o Switch back to csv output format.
+- advanced/xray_fluorescence (XrayFluo-V10-04-01)
+  o XrayFluoMercuryDetectorMessenger: fixed typo in printout.
+- basic (exbasic-V10-04-00)
+  o Updated READMEs and scripts.
+- basic/B3 (exampleB3-V10-04-04)
+  o Added StatAnalysis to example B3b to demonstrate statistical computations.
+- basic/B4 (exampleB4-V10-04-03)
+  o Fix to CMake configuration script.
+- extended/analysis (analysisExample-V10-04-00)
+  o Updated READMEs and scripts.
+- extended/exoticphysics (exExoticphysics-V10-04-00)
+  o Updated build scripts and READMEs.
+- extended/field/field01 (fieldex01-V10-04-06)
+  o Added code in main() to demonstrate use of G4PhysicsListHelper's
+    UseLowLooperThresholds() and UseHighLooperThresholds() methods.
+  o Added F01RunAction class to demonstrate fine grained control of
+    G4[Coupled]Transportation's parameters for (killing) looping tracks
+    (tracks which take too many iterations to finish integration; typically
+    due to electrons in vacuum, but also can affect other charged particles).
+  o Enable use of FSAL stepper and driver (to use it uncomment line in main()).
+  o Updated READMEs.
+- extended/hadronic/Hadr01 (exhadr01-V10-04-05)
+  o PhysicsList: updated PhysicsList according to settings in main module.
+- extended/medical (exMedical-V10-04-00)
+  o Updated READMEs and scripts.
+- extended/medical/DICOM (DICOM-V10-04-11)
+  o Updated CMake scripts to handle DICOM_USE_HEAD setup and installation
+  o DicomHandler implements GetDicomData{Path,File} which provides a fallback
+    path to data libraries directory for DICOM2 and handles DICOM_USE_HEAD
+    situation. Skipping 2 bytes in implicit VR (problem report #2101).
+    Corrected reading for 'fPixelSpacingY' (problem report #2102).
+  o Phantom parameterization classes take an argument specifying color file.
+  o DicomEventAction doesn't print every event; removed DicomRun::RecordEvent()
+    incrementing numberOfEvent (done by G4Run::RecordEvent()).
+  o Cleaned up output; now just a summary is provided and per-voxel is output
+    to file only.
+  o Moved Data.dat to Data.dat.old and CMake copies correct Data.dat.{old,new}
+    to Data.dat in binary directory based on DICOM_USE_DCMTK setting.
+  o Use canonical definition for DICOMRunAction; removed wrong singleton
+    specification.
+  o DicomPartialDetectorConstruction: fixed shadowing of base class
+    data for 'fMateIDs'. Fixed type conversion unsigned_int -> int.
+  o Updated DICOMUtilities.cmake to handle Windows builds; using modern
+    CMake DICOM::target library alias.
+- extended/medical/DICOM2 (DICOM2-V10-04-04)
+  o Implemented custom Dicom2Run and Dicom2RunAction.
+  o Added randomization in PGA.
+  o Switched default random engine to MixMax.
+  o Demonstrating usage of G4VTHitsVector (memory savings and performance).
+  o Demonstrating usage of G4VTHitsVector with objects instead of pointers
+    to objects (memory savings and performance).
+  o Demonstrating generic iteration over G4THits containers using GetIndex()
+    and GetObject().
+  o Providing output from traditional DICOM scoring in addition to output
+    with statistics.
+  o Improved default search paths for DICOMConfig.cmake to assist in general
+    and when testing.
+- extended/medical/dna/chem1 (chem1-V10-04-02)
+- extended/medical/dna/chem2 (chem2-V10-04-02)
+- extended/medical/dna/chem3 (chem3-V10-04-01)
+- extended/medical/dna/chem4 (chem4-V10-04-02)
+  o Fixed PhysicsList to allow running on Windows.
+- extended/medical/dna/chem5 (chem5-V10-04-03)
+  o New example, variation of chem4, showing how to activate chemistry code
+    and score the radiochemical yield G.
+- extended/medical/dna/dnaphysics (dnaphysics-V10-04-04)
+- extended/medical/dna/icsd (exicsd-V10-04-04)
+  o  Updated plot.C for reading ntuples merged with row-wise mode (now default).
+- extended/medical/dna/mfp (mfp-V10-04-03)
+  o Rewritten physics list and macro mfp.in to avoid factory usage.
+- extended/medical/dna/microyz (microyz-V10-04-03)
+  o  Updated plot.C for reading ntuples merged with row-wise mode (now default).
+- extended/medical/dna/neuron (neuron-V10-04-03)
+  o Fixed PhysicsList to allow running on Windows.
+- extended/medical/dna/spower (spower-V10-04-05)
+  o Rewritten physics list and macro spower.in to avoid factory usage.
+- extended/medical/fanoCavity (fano-V10-04-06)
+- extended/medical/fanoCavity2 (fano2-V10-04-04)
+  o Updated physics lists according to settings in main module.
+- extended/optical (exOptical-V10-04-02)
+  o Updated READMEs and scripts.
+- extended/optical/LXe (LXe-V10-04-11)
+  o Fixed MT issue: random directory should not be set via EventAction,
+    this functionality is moved to DetectorConstruction.
+  o LXeDetectorConstruction: removed definition of random number
+    directory from the code, user may define this via UI command.
+- extended/parallel/MPI (MPI-V10-04-01)
+  o Adapted to allow to define an extra worker for collecting data from
+    processing workers (needed for merging n-tuples).
+  o Added classes for n-tuple merging.
+  o New example exMPI04 demonstrating merging n-tuples via MPI.
+  o In exMPI03: fixed warning from analysis when opening the second output 
+    file (dose-merged) within the same run .
+- extended/parallel/ThreadsafeScorers (ThreadsafeScorers-V10-04-06)
+  o Added scorers with G4StatAnalysis and G4ConvergenceTester.
+  o Improved scheme for using TiMemory to time how long the scoring takes
+    w.r.t. storage container and PS.
+  o Replaced TIMEMORY_AUTO_TIMER_BASIC with TIMEMORY_BASIC_AUTO_TIMER.
+  o Included plot generation in main.
+
+tests                                            tests-V10-05-00
+-----
+- Updated reference outputs and tools.
+- test03 (test03-V10-04-00)
+  o Disabled test for invalid input to avoid confusing warning
+    messages in the output.
+- test06 (test06-V10-04-00)
+  o Relaxed warning on compatible but different zlib version.
+- test15 (test15-V10-04-19)
+  o Fixed unintialised variables in Test15Run.
+  o Delete G4AnalysisManager in Test15RunAction destructor.
+- test30 (test30-V10-04-02)
+  o Use recent proton ion and pion cross-sections.
+- test33 (test33-V10-04-01)
+  o Tst33PhysicsList: use Binary cascade for light ions instead of
+    Bertini to fix run time crash; fixed EM physics definition.

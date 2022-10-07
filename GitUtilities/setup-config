@@ -1,0 +1,35 @@
+#!/bin/bash
+# Set local configuration recommended for Geant4 git development
+
+# Rebase master by default when `git pull` used
+git config rebase.stat true
+git config branch.master.rebase true
+
+# Use the simple push option to prevent pushes if upstream
+# branch has different name to local one. Should be available since
+# 1.7.11 and default since Git 2.0, so set to be sure if git version
+# ok (Relies on sort having -V flag)
+localGitVer="$(git --version | cut -d" " -f3)"
+minGitVer="1.7.11"
+if [ "$minGitVer" = $(printf "$minGitVer\n$localGitVer" | sort -V | head -n1) ] ; then
+  git config push.default simple
+fi
+
+# Could set up remote here...
+# .. check not set, then "git remote add upstream ..."
+# .. Some features/aliases will rely on having the upstream remote set
+
+# Set up useful aliases
+# Minimal logging showing branch structure
+git config alias.g4.log-tree "log --decorate --pretty=oneline --abbrev-commit --graph"
+
+# Short log showing files/changes in each commit
+git config alias.g4.log-stat 'log --pretty=format:"%C(yellow)%h%Cred%d\ %Creset%s%Cblue\ [%cn]" --decorate --numstat'
+
+# Log merge commits (i.e. accepted Merge Requests) on master
+# Logging between tag-master or otherwise will require finalization
+# of the tag/branch relationship to be known (e.g. are tags on master?)
+git config alias.g4.log-merges "log --oneline --first-parent master"
+
+# Report status of origin
+git config alias.g4.show-origin "remote show origin"

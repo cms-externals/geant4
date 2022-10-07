@@ -1,0 +1,235 @@
+
+                       geant4-10-06-ref-04
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Extended CMake build system to support G4Py activation through
+   GEANT4_USE_PYTHON flag.
+ o Added support for OpenInventor Qt visualisation driver to be built and
+   used in applications. The OpenInventor module can be built with either
+   the OIQT driver, or with the OIX/OIXE drivers, but not with both.
+ o New General Particle Source energy distribution option to allow
+   enhancing higher energy tracks that are rare but contribute to scores.
+ o Added layered mass geometry option for the new "probe" scoring mesh.
+ o Fixes in Lend hadronic model to take care of large baryon number violations.
+ o Added handling of lepto-nuclear interactions for anti_nu_e, nu_e and
+   anti_mu_nu.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in release 10.6.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-06-15
+-----
+- Added activation of build of G4Py through GEANT4_USE_PYTHON flag.          (*)
+  Verify that MT builds use 'global-dynamic' TLS mode to allow Python
+  module loading of dynamic libraries.
+- Added support for OpenInventor Qt visualisation driver to be built and
+  used in applications. The OpenInventor module can be built with either
+  the OIQT driver, or with the OIX/OIXE drivers, but not with both.
+- Fix to avoid configuration of applications failure due to variables        (*)
+  having empty values, and consequently no "type" argument. Only store
+  values in the package cache if they are set and have a valid value.
+- Use full path to datasets if GEANT4_INSTALL_DATADIR is an absolute path.   (*)
+- Customize CMAKE_INSTALL_DATADIR in a single location.                      (*)
+- Removed deprecated Qt4 support.
+
+environments/g4py                                geant4py-V10-06-00          (*)
+-----------------
+- Integrated build, test, and install of geant4py with core Geant4
+  CMake build system.
+
+event                                            event-V10-06-04
+-----
+- Introducing a new General Particle Source energy distribution option,
+  that generates flat energy distribution with track weights that
+  represent energy spectrum provided by /gps/hist/point commands.
+  This option can enhance, for example, higher energy tracks that are
+  rare but contribute to the scores.
+
+geometry/management                              geommng-V10-06-02
+-------------------
+- Added deleted declarations for copy constructor and assignment operators
+  on store singletons. Based on GitHub PR#12 report.
+- Reduced size of G4LogicalVolume objects by reordering class members.
+
+geometry/solids/csg                              geom-csg-V10-06-01
+-------------------
+- G4Trap: fixed calculation of normal for points on edge in SurfaceNormal().
+  Improved code for Inside().
+
+geometry/solids/specific                         geom-specific-V10-06-06
+------------------------
+- Added GetTwistedFaceSurfaceArea() in G4GenericTrap and fixed calculation
+  of surface area in unit tests.
+
+global                                           global-V10-06-07
+------
+- G4UnitsTable: added inheriting constructors for std::vector.               (*)
+  Addressing problem report #2232.
+- Updated date and tag-ID for geant4-10-06-ref-04.
+
+interfaces                                       interfaces-V10-06-03
+----------
+- G4UIQt: replaced use of setTextColor() with adoption of rich text html
+  tags (improving visibility in MacOS Dark Mode).
+
+parameterisations/gflash                         gflash-V10-06-01
+------------------------
+- Substituting Gamma calculation with corresponding STL functions, as
+  suggested in GitHub PR#3. Makes LnGamma calculation 1.4 times faster,
+  and Gamma 1.9 times faster.
+
+particles                                        particles-V10-06-07
+---------
+- Added move operators to G4DynamicParticle.
+  Code revision for c++11 and cleanup in 'management' module.
+
+persistency/ascii                                ascii-V10-06-01
+-----------------
+- Fixed Coverity defects warnings.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-06-04
+------------------------------------------
+- G4EmStandardPhysics_option3: return back to UseDistanceToBoundary.
+
+physics_lists/constructors/gamma_lepto_nuclear   phys-ctor-glnuclear-V10-06-01
+----------------------------------------------
+- G4EmExtraPhysics, G4EmMessenger: added low-energy limit, set method, and UI
+  command defining low-energy gamma-nuclear model, which is using de-excitation
+  module and providing isomere production and gamma transitions.
+
+processes/electromagnetic/dna                    emdna-V10-06-04
+-----------------------------
+- G4MoleculeDefinition: copy constructor and assignment operator are not
+  allowed (as for G4ParticleDefinition). Now deleted.
+- Fixed Coverity defect warning in G4DNAIRT and G4DNAMolecularReactionTable.
+
+processes/electromagnetic/lowenergy              emlowen-V10-06-01
+-----------------------------------
+- G4LivermorePhotoElectricModel: allow "Water" as a name of water material
+  for low-energy photo-effect.
+- Added G4LivermoreGammaConversion5DModel class. Reading EPICS2017 data.
+- Change in G4LivermoreGammaConversion to now derive from
+  G4PairProductionRelModel.
+
+processes/electromagnetic/standard               emstand-V10-06-08
+----------------------------------
+- G4UrbanMscModel: improved cache data structure.
+- G4UniversalFluctuation: minor C++ improvements for speedup.
+- G4LindhardSorensenData: fixed data table.
+- G4eeToTwoGammaModel: code cleanup; added static flag, which identifies if
+  electron motion is taken into account for sampling of acollinearity, 
+  when annihilation happens at rest; ensuring that by default no extra
+  computation is performed; also removed extra printout at initialisation
+  and extra data structure.
+
+processes/electromagnetic/utils                  emutils-V10-06-04
+-------------------------------
+- G4EmParameters, G4EmParametersMessenger, G4VMultipleScattering:
+  removed displacement beyond safety option, as may lead to crashes in
+  some circomstances.
+- G4EmLowEParametersMessenger: extended number of DNA PhysicsList options.
+- G4LossTableBuilder: fixed typo. Addressing problem report #2230.           (*)
+- G4EmCalculator: fixed printout.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-06-02)
+  o G4ElNeutrinoNucleusTotXsc: new class for (nu_e,anti_nu_e)-nucleus
+    cross-sections.
+- management (hadr-man-V10-06-02)
+  o G4HadronicProcess: fixed Coverity defect warning to EP check method for
+    the case when primary particle remains in the interaction.
+- models/lend (hadr-lend-V10-06-01)                                          (*)
+  o New class G4LENDGammaModel to sample GND gamma-nuclear reactions.
+    New class G4LENDGammaCrossSection to sample GND gamma-nuclear reactions.
+    Added documentation to MCGIDI_outputChannel.
+    Rewritten G4LENDInelastic to take care of large baryon number violations.
+    Addressing problem report #2174.
+- models/lepto_nuclear (hadr-lepnuc-V10-06-05)
+  o Added classes G4ANuElNucleusCcModel and G4ANuElNucleusNcModel, 
+    for anti_nu_e. Initialization from G4PARTICLEXS (neutrino/anti_nu_e).
+  o Added classes G4NuElNucleusCcModel and G4NuElNucleusNcModel, 
+    for nu_e. Initialization from G4PARTICLEXS (neutrino/nu_e).
+  o Added classes G4ANuMuNucleusCcModel and G4ANuMuNucleusNcModel,
+    for anti_mu_nu. Initialization from G4PARTICLEXS (neutrino/anti_nu_mu).
+  o G4NuMuNucleusCcModel, G4NuMuNucleusNcModel, G4NeutrinoNucleusModel:
+    rearrangement of initialisation methods and arrays.
+    Fixes in CoherentPion() method, cleanup of Cc and Nc.
+- models/parton_string/hadronization (had-hadronization-V10-06-01)
+  o G4QGSMFragmentation, G4LundStringFragmentation: fixed Coverity defects   (*)
+    warnings; if fragmentation at low energy is not possible, always return
+    flag "false"; use nullptr.
+- processes (hadr-proc-V10-06-01)
+  o G4MuNeutrinoNucleusProcess, G4ElNeutrinoNucleusProcess: extended to
+    anti_nu_mu, nu_e and anti_nu_e.
+- stopping (hadr-stopping-V10-06-02)
+  o G4MuonicAtomDecay: fixed Coverity defect warning.
+
+processes/management                             procman-V10-06-02
+--------------------
+- C++11 revision and code cleanup/formatting.
+
+processes/parameterisation                       param-V10-06-01
+--------------------------
+- Added sanity check for root logical volumes in regions for
+  G4GlobalFastSimulationManager.
+  UI command /param/showSetup works also if no parallel world is present.
+
+run                                              run-V10-06-02
+---
+- G4RunManager, G4WorkerRunManager: added layered mass geometry option
+  for the new "probe" scoring mesh.
+
+visualization                                    vis-V10-06-04
+-------------
+- management (visman-V10-06-04):
+  o Fixed case where models with no extent do not contribute to scene's extent.
+  o Trap infinite loop when looking for a fallback graphics system when
+    issuing "/vis/sceneHandler/create".
+  o G4VisExecutive: added support for OIQT driver, via "OIQT" or "OI" keywords,
+    provided the G4OpenInventor library has been built with the OIQT driver
+    included.
+- modeling (modeling-V10-06-02):
+  o Minor code tidy.
+- OpenGL (opengl-V10-06-05):
+  o Removed support for Qt4.
+- OpenInventor (openinventor-V10-06-03):
+  o Enable configuration for OIQT driver, as orthogonal to OIX and OIXE.
+
+examples                                         examples-V10-06-04
+--------
+- Updated documentation and reference outputs.
+- extended/medical/dna (exdna-V10-06-03)
+  o Extended example guideline for chem6.
+- extended/electromagnetic/TestEm4 (testem4-V10-06-00)
+- extended/electromagnetic/TestEm7 (testem7-V10-06-00)
+  o Do not call vis.mac automatically in interactive mode.
+- extended/persistency/P01 (exampleP01-V10-06-01)
+  o Fixed CMake script for search or Root macros.
+
+tests                                            tests-V10-06-04
+-----
+- Updated reference outputs and tools.
+- tests/test00 (test00-V10-06-00)                                            (*)
+  o Use CMake to print environment variables.
+- tests/test22 (test22-V10-06-02)
+  o Corrected files to print-out the Geant4 version.
+  o Fixed initialization which was causing Nan.
+- tests/test23 (test23-V10-06-00)
+  o Fixed initialisation of particles; use default random engine.
+- tests/test31 (test31-V10-06-00)
+  o test31Histo: extended and cleaned-up; fixed ion data.
+- tests/test46 (test46-V10-06-00)
+  o LimiterPhysics: use override instead of final for virtual methods.
+- tests/test47 (test47-V10-06-00)
+  o Fixes to make it work with current release.
+- tests/test68 (test68-V10-06-00)                                            (*)
+  o Adapt to use with pyhton-3, keep compatible with python-2,
+    i.e. correct print to new syntax.
+- tests/test74 (test74-V10-06-00)
+  o Updated CMake script.

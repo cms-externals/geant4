@@ -1,0 +1,303 @@
+
+                       geant4-10-06-ref-01
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Cleanup of CMake build scripts in several modules to get rid of obsolete
+   granular library options and explicit list of include directories.
+ o Revision of G4PhysicsVector classes to use similar algorithm for bin
+   selection and adding checks on vectors length.
+ o Revised implementation of G4Tet and G4Ellipsoid.
+ o Fixed configuration of the default EM multiple scattering on top of
+   any other physics configuration.
+ o Enabled ability to read e+e- production table from file.
+ o Fixed outstanding problem of Bertini Cascade interface with native
+   pre-compound model, happening when in the default de-excitation internal
+   electron conversion gets enabled.
+ o Updated to data-set G4EMLOW-7.9.1.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.6.p01
+(*)  Fixes included in release 10.6.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-06-04
+-----
+- Removed obsolete Geant4Wrapping module in preparation for full G4Py
+  build support.
+- Renamed remaining internal "Geant4..." modules to "G4" convention.
+  Retain Geant4DefineModule and Geant4LibraryTargets until new modularization
+  scheme is in place.
+- Removed requirement on presence of GLU library. No longer save GLU related
+  variables in the package cache.
+- Applied patch to allow compilation on Windows using Clang.
+- Quote VECGEOM_COMPILE_DEFINITIONS to avoid incorrect argument errors.      (o)
+- Formatted G4ClangFormat script.
+- Updated to data-set G4EMLOW-7.9.1.                                         (o)
+
+config                                           config-V10-06-00
+------
+- Removed dependency on GLU for all configurations, as no longer necessary.
+
+analysis                                         analysis-V10-06-00
+--------
+- Cleanup CMake build, removing obsolete granular library options and
+  explicit include_directories.
+- Update granular dependencies in preparation for modularization
+- Remove uneeded links to externals in factory.
+
+digits_hits                                      digits_hits-V10-06-00
+-----------
+- G4ScoringManager, G4VScoreWriter, G4ScoringMessenger: added missing        (o)
+  setter/getter functions.
+- Cleanup CMake build, removing obsolete granular library options and
+  explicit include_directories.
+
+error_propagation                                error_propagation-V10-06-00
+-----------------
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+event                                            event-V10-06-00
+-----
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+g3tog4                                           g3tog4-V10-06-00
+------
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+geometry                                         geometry-V10-06-00
+--------
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+geometry/magneticfield                           field-V10-06-02
+----------------------
+- Turn off verbosity flags by default in G4IntegratorDriver,                 (o)
+  G4InterpolationDriver and G4MagIntegratorDriver.
+
+geometry/solids/specific                         geom-specific-V10-06-05
+------------------------
+- Complete revision of G4Tet, for speed-up and issues detected in unit tests.(o)
+  Implemented SetVertices(), direct modifier for vertices.
+- Re-established parameterisation mechanism for G4Tet and G4UTet which was   (o)
+  removed by mistake. Addressing problem report #2209.
+- Complete revision of G4Ellipsoid, it fixes issues with previous            (o)
+  implementation, and 30%-70% speed-up in all main methods.
+  Also addressing problem report #2206.
+- Added protection in G4VFacet header for double definition of global        (o)
+  symbols from Windows Kits code.
+
+global                                           global-V10-06-03
+------
+- G4Physics2DVector: extended number of characters in the table dump from 5
+  to 8; use similar algorithm for bin selection as in 1D vector;
+  if any dimension is less than 2 throw a G4Exception.
+- G4PhysicsVector: use same code for interpolation for all types of
+  PhysicsVector; removed obsolete unused methods; maximally use const
+  variables; preserve precision of printout.
+- G4PhysicsLinearVector: added checks on vector length: if it is less than 2
+  throw a G4Exception.
+- G4PhysicsLogVector: added checks on vector length: if it is less than 3
+  throw a G4Exception.
+- Fixed symbol exporting problem in G4coutDestination on Windows; define     (o)
+  'masterG4coutDestination' as normal pointer.
+  Addressing problem report #2217.
+- Added windefs.hh header, including protections for double definition       (o)
+  of global symbols from Windows Kits code.
+- Updated date and tag-ID for geant4-10-06-ref-01.
+
+graphics_reps                                    greps-V10-06-00
+-------------
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+intercoms                                        intercoms-V10-06-00
+---------
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+interfaces                                       interfaces-V10-06-01
+----------
+- Fixed obsolete URLs in UIQt splash screen.                                 (o)
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+materials                                        materials-V10-06-01
+---------
+- G4MaterialPropertiesTable: added ConstPropertyExists() method.
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+particles                                        particles-V10-06-00
+---------
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+persistency                                      persistency-V10-06-00
+-----------
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+physics_lists/constructors/electromagnetic      phys-ctor-em-V10-06-00       (o)
+------------------------------------------
+- G4EmModelActivator: fixed configuration of the default EM multiple
+  scattering on top of any other physics configuration.
+  Addressing problem report #2106.
+
+physics_lists/constructors/gamma_lepto_nuclear phys-ctor-glnuclear-V10-06-00 (o)
+----------------------------------------------
+- Fixed reports from Coverity; removed double delete in destructor of
+  G4LENDBertiniGammaElectroNuclearBuilder.
+
+physics_lists/lists                              phys-lists-V10-06-00        (o)
+-------------------
+- LBE: updated cross-sections to avoid crashes caused by the removal of
+  default Gheisha cross-sections, and to have consistency between elastic
+  and inelastic cross-sections.
+
+processes/electromagnetic/muons                  emmuons-V10-06-00           (o)
+-------------------------------
+- G4MuPairProductionModel: added Store/Retrieve data methods.
+  Co-works with new data-set G4EMLOW-7.9.1.
+
+processes/electromagnetic/standard               emstand-V10-06-00           (o)
+----------------------------------
+- G4BetheHeitler5DModel: added protection against negative argument of
+  sqrt(), due to precision lost.
+
+processes/electromagnetic/utils                  emutils-V10-06-00           (o)
+-------------------------------
+- G4EmParameters, G4EmParametersMessenger: added new parameter to enable
+  read of e+e- production table from file.
+  Co-works with new data-set G4EMLOW-7.9.1.
+
+processes/hadronic
+------------------
+- management (hadr-man-V10-06-01)
+  o G4HadronicProcess: for charge check assume that all final electrons      (o)
+    come from internal conversion.
+  o G4HadLeadBias: replaced 'G4int' with 'size_t' to fix warnings on Windows.
+- models/cascade (hadr-casc-V10-06-02)                                       (o)
+  o G4CascadeCheckBalance: fixed outstanding problem of the interface with
+    native pre-compound model, happening when in the default de-excitation
+    internal electron conversion gets enabled.
+  o G4CascadeInterface: fixed memory leak by deleting ltcollider in class
+    destructor.
+  o G4CascadeParamMessenger.cc: ensure that Bertini-specific commands get
+    added to "/process/had/cascade/" UI directory, instead of "/process/had".
+- models/coherent_elastic (hadr-cohe-V10-06-01)                              (o)
+  o G4ElasticHadrNucleusHE: for pi- and Z>1 reuse data structure computed for
+    pi+ in order to reduce memory and CPU at initialisation; added new private
+    methods to store/retrieve data tables. Co-works with new data-set
+    G4EMLOW-7.9.1.
+    Switch to parameterized model by cut on kinetic energy and not momentum.
+    Fixed Coverity report.
+- models/lend (hadr-lend-V10-06-00)                                          (o)
+  o Removed inclusion of amp_math header on Windows as it is not required.
+- models/lepto_nuclear (hadr-lepnuc-V10-06-00)
+  o G4NuMuNucleusCcModel, G4NeutrinoNucleusModel, new access methods and minor
+    fixes in in nu-mu nucleus model.
+- models/particle_hp (hadr-hpp-V10-06-01)
+  o In G4ParticleHPThermalScattering::create_E_isoAng_from_energy(),         (*)
+    added fatal exception for case when pointers panEPM_T_EL or panEPM_T_EH
+    are null; fixing Coverity reports.
+  o G4ParticleHPHash, G4ParticleHPCaptureFS: fixes for implicit conversion
+    between 'size_t' and 'G4int', to avoid warnings on Windows.
+- models/parton_string/diffraction (hadr-string-diff-V10-06-00)              (o)
+  o G4FTFParameters: fixed division by zero (Coverity report) due to wrong
+    protection.
+- models/parton_string/qgsm (hadr-qgsm-V10-06-00)
+  o G4SPBaryonTable: changed return type of the method 'length()' from
+    'double' to 'size_t', to fix warnings on Windows.
+- models/radioactive_decay (radioactive_decay-V10-06-04)                     (o)
+  o In G4Radioactivation::AddDeexcitationSpectrumForBiasMode(), fixed
+    memory leak. Addressing problem report #2164.
+  o G4RadioactiveDecay, G4RadioactiveDecayBase: changed default verbosity 
+    from 0 to 1, and remove G4cerr wherever it occurs and replace it with 
+    G4Exception or G4cout.
+    Increased verbosity thresholds in order to reduce printout size.
+  o G4BetaPlusDecay: changed sign of daughterZ argument in
+    G4BetaDecayCorrections according to problem report #2199.
+  o Fixed Coverity warnings in G4RadioactiveDecay and G4RadioactiveDecayBase.
+    Fixed uninitialized data in G4SFDecay.
+- models/rpg (hadr-rpg-V10-06-00)
+  o Fixed Coverity warnings for unused variables.
+- processes (hadr-proc-V10-06-00)                                            (o)
+  o G4HadronElasticProcess: removed forgotten try/catch pattern for
+    target isotope selection.
+- stopping (hadr-stopping-V10-06-00)                                         (o)
+  o G4MuonicAtomDecay: fixed Coverity warning by addition of G4Exception.
+- util (hadr-util-V10-06-01)
+  o G4HadronicParameters: added modifiers for Cascade-FTF transition.
+  o G4HadFinalState: fixed warning on Windows for implicit conversions
+    from 'size_t' to 'G4int'. 
+
+processes/optical                                op-V10-06-00
+-----------------
+- Use new ConstPropertyExists(int) method rather than passing strings.
+
+readout                                          readout-V10-06-00
+-------
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+run                                              run-V10-06-00
+---
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+track                                            track-V10-06-00
+-----
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+tracking                                         tracking-V10-06-00
+--------
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+
+visualization                                    vis-V10-06-01
+-------------
+- Cleanup CMake build, removing obsolete granular library option and
+  explicit include_directories.
+- externals (visexternals-V10-06-00)
+- OpenGL (OpenGL-V10-06-02):
+  o Removed no longer required dependence on GLU.
+- OpenInventor (openinventor-V10-06-01):
+  o Added include paths to Inventor to usage requirements on G4OpenInventor. (o)
+    Inventor does not yet support imported targets, and paths added by
+    include_directories are now explicitly removed.
+    Addressing problem report #2215
+
+data sets:
+---------
+- G4EMLOW-7.9.1:                                                             (o)
+  o Added a new directory mupair for double differential probability
+    of e+e- pairs produced by muons or hadrons.
+
+examples                                         examples-V10-06-01
+--------
+- Updated documentation and reference outputs.
+- basic (exbasic-V10-06-00)                                                  (o)
+  o Fixed comment for suggested command "/run/numberOfThreads" in macros.
+- extended/electromagnetic/TestEm1 (testem1-V10-06-00)
+- extended/electromagnetic/TestEm11 (testem11-V10-06-00)
+  o PhysicsList: use G4RadioactiveDecayBase instead of deprecated
+    G4RadioactiveDecay. Minor code cleanup.
+- extended/hadronic/Hadr01 (exHadr01-V10-06-00)                              (o)
+  o HistoManager: fixed FPE happening if check on volume's material
+    is not vacuum.
+- extended/optical/OpNovice2 (OpNovice2-V10-06-00)
+  o Removed string comparisons and redundant calls in SteppingAction.
+
+tests                                            tests-V10-06-01
+-----
+- Updated reference outputs and tools.
+- tests/test30 (test30-V10-06-00)
+  o Added extra test macro.
