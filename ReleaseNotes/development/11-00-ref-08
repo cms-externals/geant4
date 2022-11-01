@@ -1,0 +1,323 @@
+
+                       geant4-11-00-ref-08
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o New common implementation for histogram/profiles manager in analysis.
+ o Changed halflife threshold for nuclide creation to be consistent with 
+   lifetimes in nuclear de-excitation code.
+ o Improved diagnostic for problems with primary track parameters or with
+   secondary tracks in particle-change classes.
+ o New configuration script for checkoing dependency inconsistencies among
+   granular modules.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in patch release 11.0.3
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-00-40
+-----
+- New geant4_module_check.py script to provide convenient interface for
+  developers and testing to check module/library cycles and dependency
+  inconsistencies. Filter out visualization driver modules from consistency
+  check for visualization/management module. Filter out C++ filesystem
+  library from checks.
+- Promote INTERFACE module properties to PUBLIC when merging them into a
+  non-INTERFACE final target.
+
+config                                           config-V11-00-05
+------
+- Fixed gcc compilation warnings on liblist.c tool.
+
+analysis                                         analysis-V11-00-14
+--------
+- Introduced a common implementation for histogram/profiles manager.
+  New classes:
+  - G4VTBaseHnManager<DIM> - replaces G4VHn|PnManager.
+  - G4THnToolsManager<DIM,HT> - replaces G4H*|P*Manager classes.
+  - G4THnMessenger - replaces G4H*|P*Messenger class.
+  - G4HnDimension - helper type to manipulate ndim, xmin, xmake parameters.
+  Updated classes:
+  - G4THnManager: added a vector of pairs of histogram and information
+    as a data member to simplify the access when both objects are used.
+  - Updated HnInformation structures functions to use compacted parameters.
+  - Updated functions in G4AnalysisUtilities.
+  - In all messenger classes, replaced the usage of the analysis messenger
+    helper with private helper functions.
+  - G4Plot* classes moved from managent in hntools.
+  Removed classes:
+  - G4VH1Manager, etc. for H2, H3, P1, P2.
+  - G4H1Manager, etc. for H2, H3, P1, P2.
+  - G4H1Messenger, etc. for H2, H3, P1, P2.
+  - G4ToolsAnalysisMassenger, G4FileMessenger.
+  - G4BaseHistoUtilities.
+- Resolved inconsistent dependency in hntools in CMake script.
+
+digits_hits                                      digits_hits-V11-00-03
+-----------
+- Added needed public dependency to 'scorer' sub-module in CMake script.
+- G4VScoringMesh: fixed reported Coverity defects for use of auto&.
+  Some minor code cleanup.
+
+event                                            event-V11-00-06
+-----
+- Removed unneeded dependency on 'geometry/magneticfield' module in
+  CMake script.
+
+externals
+---------
+- clhep (clhep-V11-00-04)
+  o Applied patch for building on MinGW.
+    Based on GitHub PR#51 (https://github.com/Geant4/geant4/pull/51).
+- g4tools (g4tools-V11-00-08)
+  o Applied patch for building on MinGW.
+    Based on GitHub PR#51 (https://github.com/Geant4/geant4/pull/51).
+- ptl (ptl-V11-00-03)
+  o Imported fixes from latest PTL master, patched for Geant4 source code
+    layout; includes following PRs since version 2.3.3:
+    - 31: Minor fixes for macOS/Clang and use as a subproject;
+    - 33: Make copy explicit in range loop;
+    - 34: General code cleanup/tidy;
+    - 35: Set PTL_SANITIZER_TYPE to existing value, if it exists;
+    - 36: Replace sigignore(<SIG>) with signal(<SIG>, SIG_IGN);
+    - 38: Address resource leakage, unneeded dereferences, noxcept issue
+          identified by Geant4 Coverity checks;
+    - Coverity fixes.
+- zlib (zlib-V11-00-02)
+  o Applied patch for Zlib, to address Valgrind warnings.
+    Based on GitHub PR#43 (https://github.com/Geant4/geant4/pull/43).
+
+geometry/solids/CSG                              geom-csg-V11-00-01
+-------------------
+- G4Cons: define private enums within unnamed namespace, to overcome
+  C++ ODR (One Definition Rule) violation.
+
+global                                           global-V11-00-28
+------
+- Applied patch for building on MinGW.
+  Based on GitHub PR#51 (https://github.com/Geant4/geant4/pull/51).
+- Updated date and tag-ID for geant4-11-00-ref-08.
+
+graphics_reps                                    greps-V11-00-12
+-------------
+- G4VisAttributes: fixed formatting in operator<<().
+- Applied clang-tidy fixes to the code.
+- Make 'intercoms' module a private dependency in CMake script.
+
+intercoms                                        intercoms-V11-00-04
+---------
+- Always expand path argument to ExecuteMacroFile() using FindMacroPath().
+  Based on GitHub PR#40 (https://github.com/Geant4/geant4/pull/40).
+
+interfaces                                       interfaces-V11-00-07
+----------
+- Applied patch for building on MinGW.
+  Based on GitHub PR#51 (https://github.com/Geant4/geant4/pull/51).
+
+materials                                        materials-V11-00-13
+---------
+- G4CrystalExtension: fixed Coverity warning and minor clean-up.
+
+parameterisations/gflash                         gflash-V11-00-01
+------------------------
+- GFlashHitMaker: fix to make it compatible with command-based scorer.       (*)
+
+particles                                        particles-V11-00-06
+---------
+- Changed halflife threshold for nuclide creation to be consistent with 
+  lifetimes in nuclear de-excitation code.
+  In G4NuclideTable, changed 'threshold_of_halflife' from 1000 ns to 1 ns. 
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-00-29)
+  o Added used headers in chemistry builders.
+  o Updated public/private dependencies for consistency in CMke script.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V11-00-06)
+  o G4EmExtraPhysics, G4EmMessenger: added muon to muon pair process;
+    moved initialisation class members to the header.
+  o Updated public/private dependencies for consistency in CMake script
+    and added missing dependency on 'electromagnetic/muons' module.
+- constructors/limiters (phys-ctor-limiters-V11-00-05)
+  o Fixed defects reported by Coverity in G4GenericBiasingPhysics, to use auto&.
+  o Updated public/private dependencies for consistency in CMake script.
+- util (phys-util-V11-00-08)
+  o Updated public/private dependencies for consistency in CMake script.
+
+processes/biasing/generic                        proc-biasgen-V11-00-01
+-------------------------
+- Fixed defects reported by Coverity in G4BOptnLeadingParticle, to use auto&.
+
+processes/electromagnetic/adjoint                emadjoint-V11-00-03
+---------------------------------
+- Fixed defects reported by Coverity in G4AdjointCSManager, to use auto&.
+
+processes/electromagnetic/dna                    emdna-V11-00-27
+-----------------------------
+- G4DNAExcitation, G4DNAVibExcitation, G4DNARotExcitation: class cleanup
+  according to the recent G4VEmProcess base class; model headers are moved
+  to source; introduced C++11 features. 
+- Defining G4CT_MAX_COUNT for changing "compile time counter" depth to fix
+  build errors on NVHPC compiler.
+- Resolved internal sub-modules dependency inconsistencies.
+
+processes/electromagnetic/highenergy             emhighenergy-V11-00-02
+------------------------------------
+- Resolved duplicated dependency on 'particles/management' module as public
+  in CMake script.
+
+processes/electromagnetic/utils                  emutils-V11-00-34
+-------------------------------
+- G4VMultipleScattering: removed two virtual calls.
+- G4VMscModel: added Boolean flag 'useSpline' and setter to allow choosing
+  Spline for transport cross-section.
+- G4EmParameterMessenger: restored forgotten UI command to set number of
+  bins per decade.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-00-08)
+  o G4ParticleInelasticXS: code cleanup; use G4AutoLock.
+    Fixed cross-section calculation. Addressing problem report #2498.
+- models/coherent_elastic (hadr-cohe-V11-00-03)
+- models/de_excitation (hadr-deex-V11-00-15)
+- models/fission (hadr-fission-V11-00-02)
+- models/gamma_nuclear (hadr-gammanuc-V11-00-01)
+  o Updated dependencies in CMake script to address warnings from
+    consistency check.
+- models/lend (hadr-lend-V11-00-05)
+  o Applied patch for building on MinGW.
+    Based on GitHub PR#51 (https://github.com/Geant4/geant4/pull/51).
+- models/parton_string/diffraction (hadr-string-diff-V11-00-06)
+  o G4FTFTunings: added extra braces at initialisation of std::array to
+    prevent potential compilation issues.
+- models/radioactive_decay (radioactive_decay-V11-00-04)
+  o G4ECDecay: added protection against negative neutrino energy.
+    Addressing problem report #2509.
+  o Updated dependencies in CMake script to address warnings from
+    consistency check.
+- processes (hadr-proc-V11-00-06)
+  o G4NeutronGeneralProcess: issue fatal G4Exception at initialisation 
+    in the case of incomplete configuration of the process.
+    Added SetTimeLimit() method.
+  o Updated dependencies in CMake script to address warnings from
+    consistency check.
+
+run                                              run-V11-00-09
+---
+- Explicitly check for null pointer before derefencing.
+  Fixes reported Coverity defects.
+
+track                                            track-V11-00-09
+-----
+- More particle change classes cleanup: improved diagnostic for problems
+  with primary track parameters or with secondary tracks; ensuring kinetic
+  energy to be positive after a step; improved comments.
+- G4Step: added ResetPre/PostStepPoint() methods to replace a StepPoint      (*)
+  without deleting the previous object.
+- G4ParticleChangeForMSC: substituted virtual initialisation by inline method.
+
+visualization
+-------------
+- management (visman-V11-00-25):
+  o G4VSceneHandler: implemented GetPointInBox() and GetPointInTet()
+    to sample a random point inside a box and a tetrahedron.
+    In StandardSpecialMeshRendering(), draw container if not marked invisible.
+  o Fixes in CMake build script.
+- modeling (modeling-V11-00-11):
+  o G4Mesh: a simple parameterisation may only be one level; nested
+    parameterisations may be 2- or 3-level.
+- HepRep (vis-HepRep-V11-00-02)
+  o Updated dependencies in CMake script to address warnings from
+    consistency check.
+- OpenGL (opengl-V11-00-15)
+  o G4OpenGLStoredViewer, G4OpenGLStoredQtViewer: added check on special
+    mesh rendering option in CompareForKernelVisit().
+  o Updated dependencies in CMake script to address warnings from
+    consistency check.
+- OpenInventor (openinventor-V11-00-11)
+  o G4OpenInventorViewer: added check on special mesh rendering option
+    in CompareForKernelVisit().
+  o Implemented special mesh rendering.
+  o Fixed reported Coverity defects for potentially uninitialised variables.
+- Qt3D (visQt3D-V11-00-09)
+  o G4Qt3DViewer: added check on special mesh rendering option in
+    CompareForKernelVisit().
+  o Updated dependencies in CMake script to address warnings from
+    consistency check.
+- RayTracer (raytracer-V11-00-04)
+- ToolsSG (vis_toolssg-V11-00-12)
+- VRML (VRML-V11-00-02)
+- Vtk (visVtk-V11-00-04)
+  o Updated dependencies in CMake script to address warnings from
+    consistency check.
+
+examples                                         examples-V11-00-08
+--------
+- Updated documentation and reference outputs.
+- advanced/amsEcal (amsEcal-V11-00-02)
+- advanced/doiPET (doiPET-V11-00-01)
+- advanced/fastAerosol (fastAerosol-V11-00-01)
+  o Updated to use default MixMax random generator.
+- advanced/ICRP145_HumanPhantoms (ICRP145Phantoms-V11-00-02)
+  o Migrated to use G4RunManagerFactory.
+  o Updated to use QGSP_BIC_HP physics list.
+  o General code review and adoption of C++11/14/17 features.
+  o Updated to use default MixMax random generator.
+- advanced/iort_therapy (iort_therapy-V11-00-02)
+- advanced/lAr_calorimeter (lar_calorimeter-V11-00-01)
+- advanced/medical_linac (medical_linac-V11-00-01)
+- advanced/nanobeam (nanobeam-V11-00-01)
+- advanced/purging_magnet (purgmag-V11-00-01)
+- advanced/STCyclotron (STCyclotron-V11-00-02)
+- advanced/underground_physics (DMX-V11-00-01)
+- advanced/xray_fluorescence (XRayFluo-V11-00-02)
+  o Updated to use default MixMax random generator.
+- extended/biasing (exbiasing-V11-00-01)
+  o Removed redundant code (forward declarations, includes) from GB* examples.
+- extended/errorpropagation (exErrorpropagation-V11-00-00)
+  o Introduced 'errorpropagation' examples category and moved existing
+    example (now named 'errProp') therein.
+- extended/hadronic/Hadr08 (exhadr08-V11-00-02)
+  o BiasingOperation: use Bertini cascade instead of pre-compound model, as
+    not applicable for pion interactions. The Bertini cascade is applied
+    from 0 to 41 MeV, INCLXX from 40 MeV to 12 GeV.
+    Fixes infinite loops detected in nightly tests.
+  o Moved run initialisation to macro files.
+- extended/hadronic/ParticleFluence/Calo (exhadrParticleFluenceCalo-V11-00-02)
+  o Added complementary information on particle production (multiplicity,
+    kinetic energy, and total energy flow) in the calorimeter.
+- extended/hadronic/ParticleFluence/ConcentricSpheres (exhadrParticleFluenceConcentricSpheres-V11-00-02)
+  o Added complementary information on particle production (multiplicity,
+    kinetic energy, and total energy flow) in each of the three targets.
+- examples/extended/hadronic/ParticleFluence/Layer (exhadrParticleFluenceLayer-V11-00-02)
+- examples/extended/hadronic/ParticleFluence/Sphere (exhadrParticleFluenceSphere-V11-00-02)
+  o Added complementary information on particle production (multiplicity,
+    kinetic energy, and total energy flow) in the target.
+- extended/medical/dna/chem4 (chem4-V11-00-05)
+- extended/medical/dna/chem5 (chem5-V11-00-02)
+  o Updated naming conventions.
+- extended/medical/dna/chem6 (chem6-V11-00-07)
+  o Fixed analysis macros to allow running on Window.
+- extended/medical/dna/moleculardna (molecularDNA-V11-00-09)
+  o ChemistryList: added forgotten header.
+  o Updated naming conventions.
+- extended/medical/dna/scavenger (scavenger-V11-00-03)
+  o Fixed analysis macros to allow running on Window.
+  o EmDNAChemistry: added forgotten header.
+- extended/optical/LXe (LXe-V11-00-02)
+  o Changed variable name to adhere to naming convention.
+- extended/parameterisations/Par03 (expar03-V11-00-01)
+  o Start class member functions with uppercase to match guidelines.
+- extended/runAndEvent/RE07 (exampleRE07-V11-00-01)
+  o Renamed static class member `fMasterTrackingManager`.
+  o Applied clang-format to code.
+
+tests                                            tests-V11-00-08
+-----
+- Updated reference outputs and tools.
+- tests/test44 (test44-V11-00-01)
+  o PhysicsList: fixed addition of hadron elastic physics for QBBC.

@@ -1,0 +1,538 @@
+
+                       geant4-11-00-ref-09
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o In analysis module, implemented support for writing n-tuples in a file
+   multiple times. Also, implemented support for writing histograms in a file
+   multiple times
+ o In optical physics, addded ability to calculate reflection/refraction from
+   thin film coating.
+ o Added nitrogen models from PTra code in G4DNA.
+ o In coherent elastic hadronic model, added extensions for the simulation of
+   a light anti-hypernucleus projectile elastic scattering on a target nucleus.
+ o Improved description of leading particle spectra in meson-nucleon
+   interactions in Fritiof hadronic model.
+ o Implemented generic cutaway applicable to all visualization drivers.
+ o Fixed compilation warnings on gcc-12, recent Intel compilers and macOS-13.
+ o Synchronised with CLHEP version 2.4.6.0.
+ o New dataset G4EMLOW-8.2.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-00-45
+-----
+- Fixed bug in Qt3D viasualisation driver activation, based on report
+  in Users Forum.
+- Removed usage of GEANT4_USE_TOOLSSG flag, since ToolsSG is now built by
+  default.
+- Find, use and re-find Qt OpenGLWidgets component when Qt6 is in use.
+- Added "-diag-disable=10441" CXX option to Intel compilers, to disable
+  icc compiler deprecation message.
+- New dataset G4EMLOW-8.2.
+
+config                                           config-V11-00-10
+------
+- Added "--gcc-toolchain" option for CXX and CC in Linux-clang.
+- Added "-diag-disable=10441" option to Linux-icc, to disable Intel/icc
+  compiler deprecation message.
+- G4VIS_BUILD.gmk, G4VIS_USE.gmk: handle vis/ToolsSG by default.
+- Replaced use of deprecated sprintf() with snprintf() in liblist.c tool.
+
+analysis                                         analysis-V11-00-14
+--------
+- Implemented support for writing n-tuples in a file multiple times: the object
+  cycle number is attributed in the same way as for histograms; corrected
+  updating Csv file names per histograms with cycle number.
+- Corrected multiple write for n-tuples with set file and activated merging.
+- Implemented support for writing histograms in a file multiple times: with
+  Root output type, the object cycle number is attributed automatically; with
+  other output types that do not support object cycles, the object name is
+  appended with _vN, where N is the number of the write cycle, when the object
+  is written more than once; no extension is added when the object is written
+  for the first time (cycle 0).
+- Added new UI commands for analysis file management, supporting also multiple
+  write with/without calling write and/or reset in between two runs:
+  /analysis/openFile, write, closeFile and reset
+  /analysis/setDefaultFileType
+- Fix in applying units in "create" and "set" commands.
+- Replaced G4TNtupleDescription, G4RootPNtupleDescription structures with
+  classes more suitable for adding members for handling n-tuple cycles.
+
+digits_hits
+-----------
+- scorer (detscorer-V11-00-01)
+  o Applying standard clang-tidy plus range-based for and Boolean
+    simplification fixes. General code tidy and modernization: use consistent,
+    grouped ordering of public-protected-private members; do not override
+    virtual members when no difference to base class implementation; use
+    delegating constructors to remove duplicated code; use C++ Boolean
+    true/false keywords.
+- utils (detutil-V11-00-04)
+  o Removed inclusion of unused interfaces from 'scorer' module.
+  o Applying core+recommended clang-tidy fixes, plus some code cleanup.
+  o Removed large commented-out blocks of dead code.
+
+externals                                        externals-V11-00-05
+---------
+- clhep (clhep-V11-00-04)
+  o Synchronised with CLHEP-2.4.6.0.
+  o Resolved gcc-12 warnings in Evaluator source.
+- expat (expat-V11-00-01)
+  o Updated source and build scripts to expat-2.4.9 sources from upstream.
+- g4tools (g4tools-V11-00-12)
+  o Updated to version 6.1.0. See History_tools for details.
+  o Fixed compilation warnings on Intel compilers.
+- zlib (zlib-V11-00-04)
+  o Updated source to zlib-1.2.12 sources from upstream, retaining prior
+    Geant4 patches.
+  o Suppress deprecated-non-prototype warnings for compilers that check this.
+
+g3tog4                                           g3tog4-V11-00-03
+------
+- Replaced sprintf with std::to_string to address macOS 13 deprecation warnings.
+- Fixed compilation warnings on Intel/icc compiler for deprecated conversion
+  of string literal to char* in G3EleTable.
+- Fixed compilation warning on Intel/icx compiler for variable set
+  but not used in clparse source code.
+
+geometry
+--------
+- magneticfield (field-V11-00-01)
+- management (geommng-V11-00-07)
+- navigation (geomnav-V11-00-06)
+  o Fixed compilation warnings on Intel-icx compiler for variables set
+    but not used.
+- solids/Boolean (geom-bool-V11-00-06)
+  o G4SubtractionSolid: fixed problem of non-zero volume for null resulting
+    objects in GetCubicVolume().
+- solids/specific (geom-specific-V11-00-09)
+- volumes (geomvol-V11-00-01)
+  o Fixed compilation warnings on Intel-icx compiler for variables set
+    but not used.
+
+global                                           global-V11-00-30
+------
+- Fixed compilation warning on Intel-icx compiler for variable set but not
+  used in G4AnalyticalPolSolver::QuarticRoots().
+- Updated date and tag-ID for geant4-11-00-ref-09.
+
+graphics_reps                                    greps-V11-00-15
+-------------
+- G4VVisManager: added new virtual function DrawGeometry(), drawing a geometry
+  tree starting at the specified physical volume; this base class implementation
+  is empty, i.e., the derived class implementation is not forced.
+- Fixed compilation warning on Intel/icx compiler for variable set
+  but not used in HepPolyhedron::FindNodeNormal().
+- HepPolyhedron: Fix minor coverity defect in operator<<().
+
+interfaces                                       interfaces-V11-00-09
+----------
+- Fixed compilation warnings on Intel/icc for deprecated conversion of string
+  literal to char* in G4UIXm.
+
+materials                                        materials-V11-00-17
+---------
+- G4Material: added an extra check on number of atoms in method
+  AddElementByNumberOfAtoms(..). Addressing problem report #2514.
+- G4MaterialPropertiesIndex, G4MaterialPropertiesTable, G4SurfaceProperty:
+  added parameters to specify optical photon transport through thin film
+  coating.
+- G4AtomicShell: added extra data for Z=101-104.
+- G4AtomicShell, G4AtomicShell_XDB_EADL: changed format of internal tables
+  allowing to see differences in a clearer way.
+- G4CrystalExtension: fixed Coverity warning.
+
+parameterisations/gflash                         gflash-V11-00-02
+------------------------
+- Fixed compilation warning on Intel/icx compiler for variable set
+  but not used in GFlashShowerModel::ElectronDoIt().
+
+particles                                        particles-V11-00-11
+---------
+- G4NuclideTableMessenger: added command "/particle/manage/nuclide/min_meanlife"
+  corresponding to G4NuclideTable::SetMeanLifeThreshold().
+  Default minimum mean life is 1.0 ns. In "/particle/nuclideTable/min_halflife"
+  changed default minimum half-life to 0.693 ns.
+- Changed half-life threshold for nuclide creation to be consistent with 
+  lifetimes in nuclear de-excitation code; in G4NuclideTable constructor,
+  change threshold_of_halflife from 1000 ns to 1 ns.
+- Use nuclide mean-life instead of half-life in G4NuclideTable in order to be
+  consistent with ENSDFSTATE data, which uses mean-life. Provided two new 
+  methods, SetMeanLifeThreshold() and GetMeanLifeThreshold() so that the
+  life-times can be accessed as either half-life or mean-life.
+- Fixed compilation warning on Intel/icx compiler for variable set
+  but never used in G4MuonRadiativeDecayChannelWithSpin.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-00-31)
+  o Increased upper limit of DNA proton/ion physics from 100 MeV to 300 MeV
+    in all DNA constructors.
+  o G4EmDNABuilder: introduced constant upper limit of 1 MeV for DNA models;
+    introduced constant upper limit of 2 MeV for standard low-energy ionisation;
+    use the same upper limit for DNA excitation and ionisation.
+    Enabling combination of DNA and standard physics processes.
+
+processes/biasing/importance                     proc-biasimp-V11-00-01
+----------------------------
+- Fixed compilation warning on Intel/icx compiler for variable set but not
+  used in G4GeometrySampler.
+
+processes/electromagnetic/dna                    emdna-V11-00-33
+-----------------------------
+- Added nitrogen models from PTra code.
+- Added protection for HighEnergyLimit/LowEnergyLimit in
+  G4DNARPWBAIonisationModel and G4DNARPWBAExcitationModel.
+- Fixed issue in IRT model: if the first IRTSampling won't give any reactions,
+  stop the simulation; no StepProcessor set.
+  Minor correction of IRT-syn model (chemistry): contact reactions should not
+  happen after 1 ps.
+- Fixed compilation warnings on Intel/icx compiler for variables set
+  but not used in G4ITNavigator2.
+- Fixed Coverity reported defects.
+
+processes/electromagnetic/lowenergy              emlowen-V11-00-13
+-----------------------------------
+- G4UAtomicDeexcitation, G4AtomicTransitionManager, G4ShellData, G4AugerData: 
+  added de-excitation for heavy elements Z=101-104; removed commented lines;
+  improved comments; improved code format; use ++i instead of i++.
+- G4AtomicTransitionManager: read fluorescence data using new interface
+  G4EmParameters::FluoDirectory().
+- G4PhotoEffectAngularGeneratorPolarized: include factor of 1/8 for L-shell
+  differential cross-section. Addressing problem report #2293.
+- G4LivermoreComptonModel: minor clean-up.
+- Fixed compilation warnings on Intel/icx compiler for variables set
+  but not used in G4BoldyshevTripletModel::SampleSecondaries() and in
+  G4Generator2BN::SampleDirection().
+
+processes/electromagnetic/standard               emstand-V11-00-17
+----------------------------------
+- G4hIonisation, G4ionIonisation: updated initialisation to be coherent with
+  possible creation of combined DNA/standard physics-list: do not modify low
+  energy limit for a model; define high energy limit considering high energy
+  limit set in the physics-list and the mass of the particle.
+- G4PEEffectFluoModel: implemented usage of 'PhotoeffectBelowKShell' flag,
+  allowing to enable/disable photo-electron production below K-shell of an
+  atom; by default this is enabled, so effect on results; if disabled, some
+  CPU improvement may be expected.
+- G4BetheBlochModel, G4BraggIonModel, G4LindhardSorensenIonModel: use the same
+  computation of effective charge and energy at a step inside method
+  CorrectionAlongStep(..); improved range of ions in the default EM physics
+  configuration.
+- G4AtimaEnergyLossModel, G4BetheBlochModel, G4BraggIonModel,
+  G4LindhardSorensenIonModel: do not set effective charge to the model of
+  energy loss fluctuation inside CorrectionAlongStep(..) method, it is done
+  by G4VEnergyLossProcess. Addressing problem report #2495.
+
+processes/electromagnetic/utils                  emutils-V11-00-36
+-------------------------------
+- G4VEnergyLossProcess: for ions, compute effective charge pre-step and set
+  this value to the model of energy loss fluctuations.
+- G4EmCalculator: updated computation of ion dEdx.
+  Addressing problem report #2495.
+  Added extra flag 'applySmoothing' to enable/disable smoothing algorithms
+  to connect low-energy and high energy models; code clean-up.
+- G4LossTableManager: fixed selection of energy loss process used by
+  G4EmCalculator.
+- G4EmFluoDirectory: added new enumerator
+- G4EmParameters, G4EmLowEParameters, G4EmLowEParametersMessenger: introduced
+  directory for the fluorescence data as a parameter, added new UI command,
+  improved information printout.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-00-13)
+  o G4ComponentAntiNuclNuclearXS: fix and extension in methods
+    GetTotalElementCrossSection() and GetInelasticElementCrossSection();
+    a bug was causing undefined values for, respectively, the total and
+    inelastic cross-sections of anti-proton interactions with light target
+    nuclei (d, H3, He3 and He4); extended to simulation of a light
+    anti-hypernucleus projectile scattering on a target nucleus.
+  o G4MuNeutrinoNucleusTotXsc: extension to tau-neutrinos, based on energy
+    scaled nu_mu cross-sections.
+  o G4ComponentGGNuclNuclXsc, G4ComponentGGHadronNuclXsc: extension to
+    hyper-nuclei on hydrogen.
+- models/abla (hadr-abla-V11-00-04)
+  o Fixed compilation warnings on Intel/icx compiler for variables set
+    but not used in G4AblaDataDefs header.
+- models/binary_cascade (had-binary-V11-00-02)
+  o Fixed compilation warnings on Intel/icx compiler for variables set
+    but not used in G4BinaryCascade.
+- models/coherent_elastic (hadr-cohe-V11-00-04)
+  o G4AntiNuclElastic: extension of the SampleInvariantT() method for the
+    simulation of a light anti-hypernucleus projectile elastic scattering
+    on a target nucleus.
+    Note: most of the considered light anti-hypernuclei projectiles have 
+    baryon number equal to -4 : it is assumed that their properties are similar
+    to anti-He4, therefore their elastic scattering is set-up as for anti-He4
+    elastic nuclear scattering. These properties can be improved in the future
+    if theoretical estimations will be available.
+- models/inclxx (hadr-inclxx-V11-00-05)
+  o Fixed compilation warnings on Intel/icx compiler for variables set
+    but not used.
+- models/lend (hadr-lend-V11-00-06)
+  o Replaced use of sprintf() with snprintf(), to fix deprecation compilation
+    warnings on macOS-13 SDK.
+- models/lepto_nuclear (hadr-lepnuc-V11-00-05)
+  o G4ElectroVDNuclearModel: added protections against null pointers to gamma
+    cross-section and material, responsible for rare crashes.
+- models/particle_hp (hadr-hpp-V11-00-17)
+  o Removed environment variables G4PHPTEST, G4PHPTEST2 and NeutronHPCapture,
+    associated getenv() calls and associated debug code, as no longer used and
+    found to slow down the code significantly.
+    Addressing problem report #2501.
+  o G4ParticleHPContAngularPar: added protection against zero probability
+    for both discrete and continuous emission.
+  o Fixed compilation warnings on Intel/icx compiler for variable set
+    but not used in G4ParticleHPInelasticCompFS and G4ParticleHPFFFissionFS.
+  o Use auto for iterators in G4ParticleHPFFFissionFS::GetAFissionFragment().
+- models/parton_string/diffraction (hadr-string-diff-V11-00-08)
+  o G4DiffractiveExcitation: improved ExciteParticipants_doChargeExchange()
+    method: for a projectile meson in the case of quark exchange, a more
+    correct ratio between pseudo-scalar and vector mesons is included; the
+    pion after the exchange can transform into pi0, eta, eta', rho0 and omega
+    mesons. This allows to improve the description of leading particle spectra
+    in meson-nucleon interactions.
+  o G4FTFTunings: renamed tune2022-v0 (#1) to baryon-tune2022-v0; added
+    pion-tune2022-v0 (#2) and combined-tune2022-v0 (#3, combo of #1&#2).
+    Minor cleanup in tune naming.
+- models/parton_string/hadronization (had-hadronization-V11-00-03)
+  o G4HadronBuilder, G4VLongitudinalStringDecay, G4LundStringFragmentation,
+    G4QGSMFragmentation, G4ExcitedStringDecay: in order to describe the
+    NA61/SHINE data on K*0 and phi mesons production in proton-proton
+    interactions, different probabilities were introduced for the ratios
+    between pseudo-scalar and vector meson production. These ratios are the
+    following: for ordinary mesons from u- and d- quarks, the ratio is 0.5/0.5;
+    for strange mesons the ratio is 0.4/0.6; for mesons with hidden strangeness
+    (as for phi), the ratio is 0.3/0.7.
+    This approach is similar to the one adopted in Pythia8.
+    It is also assumed that the probabilities for hidden strangeness (0.3/0.7)
+    apply for mesons with hidden charm and beauty.
+  o G4LundStringFragmentation: introduced few changes for a special treatment
+    of last string decay to improve the yield of anti-Xi hyperons in
+    proton-proton interactions, according to the NA61/SHINE data.
+    Moreover, some parameters have been tuned to better describe the NA61/SHINE
+    data on various particles produced in proton-proton interactions.
+- models/parton_string/qgsm (hadr-qgsm-V11-00-03)
+  o Fixed compilation warning on Intel/icx compiler for variables set
+    but not used in G4QGSMSplitableHadron and G4QGSParticipants.
+- models/qmd (hadr-qmd-V11-00-01)
+  o Fixed compilation warning on Intel/icx compiler for variable set
+    but not used in G4QMDMeanField.
+- models/radioactive_decay (radioactive_decay-V11-00-07)
+  o G4RadioactiveDecay: removed SetICM() method, as deprecated for some time
+    and no longer used. ICM now set exclusively in G4PhotonEvaporation.
+  o G4RadioactiveDecayMessenger: removed icmCmd corresponding to SetICM() above. 
+  o G4ECDecay: removed negative neutrino energy warning but keep protection
+    against negative values. Negative values are due to negative Q values from
+    ENSDF for only four nuclides.
+- util (hadr-util-V11-00-12)
+  o G4Nucleus: corrected method GetN_asInt() for the case of hypernuclei.
+
+processes/management                             procman-V11-00-04
+--------------------
+- Fixed compilation warnings on Intel/icx compiler for variable set
+  but not used in G4ProcessTableMessenger.
+
+processes/optical                                op-V11-00-07
+-----------------
+- G4OpBoundaryProcess: calculating reflection/refraction from thin film coating.
+- G4OpBoundaryProcess: issuing warning when step size is slightly larger than 
+  geometry tolerance, in which case boundary scattering may be incorrect.
+  Addressing problem report #2510.
+
+processes/parameterisation                       param-V11-00-03
+--------------------------
+- G4FastSimHitMaker: making it compatible to command-based scorer.
+
+processes/transportation                         transport-V11-00-07
+------------------------
+- Fixed compilation warnings on Intel/icx compiler for variables set
+  but not used.
+
+visualization
+-------------
+- management (visman-V11-00-27):
+  o Implemented generic cutaway. Prior to this, cutaways were implemented only
+    in OpenGL by using OpenGL's clipping plane feature. This still pertains for
+    OpenGL since it is very fast, but here cutaways are implemented using
+    Boolean operations in a reasonably robust and reliable way. The initial
+    motivation and implementation on the management side  in method
+    G4VSceneHandler::CreateCutawaySolid() is originated from GitHub PR#53
+    (https://github.com/Geant4/geant4/pull/53).
+    In G4VSceneHandler::RequestPrimitives(), check the validity of Boolean
+    solids. This is particularly pertinent for cutaways, because the cutting
+    volume (the subtractor) is large and general, and often the target volume
+    is entirely within or entirely outside. It is a check that now applies to
+    all geometries, with or without cutaways, so to be considered as a bug fix.
+    In G4VisCommandsViewer, make sure the normal to the cutaway plane is
+    normalised (unit vector).
+    In G4VisCommandsViewerSet, make sure the normal to the sectioning plane
+    is normalised (unit vector).
+  o G4VisExecutive: added TOOLSSG_OFFSCREEN.
+- modeling (modeling-V11-00-12):
+  o Implemented generic cutaway: in G4PhysicalVolumeModel::DescribeSolid(),
+    simplified clipping, sectioning and cutaway code.
+- FukuiRenderer (DAWN-V11-00-02):
+  o Replaced use of sprintf() with snprintf(), to fix deprecation compilation
+    warnings on macOS-13 SDK.
+- OpenGL (opengl-V11-00-19)
+  o Updated comment about requesting a kernel visit when cutaway mode
+    changes (noted but not relevant because OGL does its own cutaways).
+  o Minor tidy: speed cutaway check in G4OpenGLViewer::SetView().
+  o Replaced use of sprintf() with snprintf(), to fix deprecation compilation
+    warnings on macOS-13 SDK.
+  o Fixed compilation warnings on Intel/icc compiler for deprecated conversion
+    of string literal to char* in G4OpenGLXmConvenienceRoutines and
+    G4OpenGLXmViewer.
+  o Link to Qt OpenGLWidgets target for Qt6 only.
+- OpenInventor (openinventor-V11-00-16)
+  o Request kernel visit when cutaway mode changes in G4OpenInventorViewer.
+  o G4OpenInventorQtExaminerViewer: for macOS only, disabled the mouse wheel
+    event handler to fix the trackpad zoom direction issue.
+  o Replaced use of sprintf() and vsprintf() with snprintf() and vsnprintf()
+    respectively, to fix deprecation compilation warnings on macOS-13 SDK.
+  o Fixed compilation warnings on Intel/icc compiler for deprecated conversion
+    of string literal to char* in G4OpenInventorQtExaminerViewer.
+  o Fixed compilation warning on gcc-12.
+- Qt3D (visQt3D-V11-00-10)
+  o Request kernel visit when cutaway mode changes in G4Qt3DViewer.
+- ToolsSG (vis_toolssg-V11-00-14)
+  o New offscreen sub-driver.
+  o G4ToolsSGViewer: handle ambient lightning; handling zb_png and zb_jpeg
+    formats; corrected fSGViewer->set_clear_color().
+  o Request kernel visit when cutaway mode changes in G4ToolsSGViewer.
+
+data
+----
+- G4EMLOW-8.2:
+  o New files for Nitrogen cross-sections for dna models
+  o New files for fluorescence and Auger electron transitions for
+    heavy elements Z=101-104.
+
+examples                                         examples-V11-00-09
+--------
+- Updated documentation and reference outputs.
+- advanced/composite_calorimeter (ccal-V11-00-02)
+  o Fixed compilation warning on Intel-icx compiler for set but unused variable.
+- advanced/ICRP145_HumanPhantoms (ICRP145Phantoms-V11-00-03)
+  o Fixed compilation warnings on Intel-icx compiler for set but unused
+    variable in TETModelImport source; code formatting.
+- advanced/medical_linac (medical_linac-V11-00-03)
+  o Replaced sprintf() use with std::to_string(); sprintf() deprecated on
+    macOS-13, leading to compilation warnings.
+  o Fixed compilation warnings on Intel-icx compiler for set but
+    not used variables in ML2Acc1 and ML2Acc2 source.
+- basic/B1 (exampleB1-V11-00-01)
+  o In vis.mac, commented TSG_OFFSCREEN usage example.
+- extended/analysis (analysisExample-V11-00-03)
+  o Updated AnaEx01 and AnaEx02 classes in shared with modifications applied
+    in AnaEx03.
+  o Applied new coding guidelines and clang-tidy checks in all examples
+- extended/analysis/AnaEx03 (AnaEx03-V11-00-00)
+  o New example demonstrating usage of analysis commands for file management,
+    in particular writing histograms and n-tuples in a file multiple times.
+- extended/electromagnetic/TestEm1 (testem1-V11-00-03)
+  o PhysicsList::AddRadioactiveDecay(): updated lifeTime threshold.
+  o Updated photoelec.mac macro.
+- extended/electromagnetic/TestEm7 (testem7-V11-00-01)
+  o Make local EM physics the same as EM physics option3 with
+    G4IonParameterizedModel.
+- extended/electromagnetic/TestEm8 (testem8-V11-00-01)
+  o Applying coding guidelines to start data members with 'f'.
+- extended/electromagnetic/TestEm9 (testem9-V11-00-02)
+  o Removed verbose data member in PhysListEmStandard, use the 'verboseLevel'
+    defined in the base class for this purpose.
+- extended/electromagnetic/TestEm11 (testem11-V11-00-01)
+  o PhysicsList::AddRadioactiveDecay(): updated lifeTime threshold.
+- extended/electromagnetic/TestEm17 (testem17-V11-00-02)
+  o Applying coding guidelines to start data members with 'f'.
+  o Use G4int, G4double types.
+- extended/eventgenerator/pythia/decayer6 (p6decayer-V11-00-01)
+  o P6DExtDecayerPhysics: make sure the external decayer is set to G4Decay
+    process only once to avoid potential misleading.
+- extended/eventgenerator/pythia/py8decayer (p8decayer-V11-00-04)
+  o Updated READMEs and documentation.
+- extended/exoticphysics/monopole (monopole-V11-00-03)
+  o Applying coding guidelines to start data members with 'f'.
+  o Use G4int, G4double types.
+- extended/field/field01 (fieldex01-V11-00-01)
+  o Applying coding guidelines to start data members with 'f',
+    and function members with a capital letter.
+  o Use G4int, G4double types.
+- extended/field/field04 (fieldex04-V11-00-02)
+  o Replaced sprintf() use with std::to_string(); sprintf() deprecated on
+    macOS-13, leading to compilation warnings.
+- extended/hadronic (exHadronic-V11-00-02)
+  o Fixed link to new ParticleFluence example in Doxygen documentation.
+- extended/hadronic/FissionFragment (exExtHadFissFrag-V11-00-01)
+  o Replaced sprintf() use with std::to_string(); sprintf() deprecated on
+    macOS-13, leading to compilation warnings.
+- extended/hadronic/Hadr02 (exhadr02-V11-00-01)
+  o Applying coding guidelines to start data members with 'f'.
+- extended/hadronic/ParticleFluence (exhadrParticleFluence-V11-00-01)
+  o Fixes in Doxygen documentation (links, formatting).
+- extended/medical/DICOM (DICOM-V11-00-03)
+  o Introduced special mesh rendering of DICOM image.
+  o Applying coding guidelines to start data members with 'f'.
+  o Use G4int, G4double types.
+  o Replace sprintf with direct G4String use to remove deprecation warnings
+    on macOS-13.
+  o Fixed compilation warning on Intel-icx compiler for set but unused
+    variable in DicomHandler::ReadData().
+- extended/medical/dna/clustering (clustering-V11-00-01)
+  o Fixed compilation warning on Intel-icx compiler for set but unused
+    variable in ClusteringAlgo::IncludeUnassociatedPoints().
+- extended/medical/dna/jetcounter (jetcounter-V11-00-00)
+  o New example providing a setup for simulation of a typical experiment
+    with the Jet Counter nanodosimeter. Allows the calculation of the
+    ionisation cluster size distribution (ICSD) (the number of ionisations
+    per projectile) in a real sized cylindrical interaction volume (IV) of
+    the Jet Counter device.
+- extended/medical/dna/neuron (neuron-V11-00-01)
+  o Fixed compilation warning on Intel-icx compiler for set but unused
+    variable in Run::EndOfRun().
+- extended/medical/dna/pdb4dna (pdb4dna-V11-00-01)
+  o Fixed compilation warnings on Intel-icx compiler for set but unused
+    variables in DetectorConstruction and PDBlib sources.
+- extended/optical/OpNovice2 (OpNovice2-V11-00-05)
+  o New macro coated.mac, and book-keeping code, to show reflection/refraction
+    from thin film coating.
+  o SteppingAction: check that group velocity is correct.
+    Don't include Absorbed or Detected photons in plots for forward-going
+    particles.
+- extended/parameterisations/Par04 (expar04-V11-00-03)
+  o Fixes in Doxygen documentation (links, formatting).
+- extended/radioactivedecay/rdecay01 (rdecay01-V11-00-04)
+  o PhysicsList::PhysicsList(): adjust meanLifeTime and halfLifeTime.
+    Added SetInternalConversionFlag() function.
+- extended/runAndEvent/RE02 (exampleRE02-V11-00-01)
+  o Replaced sprintf() with std::ostringstream to fix deprecation warnings
+    on macOS-13.
+
+tests                                            tests-V11-00-09
+-----
+- Updated reference outputs and tools.
+- tests/test06 (test06-V11-00-02)
+  o Suppressed deprecated-non-prototype warnings for compilers that check this.
+  o Updated tests using code from zlib 1.2.12 release.
+- tests/test22 (test22-V11-00-01)
+  o Fixed compilation warnings on Intel/icx compiler for variables set
+    but not used.
+- tests/test31 (test31-V11-00-02)
+  o test31Histo: extended test on ion stopping power versus NIST.
+- tests/test32 (test32-V11-00-01)
+  o Added test for writing objects multiple times: added MultipleWrite
+   application parameter (=true by default); incremented the number of
+   events in run.mac for the first run to get all workers processing events
+- tests/test35 (test35-V11-00-02)
+  o Fixed compilation warning on Intel/icx compiler for variable set
+    but not used in main().
+- tests/test36 (test36-V11-00-02)
+  o Fixed compilation warning on clang compiler for wrong code indentation
+    in Em10EventAction source.

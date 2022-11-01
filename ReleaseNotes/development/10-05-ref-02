@@ -1,0 +1,246 @@
+
+                       geant4-10-05-ref-02
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Fixed Boolean operators to canonical form.
+ o Fixed build of gas materials in G4NistMaterialBuilder.
+ o Added handling of UI thermalization model control in DNA physics lists.
+ o New set of UI commands and improvements in visualization.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.5.p01
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-05-01
+-----
+- Removed obsolete GEANT4_BUILD_MUONIC_ATOMS_IN_USE option
+  and associated configuration/compiler flags.
+
+g3tog4                                           g3tog4-V10-05-01            (o)
+------
+- Fixed Boolean operators to return G4bool.
+
+geometry                                         geometry-V10-05-00          (o)
+--------
+- Fixed Boolean operators to return G4bool.
+- solids/specific (geom-specific-V10-05-03):                                 (o)
+  o Fix in G4EllipticalTube::CheckParameters() for typo in condition.
+  o Accurate calculation of radical in G4IntersectingCone.
+    Addressing problem report #2111.
+
+global                                           global-V10-05-01            (o)
+------
+- Fixed Boolean operators to return G4bool.
+- Updated date and tag-ID for ref-02
+
+graphics_reps                                    greps-V10-05-02
+-------------
+- G4VisExtent: replaced operator*(const G4Transform3D&), previously introduced
+  by method Transform(const G4Transform3D&).
+- Removed Get/SetDrawOverlapsFlag() from G4VVisManager.
+- Fixed Boolean operators to return G4bool.                                  (o)
+
+intercoms                                        intercoms-V10-05-00         (o)
+---------
+- Fixed Boolean operators to return G4bool.
+
+materials                                        materials-V10-05-01         (o)
+---------
+- G4NistMaterialBuilder: fixed build of gas materials.
+  Addressing problem reports #2133 and #2134. 
+- G4NistManager: added more detailed comments to public methods.
+- Fixed Boolean operators to return G4bool.
+
+parameterisations/gflash                         gflash-V10-05-00            (o)
+------------------------
+- Fixed Boolean operators to return G4bool.
+
+particles                                        particles-V10-05-01         (o)
+---------
+- Fixed Boolean operators to return G4bool.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-05-04
+------------------------------------------
+- Added handling of UI thermalization model control in G4EmDNAPhysics_option1,
+  2,3,4,5,6,7,8.
+
+processes/electromagnetic/lowenergy              emlowen-V10-05-00           (o)
+-----------------------------------
+- Fixed calculation of 'dsigma' in G4PhotoElectricAngularGeneratorPolarized.
+  Addressing problem report #2089.
+
+processes/electromagnetic/muons                  emmuons-V10-05-00           (o)
+-------------------------------
+- G4MuMultipleSacttering: reduced length of printout.
+  Addressing problem report #2105.
+
+processes/electromagnetic/standard               emstand-V10-05-03
+----------------------------------
+- G4eMultipleSacttering, G4hMultipleScattering: reduced length of printouts. (o)
+  Addressing problem report #2105.
+- G4ModifiedTsai, G4SauterGavrilaAngularDistribution: reduced length of      (o)
+  names for these generators. Addressing problem report #2105.
+- G4BetheHeitler5DModel: set x,y components in BoostG4LorentzVector function.
+
+processes/electromagnetic/utils                  emutils-V10-05-02           (o)
+-------------------------------
+- G4EmBiasingManager: fixed incorrect weights with brem splitting introduced
+  in release 10.5. Addressing problem report #2125.
+- G4VEnergyLossProcess, G4VEmProcess, G4VMultipleScattering, G4EmModelManager:
+  make info printout at initialisation more compact.
+  Addressing problem report #2105.
+- G4VEmProcess, G4VEnergyLossProcess: make printout information more compact.
+
+processes/hadronic                               hadr-V10-05-00
+------------------
+- Improved G4HadronicException: aligned behavior with std::exception: what()
+  returns the exception explanation; move the member definition to source file.
+  Added some consts qualifiers.
+- Fixed Boolean operators to return G4bool.
+- cross_sections (hadr-cross-V10-05-02)
+  o G4MuNeutrinoNucleusTotXsc: high energy extension of cc/nc xsc (M_W and
+    M_Z propagator factors) cc/tot ratio.
+- models/particle_hp (hadr-hpp-V10-05-00)                                    (o)
+  o G4ParticleHPKallbachMannSyst::Kallbach: replaced G4Exp with std::exp in
+    order to avoid underflow/overflow crashes observed with the physics list
+    QGSP_BIC_AllHP.
+- models/parton_string/diffraction (hadr-string-diff-V10-05-00)              (o)
+  o Corrected FTF_NUCDESTR_P1_ADEP_TGT parameter (fNuclearTgtDestructP1_ADEP)
+    that was accidentally set as "fixed". Minor cleanups.
+
+processes/management                             procman-V10-05-00           (o)
+--------------------
+- Fixed Boolean operators to return G4bool.
+
+readout                                          readout-V10-05-00           (o)
+-------
+- Fixed Boolean operators to return G4bool.
+
+run                                              run-V10-05-01               (o)
+---
+- Fix in G4MultiRunAction to cope with more than one user run action classes.
+- Fixed Boolean operators to return G4bool.
+
+tracking                                         tracking-V10-05-00          (o)
+--------
+- Fixed Boolean operators to return G4bool.
+
+visualization                                    vis-V10-05-13
+-------------
+- management:
+  o New and improved commands:
+    /vis/viewer/centreOn: improved - it does not zoom.
+    /vis/viewer/centreAndZoomInOn: new.
+    /vis/touchable/centreOn: improved - it does not zoom.
+    /vis/touchable/centreAndZoomInOn: new.
+    /vis/touchable/extentForField and volumeForField: new.
+    /vis/scene/showExtents: new.
+    /vis/set/volumeForField: new.
+    /vis/touchable/showExtent: new.
+  o Added copy number parameter to "/vis/touchable/findPath".
+  o Implemented "/vis/set/extentForField" command: the default is a null extent,
+    which is to be interpreted by the field model as the whole extent of the
+    current scene. Otherwise, with this command, one can limit the extent over
+    which the field is drawn. This would help, for example, if drawing over the
+    whole scene produced so many arrows or lines that it clutters the scene.
+    Changed the default spacing: the parameter 'nDataPointsPerHalfExtent' is
+    changed from 10 to 3, so as not to clutter the scene. See guidance of
+    "/vis/scene/add/*Field" commands for further explanation.
+  o Provide ability to draw electric fields, and eventually any other field.
+    Added "/vis/scene/add/electricField" by analogy to existing
+    .../magneticField.
+  o Refactor MagneticFieldModel class with new base to handle all kinds of
+    vector fields; existing, and new ElectricFieldModel only have to
+    implement a simple function to get the field vector at a location.
+  o Fix bug in overlap drawing of parameterised volumes.
+  o Fixed Boolean operators to return G4bool.
+  o Fixed Coverity defects.
+- modeling:
+  o Introduced G4BoundingExtentScene. This allows one to accumulate extents
+    using the newly introduced G4VisExtent::Transform() and is a better way
+    of determining the overall extent of a scene (or of any set of extents)
+    than by the bounding sphere approach.
+  o G4VFieldModel, G4ElectricFieldModel, G4MagneticFieldModel: new abstraction
+    for field models.
+  o G4VModel: introduced GetTransformedExtent() method.
+  o G4PhysicalVolumeModel: use G4BoundingExtentScene instead of
+    G4BoundingSphereScene. Fixed bug whereby the local extent was incorrectly
+    calculated.
+
+examples                                         examples-V10-05-02
+--------
+- Updated documentation and reference outputs.
+- advanced/air_shower (airshower-V10-05-00)                                  (o)
+  o Fixed Boolean operators to return G4bool.
+- advanced/ChargeExchangeMC (ChargeExchangeMC-V10-05-01)                     (o)
+  o Fixed compilation warnings for unused data when no analysis set.
+  o Fixed regular expression error in schema validation for lht.gdml.
+  o Fixed Boolean operators to return G4bool.
+- advanced/composite_calorimeter (ccal-V10-05-00)                            (o)
+- advanced/eRosita (eRosita-V10-05-00)                                       (o)
+- advanced/gammaray_telescope (gammaraytel-V10-05-00)                        (o)
+- advanced/hadrontherapy (hadrontherapy-V10-05-00)                           (o)
+- advanced/human_phantom (human_phantom-V10-05-00)                           (o)
+- advanced/lAr_calorimeter (lAr_calorimeter-V10-05-00)                       (o)
+- advanced/radioprotection (radioprotection-V10-05-00)                       (o)
+- advanced/underground_physics (DMX-V10-05-00)                               (o)
+- advanced/xray_fluorescence (XrayFluo-V10-05-00)                            (o)
+- basic (exbasic-V10-05-00)                                                  (o)
+- extended/biasing (exbiasing-V10-05-00)                                     (o)
+  o Fixed Boolean operators to return G4bool.
+- extended/electromagnetic/TestEm8 (testem8-V10-05-00)                       (o)
+  o DetectorConstruction: added alternative materials in order to test all
+    methods to construct new material with G4NistMaterialBuilder.
+    Addressing problem reports #2133 and #2134.
+- extended/electromagnetic/TestEm15 (testem15-V10-05-00)
+  o SteppingAction: do not fill hist #11,#12 when no recoil returned.
+- extended/eventgenerator (exEventgenerator-V10-05-00)                       (o)
+- extended/exoticphysics (exExoticphysics-V10-05-00)                         (o)
+- extended/field (fieldex-V10-05-00)                                         (o)
+- extended/hadronic (exHadronic-V10-05-00)                                   (o)
+  o Fixed Boolean operators to return G4bool.
+- extended/medical/dna/chem1 (chem1-V10-05-00)                               (o)
+  o Fixed PhysicsList.
+- extended/medical/dna/chem2 (chem2-V10-05-01)
+- extended/medical/dna/chem3 (chem3-V10-05-01)
+  o Fixed PhysicsList.                                                       (o)
+  o Clean-up of TimeStepAction.
+- extended/medical/dna/chem4 (chem4-V10-05-01)
+  o Fixed PhysicsList.                                                       (o)
+  o Added UI commands for one step thermalization model selection
+    in macro beam.in.
+- extended/medical/dna/chem5 (chem5-V10-05-00)                               (o)
+  o Fixed PhysicsList.
+- extended/medical/dna/microyz (microyz-V10-05-02)
+  o Added condensed history models including step size control.
+  o Added EM UI commands in microyz.in.
+  o Fixed Boolean operators to return G4bool.
+- extended/medical/fanoCavity (fano-V10-05-01)
+  o PhysListEmStandard_option4: set RangeFactor to 0.08 (as in the 
+    physics_list library). PhysListEmStandard_option3: set parameters as
+    in the physics_list library.
+- extended/medical/fanoCavity2 (fano2-V10-05-01)
+  o DetectorConstruction, DetectorMessenger, Run: fixed usage of base
+    materials and cleanup (should fix Opt4 EM physics results).
+  o PhysListEmStandard_option4: set RangeFactor to 0.08 (as in the 
+    physics_list library). PhysListEmStandard_option3: set parameters as
+    in the physics_list library.
+- extended/optical (exOptical-V10-05-00)                                     (o)
+- extended/parallel (exparallel-V10-05-00)                                   (o)
+- extended/parameterisations (exParameterisations-V10-05-00)                 (o)
+- extended/persistency (exPersistency-V10-05-00)                             (o)
+- extended/runAndEvent (exRunAndEvent-V10-05-00)                             (o)
+  o Fixed Boolean operators to return G4bool.
+
+tests                                            tests-V10-05-02
+-----
+- Updated reference outputs and tools.
+- tests/test19 (test19-V10-05-01)
+  o Syncronised with SVN trunk.
+- tests/test23 (test23-V10-05-03)
+  o Added batch scripts for different processing scenarios.
+  o Syncronised with SVN trunk.
