@@ -1,0 +1,256 @@
+
+                       geant4-10-06-ref-02
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o G4PhysicsLinearVector, G4PhysicsLogVector: more accurate checks in class
+   constructors.
+ o Define PDG code as "-22" for G4OpticalPhoton.
+ o Fixed reading and writing of const properties of materials in GDML.
+ o Reviewed ownership/deletion of physics models at the end of the run.
+ o Added implementation of IRT in G4DNA module.
+ o Fixed non-conservation warnings coming from G4HadronicProcess due to
+   sub-threshold reactions in Bertini cascade.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.6.p01
+(*)  Fixes included in release 10.6.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-06-06
+-----
+- No longer create symlinks on Windows; Windows permissions may prevent      (o)
+  creation of symlinks, leading to errors at install time.
+- Use "${FOO:-}" variable expansion and "-z" test to check for
+  undefined variables in Bourne Shell scripts. Prevents errors when
+  shell is in "set -u" mode. Addressing problem report #2221.
+
+config                                           config-V10-06-01
+------
+- Fixed and updated legacy setup for DLL builds on Windows.                  (o)
+
+digits_hits/utils                                detutils-V10-06-01          (o)
+-----------------
+- In G4ScoreQuantityMessenger, changed SetDefaultUnit() in trackLength
+  scorer to SetDefaultValue() to support various unit category.
+  Addressing problem report #2216.
+
+event                                            event-V10-06-01
+-----
+- Corrected logic in G4VPrimaryGenerator::CheckVertexInsideWorld() method.
+- Some code cleanup, formatting and C++11 revision.
+- Removed obsolete and unused headers.
+
+geometry/navigation                              geomnav-V10-06-01
+-------------------
+- Avoid looping infinitely in G4RegularNavigation by pushing N times with    (o)
+  increasing step size. Addressing problem report #2196.
+
+global                                           global-V10-06-05
+------
+- G4PhysicsLinearVector, G4PhysicsLogVector: more accurate checks in class
+  constructors. Fixed Coverity warnings.
+- Updated date and tag-ID for geant4-10-06-ref-02.
+
+graphics_reps                                    greps-V10-06-02
+-------------
+- HepPolyhedron, G4Polyhedron: added HepPolyhedronTet and
+  HepPolyhedronHyberbolicMirror.
+- G4VisAttributes: clarify that if number of cloud points (for cloud style
+  drawing) is <= 0, this is to be interpreted as under control of the viewer,
+  i.e., to be decided by the viewer. Otherwise this number is to be drawn.
+  Zero is the default value, which may be changed by invoking the method
+  SetForceNumberOfCloudPoints(); also possible to force cloud drawing with
+  SetForceCloud().
+
+intercoms                                        intercoms-V10-06-01
+---------
+- Accept null string as an alias value. Addessing problem report #2208.      (*)
+
+particles                                        particles-V10-06-04
+---------
+- G4ParticleTable: create/destruct only one instance of G4IonTable and
+  associated messenger; define assignment operator and copy constructor as
+  deleted; added cache with pointer to selected particle and get/set methods.
+- G4OpticalPhoton: define PDG code as "-22".
+- G4NuclideTable: added destruction of messenger
+- Fixed broken if-block in G4DecayTableMessenger.                            (o)
+  Addressing problem report #2193.
+
+persistency/gdml                                gdml-V10-06-01
+----------------
+- Fixed reading and writing of const properties of materials.
+  Matrices of size 1x1 are now used both for writing out and reading in
+  of const material. This fixes the inconsistency (using constants by the
+  writer) found in the code. Const material properties with the same name
+  (in different materials) are now written out with the properties table
+  address appended.
+
+physics_lists/builders                          phys-builders-V10-06-00
+----------------------
+- Revised all classes to remove unnecessary members, not destruct models and
+  cross-sections and use updated instantiation of string models. This should
+  help to achieve full deletion of hadronic physics objects at the end of run.
+
+physics_lists/constructors/decay                phys-ctor-decay-V10-06-01
+--------------------------------
+- G4RadioactiveDecayPhysics: enabled flag for isomer production, required
+  after fix to problem report #2226.
+- G4DecayPhysics, G4RadioactiveDecayPhysics, G4SpinDecayPhysics,
+  G4UnknownDecayPhysics: general cleanup. Removed thread local pointers,
+  avoid deleting objects; use C++11 keywords; use standard signatures for
+  constructors; define builder type for the main constructor G4DecayPhysics
+  (bDecay, for others bUnknown).
+
+physics_lists/constructors/electromagnetic      phys-ctor-em-V10-06-01
+------------------------------------------
+- Optimisation in initialisation of G4EmDNAChemistry_option3.
+
+physics_lists/constructors/ions                 phys-ctor-ions-V10-06-00
+-------------------------------
+- Cleanup of constructors: fixed names; made all constructor signatures
+  universal, removed thread local members, added c++11 keywords.
+
+physics_lists/constructors/stopping             phys-ctor-stopping-V10-06-00
+-----------------------------------
+- Cleanup of constructors: fixed names; made all constructor signatures
+  universal, removed thread local members, added c++11 keywords.
+
+processes/biasing                                procbiasing-V10-06-00
+-----------------
+- G4ImportanceProcess: added process type as fParallel.
+
+processes/electromagnetic/dna                    emdna-V10-06-02
+-----------------------------
+- Added classes for IRT; added features in management classes for IRT
+  (G4ITReaction, G4ITModelProcessor ...).
+- Added features in G4DNAMolecularReactionTable for GFDE.
+- Added molecules (Oxygen, O2, O3, HO2) from: Plante et al.(2017).
+
+processes/electromagnetic/muons                  emmuons-V10-06-01           (o)
+-------------------------------
+- G4MuPairProductionModel: fixed Coverity warning.
+
+processes/electromagnetic/standard               emstand-V10-06-01
+----------------------------------
+- G4UrbanMscModel: tuned 'tlimitmin' computation for e- (for e+ kept
+  unchanged) and changed parameterisation of 'stepmin'; added two private
+  inline methods to reduce code duplication.
+
+processes/electromagnetic/xrays                  xrays-V10-06-00
+-------------------------------
+- G4VXTRenergyLoss: fixed destructor.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-06-00)                                      (o)
+  o G4HadronInelasticDataSet: fixed wrong GHEISHA x-section.
+    Addressing problem report #2220.
+- models/cascade (hadr-casc-V10-06-03)
+  o Fixed non-conservation warnings coming from G4HadronicProcess due to
+    sub-threshold reactions in Bertini. Sub-threshold reactions are now
+    treated as having a "non-interaction" final state, that is, the initial
+    particles are simply copied to the final state.
+- models/de_excitation (hadr-deex-V10-06-00)
+  o G4PhotonEvaporation, G4DeexPrecoParameters, G4DeexParametersMessager:
+    added extra flag 'IsomerProduction'; if enabled. photon evaporation
+    samples the time of gamma transition; added C++ interface and UI command
+    allowing to set this flag; radioactive decay constructor should enable
+    this parameter. Addressing problem report #2226.
+- models/particle_hp (hadr-hpp-V10-06-03)
+  o In G4ParticleHPInelasticBaseFS, use QI[0]-QI[it] for excitation and      (*)
+    added particle definition protection to 'iLevel' calculation.
+    Addressing problem report #1838:
+  o Correction in G4ParticleHPInelasticBaseFS and                            (*)
+    G4ParticleHPInelasticCompFS.
+    Removed deletion of 'theReactionXsec' in G4ParticleHPPhotonDist()
+    destructor as memory allocation does not take place in this class.
+    Addressing problem report #1824.
+- models/parton_string/hadronization (hadr-hadronization-V10-06-00)
+  o G4VLongitudinalStringDecay, G4ExcitedStringDecay, G4LundStringFragmentation:
+    inherit from G4HadronicInteraction; destruction of these models at the end
+    of run is now done by the hadron model store; removed implementations of
+    private operators.
+- models/parton_string/management (hadr-partonstring-mgt-V10-06-00)
+  o G4VStringFragmentation: use inheritance from G4HadronicInteraction;
+    removed implementations of private operators.
+- models/radioactive_decay (radioactive_decay-V10-06-07)                     (*)
+  o G4RadioactiveDecayBase, G4RadioactiveDecay, G4Radioactivation:
+    use G4VERBOSE consistently; in G4Radioactivation, fixed forgotten change
+    of verbosity from 0 to 1.
+  o G4RadioactiveDecayBase, G4RadioactiveDecay: fixed forgotten change of    (o)
+    verbosity from 0 to 1.
+- models/theo_high_energy (hadr-theo-HE-V10-06-00)
+  o G4QuasiElasticChannel: use inheritance from G4HadronicInteraction.
+    In G4TheoFSGenerator do not destruct G4QuasiElasticChannel.
+- stopping (hadr-stopping-V10-06-01)
+  o G4HadronicAbsorptionFritiof, G4HadronicAbsorptionFritiofWithBinaryCascade:
+    simplified instantiation of the FTF model, do not destruct its components.
+
+processes/management                             procman-V10-06-00
+--------------------
+- G4ProcessManagerMessenger: use cache pointer of selected particle in the
+  G4ParticleTable class.
+
+processes/optical                                op-V10-06-01
+-----------------
+- G4OpRayleigh: avoid double deletion of property vectors
+
+processes/scoring                                procscore-V10-06-00
+-----------------
+- G4ParallelWorldProcess, G4ParallelWorldScoringProcess: use new PDG code
+  for optical photon, "-22".
+
+run                                              run-V10-06-01
+---
+- G4RunManager: do not call G4ParticleTable for Messenger deletion.
+
+track                                            track-V10-06-02
+-----
+- G4Track: use new G4OpticalPhoton PDG code; removed static thread local 
+  variables; slightly simplified velocity computation; fixed Coverity warnings
+  connected with unnecessary checks for valid pointers to G4Step and
+  G4DynamicParticle; removed commented code.
+
+visualization                                    vis-V10-06-02
+-------------
+- management (visman-V10-06-01):
+  o Added new command "/vis/geometry/set/forceCloud".
+- OpenGL (OpenGL-V10-06-03):
+  o Improved guidance and tidy "/vis/ogl/" commands.
+
+examples                                         examples-V10-06-02
+--------
+- Updated documentation and reference outputs.
+- advanced/gammaray_telescope (gammaraytel-V10-06-00)
+  o GammaRayTelHadronPhysics, GammaRayTelIonPhysics: fixed
+    compilation problems due to incorrect FTFP instantiation.
+- basic/B2 (exampleB2-V10-06-00)                                             (*)
+  o Updated READMEs and added a comment in B2PrimaryGeneratorAction
+    that starting a primary particle on the world boundary requires
+    shooting in a direction towards inside the world.
+- extended/exoticphysics/monopole (monopole-V10-06-00)                       (*)
+  o G4MonopolePhysics: minor code clean-up for thread safety
+  o Do not instantiate VisManager in the batch mode in main();
+    fixed some typos.
+  o G4MonopoleTransportation: removed check if monopole is opticalphoton or not
+    as no longer necessary.
+- extended/hadronic/Hadr00 (exHadr00-V10-06-00)
+  o HistoManagerMessenger: fixed destructor.
+- extended/medical/dna (exdna-V10-06-01)
+- extended/medical/dna/chem6 (chem6-V10-06-00)
+  o New example providing scoring of the radiochemical yield G defined as
+    (Number of species X) / (100 eV of deposited energy), as a function of
+    time and LET. The details are described in the following paper:
+    J. Appl. Phys. 125 (2019) 104301.
+- extended/optical/OpNovice2 (OpNovice2-V10-06-01)
+  o Removed redundant G4AnalysisManager::Instance() calls.
+
+tests                                            tests-V10-06-02
+-----
+- Updated reference outputs and tools.
+- tests/test15 (test15-V10-06-00)
+  o Test15Run, Test15RunAction: cleanup of analysis.

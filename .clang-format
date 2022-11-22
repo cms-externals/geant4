@@ -1,0 +1,107 @@
+# requires clang-tidy version 10.0+
+---
+AccessModifierOffset: -1
+AlignAfterOpenBracket: DontAlign
+# Instead ContinuationIndentWidth is used
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: Left
+# Aligns \ symbols on the left; other options DontAlign, Left
+AlignOperands: true
+AlignTrailingComments: false
+AllowAllParametersOfDeclarationOnNextLine: true
+# When declaring a function, parameters continue on the same line
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: All
+# while (true) {} allowed
+AllowShortIfStatementsOnASingleLine: WithoutElse
+#  if (a) return; is allowed
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: true
+AlwaysBreakTemplateDeclarations: Yes
+#BasedOnStyle: Mozilla
+# this avoids implicit parameters setting
+BinPackArguments: true
+BinPackParameters: true
+BraceWrapping:
+    AfterClass:             true
+    AfterControlStatement:  MultiLine
+    AfterEnum:              true
+    AfterFunction:          true
+    AfterNamespace:         true
+    AfterStruct:            true
+    AfterUnion:             true
+    AfterExternBlock:       true
+    BeforeCatch:            false
+    BeforeElse:             true
+    IndentBraces:           false
+    SplitEmptyFunction:     false
+    SplitEmptyRecord:       false
+    SplitEmptyNamespace:    false
+BreakBeforeBraces: Custom
+BreakBeforeTernaryOperators: true
+BreakInheritanceList: BeforeColon
+BreakConstructorInitializers: BeforeColon
+BreakStringLiterals: true
+ColumnLimit: 100
+CompactNamespaces: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 2
+Cpp11BracedListStyle: true
+DerivePointerAlignment: false
+FixNamespaceComments: true
+IncludeBlocks: Regroup
+# Priority is:
+# 1. Geant4 headers in ""
+# 1. Geant4 headers in "" that don't start with 'G4'
+# 2. External package headers with extension in "" or <> (but _should_ be <>)
+# 3. System headers (not exhaustive)
+# Note order of regexes is important as they are matched in order
+IncludeCategories:
+  - Regex:           '^"G4.*\.hh"'
+    Priority:        1
+  - Regex:           '^"(Randomize|globals)\.hh"'
+    Priority:        1
+  - Regex:           '^"[[:alnum:]\/\-_.]+"'
+    Priority:        2
+  - Regex:           '^<[a-z_]+>'
+    Priority:        3
+  - Regex:           '^<[[:alnum:]\/.]+>'
+    Priority:        2
+IndentCaseLabels: true
+IndentPPDirectives: AfterHash
+IndentWidth: 2
+KeepEmptyLinesAtTheStartOfBlocks: false
+Language: Cpp
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: None
+PointerAlignment: Left
+ReflowComments: true
+SortIncludes: true
+# works together with IncludeBlocks, IncludeCategories
+# sorts includes alphabetically withing block, G4 includes first
+SortUsingDeclarations: true
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 2
+SpacesInAngles: false
+SpacesInConditionalStatement: false
+SpacesInContainerLiterals: true
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpaceAfterLogicalNot: true
+Standard: Cpp11
+TabWidth: 2
+UseTab: Never
+...
