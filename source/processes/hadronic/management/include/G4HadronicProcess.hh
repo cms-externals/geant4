@@ -224,7 +224,7 @@ protected:
   G4double aScaleFactor = 1.0;
   G4double theLastCrossSection = 0.0;
   G4double mfpKinEnergy = DBL_MAX;
-  G4int epReportLevel = 0;
+  G4long epReportLevel = 0;
 
   G4HadXSType fXSType = fHadNoIntegral;
 
