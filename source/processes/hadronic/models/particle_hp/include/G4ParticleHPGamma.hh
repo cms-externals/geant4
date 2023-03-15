@@ -39,10 +39,10 @@
 
 class G4ParticleHPGamma
 {
-  public:
+public:
   
   G4ParticleHPGamma();
-  ~G4ParticleHPGamma();
+  ~G4ParticleHPGamma() = default;
   
   G4bool Init(std::istream & aDataFile);
   
@@ -84,14 +84,13 @@ class G4ParticleHPGamma
     return probability;
   }
 
-  private:
+private:
   
   G4double levelEnergy;
   G4double gammaEnergy;
   G4double probability;
   
   G4ParticleHPLevel * next;
-  static G4ThreadLocal int instancecount;
 };
 
 #endif

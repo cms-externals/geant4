@@ -42,35 +42,30 @@
 
 class G4ParticleHPDeExGammas
 {
-  public:
+public:
   
   G4ParticleHPDeExGammas() 
   {
-    levelStart = 0;
-    levelSize = 0;
-    nLevels = 0;
-    theLevels = 0;
   }
   ~G4ParticleHPDeExGammas() 
   {
-    if(levelStart!=0) delete [] levelStart;
-    if(levelSize!=0) delete [] levelSize;
-    if(theLevels!=0) delete [] theLevels;
+    delete [] levelStart;
+    delete [] levelSize;
+    delete [] theLevels;
   }
   
   void Init(std::istream & aDataFile);
 
   inline G4ReactionProductVector * GetDecayGammas(G4int aLevel)
   {
-    if(aLevel>nLevels-1 || aLevel<0) return 0;
+    if(aLevel>nLevels-1 || aLevel<0) return nullptr;
     if(nLevels==0) return new G4ReactionProductVector();
     G4ReactionProductVector * result = new G4ReactionProductVector;
     G4DynamicParticleVector * theResult;
 
     theResult = theLevels[aLevel]. GetDecayGammas();
     G4ReactionProduct * theCurrent;
-    unsigned int i;
-    for(i=0; i<theResult->size(); i++)
+    for(unsigned int i=0; i<theResult->size(); ++i)
     {
       theCurrent = new G4ReactionProduct;
       *theCurrent = *(theResult->operator[](i));
@@ -90,8 +85,7 @@ class G4ParticleHPDeExGammas
   
   inline G4ParticleHPLevel * GetLevel(G4int i)
   {
-    if(std::getenv("G4PHPTEST")) G4cout << this << " GetLEVEL " << i << " n " << nLevels << G4endl;
-    if(i>nLevels-1) return 0;
+    if(i>nLevels-1) return nullptr;
     return theLevels+i;
   }
   
@@ -105,10 +99,10 @@ class G4ParticleHPDeExGammas
   }
   private:
   
-  G4int * levelStart;
-  G4int * levelSize;
-  G4int nLevels;
-  G4ParticleHPLevel * theLevels;
+  G4int * levelStart = nullptr;
+  G4int * levelSize = nullptr;
+  G4int nLevels = 0;
+  G4ParticleHPLevel * theLevels = nullptr;
 };
 
 #endif
