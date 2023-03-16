@@ -111,7 +111,7 @@ void G4ParticleHPDeExGammas::Init(std::istream & aDataFile)
     }
   }
 
-// set the next relation in the gammas.
+  // set the next relation in the gammas.
   G4double levelE, gammaE, currentLevelE;
   G4double min; 
   for(i=0; i<nGammas; i++)

@@ -32,58 +32,58 @@
 #include "G4ParticleHPLevel.hh"
 #include "G4ParticleHPGamma.hh"
 
-  G4ParticleHPLevel::~G4ParticleHPLevel() 
-  {
-    if(theGammas != 0)
+G4ParticleHPLevel::~G4ParticleHPLevel() 
+{
+  if(theGammas != 0)
     {
       for(G4int i=0; i<nGammas; i++) delete theGammas[i];
+      delete [] theGammas;
     }
-    delete [] theGammas;
-  }
+}
 
-  void G4ParticleHPLevel::SetNumberOfGammas(G4int aGammas)
-  {
-    nGammas = aGammas;
-    if(theGammas != 0)
+void G4ParticleHPLevel::SetNumberOfGammas(G4int aGammas)
+{
+  nGammas = aGammas;
+  if(theGammas != 0)
     {
       for(G4int i=0; i<nGammas; i++) delete theGammas[i];
+      delete [] theGammas; 
     }
-    delete [] theGammas; 
-    theGammas = new G4ParticleHPGamma * [nGammas];
-  }
+  theGammas = new G4ParticleHPGamma * [nGammas];
+}
 
-  void G4ParticleHPLevel::SetGamma(G4int i, G4ParticleHPGamma * aGamma)
-  {
-    theGammas[i] = aGamma;
-    SetLevelEnergy(aGamma->GetLevelEnergy());
-  }
+void G4ParticleHPLevel::SetGamma(G4int i, G4ParticleHPGamma * aGamma)
+{
+  theGammas[i] = aGamma;
+  SetLevelEnergy(aGamma->GetLevelEnergy());
+}
 
-  G4double G4ParticleHPLevel::GetGammaEnergy(G4int i)
-  {
-    return theGammas[i]->GetGammaEnergy();
-  }
+G4double G4ParticleHPLevel::GetGammaEnergy(G4int i)
+{
+  return theGammas[i]->GetGammaEnergy();
+}
   
-  G4DynamicParticleVector * G4ParticleHPLevel::GetDecayGammas()
-  {
-    G4DynamicParticleVector * theResult;
-    G4double sum = 0;
-    G4double * running = new G4double[nGammas];
-    running[0] = 0;
-    G4int i;
-    for(i=0; i<nGammas; i++)
+G4DynamicParticleVector * G4ParticleHPLevel::GetDecayGammas()
+{
+  G4DynamicParticleVector * theResult;
+  G4double sum = 0;
+  G4double * running = new G4double[nGammas];
+  running[0] = 0;
+  G4int i;
+  for(i=0; i<nGammas; i++)
     {
       if(i!=0) running[i]=running[i-1];
       running[i]+=theGammas[i]->GetWeight();
     }
-    sum = running[nGammas-1];
-    G4int it(0);
-    G4double random = G4UniformRand();
-    for(i=0; i<nGammas; i++)
+  sum = running[nGammas-1];
+  G4int it(0);
+  G4double random = G4UniformRand();
+  for(i=0; i<nGammas; i++)
     {
       it = i;
       if(random*sum < running[i]) break;
     }
-    delete [] running;
-    theResult = theGammas[it]->GetDecayGammas();
-    return theResult;
-  }
+  delete [] running;
+  theResult = theGammas[it]->GetDecayGammas();
+  return theResult;
+}
