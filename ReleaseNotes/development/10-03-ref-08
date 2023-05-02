@@ -1,0 +1,342 @@
+
+                       geant4-10-03-ref-08
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Fix in G4NystromRK4 for caching of momentum, field location & value.
+ o Reviewed implementation of G4Orb, made more compact and performant.
+ o Updated mass, width and life time of particles according to PDG-2017.
+ o Extended schema for coping with all possible parameters for G4TwistedTubs
+   shape; new GDML schema version 3.1.6.
+ o Added option to apply Mott-correction to the default Goudsmit-Saunderson
+   multiple-scattering model; use most accurate settings (error-free stepping
+   and Mott-correction).
+ o Tuned performance of G4eSingleCoulombScatteringModel, making it as fast as
+   the default single scattering.
+ o Added possibility of smearing last step length of low-energy charged
+   particles in G4VEnergyLossProcess, G4VEmFluctuationModel.
+ o Implemented initial set of FTF configurable parameters.
+ o Updated to data sets G4EMLOW-7.0 and G4TENDL-1.3.1.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.3.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-03-32
+-----
+- Added new GEANT4_USE_HDF5 option (OFF by defaults), to allow user to
+  enable Hdf5 support in analysis library. Created a G4HDF INTERFACE target
+  for uniform access to HDF5 headers and libraries at build, test and install
+  time.
+- Updated to data set G4EMLOW-7.0.
+
+analysis                                         analysis-V10-03-11
+--------
+- Updated to g4tools 3.6.0: Coverity fixes on previous version.
+  See History_tools for the complete list of modifications.
+- Added full support for HDF5 and fixes.
+
+digits_hits                                      digits_hits-V10-03-02
+-----------
+- Fixed propagation of warning flag in G4SDStructure.                        (o)
+  Addressing problem report #1993.
+
+geometry
+--------
+- magneticfield (field-V10-03-14):
+  o G4NystromRK4: fixed caching of momentum, field location & value.         (o)
+    Addressing problem report #1996, reported by ALICE.
+    Correction in call to getField().
+  o Temporarly made G4NystromRK4 the default stepper when using the 2nd
+    constructor of G4ChordFinder, for testing.
+  o G4MagInt_Driver: added GetEquationOfMotion() method for enabling common
+    code with future development.
+  o Fixed Coverity defects in G4MagIntegratorDriver, G4DormandPrinceRK78.
+- navigation (geomnav-V10-03-05):
+  o Modification in  G4PathFinder, G4PropagatorInField and locator classes
+    to use GetEquationOfMotion() method from G4MagIntegratorDriver.
+  o G4Navigator: use 'perThousand' in check for unity of normal vector.
+- solids/CSG (geom-csg-V10-03-34):
+  o Reviewed implementation of G4Orb, made more compact and performant.
+- solids/specific (geom-specific-V10-03-13):
+  o G4EllipticalCone: corrected sampling of random points on lateral surface
+    in function GetPointOnSurface().
+  o Twisted solids: fixed bug in drawing polyhedra with negative twist       (o)
+    angle. Addressing problem report #1995.
+
+graphics_reps                                    greps-V10-03-05
+-------------
+- G4AttDefStore: made it shared (i.e., no longer thread-local).
+
+intercoms                                        intercoms-V10-03-02
+---------
+- Explicitly remove constness in G4AnyMethod by means of remove_const.       (o)
+  Addressing problem report #1803. 
+
+interfaces                                       interfaces-V10-03-01        (o)
+----------
+- G4VBasicShell: fixed std::out_of_range exception in ModifyPath() when
+  typing 'ls' command at the top directory.
+  Addressing problem report #1989.
+- G4UIQt: set always-on-top to the picking windows.
+
+materials                                        materials-V10-03-06
+---------
+- G4NistManager, G4NistElementBuilder, G4NistMaterialBuilder: fixed potential
+  thread safety issues when building element or material.
+- G4Material, G4IonisParMat: fixed definition of state of a material,
+  when a material is constructed via based material.
+  Addressing problem report #1997.
+
+particles                                        particles-V10-03-13
+---------
+- Updated mass, width and life time of particles according to PDG-2017.
+- Fixed problem of G4DecayTable::SelectADecayChannel() in case of sum of BR
+  is not equal to 1.0.
+- Added protection for BR<0 or BR>1 in G4VDecayChannel.
+- Fixed Coverity defect in G4PDGCodeChecker.
+
+persistency/gdml                                 gdml-V10-03-06
+----------------
+- Handle all possible variants for G4TwistedTubs, included asymmetric ones.
+  Updated TwistedtubsRead/Write() in G4GDMLRead/WriteSolids accordingly.
+  Fixed export of shape to correctly export end-inner/outer radii.
+- Extended schema for coping with all possible parameters for G4TwistedTubs
+  shape (updated file gdml_solids.xsd). New GDML schema version 3.1.6.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-03-27)
+  o G4EmStandardPhysicsGS: use most accurate settings for the Goudsmit-
+    Saunderson multiple-scattering model (error-free stepping and
+    Mott-correction).
+  o G4EmModelActivator: allow to use both "PAIphoton" and "pai_photon" 
+    names when activating PAIphoton model
+  o G4EmLivermorePolarizedPhysics: use upper limit 100 TeV, do not apply
+    high energy limit 1 GeV to gamma processes.
+  o G4EmLivermorePhysics, G4EmPenelopePhysics: code cleanup.
+  o All EM physics constructors now do not share multiple and single
+    scattering processes between proton and anti_proton.
+    All now using G4EmParticleList.
+  o All DNA physics constructors use gamma configuration as in Livermore;
+    fixed usage of SetEmModel() and AddEmModel().
+  o G4EmDNAPhysicsActivator: apply solatation model below 7.4 eV
+    (was 4 eV) in order to absorb low-energy e- and coherently initialise
+    models; code cleanup.
+- constructors/hadron_elastic (phys-ctor-helastic-V10-03-01)
+  o G4HadronElasticPhysics, G4HadronHElasticPhysics: changed kaon elastic    (o)
+    cross-sections from, respectively, Gheisha (used in G4HadronElasticPhysics)
+    and Chips (used in G4HadronHElasticPhysics), to Glauber Gribov ones.
+    This way, the total (elastic + inelastic) kaon cross sections are
+    consistent with the PDG ones. 
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V10-03-02)
+  o Code refactoring of QGSP_BERT, QGSP_BIC variants.
+
+processes/biasing                                procbiasing-V10-03-03
+-----------------
+- Removed duplicate class definition G4TrackTerminator.hh, which is part
+  of the processes/transportation module.
+
+processes/decay                                  decay-V10-03-03
+---------------
+- Added ProcessDescription to decay process.
+- Use nullptr in place of NULL or 0.
+
+processes/electromagnetic/dna                    emdna-V10-03-28
+-----------------------------
+- Added stationary mode flag to CPA100 ionisation.
+- G4DNAExcitation, G4DNAIonisation: make coherent model initialisation.
+- G4DNAEmfietzoglouIonisationModel: added protection for out of bound access.
+- Updated variable types in models.
+
+processes/electromagnetic/highenergy              emhighenergy-V10-03-00
+------------------------------------
+- G4eeToHadrons, G4hhIonisation, G4mplIonisation: make coherent model
+  initialisation.
+
+processes/electromagnetic/lowenergy               emlowen-V10-03-12
+-----------------------------------
+- G4MicroElecElastic, G4MicroElecInelastic: make coherent model initialisation.
+- G4LowECapture: added scaling of energy threshold for ions.
+
+processes/electromagnetic/muons                   emmuons-V10-03-01
+-------------------------------
+- G4MuIonisation, G4MuMultipleScattering, G4MuPairProduction,
+  G4ePairProduction: make coherent model initialisation.
+
+processes/electromagnetic/polarisation            empolar-V10-03-01
+--------------------------------------
+- G4PolarizedCompton, G4PolarizedGammaConversion, G4ePolarizedIonisation:
+  make coherent model initialisation.
+
+processes/electromagnetic/standard               emstand-V10-03-29
+----------------------------------
+- G4GoudsmitSaundersonMscModel, G4GoudsmitSaundersonTable: added option to
+  apply Mott-correction to the default GS model.
+  The new class G4GSMottCorrection handles the Mott-correction to the angular
+  distributions as well as correction factors to elastic, mfp, first and
+  second moments.
+- G4MottCoefficients, G4ScreeningMottCrossSection,
+  G4eSingleCoulombScatteringModel: tuned performance of the model making
+  as fast as the default single scattering.
+- G4hIonisation: fixed energy intervals per EM model for super-heavy particles.
+- G4ComptonScattering, G4CoulombScattering, G4GammaConversion,
+  G4PhotoElectricEffect, G4WentzelOKandVIxSection, G4WentzelVIModel,
+  G4alphaIonisation, G4eIonisation, G4hIonisation, G4ionIonisation,
+  G4eBremsstrahlung, G4eMultipleScattering, G4hMultipleScattering:
+  make coherent model initialisation  
+- G4PAIModel. G4PAIPhotModel: added implementation of virtual method
+  MinEnergyCut(), always return 25 eV, as PAI models are not applicable for
+  smaller energy transfers.
+- Requires new data set G4EMLOW-7.0.
+
+processes/electromagnetic/utils                  emutils-V10-03-17
+-------------------------------
+- G4VEnergyLossProcess, G4VEmFluctuationModel: added possibility of smearing
+  last step length of low-energy charged particle.
+- G4EmDataHandler: new class to keep physics tables in easy way.
+- G4EmParametersMessenger, G4EmParameters: added parameters "DNAFast",
+  "DNAStationary" and "DNAMsc"; added Get/Set methods and UI command.
+- G4VMultipleScattering, G4VMscModel, G4VEnergyLossProcess, G4VEmProcess,
+  G4EmConfigurator, G4EmConfigurator: new scheme of model initialisation
+  in order to not create extra fake model objects and reduce number of calls
+  at run time.
+- G4EmParameters: changed to fully thread-safe singleton.
+- G4VMultipleScattering: improved initialisation printout.
+- G4VMultipleScattering, G4VEmProcess, G4VEnergyLossProcess: code cleanup.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-03-11)
+  o Added G4MuNeutrinoNucleusTotXsc class implementing total muon
+    (anti)neutrino-nucleus cross-sections in the simplified form as
+    A-multiplied nu_mu-nucleon cross-sections.
+  o Bug fix in G4ComponentGGHadronNucleusXsc to use the correct cross-       (o)
+    sections for Kaons on H.
+- management (hadr-man-V10-03-05)
+  o G4HadronicProcessStore: in DumpHtml(), added printing for generic ion;
+    added loop in PrintHtml() to print descriptions of "extra" processes;
+    in Clean(), added exception to prevent deletion of G4RadioactiveDecay
+    already deleted somewhere else.
+- models/abrasion (had-abrasion-V10-03-03)
+  o Fixed memory leak in G4WilsonAbrasionModel; use nullptr instead of NULL.
+- models/de_excitation (hadr-deex-V10-03-47)
+  o G4NuclearLevelData: hold and have access method to G4PairingCorrection
+    and G4ShellCorrection classes; made it a fully thread safe singleton.
+  o G4PolarisationTransition: added protections inside GenerateGammaPhi() to
+    avoid reading outside vector; reduced sampling loop from 1000 to 100.
+  o G4PairingCorrection, G4ShellCorrection: no longer singletons.
+  o G4EvaporationChannel, G4FissionProbability, G4CompetitiveFission,
+    G4FissionBarrier, G4GEMChannel, G4GEMChannelVI, G4GEMProbability,
+    G4VEmissionProbability: changed access to G4PairingCorrection and 
+    G4ShellCorrection.
+  o G4LevelReader: added extra G4Exception in file reading method.
+- models/particle_hp (hadr-hpp-V10-03-06)
+  o Code cleanup.
+- models/parton_string/diffraction (hadr-string-diff-V10-03-03)
+  o Implemented initial set of FTF configurable parameters (baryon projectiles
+    and target destruction)
+
+processes/transportation                         transport-V10-03-02
+------------------------
+- G4Transportation, G4CoupledTransportation: obtain equation of motion using
+  dedicated method now provided through G4ProgatorInField.
+- Make appropriate setting/use of verbosity from base class G4VProcess,
+  instead of re-defining/using local verbosity flag in G4Transportation
+  and G4CoupledTransportation.
+  Addressing problem report #1999.
+
+data sets:
+---------
+- G4EMLOW-7.0:
+  o Added Mott-correction data to the GS angular distributions.
+  o Added new photoeffect parameterisation using EPICS-2014.
+- G4TENDL-1.3.1:
+  o Fixed Alpha/Inelastic/CrossSection/6_12_Carbon.z.
+  o Deleted F37 directories, "F37" is not defined in ParticleHPInelastic.
+  o Correction in Triton/README.
+  o Added remark for unsupported projectile-target combinations in README.
+
+examples                                         examples-V10-03-08
+--------
+- Updated documentation and reference outputs.
+- advanced/microbeam (microbeam-V10-03-03)
+  o Modified voxel dose normalisation; updated plot.C.
+- extended/analysis/AnaEx01 (AnaEx01-V10-03-00)
+- extended/analysis/AnaEx02 (AnaEx02-V10-03-00)
+- extended/analysis/AnaEx03 (AnaEx03-V10-03-00)
+  o Applied code guidelines (removed empty lines).
+- extended/electromagnetic/TestEm5 (testem5-V10-03-06)
+  o Added dna.mac macro and updated pixe.mac.
+- extended/electromagnetic/TestEm8 (testem8-V10-03-00)
+  o PhysicsList: restored functionality for old command
+    "/testem/phys/addPhysics pai".
+- extended/electromagnetic/TestEm14 (testem14-V10-03-01)
+  o Fixed printout.
+- extended/electromagnetic/TestEm18 (testem18-V10-03-05)
+  o Allow for optional tracking of secondary particles.
+- extended/exoticphysics/channeling (channelingExample-V10-03-03)
+  o Modified sdht_ID to fSDHT_ID.
+  o Removed G4VIS_USE, G4UI_USE.
+  o Applied code guidelines (removed empty lines).
+- extended/hadronic/Hadr03 (exhadr03-V10-03-04)
+  o SteppingAction: take into account e- from internal conversion.
+- extended/medical/dna/clustering (clustering-V10-03-00)
+  o Applied code guidelines.
+- extended/medical/dna/dnaphysics (dnaphysics-V10-03-11)
+  o PhysicsList: limit high energy by 1 GeV.
+  o Added more variables to ntuple; improved SteppingAction.
+  o Updated plot.C and numbering scheme.
+  o Applied code guidelines.
+- extended/medical/dna/mfp (mfp-V10-03-00)
+  o New example showing how to calculate mean free path of particles 
+    in liquid water using the Geant4-DNA physics processes and models.
+- extended/medical/dna/microdosimetry (microdosimetry-V10-03-04)
+  o Adapted to same scheme as dnaphysics example.
+  o Fix to analysis manager call in SteppingAction.
+- extended/medical/dna/neuron (neuron-V10-03-02)
+- extended/medical/dna/range (range-V10-03-02)
+- extended/medical/dna/slowing (slowing-V10-03-02)
+- extended/medical/dna/svalue (svalue-V10-03-02)
+- extended/medical/dna/wvalue (wvalue-V10-03-02)
+  o Applied code guidelines.
+- extended/optical/OpNovice (OpNovice-V10-03-02)
+  o Fix gui.mac, which wrongly executed vis.mac.
+- extended/parallel/ThreadsafeScorers (ThreadsafeScorers-V10-03-02)
+  o Add inclusion of <deque> in TSPhysicsList header.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-03-11)
+  o TrackingAction: count primary ions.
+  o EndOfRun: print time life > 0 only.
+
+tests                                            tests-V10-03-08
+-----
+- Updated reference outputs and tools.
+- test03 (test03-V10-03-04)
+  o Added testHdf5; fixed file names in reading test.
+- test04 (test04-V10-03-06)
+  o Updated to use G4TENDL-1.3.1.
+- test14 (test14-V10-03-00)
+- test17 (test17-V10-03-00)
+  o Updated CMake script to allow standalone build.
+- test22 (test22-V10-03-00)
+  o Added to Test30Physics the possibility to run:
+    FTF + QGS-string-fragmentation and QGS + Lund-string-fragmentation.
+- test31 (test31-V10-03-01)
+  o Updated CMake script to allow standalone build.
+- test37 (test37-V10-03-02)
+  o Use G4EmStandardPhysicsGS physics constructor, added Opt4 physics
+    constructor; added scripts.
+- test41 (test41-V10-03-02)
+  o Added scripts.
+- test50 (test50-V10-03-00)
+  o Updated CMake script to allow standalone build.
+- test58 (test58-V10-03-01)
+  o PhysListEmStandardISS: updated according to recent modifications 
+    in physics lists module.
+  o Updated CMake script to allow standalone build.
+- test65 (test65-V10-03-04)
+  o Increased timeout and inactivity limit for download of LEND data.
+  o Updated URL address of ftp site for LEND data.

@@ -1,0 +1,205 @@
+
+                       geant4-11-01-ref-02
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Refactored sub-modules in interfaces library to isolate core/always on
+   functionality from concrete UIs requiring external libraries.
+ o Fixed issue in single scattering model definition per region for e+, e-,
+   and light hadrons.
+ o Refactored visualization sub-modules to isolate private headers.
+ o New dataset G4EMLOW-8.3.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.0.4
+(*)  Fixes included in patch release 11.1.1
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-01-07
+-----
+- Removed no longer required G4VecGeomShim module.                        (o)(*)
+  VecGeom supports/supplies full imported targets since 1.1.18
+  Use of VECGEOM_LIBRARIES variable required to allow build against
+  CUDA-enabled VecGeom.
+- Updated Qt MOC application for G4UI implementation in place of
+  G4UIbasic/G4UIcommon.
+- Streamlined VTK cmake components.
+- Updated to dataset G4EMLOW-8.3.
+
+config                                           config-V11-01-00
+------
+- Updated UI/interfaces include paths to reflect new organization.
+
+global                                           global-V11-01-06
+------
+- Removed obsolete and no longer used G4SIunits.hh header.
+- Updated date and tag-ID for geant4-11-01-ref-02.
+
+interfaces                                       interfaces-V11-01-08
+----------
+- Refactored modules into G4UIcore and G4UIimplementation to isolate
+  core/always on functionality from concrete UIs requiring external libraries.
+  Both modules are still built into a G4interfaces library, with no change to
+  user interface for applications. 
+- Applied clang-tidy and clang-format fixes, together with
+  public/protected/private ordering in headers.
+- G4UIQt: fixed mutex bug in implementation of G4UIQt::ReceiveG4debug();
+  moved "workaround output" (std::cout) under control of mutex;
+  limit "workaround output" to master thread.
+  Use the same mutex for all 3 output streams.
+  This "workaround" is to make sure all flushed output appears on the terminal
+  after a crash, because even flushed output can get lost in the Qt UI system.
+  Move "smart warning" code outside mutex lock to avoid double locking.
+- In G4UIQt, replaced use of G4int by int in QT signal/slots.
+
+materials                                        materials-V11-01-02
+---------
+- Applied standard and extended clang-tidy fixes, normal order access
+  specifiers and docstrings; applied clang-format.
+
+particles                                        particles-V11-01-03
+---------
+- G4XicZero, G4AntiXicZero: updated mean lifetime values according to values (o)
+  in PDG-2022.
+- G4(Anti)OmegacZero: updated mean life time.                             (o)(*)
+
+physics_lists                                    physics-lists-V11-01-00
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-01-04)
+  o G4EmBuilder, G4EmModelActivator, G4EmStandardPhysicsSS: fixed issue in
+    single scattering model definition per region for e+, e-, and light
+    hadrons. Addressing problem report #2530.
+  o G4EmBuilder, G4EmStandardPhysicsSS: use new constructor for the
+    G4CoulombScattering process.
+  o G4EmModelActivator: use new constructor for the G4CoulombScattering process;
+    allow adding G4EmStandardPhysicsSS on top of G4EmStandardPhysics_option3.
+  o G4GammaGeneralProcess: added method GetGammaNuclear().
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V11-01-00)
+  o G4EmExtraPhysics: activate biasing in processes, not in cross-sections.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-01-04)
+  o Introduced G4DNAMaterialManager to handle available DNA materials
+    and keep DNA cross-section data shared across threads.
+  o Minor change in G4VDNAModel class.
+- standard (emstand-V11-01-05)
+  o G4WentzelOKandVIxSection: fixed numeric instability for the extreme      (o)
+    case of very small kinetic energy (< 1 eV). Improved comments and
+    fixed single scattering per region. Addressing problem report #2530.
+  o G4UrbanMscModel: check IsLocked() method before definition of lateral
+    displacement algorithm and positron correction; improved code formatting.
+  o G4CoulombScattering: added SetCombined() method allowing the user to
+    configure the process; improved code formatting and initialisation.
+    Added constructor with changed signature, which uses flag "isCombined"
+    instead of process name.
+  o G4eCoulombScatterinModel: improved initialisation and code formatting.
+- utils (emutils-V11-01-02)
+  o G4EmExtraParameters: fixed AddPAIModel() method and improved comments.
+  o G4EmExtraParametersMessenger: fixed broadcasting.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-01-01)
+  o G4ElNeutrinoNucleusTotXsc: uncommented methods for interface with
+    G4ElNeutrinoNucleusProcess.
+- models/lend (hadr-lend-V11-01-00)                                          (*)
+  o Fixed potential uninitialised variables in
+    MCGIDI_energy_parseMadlandNixFromTOM().
+- models/particle_hp (hadr-hpp-V11-01-00)                                    (*)
+  o Minor cleanup in G4ParticleHPDeExGammas header for data initialisation.
+- models/parton_string/qgsm (hadr-qgsm-V11-01-00)                            (*)
+  o Fixed potential uninitialised variables in
+    G4QGSMSplitableHadron::GetValenceQuarkFlavors().
+- processes (hadr-proc-V11-01-08)
+  o G4(El,Tau)NeutrinoNucleusProcess, G4NeutrinoElectronProcess,
+    G4MuNeutrinoNucleusProcess: update neutrino cross-section biasing
+    in selected detector-region.
+  o G4ElNeutrinoNucleusProcess: updated process name to be
+    "el-neutrino-nucleus".
+  o G4NeutronGeneralProcess: added two access methods, an extra set method and
+    removed possible variable shadowing.
+  o G4HadronElasticProcess, G4NeutronGeneralProcess: fixed problems identified 
+    by Coverity.
+
+run                                              run-V11-01-02
+---
+- Reduced printout in destruction of run-manager (master and workers),       (*)
+  to be coherent with verbose level greater than 1.
+
+tracking                                         tracking-V11-01-01
+--------
+- Applied standard and extended set of clang-tidy/format fixes.
+
+visualization
+-------------
+- modeling (modeling-V11-01-01):
+  o G4VModel: removed unnecessary reference to G4PhysicalVolumeModel.
+  o G4PseudoScene: added G4VisAttributes (this was always available, but
+    never previously made onward available to sub-classes).
+  o G4CallbackModel: corrected description in comments.
+- FukuiRenderer (DAWN-V11-01-00)
+- gMocren (gMocren-V11-01-00)
+- HepRep (vis-HepRep-V11-01-00)
+  o Isolate private headers and updated dependencies.
+- OpenGL (opengl-V11-01-01)
+- OpenInventor (openinventor-V11-01-00)
+  o Link to new G4UIcore/UIimplementation modules in place of former
+    G4UIbasic/UIcommon.
+- Qt3D (visQt3D-V11-01-01)
+  o Link to new G4UIcore/UIimplementation modules in place of former
+    G4UIbasic/UIcommon.
+  o Isolate private headers and update dependencies.
+- RayTracer (raytracer-V11-01-00)
+  o Isolate private headers and update dependencies.
+- ToolsSG (vis_toolssg-V11-01-01)
+  o Link to new G4UIcore/UIimplementation modules in place of former
+    G4UIbasic/UIcommon.
+  o Isolate private headers and update dependencies.
+- Tree (vistree-V11-01-00)
+- VRML (VRML-V11-01-00)
+  o Isolate private headers and update dependencies.
+- Vtk (visVtk-V11-01-04)
+  o Refactor of VTK viewer with pipelines, geometry stores; improved 2D
+    rendering, streamlined VTK cmake components.
+  o G4VtkSceneHandler: text justification to given coordinate.
+  o Link to new G4UIcore/UIimplementation modules in place of former
+    G4UIbasic/UIcommon.
+  o Isolate private headers and update dependencies.
+
+data
+----
+- G4EMLOW-8.3:
+  o Updated microelec data for electrons.
+
+examples                                         examples-V11-01-02
+--------
+- Updated documentation and reference outputs.
+- basic/B4 (exampleB4-V11-01-00)
+  o In PrimaryGeneratorAction, default e-, 300 MeV.
+  o RunAction: adjusted binning of histograms.
+  o Updated run1.mac and run2.mac macros.
+- extended/hadronic/Hadr10 (exhadr10-V11-01-01)                              (*)
+  o In DetectorMessenger, define "/mydet/update" command also for PreInit
+    state and call "/run/initialize" after geometry update in hadr10.in script,
+    to avoid run-time warning messages in output for reinitialisation of
+    geometry.
+  o In SteppingAction, protecting the argument of acos() to be within range.
+- extended/medical/dna/moleculardna (molecularDNA-V11-01-02)                 (*)
+  o Fixed materials definition and corrected mistake in PhysicsList.
+  o Updated input macros.
+- extended/visualization/perspective (exam-ext-vis-persp-V11-01-00)
+  o PerspectiveVisAction: fixed missing include for G4Transform3D header.
+
+tests                                            tests-V11-01-02
+-----
+- Updated reference outputs and tools.
+- tests/test44 (test44-V11-01-00)
+  o PhysicsList: take into account possible use of neutron general process;
+    use for EM physics Opt0, Opt3, and Opt4 Opt4 configurations in standard
+    testing scripts.
+- tests/test60 (test60-V11-01-00)
+  o Updated physics constructors.

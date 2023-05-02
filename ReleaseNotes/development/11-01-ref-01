@@ -1,0 +1,320 @@
+
+                       geant4-11-01-ref-01
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Initial support for declaring headers of a source code module private.
+ o Removed deprecated GNUmake scripts for building kernel libraries.
+ o Reviewed/simplified stream buffer and I/O classes. Added G4debug output
+   stream for logging low priority messages.
+ o Removed most calls to environment variables in hadronic physics classes.
+ o New dataset G4ABLA-3.2.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.0.4
+(*)  Fixes included in patch release 11.1.1
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-01-03
+-----
+- Fixed configuration/use of TGS visualisation driver in geant4-config      (*)
+  Addresses problem report #2525.
+- Use PROJECT_ or Geant4_ scoped _SOURCE/BINARY_DIR variables in place of   (*)
+  CMAKE_  scope version to ease use of Geant4 as a CMake subproject. 
+  Based on GitHub PR#52 (https://github.com/Geant4/geant4/pull/52).
+- Initial support for declaring headers of a source code module private.
+  Headers declared private are not installed; geant4_module_check reports
+  an inconsistency if a private header is used non-privately.
+- Updated to dataset G4ABLA-3.2.
+
+analysis                                         analysis-V11-01-00
+--------
+- Removed deprecated GNUmake scripts for library build.
+
+digits_hits                                      digits_hits-V11-01-00
+-----------
+- Removed deprecated GNUmake scripts for library build.
+- detector (det-V11-01-00)
+  o Applied clang-tidy corrections and general code modernization.
+  o Move docstrings prior to function declarations for doxygen/IDE
+    compatibility.
+- digits (detdigits-V11-01-00)
+  o Applied clang-tidy corrections and general code modernization.
+
+error_propagation                                error-propagation-V11-01-00
+-----------------
+- Removed deprecated GNUmake scripts for library build.
+
+event                                            event-V11-01-00
+-----
+- Removed deprecated GNUmake scripts for library build.
+
+externals                                        externals-V11-01-00
+---------
+- Removed deprecated GNUmake scripts for library build.
+- clhep (clhep-V11-01-00)
+  o Synchronised with CLHEP-2.4.6.3.
+  o Fixed compilation warnings for implicit type conversions on macOS/XCode
+    14.1 in Random and Evaluator code.
+  o Fixed cases of C++20 deprecated arithmetics with unnamed enumerations
+    in Vector classes.
+- g4tools (g4tools-V11-01-01)
+  o Updated to version 6.1.1.
+  o Added support for Qt6 in glarea.
+  o Fixed compilation warnings on Intel/icx compiler for mismatched array
+    bounds. Fixed Coverity defect.
+
+g3tog4                                           g3tog4-V11-01-00
+------
+- Removed deprecated GNUmake scripts for library build.
+
+geometry                                         geometry-V11-01-00
+--------
+- Removed deprecated GNUmake scripts for library build.
+- magneticfield (field-V11-01-01)                                            (*)
+  o Reduced printout for setting any valid value for epsilon_min/_max in
+    G4FieldManager.
+- management (geommng-V11-01-00)                                             (*)
+  o G4LogicalVolume: use std::shared_ptr for handling visualization attributes.
+    Ignore calls to SetVisAttributes() from worker threads.
+- solids/Boolean (geom-bool-V11-01-00)                                       (*)
+  o Fixed hang-out in G4MultiUnion, caused by oveflow of 'size-1' when 'size'
+    value is zero.
+- solids/specific (geom-specific-V11-01-00)                                  (*)
+  o G4QuadrangularFacet: fixed warning message.
+
+global                                           global-V11-01-04
+------
+- Removed public interface to G4strstreambuf: G4strstreambuf becomes a private
+  implementation detail of G4ios.
+  Minimized coupling among G4cout/G4strstreambuf/G4coutDestination.
+- Added G4debug output stream for logging messages at lower priority than
+  G4cout.
+- G4DataVector: simplified inline methods implementation.                    (*)
+- Removed deprecated GNUmake scripts for library build.
+- Updated date and tag-ID for geant4-11-01-ref-01.
+
+graphics_reps                                    greps-V11-01-00
+-------------
+- Removed deprecated GNUmake scripts for library build.
+
+intercoms                                        intercoms-V11-01-02
+---------
+- Replace direct access to G4cout/etc stream buffers with call to
+  G4coutDestination installer function.
+- Implement ReceiveG4debug for G4UIsession et al.
+- Removed deprecated GNUmake scripts for library build.
+
+interfaces                                       interfaces-V11-01-02
+----------
+- Implemented ReceiveG4debug for concrete sessions.
+- Tentative implementation of user-specified output styles: "/gui/outputStyle".
+  Output streams: cout cerr warn error debug (extendible, see
+  G4VInteractiveSession header). Only used by G4UIQt at present.
+  Implemented here just a few features that have proved to be useful.
+- Removed deprecated GNUmake scripts for library build.
+
+materials                                        materials-V11-01-01
+---------
+- G4Material: allow recursive search for based material.                     (*)
+  Addressing problem report #2520.
+- Removed deprecated GNUmake scripts for library build.
+
+parameterisations                                gpara-V11-01-00
+-----------------
+- Removed deprecated GNUmake scripts for library build.
+
+particles                                        particles-V11-01-01
+---------
+- G4AntiNeutron: set the "PDG stable" flag to "false", as for G4Neutron.  (o)(*)
+- Removed deprecated GNUmake scripts for library build.
+
+persistency                                      persistency-V11-01-00
+-----------
+- Removed deprecated GNUmake scripts for library build.
+
+physics_lists                                    physics-lists-V11-01-00
+-------------
+- Removed deprecated GNUmake scripts for library build.
+- builders (phys-builder-V11-01-00)                                          (*)
+  o Updated table of processes.
+- constructors/decay (phys-ctor-decay-V11-01-00)                          (o)(*)
+  o G4RadioactiveDecayPhysics: assigned RadioactiveDecay process to G4Triton
+    (which is the only light ion that decays). Note: before, triton did not
+    have beta decay, i.e. it was wrongly treated as stable even when radioactive
+    decay physics was enabled; anti_triton did not, and still does not, have
+    beta decay (because RadioactiveDecay, in its current implementation, does
+    not handle any kind of anti-ions): in practice, this is an acceptable
+    approximation because of its relatively long lifetime and the fact
+    that annihilation and nuclear capture are more likely to happen before
+    decay.
+- constructors/electromagnetic (phys-ctor-em-V11-01-00)                      (*)
+  o G4GammaGeneralProcess: in all cases select the sub-process.
+    Addressing problem report #2521.
+- util (phys-util-V11-01-00)                                                 (*)
+  o G4HadProcesses: avoid double instantiation of capture cross-section.
+
+processes/electromagnetic
+-------------------------
+- Removed deprecated GNUmake scripts for library build.
+- dna (emdna-V11-01-03)
+  o Reorganised multiple material model of PTB. G4VDNAModel plays like a data
+    layer for multiple material models. The concrete models are independent of
+    G4DNAModelInterface.
+  o Replaced string to material index and some code cleanup in PTB models.
+  o Added material pointer members for each concrete PTB models.
+  o Code cleanup in G4DNAModelInterface for the model combination of different
+    materials.
+  o Fixed Coverity defects for uninitialised scalar variables.
+- lowenergy (emlowen-V11-01-00)
+  o In G4LivermorePhotoElectricModel and G4LivermoreRayleighModel removed calls
+    to environment variables and use G4EmParameters method instead.
+    Added lock for reading data on the fly; minor code formatting.
+- standard (emstand-V11-01-02)
+  o Removed use of std::getenv() from model classes, use G4EmParameters instead.
+  o Fixed compilation warning in G4GoudsmithSoundersonMscModel.              (*)
+  o G4UrbanMscModel: added flag for multiple-scattering positron correction. (*)
+- utils (emutils-V11-01-01)
+  o G4EmParameters: added extra member and access method to G4LEDATA path
+    allowing checking of the environment variable for the EM data only once.
+  o G4EmParameters, G4EmParametersMessenger: added parameter, UI command     (*)
+    and Get/Set methods for positron correction in multiple-scattering.
+
+processes/hadronic
+------------------
+- Removed deprecated GNUmake scripts for library build.
+- cross_sections (hadr-cross-V11-01-00)
+  o Removed calls to environment variable G4PARTICLEXSDATA, use
+    G4HadronicParameters access method instead.
+  o In G4CrossSectionDataStore, reduced number of calls to environment
+    variables, which are done only to print output for documentation.
+- management (hadr-man-V11-01-02)
+  o G4HadronicProcess: removed usage of "DebugFlag" and "RandomFile".
+    Replace access to environment variables with call to G4HadronicParameters.
+  o G4HadronicProcess: moved several class members to be protected.          (*)
+- processes (hadr-proc-V11-01-01)
+  o G4HadronElasticProcess: removed obsolete try/catch diagnostics not       (*)
+    applicable for hadron elastic models; added forgotten integral approach
+    for charged particles.
+  o G4NeutronGeneralProcess: optimized code: initialisation methods are      (*)
+    moved to source; avoid double instantiation of capture cross-section;
+    reduced number of calls to cross-section, added cross-section data store
+    pointer.
+- util (hadr-util-V11-01-01)
+  o G4HadronicParameters: removed two obsolete environment variables and
+    access methods; added flag for charge exchange.
+    Added class members defined via environment variable and access methods
+    for these members, this allows to remove the majority of calls to
+    std::getenv().
+
+processes/transportation                         transport-V11-01-02
+------------------------
+- Fixed inadvertent creation of G4TransportationParameters in                (*)
+  G4Transportation constructor, determining a change of default looper
+  parameters, responsible for observed warnings at run-time.
+- Fixed compilation warning about unused variable with G4VERBOSE unset.      (*)
+- In G4TransportationParameters, added a method to set both warning and
+  important energies; added method to report lock errors.
+  Improved reporting of inconsistent changes of 'warning' & 'important'
+  energies (not only enforce warning_E < important_E but also warn about
+  violations).
+- Removed deprecated GNUmake scripts for library build.
+
+readout                                          readout-V11-01-00
+-------
+- Removed deprecated GNUmake scripts for library build.
+
+run                                              run-V11-01-01
+---
+- G4PhysicsListHelper: added forgotten process of muon pair production by    (*)
+  muons and added general process. Addressing problem report #2523.
+- Removed deprecated GNUmake scripts for library build.
+
+track                                            track-V11-01-00
+-----
+- Removed deprecated GNUmake scripts for library build.
+
+tracking                                         tracking-V11-01-00
+--------
+- Removed deprecated GNUmake scripts for library build.
+
+visualization                                    vis-V11-01-00
+-------------
+- Removed deprecated GNUmake scripts for library build.
+- management (visman-V11-01-00):
+  o Code cleanup in G4VUserVisAction: made protected Draw() virtual method;
+    improve comments.
+- modeling (modeling-V11-01-00):                                             (*)
+  o Fixed transform in G4TextModel; the rotation part of the transform was
+    being ignored. This impacted the implementation of
+    "/vis/scene/add/localAxes".
+  o Tidied G4AxesModel.
+- OpenGL (opengl-V11-01-00)
+  o Make "modeling" module a private dependency, unless Qt is active, when
+    it must be public.
+
+data
+----
+- G4ABLA-3.2:
+  o New file named "mass2016.dat" with experimental atomic mass evaluation
+    from 2016.
+
+examples                                         examples-V11-01-01
+--------
+- Updated documentation and reference outputs.
+- advanced/ICRP110_HumanPhantoms (ICRP110Phantoms-V11-01-00)
+  o Now building two executables: ICRP110phantoms and ICRP110standalone.
+    ICRP110standalone allows to visualise the phantom without the overhead
+    of the run manager and initialising of all the physics tables (i.e. cannot
+    visualise trajectories).
+- extended/biasing/ReverseMC01 (ReverseMC01-V11-01-00)
+  o Remove inclusion of unneeded and now obsolete G4strstreambuf header.
+- extended/electromagnetic/TestEm3 (testem3-V11-01-00)
+  o Compute and plot energy leakage and total energy.
+- extended/electromagnetic/TestEm11 (testem11-V11-01-00)
+  o Compute and plot energy leakage and total energy.
+  o Revised headers.
+- extended/electromagnetic/TestEm15 (testem15-V11-01-00)
+  o Updated READMEs.
+- extended/eventgenerator/exgps (exgps-V11-01-00)                            (*)
+- extended/exoticphysics (exExoticPhysics-V11-01-00)                         (*)
+- extended/geometry/vecGeomNavigation (VecGeomNavigation-V11-01-00)          (*)
+  o Use PROJECT_ or Geant4_ scoped _SOURCE/BINARY_DIR variables in place of
+    CMAKE_  scope version to ease use of Geant4 as a CMake subproject. 
+    Based on GitHub PR#52 (https://github.com/Geant4/geant4/pull/52).
+- extended/hadronic/Hadr01 (exhadr01-V11-01-00)
+  o Added UI commands to enable neutron general process and extra macro file.
+- extended/hadronic/Hadr05 (exhadr05-V11-01-00)
+  o Compute and plot Edep, Eleak, Etotal=Edep+Eleak.
+- extended/hadronic/Hadr06 (exhadr06-V11-01-00)
+  o Compute and plot total energy released.
+- extended/hadronic/Hadr07 (exhadr07-V11-01-00)
+  o Compute and plot Edep, Eleak, Etotal=Edep+Eleak.
+- extended/medical (exMedical-V11-01-00)
+  o Use PROJECT_ or Geant4_ scoped _SOURCE/BINARY_DIR variables in place of  (*)
+    CMAKE_  scope version to ease use of Geant4 as a CMake subproject. 
+    Based on GitHub PR#52 (https://github.com/Geant4/geant4/pull/52).
+- extended/medical/dna/icsd (exicsd-V11-01-00)
+  o PhysicsList: deleted unused models; apdated RegisterModel() function
+    with new structure.
+- extended/medical/dna/moleculardna (molecularDNA-V11-01-01)
+  o Migrated data download to CERN EOS area for examples.
+  o Updated ecoli.mac file.
+- extended/parallel/MPI (MPI-V11-01-00)
+  o Use PROJECT_ or Geant4_ scoped _SOURCE/BINARY_DIR variables in place of  (*)
+    CMAKE_  scope version to ease use of Geant4 as a CMake subproject. 
+    Based on GitHub PR#52 (https://github.com/Geant4/geant4/pull/52).
+- extended/visualization/standalone (exam-ext-vis-standalone-V11-01-00)
+  o Include an example of DrawGeometry. DrawGeometryVisAction shows how to
+    visualise the geometry alone, i.e., without run manager and physics.
+
+tests                                            tests-V11-01-01
+-----
+- Removed deprecated GNUmake scripts for library build.
+- Use PROJECT_ or Geant4_ scoped _SOURCE/BINARY_DIR variables in place of   (*)
+  CMAKE_  scope version to ease use of Geant4 as a CMake subproject. 
+  Based on GitHub PR#52 (https://github.com/Geant4/geant4/pull/52).
+- Updated reference outputs and tools.

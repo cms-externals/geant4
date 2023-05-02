@@ -1,0 +1,273 @@
+
+                       geant4-10-06-ref-09
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Introducing G4VScoreHistFiller and G4TScoreHistFiller, allowing scorers
+   to fill histograms defined through Geant4 Analysis tools.
+ o Fixes in Tasking modules, improving stability.
+ o Changed computation of step limitation in G4UrbanMscModel for distance
+   to boundary; effects are limited only to Opt3 EM physics.
+ o Fixed scale of energy in G4PhysicsLinearVector and G4PhysicsLogVector;
+   may change dEdx and cross-sections numerically on small level.
+ o Implemented new splitting of excited hadrons into quark-antiquark or
+   quark-diquark in G4DiffractiveExcitation for FTF hadronic model.
+ o Improved agreement of FTF simulations with NA49 experimental data, on
+   Pt-Xf correlations for various particles produced in pp interactions at
+   158 GeV/c.
+ o New data set version G4EMLOW-7.13.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(+)  Fixes included in release 10.6.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-06-29
+-----
+- Improved support for Inventor (Coin): simplified configuration options,
+  handling co-working ones both at configure time and by client applications;
+  separated out dependency finding to keep these in one place; improved
+  consistency of using XQuartz vs System OpenGL on MacOS; removed obsolete
+  FindInventor module.
+- Updated GEANT4_TEST_ENVIRONMENT to set G4RUN_MANAGER_TYPE=TBB when MT and
+  GEANT4_USE_TBB=ON.
+- Updated to data set G4EMLOW-7.13.
+
+digits_hits
+-----------
+- detector (det-V10-06-01)
+  o Introducing G4VScoreHistFiller and G4TScoreHistFiller, allowing scorers
+    to fill histograms defined through Geant4 Analysis tools.
+  o Moved G4VPrimitivePlotter header from "util" sub-module.
+- scorer (detscorer-V10-06-00)
+  o Introducing a new scorer, G4PSVolumeFlux.
+  o Use G4VPrimitivePlotter base class to allow scorers to directly fill
+    histograms.
+- utils (detutils-V10-06-09)
+  o Added "/score/fill1D" command, allowing a primitive scorer to directly
+    fill a 1D histogram.
+  o Moved G4VPrimitivePlotter header to "detector" sub-module.
+
+error_propagation                                error-propagation-V10-06-01
+-----------------
+- Fixed Coverity defects warnings in G4ErrorPropagator for unreachable code.
+  Implemented move assignment operators in G4ErrorSymMatrix, G4ErrorSymMatrix,
+  G4ErrorFreeTrajParam, G4ErrorTrajState and G4ErrorSurfaceTrajParam.
+
+externals/ptl                                    ptl-V10-06-05
+-------------
+- Fixed issues with PTL::ThreadPool destruction.
+- Created generic execute_on_all_threads() member function for thread pool,
+  handling the complexity of performing this operation w/ TBB.
+- Cleaned up the inconsistent naming in PTL::ThreadPool.
+- All template parameters using leading underscore followed by capital letter
+  have been replaced --> reserved for standard library.
+- TaskGroup and TBBTaskGroup support non-aggregating join() function.
+- Arguments are copied into tuple for tasks.
+
+geometry/navigation                              geomnav-V10-06-06
+-------------------
+- Fixed Coverity defects in G4RegularNavigation for uninitialised data.
+
+global                                           global-V10-06-22
+------
+- G4PhysicsLinearVector, G4PhysicsLogVector: fixed scale of energy; this
+  problem does not affect results in general; it fixes data table scale
+  and may change dEdx and cross-sections numerically on small level.
+- Re-instate static pointer for 'masterG4coutDestination' in                 (+)
+  G4coutDestination with proper symbol exporting on Windows (necessary
+  for MT builds). Restores trapping of G4cout from workers in Qt GUI.
+- Updated date and tag-ID for geant4-10-06-ref-09.
+
+intercoms                                        intercoms-V10-06-04
+---------
+- Added StoL() method in G4UImessenger for parsing string to long int.       (+)
+  Addressing problem report #2276.
+
+interfaces                                       interfaces-V10-06-07
+----------
+- Added fix in G4Qt to properly set GL on Windows (see Forum topic #3144).   (+)
+- Make such that GEANT4_USE_INVENTOR for SoXt activates use of Xm, so there's
+  no need to check for use of Inventor in setting up Xt, only GEANT4_USE_XM.
+
+parameterisations/gflash                         gflash-V10-06-02
+------------------------
+- Removed no longer required 'include_directories' setting in CMake setup.
+
+physics_lists                                    physics-lists-V10-06-00
+-------------
+- Removed no longer required 'include_directories' setting in CMake setup.
+- builders (phys-builders-V10-06-12)
+  o G4HadronicBuilder: disabled QGSP for light anti-ions.
+- constructors/electromagnetic (phys-ctor-em-V10-06-18)
+  o G4EmStandardPhysics_option4: use ICRU90 data.
+- constructors/hadron_elastic (phys-ctor-helastic-V10-06-05)
+  o G4HadronHElasticPhysics: added elastic scattering for charm and bottom
+    hadrons (needed for FTFP_BERT_TRV).
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V10-06-12)
+  o G4HadronInelasticFTFP_BERT, G4HadronInelasticFTFP_BERT_HP, 
+    G4HadronInelasticFTFP_BERT_ATL, G4HadronInelasticFTFP_BERT_TRV: added 
+    optional cross-section factor for systematics studies; added b-, c- 
+    physics; c++11 code revision; removed unused headers.
+  o G4HadronInelasticQGSP_BERT and G4HadronInelasticQGSP_BIC: replaced
+    BuildAntiLightIonsQGSP_FTFP() with BuildAntiLightIonsFTFP(); currently
+    QGSP cannot be applied to any ion or anti-ion. Allow modification
+    of parameters at 'PreInit' state.
+  o G4HadronInelasticQGSP_FTFP_BERT: enabled b- and c- particle physics.
+
+processes/biasing                                procbiasing-V10-06-01
+-----------------
+- Fixed Coverity defect warnings for data initialisation.
+
+processes/electromagnetic/lowenergy              emlowen-V10-06-07
+-----------------------------------
+- Added protections in G4JAEAPolarizedElasticScatteringModel.
+
+processes/electromagnetic/standard               emstand-V10-06-15
+----------------------------------
+- G4UrbanMscModel: changed computation of 'tlimit' in the step limitation
+  algorithm UseDistanceToBoundary(); affecting only Opt3 EM physics.
+- G4ICRU49NuclearStoppingModel, G4WentzelOKandVIxSection, G4WentzelVIRelModel,
+  G4SeltzerBergerModel, G4LindhardSorensenIonModel: improved usage of locks;
+  it is defined inside one method with call to any other method.
+  Defined standard deletion of copy consructor and assignment operator.
+
+processes/electromagnetic/utils                  emutils-V10-06-11
+-------------------------------
+- G4VEmProcess: fixed setting of current particle.
+  Addressing problem report #2277 affecting ion DNA physics.
+
+processes/electromagnetic/xrays                  xrays-V10-06-06
+-------------------------------
+- G4Scintillation: allow specifying SCINTILLATIONYIELD only (not requiring
+  SCINTILLATIONYIELD1) when only one scintillation channel is present.
+  Same for particle specific yields.
+- Removed BuildThePhysicsTable() in G4Scintillation and G4Cerenkov.
+
+processes/hadronic
+------------------
+- Removed no longer required 'include_directories' setting in CMake setup.
+- cross_sections (hadr-cross-V10-06-09)
+  o Fixed trivial Coverity defects warnings for non-initialised data.
+- models/parton_string/diffraction (hadr-string-diff-V10-06-07)
+  o G4DiffractiveExcitation: implemented new splitting of excited hadrons
+    into quark-antiquark or quark-diquark in the method CreateStrings().
+    Additional code improvements.
+  o G4FTFModel: quasi-elastic is not applied any longer when the target      (+)
+    nucleus has one nucleon and the projectile hadron is not an ion. This
+    avoids to double count elastic scattering (as reported by NA61/SHINE
+    in 158 GeV/c proton interactions on liquid hydrogen).
+    Addressing problem report #2274.
+  o G4FTFAnnihilation: added initialization of 2-dimensional arrays as
+    suggested by Coverity. Used consistently pre-increment instead of
+    post-increment.
+  o G4FTFParameters: extended FTF configuration interface to include parameters
+    of quark exchange with and/or without excitation, for baryon and pion
+    projectiles.
+- models/parton_string/hadronization (had-hadronization-V10-06-07)
+  o Improved agreement of FTF simulations with NA49 experimental data (on
+    Pt-Xf correlations for various particles produced in pp interactions at
+    158 GeV/c).
+  o G4LundStringFragmentation: introduced a new parameter (as a class data
+    member), a kind of "temperature" for sampling the Pt of produced hadrons;
+    this parameter has been tuned for different fragmentation processes.
+    The string direction (one of string's properties, whose value can be either
+    +1 for projectile-like strings or -1 for target-like strings) is now
+    treated correctly and used to invert the results of the string
+    fragmentation (in the string rest frame) when the string direction is -1.
+  o G4FragmentingString: erased some inconsistencies.
+  o G4VLongitudinalStringDecay: made the logic clearer for Coverity; no effect
+    on results. Code cleanup.
+- models/util (hadr-mod-util-V10-06-01)
+  o G4KineticTrack: added initialization of an array as suggested by Coverity.
+    Used consistently pre-increment and pre-decrement instead of post-increment
+    and post-decrement, respectively.
+- util (hadr-util-V10-06-06)
+  o G4HadronicParameters: disabled b-, c- particles by default.
+
+processes/parameterisation                       param-V10-06-02
+--------------------------
+- Fixed minor Coverity defect for uninitialised data in G4FastStep.
+
+run                                              run-V10-06-11
+---
+- Added checks in run-manager for 'currentRun' for fixing tasking issues.
+- G4MTRunManager: added banner similar to G4TaskRunManager at method
+  CreateAndStartWorkers(); moved master scoring-manager, master worlds,
+  'fMasterRM' from private to protected sections.
+- Allow setting of seeds with 'long' values for '/random/setSeeds'           (+)
+  UI command. Addresses problem report #2276.
+- G4VModularPhysicsList: fixed typos in printouts.
+
+tasking                                          tasking-V10-06-08
+-------
+- Stability fixes; removed a bunch of excess functions from
+  G4WorkerTaskRunManager.
+- Got rid of regular task group vs. TBB task group implementation.
+- Added checks for 'currentRun' before calling functions with 'currentRun'.
+- G4WorkerTaskRunManager: minor tweaks to ProcessUI
+- G4TaskRunManagerKernel: memory cleanup and enabled initCmdStack().
+- G4TaskRunManager: fixed issues with geometry changes between runs;
+  inherited scoring-worlds, master-worlds, 'fMasterRM' data from G4MTRunManager;
+  CreateAndStartWorkers() processes command stack on second fakeRun; cleaned up
+  header.
+- Updated docs using G4RunManagerCreator instead of G4RunManagerFactory
+- Removed no longer required 'include_directories' setting in CMake setup.
+
+tracking                                         tracking-V10-06-03
+--------
+- Fixed minor Coverity defect in G4SteppingManager::ApplyProductionCut()
+  for use of potentially negative argument.
+
+visualization                                    vis-V10-06-07
+-------------
+- Removed no longer required 'include_directories' setting in CMake setup.
+- modeling (modeling-V10-06-04)
+  o Pick up default vis attributes.
+  o Improved printing.
+- OpenGL (opengl-V10-06-09)
+- OpenInventor (openinventor-V10-06-10)
+- XXX (visXXX-V10-06-00)
+  o CompareForKernelVisit(), force kernel visit if global parameters change.
+  o Moved fLastVP=fVP so always updated (avoids unnecessary redraw at start).
+
+data sets:
+---------
+- G4EMLOW-7.13:
+  o Added new Molecular Interference form factors (penelope/rayleigh/MIFF),
+    to be used by G4PenelopeRayleighMI model.
+
+examples                                         examples-V10-06-09
+--------
+- Updated documentation and reference outputs.
+- Added 'physicslists' category in the top extended examples CMake setup.
+- advanced/gorad (gorad-V10-06-01)
+  o New example Gorad (Geant4 Open-sourced Radiation Analysis and Design),
+    a turn-key application for radiation analysis and spacecraft design.
+- advanced/hadrontherapy (hadrontherapy-V10-06-02)
+  o Added BEST beamline.
+  o Fixed occasional segmentation faults in MT mode with max number of threads.
+  o Fixed compilation warnings on Windows related  type conversions.
+  o Code cleanup.
+- extended/electromagnetic/TestEm1 (testem1-V10-06-02)
+  o Reviewed macros and added macro description in README.
+- extended/electromagnetic/TestEm3 (testem3-V10-06-01)
+  o Macro & commands review: added macro descriptions in README; added geom.mac
+    with commands not used in TestEm3.in; fixed not working macros: ionC12.mac,
+    lockwood.mac, storeTables.mac; removed obsolete macro retrieveTables.mac.
+- extended/electromagnetic/TestEm5 (testem5-V10-06-03)
+  o Macro & commands review: added macro descriptions in README; added geom.mac
+    for testing remaining commands.
+- extended/optical/LXe (LXe-V10-06-00)
+  o Set optical parameters in G4OpticalParameters class.
+  o Use new scintillation material property names.
+  o Use std::vector to specify material property names.
+
+tests                                            tests-V10-06-09
+-----
+- Updated reference outputs and tools.
+- tests/test78 (test78-V10-06-00)
+  o New test derived from TestEm14 example, for computation of angular
+    distribution of a gamma interaction with polarization.
