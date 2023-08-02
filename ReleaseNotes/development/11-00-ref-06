@@ -1,0 +1,226 @@
+
+                       geant4-11-00-ref-06
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Consistently use G4FindDataDir() in place of std::getenv() in code for
+   accessing data-sets.
+ o G4EmStandardPhysics_option4: use Penelope ionisation model for e- below
+   100 keV.
+ o Added temporary check and protection in G4HadronicProcess against anomalous
+   condition leading to rare crashes recently observed with neutronHP and
+   fixed also rare reproducibility problems in particleHP.
+ o Introduced infrastructure in FTF to describe phi-meson production in
+   proton-proton interactions, as measured by NA61/SHINE.
+ o New set of extended examples, implementing different setups showing how
+   to score particle fluences.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(+)  Fixes included in patch release 10.7.4
+(*)  Fixes included in patch release 11.0.3
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-00-32
+-----
+- Rationalised interlinked PTL/TBB build options.
+- Added options --sh and --csh to geant4-config script.
+- G4ConfigureGNUMakeHelpers.cmake (geant4.[c]sh, geant4.bat generation):
+  use the environment variable GEANT4_DATA_DIR as top data directory; the
+  environment variables for individual dataset commented in scripts.
+
+externals                                        externals-V11-00-03
+---------
+- g4tools (g4tools-V11-00-07)
+  o Updated to version 6.0.1.
+  o In toolx/X11/base_session, check in show_window() that the window is
+    not already mapped.
+- ptl (ptl-V11-00-02)
+  o Updated CMake install directory for PTL to match recent changes
+    in default install directories in Geant4.
+  o Use any existing value of PTL_SANITIZER_TYPE to set the cache value
+    to prevent override.
+
+global                                           global-V11-00-23
+------
+- G4FindDataDir: correction for windows runtime, G4MULTITHREADED flag.
+  Use the environment variable GEANT4_DATA_DIR as top data dir.
+- Removed dependency on TBB which is not a direct dependency of the global
+  category.
+- Commented out debug printout in G4ThreadLocalSingleton method.             (*)
+- Updated date and tag-ID for geant4-11-00-ref-06.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-00-25)
+  o G4EmStandardPhysics_option4: use Penelope ionisation model for e- 
+    below 100 keV.
+  o G4EmBuilder: use check on process sub-type, do not substitute
+    G4CoupledTransportation with G4TransportationWithMsc.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V11-00-03)
+  o Replaced use of std::getenv() with G4FindDataDir().
+
+processes/electromagnetic/dna                    emdna-V11-00-23
+-----------------------------
+- Use G4FindDataDir("G4LEDATA") to find dataset path in place of std::getenv().
+- Corrected DNA ion definitions in G4DNARuddIonisationExtendedModel.
+- G4Octree: fixed Coverity warning.
+
+processes/electromagnetic/muons                  emmuons-V11-00-02
+-------------------------------
+- G4MuIonisation: use G4MuBetheBloch model above 0.2 MeV.
+- G4MuBremsstrahlungModel: moved low energy limit from 1 GeV to 100 MeV.
+- G4MuPairProductionModel: moved low energy limit from 1 GeV to 850 MeV.
+  Some code cleanup: formatting, removed extra space lines.
+
+processes/electromagnetic/utils                  emutils-V11-00-30
+-------------------------------
+- G4EmExtraParametersMessenger: fixed typo.                               (+)(*)
+  Addressing problem report #2492.
+- G4VEnergyLossProcess: moved out common computations to G4EmTableUtil; use
+  G4EmDataHandler and removed unused headers/methods. Fixed trivial Coverity
+  warnings.
+- G4VEnergyLossProcess, G4EmDataHandler: improved StorePhysicsTable(..) method
+  and debug printouts.
+- G4EmParametersMessenger: added extra UI command to define fluctuations model.
+- G4VEmModel: fixed Coverity warning.
+
+processes/hadronic
+------------------
+- management (hadr-man-V11-00-03)
+  o G4HadronicProcess: temporary check and protection against anomalous
+    condition leading to rare crashes recently observed with neutronHP; when a
+    secondary particle has a huge kinetic energy (i.e. higher than the max
+    energy allowed - by default 100 TeV), throw a warning exception and neglect
+    the particle concerned (i.e. corresponding G4Track object is not created).
+    Propagate the information on parent resonance (in the FillResults() method,
+    from G4HadSecondary to G4Track).
+- models/binary_cascade (had-binary-V11-00-01)
+  o G4GeneratorPrecompoundInterface, G4BinaryCascade: propagate the information
+    on parent resonance (in the ApplyYourself() method, from G4ReactionProduct
+    to G4HadSecondary; in other methods, from G4KineticTrack to
+    G4ReactionProduct).
+- models/de_excitation (hadr-deex-V11-00-12)
+  o G4PhotonEvaporation: simplified handling of floating levels and fixed
+    Coverity warning.
+  o G4EvaporationProbability: reduced usage of cache.
+- models/inclxx (hadr-inclxx-V11-00-04)
+  o G4INCLParticle, G4INCLEventInfo, G4INCLNucleus, G4INCLDeltaDecayChannel,
+    G4INCLXXInterface: set and propagate the information on parent resonance.
+  o G4INCLPiNElasticChannel: erase the information on parent resonance in
+    the case of charge exchange.
+  o G4INCLPiNToDeltaChannel, G4INCLPiNToOmegaChannel, G4INCLPiNToEtaChannel,
+    G4INCLPiNToMultiPionsChannel, G4INCLNpiToLKpiChannel, G4INCLNpiToLKChannel,
+    G4INCLNpiToLK2piChannel, G4INCLNpiToNKKbChannel, G4INCLNpiToSK2piChannel,  
+    G4INCLNpiToSKpiChannel, G4INCLNpiToSKChannel,
+    G4INCLNpiToMissingStrangenessChannel: erase the information on parent
+    resonance in inelastic channels (where the nucleon and pion initial-state
+    objects are re-used for the final state).
+- models/lepto_nuclear (hadr-lepnuc-V11-00-04)
+  o Use G4FindDataDir("G4PARTICLEXSDATA") in place of std::getenv().
+- models/particle_hp (hadr-hpp-V11-00-11)
+  o G4ParticleHPContAngularPar: added protections against evaluations of     (+)
+    arrays at negative index (-1), fixing rare reproducibility problems and
+    rare crashes observed.
+  o G4ParticleHPContEnergyAngular: fixed Coverity report. Expected no effect.
+  o Replaced use of std::getenv() with G4FindDataDir().
+- models/parton_string/diffraction (hadr-string-diff-V11-00-02)
+  o Allow control of diffraction for baryon number greater than 10 in
+    G4FPFParameters. The option comes from G4HadronicParameters and the
+    default behaviour remains the same (i.e. off).
+  o Fixes to get isotropic distributions in annihilations at rest: in        (*)
+    G4DiffractiveSplitableHadron, set proper parton index.
+    In G4DiffractiveExcitation, in the CreateStrings() method, take into
+    account that strings are created in G4FTFAnnihilation; by default, the
+    method CreateStrings() creates a string from a wounded nucleon/hadron,
+    but this is not needed in the case of annihilation.
+    In G4FTFAnnihilation, removed splitting of hadron; fixed bugs in the 
+    calculations of kinematical properties; set quark momenta at string ends,
+    to properly account for string order on rapidity.
+- models/parton_string/hadronization (had-hadronization-V11-00-01)
+  o G4HadronBuilder: added a new argument in constructor, and a new data member
+    to the class. This is needed to set a special mixing of pseudo-scalar and
+    vector mesons for s-sbar mesons. Introduced to describe phi-meson production
+    in proton-proton interactions measured by NA61/SHINE.
+  o G4VLongitudinalStringDecay: tuned the probability of pseudo-scalar meson
+    production, to describe K*0 meson production in proton-proton interactions
+    according to NA61/SHINE data. Introduced also a new parameter (probability
+    of pseudo-scalar meson production in s-sbar mesons) to increase the
+    phi-meson yield in proton-proton interactions.
+    Fixed a bug in mixing eta_prime and phi mesons in the quark systems
+    d-dbar, u-ubar and s-sbar.
+  o G4LundStringFragmentation: introduced few changes for special treatment of
+    the last string decay in the case of ss-q or ss-qq, ss-sbar sbar last
+    string decay. This improves the yield of anti-Xi hyperons in proton-proton
+    interactions according to the NA61/SHINE data.
+- models/parton_string/management (hadr-partonstring-mgt-V11-00-02)          (*)
+  o G4VSplitableHadron: changed the method Splitting() from "protected" to
+    "public" (needed to change the status of SplitableHadron in
+    G4FTFAnnihilation, to get isotropic distributions in annihilations at rest).
+- models/theo_high_energy (had-theo-HE-V11-00-01)
+  o G4TheoFSGenerator: propagate the information on parent resonance (in the
+    ApplyYourself() method, from G4ReactionProduct to G4HadSecondary).
+- util (hadr-util-V11-00-07)
+  o Added option to G4HadronicParameters to control diffraction for baryon
+    number greater than 10.
+  o G4KineticTrack, G4HadSecondary, G4ReactionProduct, G4DecayKineticTracks,
+    G4DecayStrongResonances: propagate the information on parent resonance.
+
+track                                            track-V11-00-04
+-----
+- G4Track: added methods to get/set information on (short-lived) parent
+  resonance.
+
+tracking                                         tracking-V11-00-06
+--------
+- G4SteppingManager: removed check on cuts and removed dependence of tracking
+  from EM physics; real implementation of ApplyCut() is done within EM physics
+  classes. Merged G4SteppingManager translation units.
+
+visualization
+-------------
+- management (visman-V11-00-20):
+  o G4VisCommandsSceneAdd: changed the default width of axes added to the scene
+    with automatic length and width determination.
+  o G4VisManager::GeometryHasChanged(): Fixed crash observed in example AnaEx01.
+    GeometryHasChanged() is a method that is called by the run manager.
+    Sometimes the user chooses to delete the existing geometry tree and
+    ask the run manager to construct a new detector geometry. Previously
+    existing vis models of the geometry become invalid and the vis manager
+    had to pick up the new geometry.
+    The vis manager removes invalid models from the vis scenes and now adds
+    the new version of the world back in. Other types of models, trajectory
+    drawing, for example, if specified in the original scene, are kept in the
+    new version of the scene.
+- modeling (modeling-V11-00-10)
+  o Allow arrow proportions to be greater than 1/100. Produces more visible
+    arrows for field visualisation and also obeys the input parameters more
+    closely.
+- Qt3D (visQt3D-V11-00-07)
+  o Fixed compilation warnings about shadowing.
+
+examples                                         examples-V11-00-06
+--------
+- Updated documentation and reference outputs.
+- advanced/brachytherapy (brachy-V11-00-01)
+  o Migration to C++11/14/17 features.
+- advanced/ICRP110_HumanPhantoms (ICRP110Phantoms-V11-00-01)
+  o Corrected error in reading the first voxels (in x=0, y=0).
+  o Migration to C++11/14/17 features.
+- advanced/iort_therapy (iort_therapy-V11-00-01)
+  o Simplified calls to SetProductionCut().
+- advanced/STCyclotron (STCyclotron-V11-00-01)
+  o Removed no-op lines; simplified calls to SetProductionCut().
+- extended/hadronic/ParticleFluence (exhadrParticleFluence-V11-00-00)
+  o New set of examples implementing different setups showing how to score
+    particle fluences (Sphere, Concentric Spheres, Layer, Calo).
+- extended/medical/dna/chem6 (chem6-V11-00-06)
+- extended/medical/dna/microyz (microyz-V11-00-02)
+- extended/medical/dna/moleculardna (molecularDNA-V11-00-05)
+  o Added missing headers inclusion for self-consistency.
+
+tests                                            tests-V11-00-06
+-----
+- Updated reference outputs and tools.
