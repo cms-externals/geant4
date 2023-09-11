@@ -1,0 +1,265 @@
+
+                       geant4-10-03-ref-01
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Removed obsolete utility class G4SubString used internally in G4String,
+   as no longer necessary.
+ o Added new CPA100 files and new G4DNAPTB* classes to G4DNA, together with
+   the structure of the new material management system.
+ o Bringing back the "development" version for parton_string (FTF, QGSM),
+   similar to version in 10.2.ref10.
+ o Updated data set G4EMLOW-6.52.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in release 10.2.p03
+(o)  Fixes included in release 10.3.p01
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-03-04
+-----
+- Added new module G4CMakeMain.cmake for refactoring core implementation.
+- Removed obsolete modules for interfaces provided by CMake built-in tools
+  CMakeParseArguments, GNUInstallDirs and commands.
+- Refactored core Configure/Build and client script modules for clarity
+  and cohesion:
+  o G4CMakeSettings.cmake (NEW)
+    Handles all core CMake behaviour and extensions.
+  o Geant4MacroUtilities.cmake to G4CMakeUtilities.cmake
+    Renamed to better reflect purpose.
+  o Geant4LibraryBuildOptions.cmake to G4BuildSettings.cmake
+    Handles all core build/link options not dependent on externals.
+    All functionality in Geant4BuildModes.cmake moved to this module.
+  o Geant4ToolchainBackwardCompatibility.cmake to G4ConfigureGNUMakeHelpers.cmake
+    Renamed to clearly identify task.
+    Moved all GMake related setup to this module.
+  o Geant4ConfigureConfigScript.cmake to G4ConfigurePkgConfigHelpers.cmake
+    Renamed to clearly identify task.
+  o Geant4BuildProjectConfig.cmake to G4ConfigureCMakeHelpers.cmake
+    Renamed to clearly identify task.
+  o Geant4CTest.cmake
+    All test-related options moved into file.
+- Updated to data set G4EMLOW-6.52.
+
+geometry
+--------
+- management (geommng-V10-03-01):
+  o Added methods TriangelAreaNormal(), QuadAreaNormal(), PolygonAreaNormal(),
+    ClosestPointOnSegment() and ClosestPointOnTriangle() to G4GeomTools.
+- solids/CSG (geom-csg-V10-03-00):                                           (o)
+  o Use radius differences and hypot to improve precision in G4Torus.
+    Addressing problem report #1931.
+- solids/specific (geom-specific-V10-03-00)                                  (o)
+  o Correction in G4UExtrudedSolid to signature for CalculateExtent().
+    Fixes issue of undefined symbol if extruded-solid not included in the
+    list of VecGeom wrappers to activate.
+- volumes (geomvol-V10-03-00)                                                (o)
+  o Correction in G4NavigationHistory default constructor to use             (*)
+    GetLevels() instead of GetNewLevels() from G4NavigationHistoryPool,
+    to favor re-use of already allocated space.
+
+global                                           global-V10-03-00            (o)
+------
+- Removed obsolete utility class G4SubString used internally in G4String,
+  as no longer necessary and also including unnecessary and buggy operators.
+  Addressing problem report #1864.
+- Updated version ID and date.
+
+interfaces                                       interfaces-V10-03-00        (o)
+----------
+- G4UIQt:
+  o Added missing check for pointer deletion.
+    Addressing problem report #1933.
+
+particles                                        particles-V10-03-00         (o)
+---------
+- Fixed calculation of neutrino mass in G4MuonRadiativeDecayWithSpin.        (*)
+  Addressing problem report #1928.
+- Added class G4AdjointElectronFI.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-03-04)
+  o G4EmModelActivator: use new access methods RegionsPhysics() and
+    TypesPhysics() instead of RegionsMsc() and TypesMsc().
+  o Added G4EmDNAPhysics_option6 constructor.
+    Added elastic scattering process for ions to all DNA constructors.
+  o Added 'setCerenkov/ScintillationStackPhotons' commands to                (o)
+    G4OpticalPhysicsMessenger and use them in G4OpticalPhysics.
+- constructors/decay (phys-ctor-decay-V10-03-01)
+  o G4RadioactiveDecayPhysics: simplified list of EM parameters.             (o)
+    Switch on storing of all internal conversion data vector for correct
+    gamma deexcitation modeling in radioactive decay.
+  o G4RadioactiveDecayPhysics: use a new method AddPhysics() instead
+    of old AddMsc(). 
+
+processes/electromagnetic/adjoint                emadjoint-V10-03-00         (o)
+-----------------------------
+- Correction for cases of FPE in G4AdjointForcedInteractionForGamma.
+
+processes/electromagnetic/dna                    emdna-V10-03-07
+-----------------------------
+- Added new CPA100 classes. Added new G4DNAPTB* classes and the structure
+  of the new material management system.
+- Extended upper energy limit of protons for G4DNARuddIonisationExtendedModel.
+- Prevent a crash when calling G4ITTrackingManager::EndTracking() from       (o)
+  the UserTimeStepAction::PostTimeStepAction.
+- Added missing call to tracking-manager.                                    (o)
+- Requires data-set G4EMLOW-6.52.
+
+processes/electromagnetic/lowenergy              emlowen-V10-03-01
+-----------------------------------
+- G4LivermoreNuclearGammaConversionModel, G4BoldyshevTripletModel:
+  fixed file name to read data from G4LEDATA structure.
+- Extended coverage of shell ionisation models.
+
+processes/electromagnetic/standard               emstand-V10-03-00
+----------------------------------
+- Correction in G4UniversalFluctuation for better results with small steps.
+
+processes/electromagnetic/utils                  emutils-V10-03-00
+-------------------------------
+- Fixed typo in G4EmParametersMessenger.                                     (o)
+  Addressing problem report #1929.
+- G4EmParameters: added method with more correct name AddPhysics() 
+  in order to replace AddMsc in future (no change in functionality).
+
+processes/hadronic
+------------------
+- models/de_excitation (hadr-deex-V10-03-06)                                 (o)
+  o G4LevelManager, G4NuclLevel, G4LevelReader: reduce memory for description
+    of a level: each two integer parameters are packed into one integer value;
+    use only one set of probabilities of transition independently on use-case
+    (HEP or radioactive decay). Fill internal conversion coefficients into the
+    data structure only if a flag SetStoreAllLevels() is set to true; in the
+    last case, more memory required per isotope (~8 times).
+  o G4LevelReader: fixed Ra228 problem; read all levels from a data file.
+  o G4NucLevel: in TransitionType, use % operator to correctly strip off
+    leading digit.
+  o G4GammaTransition: sample e- with kinetic energy corresponding to
+    transition between nuclear levels, ignoring atomic effects, when internal
+    conversion data are not filled but sampling e- emission is selected.
+    In SampleDirection(), fix to avoid only zero polarization returned;
+    return back sampling when  initial state has angular moment but its
+    polarisation is random; also fix in order to comply with instructions in
+    G4PolarizationTransition for the call order and to properly initialize
+    the nuclear polarization.
+  o G4PhotonEvaporation, G4GammaTransition: improved sampling and kinematics
+    for internal conversion. Added internal conversion in G4PhotonEvaporation
+    even if the data are not stored.
+  o G4PolarizationTransition: fix for computation of polarisation and
+    multi-polarity. Fix in SetGammaTransitionData().
+  o G4ExcitationHandler: moved Dump() printout within Initialise()
+    method; print info if evaporation channels are changed.
+    Added local data member to control verbosity level.
+  o G4DeexPrecoParameters: changed default time limit from 0.01 s to
+    1 microsecond. By default use uniform angular distribution in CM
+    system of precompound decay. Extended Dump() printout; make new data
+    structure the default.
+  o G4VEvaporation: added extra const access method.
+  o G4Evaporation: added data member to control verbosity level.
+- models/im_r_matrix (hadr-im_r-V10-03-00)                                   (o)
+  o G4VScatteringCollision: fixed memory leak in MT-mode.                    (*)
+    Addressing problem report #1905.
+- models/parton_string/diffraction (hadr-string-diff-V10-03-00)
+  o Bringing back the "development" version, similar to version in 10.2.ref10.
+- models/parton_string/hadronization (had-hadronization-V10-03-03)
+  o Bringing back the "development" version, similar to version in 10.2.ref10.
+  o G4ExcitedStringDecay: increased the number of max attempts to
+    fragment strings from 10 to 100.
+  o Re-organized and cleaned up code in G4LUNDStringFragmentation.
+    The variant is tuned using NA49 experimental data on pp->p/pi/K +X.
+- models/parton_string/management (hadr-partonstring-mgt-V10-03-02)
+  o Bringing back the "development" version, similar to version in 10.2.ref10.
+- models/parton_string/qgsm (hadr-qgsm-V10-03-03)
+  o Bringing back the "development" version, similar to version in 10.2.ref10.
+  o Fix in G4QGSParticipants for nucleon state counter.
+    Minor fix to avoid FPE observed only in optimized mode.
+  o Fixed warning message in G4QuarkExchange.
+- models/radioactive_decay (radioactive_decay-V10-03-00)                     (o)
+  o G4ITDecay: in constructor, make G4PhotonEvaporation a class member 
+    and initialize only once to avoid memory churn.
+    In DecayIt(), make G4Fragment a data member to avoid its deletion at the
+    end of this method and keep polarization information.
+- models/util (hadr-mod-util-V10-03-00)                                      (o)
+  o G4Fragment: minor cleanup of check on excitation energy of a ground state.
+
+run                                              run-V10-03-00               (o)
+---
+- Modifications to fix bug with reverse track splitting.
+  Added function ResetDidOneAdjPartReachExtSourceDuringEvent() to
+  G4AdjointSimManager and use it in G4AdjointPrimaryGeneratorAction.
+
+tracking                                    tracking-V10-03-00               (o)
+--------
+- Modification in G4AdjointSteppingAction for fixing bug with reverse
+  track splitting.
+
+visualization                                    vis-V10-03-01
+-------------
+- management (visman-V10-03-02):
+  o Deprecated SetUserAction(). Use RegisterRunDurationUserVisAction().
+  o Fix in G4VisCommandsViewer to have /vis/viewer/interpolate to work       (o)
+    on Windows.
+- modeling (modeling-V10-03-00):
+  o Improved arrow drawing. Reduced default 'lineSegmentsPerCircle' to 6 for
+    rapid yet adequate drawing. Similar improvement to magnetic field drawing.
+  o Default can be changed with new command:
+    /vis/set/arrow3DLineSegmentsPerCircle.
+- OpenGL (opengl-V10-03-00):                                                 (o)
+  o Fixed bug in ScaledFlush.
+- OpenInventor (openinventor-V10-03-00):                                     (o)
+  o G4OpenInventorXtExtendedViewer: added viewer button for Wireframe/Solid
+    switching. Added workaround to prevent empty second page in PS and PDF
+    output (due to superimposed scene).
+
+data sets:
+---------
+- G4EMLOW-6.52:
+  o Updated ecpssr shell cross section proton and alpha files.
+  o Added G4DNA-CPA100 files.
+  o Added PTB cross sections to dna module.
+
+examples                                         examples-V10-03-01
+--------
+- Updated documentation and reference outputs.
+- advanced/microbeam (microbeam-V10-03-00)
+  o Cleanup and relaxed step size constraints.
+- advanced/nanobeam (nanobeam-V10-03-01)
+  o Added usage of std::floor() in TabulatedField3D.
+  o Updated handling of UI commands. Code cleanup.
+- advanced/xray_fluorescence XrayFluo-V10-03-00)
+  o Use units for angles explicitly in XrayFluoDetectorConstruction.
+- basic/B3 (exampleB3-V10-03-00)
+  o PhysicsList: register EM physics before radioactive-decay.
+- extended/electromagnetic/TestEm5 (testem5-V10-03-00)
+  o Updated pixe.mac macro.
+- extended/electromagnetic/TestEm12 (testem12-V10-03-00)
+  o Updated PhysicsList.
+- extended/exoticphysics/phonon (phononExample-V10-03-03)
+  o Split build/run/compare test into three: build and run,
+    compare timing outputs, compare caustic outputs.
+    Added new CMake script ComparePhonon.cmake to perform comparison of
+    timing and caustic output/reference files.
+  o Fix in CMake macros to resolve CMP0054 related warnings on Windows.
+- extended/medical/dna/dnaphysics (dnaphysics-V10-03-01)
+  o Updated numbering scheme in SteppingAction & README files.
+- extended/medical/dna/microdosimetry (microdosimetry-V10-03-01)
+  o Cleanup and reordering of processes.
+- extended/medical/dna/range (range-V10-03-00)
+- extended/medical/dna/svalue (svalue-V10-03-00)
+- extended/medical/dna/wvalue  (wvalue-V10-03-00)
+  o Code cleanup.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-03-03)
+  o PhysicsList: read new PhotonEvaporation data set; set AugerCascade
+    via G4EmParameters; SetStoreAllLevels(true).
+  o Updated user data Cf238.mac and No252.mac, and related README.
+
+tests                                            tests-V10-03-01
+-----
+- Updated reference outputs and tools.
+- tests/test65 (test67-V10-03-01)
+  o Updated CMake scripts to handle data download as part of CTest.

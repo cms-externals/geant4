@@ -1,0 +1,41 @@
+#
+# Verbosity settings
+#
+
+/control/verbose 2
+/run/verbose 2
+/tracking/verbose 0
+
+#
+# Create a scene handler for a specific graphics system
+# (Edit the next line(s) to choose another graphics system)
+#
+
+#/vis/open DAWNFILE
+#/vis/open HepRepFile
+#/vis/open OGL
+/vis/open OGL 600x600-0+0
+#/vis/open OGLSXm
+#/vis/ogl/set/displayListLimit 10000
+
+#
+# Draw the scene
+#
+
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 45 180 deg
+/vis/viewer/zoom 1.4
+
+# for drawing tracks, uncomment the next line
+/vis/scene/add/trajectories smooth
+
+# if too many tracks cause core dump, then set /tracking/storeTrajectory 0
+/tracking/storeTrajectory 1
+
+# for drawing hits, uncomment the next line
+/vis/scene/add/hits
+
+# for refreshing each event, comment out the next line
+/vis/scene/endOfEventAction accumulate
+
+/run/beamOn 100

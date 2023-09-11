@@ -1,0 +1,292 @@
+
+                       geant4-11-01-ref-08
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Updates & fixes in files handling in analysis classes. Added new functions
+   for deleting selected histograms/profiles.
+ o Optimised MixMax engine performance and class structure.
+ o New class G4MicroElecCapture for better estimation of the non ionizing
+   energy deposition.
+ o Reviewed initialisation of static data in G4SeltzerBergerModel and
+   G4eBremsstrahlungRelModel classes.
+ o New cross-section class G4ChargeExchangeXS for charge exchange process.
+ o Reviewed G4RadioactiveDecay class to use only one table of radioactive
+   decay channels and streamlined code for thread safety.
+ o Implemented a more flexible way of choosing a graphics system for
+   visualisation, preserving the existing behaviour in all aspects.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-01-23
+-----
+- Export non-cache variables to Geant4PackageCache to support CMake>=3.27.
+  Addresses problem report #2556.
+
+analysis                                         analysis-V11-01-06
+--------
+- Moved 'CompressionLevel' data/functions members from G4AnalysisManagerState
+  to G4BaseFileManager to make it available in helper classes which do not have
+  access to state. Compression level (default 1) is now used also when writing
+  a Root histogram in an extra file and writing Hdf5 n-tuples.
+- Postpone creating G4HnMessenger after G4THnMessenger to get better command
+  ordering in the 'help' tree.
+- Moved 'setAxisLog' command from G4THnMessenger to G4HnMessenger as it applies
+  to function defined in its associated class.
+- Moved 'kMaxDim' constant from G4THnMessenger in G4AnalysisUtilities as needed
+  also at other places.
+- Moved 'kDimN' constants from G4VAnalysisManger in G4AnalysisUtilities
+  and replaced all hard-wired literals '1', '2' and '3' with these.
+- Fix: do not create 'setAxis*'' commands for idim = 4.
+- Fixed implementation of set commands per dimension: '/analysis/hn|pn/setX|Y|Z'
+  Addressing a problem report in Geant4 forum.
+- Added new G4AnalysisManager functions for deleting selected
+  histograms/profiles:
+    G4bool  Delete[Hn|Pn](G4int id, G4bool clear = false);
+  and UI commands:
+    /analysis/[hn|pn]/delete id [keepSetting].
+- Moved Set/GetDefaultFileType methods and UI command in G4VAnalysisManager
+  and G4AnalysisMessenger (from G4GenericAnalysisManager/Messenger).
+  This allows to support omitting file extension also when setting file names
+  to histograms/profiles.
+- Removed G4GenericAnalysisMessenger.
+- Added clearing of file data in 'DeleteEmptyFiles'. This prevents from
+  deleting non-empty files created/filled in previous runs but not used in
+  new runs.
+- Supressed warning from 'CreateTFile' when file is already existing.
+- Added warnings about failure in *HnFileManager::WriteExtra where missing.
+- Use forward declarations for templated classes where suitable.
+
+externals
+---------
+- clhep (clhep-V11-01-01)
+  o Optimised MixMax engine performance and class structure.
+
+global                                           global-V11-01-15
+------
+- Updated date and tag-ID for geant4-11-01-ref-08.
+
+intercoms                                        intercoms-V11-01-07
+---------
+- Added function GetBaseSession() to G4UImanager, finding the base session
+  in a hierarchy of sessions.
+- Make range check setup consistent between parameters/commands.
+
+materials                                        materials-V11-01-03
+---------
+- G4MicroElecMaterialStructure: Modified GetLimitEnergy() function to account
+  for the changes in the treatment of weakly bound electrons of microelec
+  inelastic model.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-01-08)
+  o G4EmDNABuilder: for Opt2, 4, 6 use for protons and ions; 
+    G4DNARuddIonisationExtendedModel from zero to 100 MeV;
+    ion capture limit is set to 0.1 keV.
+- constructors/hadron_elastic (phys-ctor-helastic-V11-01-02)
+  o G4ChargeExchangePhysics: do not use G4PhysicsListHelper, as the 
+    charge exchange process is an addition to the main hadron process.
+    Updated the constructor.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-01-17)
+  o Applied core clang-tidy fixes, consstructir/destructor modernization,
+    readability and logic for conditionals/Booleans.
+- lowenergy (emlowen-V11-01-06)
+  o Simplification of weakly bound electrons treatment in
+    G4MicroElecInelasticModel_new, handled now similarly to core electrons
+    with limitEnergy equivalent to binding energy. Updated SampleSecondaries(),
+    and RandomizeEjectedElectronEnergyFromCumulatedDcs().
+  o G4MicroElecMaterialStructure: modification in GetLimitEnergy() function
+     to account for the changes in the treatment of weakly bound electrons.
+  o New class G4MicroElecCapture for better estimation of the non ionizing
+    energy deposition.
+  o Fix for (rare) infinite loops in G4PenelopeComptonModel.
+    Reported GitHub PR#61 (https://github.com/Geant4/geant4/pull/61).
+  o G4MicroElecCapture, G4MicroElecSurface: fixed compilation warnings for
+    implicit type conversions on XCode. Minor code cleanup (removed tabs,
+    formatting, use of nullptr...).
+- standard (emstand-V11-01-19)
+  o G4SeltzerBergerModel: use inheritance from G4VEmModel instead of 
+    G4eBremsstrahlungRelModel; use 'applyOnce' approach to initialise static
+    data; code formatting.
+  o G4eBremsstrahlungRelModel: use 'applyOnce' approach to initialise static
+    data.
+  o G4BetheHeitlerModel, G4PairProductionRelModel, G4eBremsstrahlungRelModel,
+    G4SeltzerBergerModel: further reorganized initialisation to address
+    problem report #2543.
+    Fixes to Initialise() method, to have thread safe check if a model is the
+    first instance of the class; set lock and perform initilisation of all
+    static data. Results of standard EM tests are unchanged.
+- xrays (xrays-V11-01-00)
+  o Added protection against potential infinite loops.
+    Addressing problem report #2555.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-01-09)
+  o G4NeutronCaptureXS, G4NeutronElasticXS, G4NeutronInelasticXS,
+    G4GammaNuclearXS, G4ParticleInelasticXS: use same approach to fill static
+    data: do not unlock initialisation inside BuildPhycsTable() method until
+    initialisation is done; minor code formatting.
+  o G4ChargeExchangeXS: new cross-section class for charge exchange process;
+    Fill out the content of implementing the charge exchange process.
+  o G4CrossSectionDataStore::DumpPhysicsTable(): fixed printing problem.
+- management (hadr-man-V11-01-05)
+  o G4HadronicProcessStore: removed extra not needed empty lines from
+    information printout.
+- models/coherent_elastic (hadr-cohe-V11-01-02)
+  o In G4ChargeExchange, updated input parameters for the method
+    SampleSecondaryType(). Fixed parameter for SampleT() method.
+- models/de_excitation (hadr-deex-V11-01-06)
+  o Fixed compilation warning for implicit type conversion on macOS/XCode 14.1
+    in G4FermiFragmentsPoolVI::DumpFragment().
+- models/particle_hp (hadr-hpp-V11-01-16)
+  o G4ParticleHPManager: added data member and Get/Set methods for 
+    maximum energy above which no Doppler broading is applied.
+  o G4ParticleHPInelastic: improved info printout.
+  o G4ParticleHPContAngularPar: fixed reported Coverity defect.
+- models/radioactive_decay (radioactive_decay-V11-01-04)
+  o G4RadioactiveDecay: use only one table of radioactive decay channels;
+    removed unnecessary MULTITHREADED blocks protections; removed lock from
+    class constructor; added use only lock in the method LoadDecayTable()
+    after the check if the table is already downloaded; added explicit
+    unlock in this method; removed counter of instances of the class.
+    Made all virtual methods override and moved implementations to source.
+    DecayIt() method is declared virtual; removed unused methods; use reference
+    instead of by-values in method signatures for complex objects; added
+    G4ITDecay object local for each thread to perform sampling of radioactive
+    decays with a possibility to sample correlated gamma emission.
+    Fixed initialisation printout: corrected place for triton printout.
+  o G4Radioactivation: marked all virtual methods as override and moved
+    implementations to source; marked DecayIt() as override; removed methods
+    GetDecayTable1(), AtRestDoIt() and PostStepDoIt(), use instead base class
+    methods.
+  o G4BetaMinusDecay, G4BetaPlusDecay, G4BetaSpectrumSampler: implemented
+    thread safe sampling method.
+  o G4NuclearDecay: implemented virtual method IsOKWithParentMass() which
+    always return 'true'; made access methods 'const' where possible.
+  o G4ITDecay: added method SetupDecay(), which allows this class to be used
+    inside local thread.
+
+visualization
+-------------
+- management (visman-V11-01-26)
+  o Implemented a more flexible way of choosing a graphics system.
+    It preserves the existing behaviour in all aspects.
+    To take advantage of the new ways, "/vis/open" should be allowed to use
+    default parameters, either by omitting them altogether or by using '!'.
+    Without any change of code, i.e., using the existing constructor,
+    G4VisExecutive will refer to the environment variable G4VIS_DEFAULT_DRIVER,
+    which should contain the nickname of the chosen graphics system and,
+    optionally, a window size hint (space separated), e.g:
+      <graphics-system> [<window-size-hint>]
+    Or on the command line, precede the app invocation, e.g:
+      G4VIS_DEFAULT_DRIVER=Vtk ./<application-name>
+    The window-size-hint can optionally be added to all these options, e.g:
+      (bash) export G4VIS_DEFAULT_DRIVER="OGLSX 1000x1000-0+0"
+    Otherwise G4VisExecutve will choose a graphics system on the basis of
+    batch/interactive running, and Geant4 build options (see list
+    of registered graphics systems printed at the start of job).
+  o Further ways are available by using a new constructor,
+    G4VisExecutive(argc, argv). This follows G4UIExecutive usage.
+    If a 3rd argument is supplied, this is your chosen system, e.g.:
+      G4VisExecutive(argc, argv, "Vtk").
+    Otherwise, it looks at G4VIS_DEFAULT_DRIVER, as above.
+    Otherwise, it inspects ~/.g4session, where:
+    + The first line is  <session> [<graphics-system>] [<window-size-hint>]
+      and is used as default.
+    + Subsequent lines are:
+        <app-name> <session> [<graphics-system>] [<window-size-hint>]
+    + G4UIExecutive behaviour is preserved.
+    Otherwise, as above, it will choose a graphics system on the basis of
+    batch/interactive running, and Geant4 build options.
+  o G4VisExecutive: added new constructor:
+      G4VisExecutive(int argc, char** argv, const G4String& system,
+                     const G4String& verbosityString)
+    Implemented default graphics system by environment variable,
+    G4_VIS_DEFAULT_DRIVER. Simplified default graphics system by run option
+    (batch/interactive). Exploit new method, G4UImanager::GetBaseSession().
+    Added code for default graphics system based on batch or build flags.
+  o Implemented choice by argument and by ~/.g4session.
+  o G4VisManager: improved messaging in PrintAvailableGraphicsSystems().
+    Improved readability of code that ignores deleted histograms, etc.
+    Improve printing about histograms that can be plotted in the UI session.
+    Take into account deleting histograms in G4VisManager: the vector of
+    histograms can contain 'nullptr' elements.
+  o Introducing concept of default XGeometryString (aka window size hint).
+  o G4VisCommandsCompound: in "/vis/open", exploit "current as default" for
+    all parameters, including the window-size-hint.
+  o G4VisCommandsViewer: in "/vis/viewer/create", exploit "current as default"
+    for all parameters, including the window-size-hint.
+- OpenGL (opengl-V11-01-12)
+  o G4OpenGLQt, G4OpenGLXm: simplified IsUISessionCompatible().
+    Exploit new method, G4UImanager::GetBaseSession().
+  o Fixed precision-loss warning.
+  o Fixed reported Coverity defects.
+- OpenInventor (openinventor-V11-01-09)
+  o G4OpenInventor: simplified IsUISessionCompatible().
+    Exploit new method, G4UImanager::GetBaseSession().
+    Implemented fix as an OI driver is not appropriate for a batch session.
+- Qt3D (visQt3D-V11-01-05)
+  o G4Qt3D: simplified IsUISessionCompatible().
+    Exploit new method, G4UImanager::GetBaseSession().
+- ToolsSG (vis_toolssg-V11-01-11)
+  o G4ToolsSGQtGLES, G4ToolsSGQtZB: simplified IsUISessionCompatible().
+    Exploit new method, G4UImanager::GetBaseSession().
+- Vtk (visVtk-V11-01-11)
+  o G4VtkQt: simplified IsUISessionCompatible().
+    Exploit new method, G4UImanager::GetBaseSession().
+
+examples                                         examples-V11-01-08
+--------
+- Updated documentation and reference outputs.
+- advanced/stim_pixe_tomography (stim_pixe_tomography-V11-01-01)
+  o Changed the folder name from "Scripts" to "scripts".
+  o Modified default verbose level.
+- extended/analysis/AnaEx03 (AnaEx03-V11-01-01)
+  o Updated to demonstrate new analysis manager commands
+    for deleting selected histograms
+  o Added UI command "/AnaEx03/runAction/printStatistic"
+    to call PrintStatistics(). This allows to call this function at the end
+    of run before resetting histograms and avoids printing empty statistics
+    in MT mode.
+  o Added plotter.mac macro.
+- extended/hadronic/Hadr01 (exhadr01-V11-01-02)
+  o In main(), added possibility to change transition energy cascade/string
+    in the command line; added possibility to enable charge exchange physics
+    in the command line.
+  o HistoManager: added option key to print internal Bertini cross-section.
+- extended/hadronic/Hadr07 (exhadr07-V11-01-02)
+  o Added neutron.mac macro.
+- extended/hadronic/Hadr08 (exhadr08-V11-01-00)
+  o Fix in BiasingOperation::ApplyFinalStateBiasing(): added calls to biased
+    processes CrossSectionDataStore::ComputeCrossSection().
+    This fixes a break observed in the ALICE simulation, that could be
+    reproduced in this example by changing "G4_Si" with "G4_SILICON_DIOXIDE".
+- extended/persistency/P01 (exampleP01-V11-01-00)
+- extended/persistency/P02 (exampleP02-V11-01-00)
+  o Fixed comment line in run.mac.
+- extended/radioactivedecay/Activation (activation-V11-01-01)
+- extended/radioactivedecay/rdecay02 (rdecay02-V11-01-01)
+  o Added run.mac macro.
+
+tests                                            tests-V11-01-08
+-----
+- Updated reference outputs and tools.
+- tests/test03 (test03-V11-01-01)
+  o Added test for setting histogram parameters via 'set' commands per axis.
+- tests/test32 (test32-V11-01-00)
+  o Fixed index in filling P2 in CalorimeterSD source.
+  o Added README.
+- tests/test75 (test75-V11-01-03)
+  o Update geantval_scripts/test75/parser.py with title(s) of y-axis
+    and comment out output of exp.data since they are already in geant-val.
+- tests/test320 (test320-V11-01-02)
+  o New test for analysis for testing object cycles and objects deletion.

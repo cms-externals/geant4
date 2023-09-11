@@ -1,0 +1,206 @@
+
+                       geant4-11-01-ref-07
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o In G4UIQt, implemented right-click pop-up menu for touchables in new
+   scene tree.
+ o In G4UrbanMscModel, reduced number of re-computations of safety.
+ o Reviewed and updated the fermi_breakup model.
+ o Renamed classes for capture from G4ParticleHP to G4NeutronHP.
+   Removed unused G4NeutronHP*.hh headers for elastic and inelastic.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-01-22
+-----
+- Print md5sum in coreutils format for compatibility with busybox.
+
+externals
+---------
+- g4tools (g4tools-V11-01-05)
+  o Updated to version 6.2.1: fixed reported Coverity defects.
+
+geometry
+--------
+- solids/specific (geom-specific-V11-01-06)
+  o Fixed bounding box calculation in G4VTwistedFaceted::BoundingLimits().
+
+global                                           global-V11-01-14
+------
+- Updated date and tag-ID for geant4-11-01-ref-07.
+
+graphics_reps                                    greps-V11-01-05
+-------------
+- G4VisAttributes: trap under-limit requested number of line segments per
+  circle for polyhedral representation of circular surfaces.
+  An under-limit request sets number to minimum (3).
+
+interfaces                                       interfaces-V11-01-23
+----------
+- G4UIQt: implemented right-click pop-up menu for touchables in new scene tree.
+  Choose sub-set of commands suitable for the pop-up menu.
+  Workaround changes in QEvent globalPos/globalPosition for Qt5 and 6.
+- Fixed Coverity reported defects.
+
+particles                                        particles-V11-01-08
+---------
+- Apply clang-format, excepting tabular data/constructors.
+- Removed unused headers suggested by include-what-you-use tool.
+- Removed extraneous/duplicate comments.
+
+physics_lists
+-------------
+- builders (phys-builders-V11-01-02)
+  o Removed the no longer used file OrderingParameterTable.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-01-16)
+  o Use std::erfc() to avoid precision loss.
+    Imported from GitHub PR#58 (https://github.com/Geant4/geant4/pull/58).
+  o Remove unused header.
+- standard (emstand-V11-01-17)
+  o G4UrbanMscModel: reduced number of re-computations of safety,
+    results of EM tests are unchanged
+
+processes/hadronic
+------------------
+- management (hadr-man-V11-01-04)
+  o G4HadronicProcess: reduced the number of warnings concerning kaon0 and
+    anti_kaon0 (transformed in kaon0S and kaon0L) to maximum one warning
+    per thread.
+- models/de_excitation (hadr-deex-V11-01-05)
+  o G4LevelManager, G4PhotonEvaporation: improved method names.
+  o G4LevelReader: set life time of stable levels to DBL_MAX instead of -1;
+    left undefined spin 99 and do not set it to zero.
+  o G4ExcitationHandler: instantiate FermiBreakUp, MultiFragmentation, and
+    PhotonEvaporation in constructor. Code formatting.
+  o Reviewed and updated the fermi_breakup model, to address problem
+    report #2263. Removed few obsolete classes. Added G4FermiBreakUpUtil class.
+  o G4VEvaporation, G4Evaporation, G4VEvaporationFactory, G4EvaporationFactory,
+    G4EvaporationGEMFactory, G4EvaporationGEMFactoryVI and
+    G4EvaporationDefaultGEMFactory: more accurate instantiation/destruction
+    of components. Code formatting.
+  o G4KalbachCrossSection: dynamic choice of peak position on inverse
+    cross-section as a function of A.
+  o Clean-up evaporation and utils modules.
+  o Removed unused files.
+- models/inclxx (had-inclxx-V11-01-02)
+  o G4INCLPbarAtrestEntryChannel, G4INCLCascade, G4INCLNucleus: fixed
+    Coverity reported defects.
+- models/particle_hp (hadr-hpp-V11-01-14)
+  o Renamed classes for capture from G4ParticleHP to G4NeutronHP, as capture
+    process exists only for neutrons; removed old commented lines in modified
+    files.
+  o Removed unused G4NeutronHP*.hh headers for elastic and inelastic.
+  o G4ParticleHPManager: check all environment variables once; provided new
+    methods to access path to data. Use G4ParticleHPManager for directory
+    names and various flags. Code clean-up.
+  o G4ParticleHPContAngularPar, G4ParticleHPContEnergyAngular,
+    G4ParticleHPEnAngCorrelation, G4ParticleHPNames, G4ParticleHPProduct:
+    use new interfaces to G4ParticleHPManager, moved constructors, destructors, 
+    and some other methods to source; removed unused commented lines.
+  o G4ParticleHPEnAngCorrelation: fixed reported Coverity defect and minor
+    code cleanup.
+  o In CMake script, use alphabetical order both for headers and for source
+    files.
+- models/pre_equilibrium (hadr-pre-V11-01-00)
+  o Use the default Coulomb barrier computation, Code cleanup: code formatting;
+    removed unused data and methods.
+- models/qmd (hadr-qmd-V11-01-02)
+  o G4QMDMeanField: removing unused map.
+  o G4QMDReaction: do not create local G4Evaporation class, only define 
+    type of evaporation for local G4ExcitationHandler.
+
+processes/scoring                                procscore-V11-01-02
+-----------------
+- Fixed Coverity reported defect in G4EnergySplitter::SplitEnergyInVolumes().
+
+run                                              run-V11-01-05
+---
+- G4PhysicsListHelper: removed the unused code related to reading from the
+  file OrderingParameterTable (which has been deleted).
+
+visualization
+-------------
+- management (visman-V11-01-19)
+  o G4VViewer: limit the depth of expansion of the scene tree touchables.
+    This is to prevent the trees of complex detector running off the page.
+    All touchables are entered but could be in a collapsed item, viewable by
+    expanding the mother with a left click.
+    Applied clang-format.
+  o Remove obsolete attempt at flying (interpolation with splines).
+    Functionality now delegated to G4ViewParameters.
+  o Fized problem of local axes not appearing, by adding "/vis/viewer/refresh"
+    after "/vis/touchable/localAxes".
+- modeling (modeling-V11-01-06)
+  o G4PhysicalVolumeModel: introducing touchable count. A new function
+    GetNumberOfTouchables() returns a map with the number of touchables by
+    depth of the geometry tree. Used in G4VViewer when deciding whether to
+    expand the scene tree.
+- OpenGL (opengl-V11-01-09)
+  o Fixed precision-loss warning.
+  o Fixed reported Coverity defects.
+- OpenInventor (openinventor-V11-01-06)
+  o Fixed reported Coverity defects.
+- Qt3D (visQt3D-V11-01-04)
+  o Fixed precision-loss warning.
+- ToolsSG (vis_toolssg-V11-01-10)
+  o G4ToolsSGViewer: protected null scene pointer, in case user forgets
+    to create a scene.
+  o G4ToolsSGQtViewer renamed to G4ToolsSGQtGLESViewer for consistency with
+    the file naming pattern applied in other sub-drivers.
+
+examples                                         examples-V11-01-07
+--------
+- Updated documentation and reference outputs.
+- extended/analysis/AnaEx01 (AnaEx01-V11-01-00)
+- extended/analysis/AnaEx02 (AnaEx02-V11-01-00)
+  o Moved default declaration of destructor in header.
+- extended/analysis/B1Con (B1Con-V11-01-00)
+  o Synchronised with changes in example B1.
+  o Added accumulable class for a vector of Edep per event.
+- extended/eventgenerator/particleGun (particleGunExample-V11-01-00)
+- extended/eventgenerator/userPrimaryGenerator (userPrimaryGenerator-V11-01-00)
+  o Code revision of all headers.
+- extended/field (fieldex-V11-01-00)
+  o Applied clang-tidy and new coding guidelines.
+  o Clean-up trailing white-spaces in README's and CMake files.
+- extended/geometry/transforms (exTransforms-V11-01-00)
+  o Applied clang-tidy and new coding guidelines.
+- extended/hadronic/Hadr05 (exhadr05-V11-01-01)
+- extended/hadronic/Hadr07 (exhadr07-V11-01-01)
+- extended/hadronic/NeutronSource (NeutronSource-V11-01-00)
+  o Code revision of all headers.
+- extended/parameterisations/Par04 (expar04-V11-01-00)
+  o Bump tensorflow to 2.9.3.
+    Fixes GitHub PR#55 (https://github.com/Geant4/geant4/pull/55)
+    and GitHub PR#60 (https://github.com/Geant4/geant4/pull/60).
+- extended/physicslists (exPhysicsLists-V11-01-00)
+  o Removed 'shared' module  as now redundant.
+- extended/polarisation/Pol01 (expol01-V11-01-01)
+  o Ported example to run in MT mode.
+  o Make DetectorConstruction use GeometryHasBeenModified() and not recreate
+    the geometry in material definition.
+  o Removed broken histo.mac macro.
+  o Removed annoining printout for the default macro.
+  o Converted classes to user defined accumulables.
+  o Added analysis macro plotResults.C.
+- extended/radioactivedecay/Activation (activation-V11-01-00)
+- extended/radioactivedecay/rdecay01 (rdecay01-V11-01-00)
+  o Code revision of all headers.
+
+tests                                            tests-V11-01-07
+-----
+- Updated reference outputs and tools.
+- tests/test15 (test15-V11-01-01)
+  o In CMake script, removed check for unused gdml component.
+- tests/test75 (test75-V11-01-02)
+  o Updated geantval_scripts/test75/parser.py to write beam energy/momentum 
+    in the units of GeV. Use testName="experiment" for geant-val json files(s)
+    with experimental data reference.
