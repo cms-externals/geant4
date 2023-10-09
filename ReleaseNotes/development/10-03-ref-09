@@ -1,0 +1,236 @@
+
+                       geant4-10-03-ref-09
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o New class G4MaterialPropertiesIndex defining indices and names for
+   G4MaterialProperties; adopting enum type instead of strings for keys in
+   the material property table maps.
+ o Added support for muonic atoms.
+ o Made G4DormandPrince457 the default stepper for magnetic fields in
+   when a driver/stepper is not specified.
+ o Added specialised implementation in G4ExtrudedSolid for constructs
+   defining a convex right prism.
+ o New parameterisations method based on EPICS-2014 data for
+   G4LivermorePhotoElectricModel.
+ o Improved sampling for thin layers in G4UniversalFluctuation.
+   improvements to GS Mott-correction.
+ o Updated to data set G4EMLOW-7.1.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.3.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-03-37
+-----
+- Updated minimum version for system expat package to be >= 2.0.1,
+  according to features required in the g4tools analysis package.
+  Addressing problem report #2003.
+- Added GEANT4_INSTALL_EXAMPLES advanced option, ON by default; for use to
+  disable/enable installation of examples code.
+  Removed GEANT4_BUILD_EXAMPLES option.
+- Set INSTALL_RPATH for MacOS systems; loading dylibs in Python can lead to
+  resolution errors as they cannot locate each other. The option allows to
+  append "@loader_path" to the INSTALL_RPATH for all Geant4 libraries.
+- Updated to data set G4EMLOW-7.1, G4ENSDFSTATE-2.2, G4PhotonEvaporation-5.1
+  and G4RadioactiveDecay-5.2.
+
+analysis                                         analysis-V10-03-13
+--------
+- Updated to g4tools 3.7.0: updated in colorf, colors to make possible to use
+  the tools/colors color table in G4Colour class.
+  Coverity fixes in graphics/plotting code.
+- Fixed generation of file name on workers (adding _tN extension).
+  Addressing Hypernews post #537 in analysis Forum.
+
+geometry
+--------
+- magneticfield (field-V10-03-15):
+  o Made G4DormandPrince457 the default stepper for magnetic fields in
+    G4ChordFinder, when a driver/stepper is not specified.
+- solids/CSG (geom-csg-V10-03-35):
+  o G4Trap: use specialization (fTrapType 3) for traps that could be also
+    defined as G4Trd, where isosceles trapeziod is in the XY section, instead
+    of XZ (faces at Xmin/Xmax symmetrical and have Z-component of normals
+    equal to zero). Factorised code with case statements for the different
+    specialisations.
+- solids/specific (geom-specific-V10-03-19):
+  o G4Voxelizer: directly set components for bounding-box instead of         (o)
+    recreating it in BuildBoundingBox(..).
+  o G4ExtrudedSolid: added specialised implementation for constructs defining
+    a convex right prism.
+  o Temporarly disabled G4UExtrudedSolid wrapper, pending implementation
+    of extruded solid in VecGeom.
+  o G4SolidsWorkspacePool: use DLL export flag for static thread-local
+    symbol of the workspace.
+  o Corrected initialisation of polyhedra by vertices in G4UPolyhdra wrapper
+    following the changes in VecGeom.
+- volumes (geomvol-V10-03-02):
+  o G4GeometryWorkspacePool: use DLL export flag for static thread-local
+    symbol of the workspace.
+
+graphics_reps                                    greps-V10-03-06
+-------------
+- HepPolyhedron: reverted default number of line segments per circle, from
+  72 to 24 (72 lines per circle cause troubles in the Boolean Processor).
+
+intercoms                                        intercoms-V10-03-04
+---------
+- Use DLL export flags for static symbols in classes. Removed inline
+  specification for two static methods in G4UImanager.
+
+materials                                        materials-V10-03-12
+---------
+- Added class G4MaterialPropertiesIndex defining indices and names for
+  G4MaterialProperties; use the enum type instead of G4String for keys in the
+  material (constant) property table maps and provide necessary accessors and
+  interfaces. Keep property and constant property maps and public methods in
+  G4MaterialPropertiesTable; these methods, GetPropertiesMap() and
+  GetPropertiesCMap() become obsolete from the next release; GetPropertyMap()
+  and GetConstPropertyMap() should be used instead.
+- G4Material: apply mutex lock when defining material properties table.
+- G4IonisParMat: added possibility of defining custom density effect parameters
+  and another possibility to request parameters of a base material, which may
+  have not exactly the same atomic composition.
+  Set lock when user defines density effect parameters.
+
+particles                                        particles-V10-03-16
+---------
+- Introduced G4GenericMuonicAtom class, used only by G4IonTable and not for
+  tracking; processes for G4MuonicAtoms should be registered with this class.
+  Revised G4MuonicAtomHelper, added G4MuonicAtom support.
+
+persistency/gdml                                 gdml-V10-03-08
+----------------
+- Use GetPropertyMap() and GetConstPropertyMap() instead of GetPropertiesMap()
+  and GetPropertiesCMap() in G4GDMLWriteMaterials and G4GDMLWriteSolids.
+
+physics_lists
+-------------
+- constructors/decay (phys-ctor-decay-V10-03-05)
+  o G4MuonicAtomDecayPhysics use new G4MuonicAtomDecay.
+- constructors/electromagnetic (phys-ctor-em-V10-03-30)
+  o G4EmStandard_option3: use default Urban model of fluctuations.
+  o G4EmStandardPhysics_option4: changed msc model for e-/e+ below 100 MeV
+    from Urban + UseDistanceToBoundary stepping to 
+    GS + Mott-correction + error-free stepping.
+
+processes/decay                                  decay-V10-03-04
+---------------
+- Moved muonic atom files to processes/hadronic/stopping module.
+- Replaced DECAY_MuonicAtomDecay process type with DECAY_MuAtom.
+
+processes/electromagnetic/lowenergy               emlowen-V10-03-14
+-----------------------------------
+- G4LivermorePhotoElectricModel: new parameterisations method based on
+  EPICS-2014 data. Requires new data set G4EMLOW-7.1.
+- Fixed Coverity defect in G4hICRU49He.
+
+processes/electromagnetic/standard               emstand-V10-03-36
+----------------------------------
+- G4UniversalFluctuation: added extra parameter in the model and improved
+  sampling for thin layers; added correction for small cuts.
+  Removed temporary class G4UniversalFluctuation2017.
+- G4GoudsmitSaundersonMscModel, G4GoudsmitSaundersonTable, 
+  G4GSMottCorrection: further improvements to GS Mott-correction.
+- G4PAIModel, G4PAIPhotModel: set MinEnergyCut() to 12.5 eV, based on results
+  study of gaseous detector simulations.
+
+processes/electromagnetic/utils                  emutils-V10-03-18
+-------------------------------
+- G4VEnergyLossProcess, G4VEmFluctuationModel: withdrawn changes introduced
+  in previous tag (i.e. removed possibility of smearing last step length of
+  low-energy charged particle).
+
+processes/electromagnetic/xrays                  xrays-V10-03-00
+-------------------------------
+- Changed material property keys by the enum (index) type defined in 
+  G4MaterialPropertiesIndex.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-03-12)
+  o Use N.Starkov parameterization for Kaon on Hydrogen.                     (o)
+- management (hadr-man-V10-03-06)
+  o Added fMuAtomicCapture in G4HadronicProcessType.
+- models/pre_equilibrium (hadr-pre-V10-03-02)
+  o G4PreCompoundModel: added 'isActive' flag, which can be defined via
+    G4DeexPrecoParameters interface.
+- models/radioactive_decay (radioactive_decay-V10-03-14)
+  o Modified G4RadioactiveDecay::LoadDecayTable() to divide the b branching
+    ratio of a specific decay channel read in the database by 100 to avoid
+    that it is higher than 1 as prevented by G4VDecayChannel.
+    This branching ratio is given in pc in the database while it should be
+    smaller than 1 when setting it by G4VDecayChannel::SetBR() method.
+- models/util (hadr-mod-util-V10-03-12)
+  o Removed debug printout in G4NuclearPolarizationStore desctructor.
+- stopping (hadr-stopping-V10-03-01)
+  o Define G4MuonMinusAtomicCapture as a process at rest.
+    Added G4MuonicAtomDecay class.
+
+processes/optical                                op-V10-03-03
+-----------------
+- Change material property keys by the enum type defined in 
+  G4MaterialPropertiesIndex.
+
+run                                              run-V10-03-12
+---
+- Added MuAtomicCapture and DecayMuAtom to G4PhysicsListHelper.
+
+tracking                                         tracking-V10-03-01
+--------
+- Added a case when a particle is a muonic atom in G4SteppingManager.
+
+visualization                                    vis-V10-03-08
+-------------
+- management (visman-V10-03-14):
+- modeling (modeling-V10-03-08):
+  o Reverted default number of line segments per circle to 24.
+- OpenGL (opengl-V10-03-03):
+  o Fix issue affecting repaint for external applications.                   (o)
+    Addressing problem report #1959.
+
+data sets:
+---------
+- G4EMLOW-7.1:
+  o Updated photoeffect parameterisation using EPICS-2014 data.
+  o Updated ion elastic data files for Geant4-DNA.
+- G4ENSDFSTATE-2.2
+  o Corrected some levels for compliance with PhotonEvaporation data-base.
+- G4PhotonEvaporation-5.1
+  o Correction of transitions for floating levels in last 60
+    correlated_gamma files.
+- G4RadioactiveDecay-5.2
+  o Modified z33.a83 to force beta- decay of As83 directly to the ground
+    of 83Se. The populating of the excited levels of 83SE is poorly known
+    and the gamma spectrum will be anyway not correct (not enough ENSDF data).
+
+examples                                         examples-V10-03-09
+--------
+- Updated documentation and reference outputs.
+- extended/exoticphysics/ucn (ExUCN-V10-03-01)
+  o ExUCNDetectorConstruction: commented out a wrong use of AddConstProperty().
+- extended/hadronic/Hadr00 (exhadr00-V10-03-00)
+  o Added possibility to enable radioactive decay.
+- extended/medical/DICOM (DICOM-V10-03-03)
+  o Added DICOM Digital Head model.
+  o Updated READMEs.
+- extended/medical/dna/range (range-V10-03-03)
+- extended/medical/dna/svalue (svalue-V10-03-03)
+- extended/medical/dna/wvalue (wvalue-V10-03-03)
+  o Updated READMEs.
+- extended/parallel/MPI (MPI-V10-03-01)
+  o Updated build scripts.
+
+tests                                            tests-V10-03-09
+-----
+- Updated reference outputs and tools.
+- test30 (test30-V10-03-01)
+  o Added possibility to run gamma-nuclear processes.
+- test37 (test37-V10-03-03)
+  o Fixed Opt4 physics list definition.
+- test65 (test65-V10-03-05)
+  o Added gamma projectile reactions.

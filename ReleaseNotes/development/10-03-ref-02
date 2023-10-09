@@ -1,0 +1,214 @@
+
+                       geant4-10-03-ref-02
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added "/control/useDoublePrecision" UI command to extend to 17 digits
+   precision printout for the current parameter values.
+ o Set life time to -1.0 for all stable particles.
+ o First implementation of rotating strings in FTF with introduction of Mt
+   distribution of hadrons.
+ o Improvements in reading of de-excitation data.
+ o Temporarily switched off correlated gamma emission in radioactive-decay.
+ o Removed obsolete FindCLHEP.cmake module; updated internal/system CLHEP
+   selection; simplified location/setup of system CLHEP.
+ o Updated to data sets G4PhotonEvaporation-4.3.2 and G4RadioactiveDecay-5.1.1.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.3.p01
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-03-11
+-----
+- Removed obsolete FindCLHEP.cmake module; updated internal/system CLHEP
+  selection; simplified location/setup of system CLHEP as CLHEP (>= 2.3.3.0)
+  now provides CLHEP_LIBRARIES set with appropriate single/granular targets
+  with full usage requirements. Addressing enhancement request #1934.
+- Restructured developer API scripts.
+- Updated to data sets G4PhotonEvaporation-4.3.2 and                         (o)
+  G4RadioactiveDecay-5.1.1.
+
+analysis                                         analysis-V10-03-00          (o)
+--------
+- Restored clean-up of Root empty files in MT mode.
+
+externals                                        externals-V10-03-00
+---------
+- Adapted CMake scripts to new configuration for internal/external
+  packages of CLHEP, expat and zlib.
+
+geometry
+--------
+- management (geommng-V10-03-02):
+  o Added functions EllipsePerimeter(), EllipticConeLateralArea() and
+    comp_ellint_2() to G4GeomTools.
+- solids/Boolean (geom-bool-V10-03-00):                                      (o)
+  o Return normal from solid being subtracted, in case point is located
+    outside in G4SubtractionSolid::SurfaceNormal().
+  o Code formatting and minor cleanup in G4IntersectionSolid.
+- solids/CSG (geom-csg-V10-03-02):                                           (o)
+  o Fix in GetCubicVolume() and GetSurfaceArea() for G4CutTubs, to make
+    use of the cached values. Addressing problem report #1943.
+  o Removed redundant code/checks in G4Orb::SurfaceNormal().
+- solids/specific (geom-specific-V10-03-01)
+  o Revised implementation of GetCubicVolume() and GetSurfaceArea() for
+    G4EllipticalTube, to return exact values.
+  o Revised implementation of GetSurfaceArea() for G4EllipticalCone, to
+    return exact value; moved both GetCubicVolume() and GetSurfaceArea() to
+    be not inline.
+
+graphics_reps                                    greps-V10-03-01
+-------------
+- Removed G4VisExtent::NullExtent.
+
+intercoms                                        intercoms-V10-03-00         (o)
+---------
+- Added "/control/useDoublePrecision" UI command to extend to 17 digits
+  precision printout for the current parameter values.
+  Addressing problem report #1921.
+
+materials                                        materials-V10-03-01
+---------
+- Removed debug printout from G4MaterialPropertiesTable destructor.          (o)
+  Addressing problem report #1944.
+- G4Material: improved printout; always print temperature and presure 
+  independently on the state of the material.
+
+particles                                        particles-V10-03-03
+---------
+- Set life time to -1.0 for all stable particles.
+
+physics_lists
+-------------
+- constructors/hadron_inelastic               phys-ctor-hinelastic-V10-03-00 (o)
+  o Fixed printing of setup for transition energy region between FTFP
+    and BERT to happen only from master thread.
+- constructors/limiters                       phys-ctor-limiters-V10-03-00   (o)
+  o Fixed printing of setup parameter for nureon tracking cuts to happen
+    only from master thread.
+- lists                                       phys-lists-V10-03-00           (o)
+  o G4PhysListFactory: added single scattering EM option (need to add
+    "__SS" to the reference physics list name for activation).
+
+processes/electromagnetic/dna                    emdna-V10-03-08
+-----------------------------
+- Code cleanup in G4KDNode and G4KDMap.                                      (o)
+
+processes/electromagnetic/lowenergy              emlowen-V10-03-02
+-----------------------------------
+- Fix in G4LowEPPolarizedComptonModel.
+
+processes/electromagnetic/standard               emstand-V10-03-00
+----------------------------------
+- G4hIonisation: fixed min/max energy for dEdx table for the case when the
+  mass of a hadron is very different from the mass of proton.
+
+processes/hadronic
+------------------
+- models/de_excitation (hadr-deex-V10-03-17)
+  o G4LevelReader: fixed Ra228 problem; read all levels from a data file.    (o)
+    Fixed U235[0.076] problem: if value of alpha (relative probability of the
+    internal conversion) is 10^10, then assume that internal conversion will
+    go via outer levels and gamma emission has zero probability; internal
+    conversion is forced independently on other flags.
+    In the case of broken file structure or absence of a data file a fatal
+    exception is issued. Addressing problem report #1942.
+  o G4LevelReader, G4LevelManager, G4PhotonEvaporation: for stable states 
+    (ground state isotopes) life time is set to "-1"; changed all checks 
+    accordingly.
+  o G4LevelManager: fixed unpacking of spin.                                 (o)
+  o G4GammaTransition: use SetExcitationEnergy() method of G4Fragment for    (o)
+    keeping excitation energy exact as in the database and avoid rare cases
+    of event non-reproducibility; added SetVerbose() method.
+    Fixed multipolarity based on the updated data-set.
+    Added control on printout; fixed thread unsafe check.
+  o G4PolarizationTransition: added SetVerbose() method; added protection    (o)
+    from extra verbosity.
+  o G4DeexPrecoParameters: by default, use uniform angular distribution      (o)
+    in CM sytem of precompound decay.
+    Changed minimum excitation energy now set to 10 eV (was 100 eV).
+  o G4DeexPrecoParameters: set default time limit to 0.1s (if radioactive
+    decay is enabled this time is set to the limit of the G4NuclideTable);
+    this allows to not create extra isomers if radioactive decay is not
+    included in the physics-list.
+  o Fixed case of event non-reproducibility due precision lost in            (o)
+    Lorentz transformations.
+- models/parton_string/hadronization (had-hadronization-V10-03-04)
+  o First implementation of rotating strings with introduction of Mt
+    distribution of hadrons. Parameters are tuned using NA49 experimental
+    data on pp-interactions. Good results are obtained for Pi+-, K+-.
+    For P and Pbar <Pt> - xF correlations need still improvement.
+- models/radioactive_decay (radioactive_decay-V10-03-05)                     (o)
+  o G4ITDecay: added check on Z, A, excitation energy in order to be sure that
+    correlated gamma may be sampled; reset 4-momentum at rest when previous
+    nucleaus is reused; use floating level index when a new ion is created.
+  o G4RadioactiveDecay: temporarily switched off correlated gamma emission,
+    to limit observed event non-reproducibility violations.
+- models/util (hadr-mod-util-V10-03-02)                                      (o)
+  o G4Fragment: added method SetExcEnergyAndMomentum() allowing to preserve
+    excitation energy value without precision lost; 4-momentum is recomputed.
+    Added missing class member and accesors/modifiers for floating levels
+    number.
+  o Added control on printout in G4PolynomialPDF.
+
+run                                              run-V10-03-01               (o)
+---
+- Fixed printing of banner to happen only from master thread.
+
+visualization
+-------------
+- management (visman-V10-03-03):
+  o Replaced G4VisExtent::NullExtent by G4VisExtent() throughout.
+- RayTracer (raytracer-V10-03-00):                                           (o)
+  o G4RTXScanner: changed XA_RGB_BEST_MAP to XA_RGB_DEFAULT_MAP.
+
+data sets:
+---------
+- G4PhotonEvaporation-4.3.2:                                                 (o)
+  o Corrected correlated_gamma files for the uncorrect setting of the
+    multipolarity E0 as -1. Now considering E0,E1,M1, as 1,2,3,.....
+    The value of = is for unkown.
+  o Corrected correlated_gamma files z64.a148,z64.a149,z64.a150,z81.a194
+    for problem of order of level index.
+- G4RadioactiveDecay-5.1.1:                                                  (o)
+  o Correction of negative Q value for metastable 190+X level in z77.a194. 
+  o Correction of z38.a85 (Sr-85) with input data from DDEP.
+    Addressing problem report #1922.
+
+examples                                         examples-V10-03-02
+--------
+- Updated documentation and reference outputs.
+- advanced/hadrontherapy (hadrontherapy-V10-03-01)
+  o Fixed field setup; corrected physics-list.                               (o)
+    Addressing problem report #1879.
+  o Removed HadrontherapyAnalysisManager class; now using G4tools
+    in HadrontherapyMatrix.
+- extended/electromagnetic/TestEm5 (testem5-V10-03-02)
+  o Run: modified normalisation of histogram 1 and 10.
+  o PhysicsList: use more uniform builder names.
+- extended/exoticphysics/phonon (phononExample-V10-03-04)
+  o Updated timing output for MT.
+- extended/exoticphysics/ucn (ExUCN-V10-03-00)                               (o)
+  o Reduced verbosity.
+- extended/hadronic/Hadr06 (exhadr06-V10-03-01)
+  o Added comments.
+- extended/hadronic/NeutronSource (NeutronSource-V10-03-01)
+  o Run: remove normalisation of all histograms.
+  o Added comments.
+- extended/medical/dna/microdosimetry (microdosimetry-V10-03-02)
+  o Fixed compilation problem when Qt is enabled.
+- extended/medical/dna/pdb4dna (pdb4dna-V10-03-00)                           (o)
+- extended/medical/dna/wholeNuclearDNA (wholeNuclearDNA-V10-03-00)           (o)
+  o Fixed compilation problem when Qt is enabled.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-03-04)
+  o Run: added printout of mean time life.
+
+tests                                            tests-V10-03-02
+-----
+- Updated reference outputs and tools.
+- tests/test30 test30-V10-03-00)                                             (o)
+  o Updated Binary cascade runs according to modifications in
+    de-excitation module.

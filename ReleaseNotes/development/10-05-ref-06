@@ -1,0 +1,212 @@
+
+                       geant4-10-05-ref-06
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Removed G4FPE_DEBUG from CMake build mode "Debug". Added new dedicated
+   build mode "Debug_FPE".
+ o Revert to use G4IntegrationDriver as default in G4ChordFinder.
+ o New helper class G4NIELCalculator, to compute NIEL in user stepping
+   action or sensitive detector code.
+ o Introduced cloud drawing in visualization and graphics representations.
+ o Updated CLHEP module to CLHEP-2.4.1.2.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-05-05
+-----
+- Removed G4FPE_DEBUG from build mode "Debug". Added new build mode
+  "Debug_FPE" same as "Debug" mode but appending -DG4FPE_DEBUG.
+
+analysis                                         analysis-V10-05-01
+--------
+- Fixed CSV, XML ntuple file names.
+
+digits_hits                                      digits_hits-V10-05-04
+-----------
+- G4PSSphereSurfaceFlux: fixed track weight.
+
+event                                            event-V10-05-04
+-----
+- G4SPSPosDistribution: added accessor methods for volume confinement 
+  Addressing GitHub PR #7.
+
+externals                                        externals-V10-05-02
+---------
+- CLHEP: Synchronised with CLHEP-2.4.1.2:
+  MixMaxRng: throw if seed is zero. Use throw instead of exit() elsewhere.
+  Defaulted operator=() also for BasicVector3D andPlan3D; fixing
+  deprecation warnings  on gcc-9.1.
+  Fixed shadowing compilation warnings in Transform3D as reported on gcc-9.1.
+
+geometry/divisions                               geomdiv-V10-05-00
+------------------
+- Return correct value for multiplicity in G4PVDivision and G4ReplicatedSlice.
+  Addressing problem report #2168.
+
+geometry/magneticfield                           field-V10-05-08
+----------------------
+- Revert to use G4IntegrationDriver as default in G4ChordFinder.
+  Changed to use concrete type of Stepper as template parameter.
+- G4InterpolationDriver: new revision with multiple steppers for
+  each substep. Fixed memory churn; use FSAL property of G4DormandPrince745.
+  Change from G4VERBOSE to G4FIELD_DEBUG for debug checks.
+- Removed division in G4DormandPrince745::Interpolate4thOrder().
+- Reset step estimate in G4MagInt_Driver only at the beginning of a track.
+
+geometry/management                              geommng-V10-05-07
+-------------------
+- Fixed minor Coverity defects.
+
+geometry/navigation                              geomnav-V10-05-04
+-------------------
+- Improved information in G4Exceptions for particles stuck due to multiple
+  zero steps in G4Navigator.
+
+geometry/solids/csg                              geom-csg-V10-05-03
+-------------------
+- G4Tubs: Fixed normal from DistanceToOut() to be unit vector, for abnormal
+  exit points. Added inverse-Rmax and -Rmin as data members.
+- Re-use pre-calculated values instead of using std::cos(), std::sin() in
+  G4Tubs, G4Cons, G4CutTubs and G4Sphere.
+
+geometry/solids/specific                         geom-specific-V10-05-10
+------------------------
+- Use GetVertices() instead of GetParametersList() in the wrapper G4UTet.
+- Fixed minor Coverity defects.
+
+global                                           global-V10-05-10
+------
+- Updated date and tag-ID for geant4-10-05-ref-06.
+
+graphics_reps                                    greps-V10-05-03
+-------------
+- G4VisAttributes: added 'cloud' and methods to force, SetForceCloud(),
+  and SetForceNumberOfCloudPoints().
+
+physics_lists/lists                              phys-lists-V10-05-01
+-------------------
+- Replaced G4RadioactiveDecay with G4RadioactiveDecayBase in LBE list.
+
+processes/electromagnetic/dna                    emdna-V10-05-06
+-----------------------------
+- Fixed compilation warnings on gcc-9.1.
+
+processes/electromagnetic/utils                  emutils-V10-05-12
+-------------------------------
+- New helper class G4NIELCalculator, to compute NIEL in user stepping action 
+  or sensitive detector code. User should provide G4VEmModel objects, which
+  has NIEL model.
+- G4LossTableManager: added access and initialisation of G4NIELCalculator.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-05-16)
+  o G4HadronicException is substituted by G4Exception in all classes with
+    exceptions.
+  o G4BGGPionElasticXS, G4BGGPionInelasticXS: fixed initialisation for pi+-
+    by usage of separate vectors of correction factors; fixed computation for
+    Hydrogen target.
+  o G4BGGNucleonElasticXS, G4BGGNucleonInelasticXS: fixed computation
+    for Hydrogen target.
+  o G4ComponentGGHadronNucleusXsc: fixed correction factor for kaons.
+- management (hadr-man-V10-05-02)
+  o G4EnergyRangeManager: fixed bug regarding the kinetic energy per nucleon
+    in the case of anti-nuclei (the bug was of little harm as one single model,
+    FTFP, is used for all energies in the case of anti-nuclei projectiles).
+  o G4HadronicProcess: removed try/catch pattern from computation of mean
+    free path, removed final state random rotation.
+- models/cascade (hadr-casc-V10-05-00)
+  o Fixed case for potential FPEs due to un-protected sqrt() in
+    G4NucleiModel::boundaryTransition().
+- models/de_excitation (hadr-deex-V10-05-07)
+  o G4Evaporation, G4ExcitationHandler, G4LevelReader, G4VEmissionProbability,
+    G4GammaTransition, G4PhotonEvaporation, G4PolarizationTransition: changed
+    scheme of verbosity - 0- silence, 1- dump of parameters at initialisation,
+    2- debug printout, 3- very detailed debug printout.
+    Addressing problem report #2098.
+  o G4CoulombBarrier: use G4NuclearRadii utility to compute nuclear radius.
+- models/lend (hadr-lend-V10-05-01)
+  o G4LENDCapture::ApplyYourself: fixed memory leak of 'products_from_PE',
+    reported by Coverity.
+- models/lepto_nuclear (hadr-lepnuc-V10-05-01)
+  o Fixed in G4NuMuNucelusCc(Nc)Model for kinematics of quasi-elastic neutrino
+    scattering.
+- models/management (hadr-modman-V10-05-00)
+  o G4HadronicInteractionRegistry: fixed typo in comments, removed unused 
+    Boolean flag.
+- models/particle_hp (hadr-hpp-V10-05-05)
+  o Fix to deal with un-incremented index of photons in
+    G4ParticleHPPhotonDist::GetPhotons().  Also cleaned up dead code
+    in that class. Addressing problem report #2167.
+  o G4ParticleHPChannelList: fixed bug in the momentum change (it has to be
+    a normalized 3-vector, but it was not) in the case where NeutronHP could
+    not find a proper reaction channel.
+  o G4ParticleHPInelasticCompFS: fix to avoid arbitrary number of target
+    nuclei being generated and slowing down multi-threaded operation.
+    Addressing problem report #2166.
+- models/radioactive_decay (radioactive_decay-V10-05-05)
+  o G4RadioactivationMessenger: removed obsolete "fast beta" option,
+    internal conversion option (not part of biasing) and atomic relaxation
+    option (not part of biasing). Added "analogueMC" option which was
+    forgotten when class was developed.
+  o G4RadioactiveDecayBaseMessenger: removed obsolete "fast beta" option.
+  o Replaced G4ExceptionDescription in loop with simple string at exception
+    time inG4RadioactiveDecay, G4RadioactiveDecayBase and G4Radioactivation.
+  o In G4RadioactiveDecay::CalculateChainsFromParent() and
+    G4Radioactivation::CalculateChainsFromParent(), fixed memory leak of
+    'summedDecayTable' reported by Coverity.
+  o G4RadioactiveDecay, G4RadioactiveDecayBase: make sure decay table maps
+    are cleanly deleted at the end of program.
+- models/util (hadr-mod-util-V10-05-01)
+  o G4NuclearRadii: added extra utility methods.
+
+visualization                                    vis-V10-05-20
+-------------
+- management (visman-V10-05-06):
+  o Final changes for introduction of cloud drawing.
+- modeling (modeling-V10-05-04):
+  o Final changes for introduction of cloud drawing.
+  o Arrows and field models: introduced further protection.
+- OpenGL (OpenGL-V10-05-06):
+  o Final changes for introduction of cloud drawing.
+  o Force double buffer context for OGLIX.
+  o Force kernel visit on change of number of cloud points.
+- OpenInventor (openinventor-V10-05-06):
+  o Test number of cloud points for kernel visit.
+  o Added missing protection on G4VIS_BUILD_OIX_DRIVER.
+- XXX (visXXX-V10-05-01):
+  o Force kernel visit on change of number of cloud points.
+
+examples                                         examples-V10-05-06
+--------
+- Updated documentation and reference outputs.
+- extended/biasing/B03 (B03-V10-05-01)
+  o B03PhysicsList: use G4NeutronInelasticXS cross-section.
+- extended/electromagnetic/TestEm1 (testem1-V10-05-00)
+  o Added G4NIELCalculator and corresponding histograms and printouts;
+    general clean-up of the code; use default random number generator.
+- extended/hadronic/Hadr02 (exhadr02-V10-05-01)
+  o G4CRMCModel: some improvements (e.g. considered the energy-per-nucleon,
+    instead of the whole projectile, in the case of nucleus projectile) and
+    better documentation (in the form of comments in the class).
+- extended/medical/DICOM (DICOM-V10-05-00)
+  o Defaulted copy-ctr in DicomPhantomZSliceHeader, to fix deprecation
+    compilation warnings on gcc-9.1.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-05-00)
+  o PhysicsList: replaced G4RadioactiveDecay with refactored class
+    G4Radioactivation.
+- extended/radioactivedecay/rdecay02 (rdecay02-V10-05-00)
+  o New class BiasedRDPhysics using new G4Radioactivation process with all
+    biasing available
+  o In PhysicsList, replaced G4RadioactiveDecayPhysics with BiasedRDPhysics,
+    also remove HP option physics lists 
+  o In Run, replaced G4RadioactiveDecay with G4Radioactivation.
+
+tests                                            tests-V10-05-06
+-----
+- Updated reference outputs and tools.
