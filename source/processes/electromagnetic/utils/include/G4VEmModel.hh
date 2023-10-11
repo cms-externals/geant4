@@ -365,6 +365,8 @@ public:
 
   inline void SetSecondaryThreshold(G4double);
 
+  inline void SetLPMFlag(G4bool val);
+
   inline void SetDeexcitationFlag(G4bool val);
 
   inline void SetForceBuildTable(G4bool val);
@@ -437,8 +439,8 @@ private:
 
 protected:
 
-  size_t currentCoupleIndex = 0;
-  size_t basedCoupleIndex = 0;
+  std::size_t currentCoupleIndex = 0;
+  std::size_t basedCoupleIndex = 0;
   G4bool lossFlucFlag = true;
 
 private:
@@ -777,6 +779,11 @@ inline void G4VEmModel::SetSecondaryThreshold(G4double val)
 {
   secondaryThreshold = val;
 }
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+inline void G4VEmModel::SetLPMFlag(G4bool) 
+{}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
