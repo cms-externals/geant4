@@ -1,0 +1,354 @@
+
+                       geant4-10-04-ref-00
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o CLHEP: set MixMax as the default random number generator in HepRandom.
+ o Use default (as in version 9.6) Urban multiple-scattering lateral
+   displacemet algorithm for e+-, in G4EmStandardPhysics_option1 and option2.
+   Use new Urban lateral displacement algorithm in option3, G4EmLowEPPhysics,
+   G4EmPenelopePhysics, G4EmLivermorePhysics, G4EmLivermorePolarizedPhysics.
+   Enable Auger cascade in option4.
+ o Disabled correlated gamma in radioactive-decay.
+ o Updated to data set G4PhotonEvaporation-5.2.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-03-49
+-----
+- Added check for HDF5 installation; requiring HDF5 >= 1.8.
+- Restored reporting of C++ standard configuration.
+- Replaced USolids specific flags with VecGeom in Geant4OptionalComponents.cmake.
+  From now on VecGeomConfig.cmake will be required and used instead of
+  USolidsConfig.cmake, as well as VecGeom_DIR instead of USolids_DIR.
+- Corrected setting of USOLIDS_BASE_DIR path for GNUmake setup.
+- Removed obsolete FindROOT module.
+- Updated to data set G4PhotonEvaporation-5.2.
+
+config                                           config-V10-03-07
+------
+- In architecture.gmk, removed references to old USolids library;
+  just use VecGeom.
+
+analysis                                         analysis-V10-03-17
+--------
+- Updated to g4tools 4.2.1: fixed Coverity defects and compilation warnings.
+  See History_tools for the complete list of modifications.
+
+environments                                     envs-V10-03-01
+------------
+- G4py: updated for 10.4 release
+- New module zmq including ZeroMQ interface (experimental).
+
+error_propagation                                error_propagation-V10-03-02
+-----------------
+- Precision correction in G4ErrorFreeTrajState.
+  Addressing problem report #2010.
+- Migrated code to use new types for G4(Mag)IntegrationDriver and use its
+  new GetEquation() method.
+
+externals                                        externals-V10-03-08
+---------
+- CLHEP: updated MixMaxRng class to include latest C++ revision based on
+  MixMax-2.0. Replaced skipping coefficients optional set for N=256 with N=240. Removed old C implementation files.
+  Set MixMax as the default random number generator in HepRandom.
+
+geometry
+--------
+- magneticfield (field-V10-03-30):
+  o New templated driver G4IntegrationDriver is chosen for the 
+    the simple constuctors of G4ChordFinder and G4FieldManager
+    which only require a (pure) magnetic field.
+  o Fixed Coverity defects in new driver/stepper classes.
+  o Introduced G4VIntegrationDriver base class for any driver algorithm.
+    New concrete classes added: G4IntegrationDriver, implementation of
+    templated driver algorithm for non-FSAL explicit Runge-Kutta steppers;
+    G4FSALIntegrationDriver, implementation of driver algorithm for
+    FSAL explicit Runge-Kutta steppers.
+  o Added new steppers G4RK547FEq{1,2,3} which implement 7 stage embedded 
+    Runge-Kutta 4,5 pairs with: FSAL property (return derivative at endpoint
+    for use in next step); stable equilibrium states (better stability in
+    choosing step size). Each one can be used with all existing Runge-Kutta
+    drivers.
+  o Added GetStepper() method to G4VIntegrationDriver for backward
+    compatibility.
+  o Added G4FieldUtils utilities class, to extract data from arrays in
+    conventions of the magneticfield integration.
+- management (geommng-V10-03-21):
+  o Precision correction in G4ErrorPlaneSurfaceTarget.
+    Addressing problem report #2011.
+- navigation (geomnav-V10-03-09):
+  o G4Navigator: loosened check on normal vector in GetGlobalExitNormal(),
+    whether it is a unit vector; set tolerance to 10^-3 (was 10^-6).
+    Improved clarity by using a constant to define it.
+  o Fix in G4PathFinder to cope with zero proposed step; the correction
+    ensures that the 'physical' length of a step is used in minimum, rather
+    than 'logical' value (i.e. kInfinity).
+- solids/CSG (geom-csg-V10-03-38)
+  o Fix in SurfaceNormal() for G4Trap, G4Para, G4Trd to assure explicit
+    counting of the surfaces where the point is placed on edges.
+- solids/specific (geom-specific-V10-03-25):
+  o Added specialised implementation for constructs defining a non-convex
+    right prism in G4ExtrudedSolid.
+
+physics_lists
+-------------
+- builders (phys-builders-V10-03-06)
+  o G4NeutronLENDBuilder: modified setting for selection of target data.
+- constructors/decay (phys-ctor-decay-V10-03-08)
+  o G4RadioactiveDecayPhysics: enabling Auger cascade.
+- constructors/electromagnetic (phys-ctor-em-V10-03-37)
+  o G4EmStandardPhysics, G4EmStandardPhysics_option1,
+    G4EmStandardPhysics_option2: use default (as in version 9.6) Urban
+    multiple-scattering  lateral displacemet algorithm for e+-.
+  o G4EmStandardPhysics_option3, G4EmLowEPPhysics, G4EmPenelopePhysics, 
+    G4EmLivermorePhysics, G4EmLivermorePolarizedPhysics: use new
+    Urban lateral displacement algorithm.
+  o G4EmStandardPhysics_option4: enable Auger cascade.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V10-03-04)
+  o Dump LEND target information in G4LENDBertiniGammaElectroNuclearBuilder.
+- constructors/hadron_elastic (phys-ctor-helastic-V10-03-04)
+  o G4HadronElasticPhysicsLEND: modified setting for selection of target data.
+    Dump LEND target information.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V10-03-06)
+  o Added G4HadronPhysicsShieldingLEND.
+  o Fix registration of cross-section data set in G4HadronPhysicsShielding.
+- constructors/limiters (phys-ctor-limiters-V10-03-02)
+  o G4StepLimiterPhysics: fixed thread safety issue; removed potential
+    race condition.
+  o G4NeutronTrackingCut: added explicit builder type.
+- lists (phys-lists-V10-03-08)
+  o Added FTFQGSP_BERT to G4RegisterPhysLists, to make available to
+    G4PhysListFactory.
+  o Added messenger with two commands to G4PhysListFactory to enable
+    radioactive decay or optical physics.
+  o Added ShieldingLEND as a new physics list.
+
+processes/biasing/generic                        proc-biasgen-V10-03-00
+-------------------------
+- Fix in G4BiasingProcessInterface for wrong setting of first/last GPIL/DoIt
+  flags in case of charged particles, according to the fact that the multiple-
+  scattering is now a pure along step process.
+
+processes/electromagnetic/adjoint                emadjoint-V10-03-01
+---------------------------------
+- Correction for FPE cases in G4AdjointForcedInteractionForGamma.
+- G4eAdjointMultipleScattering: changed index of the default according to
+  recent modifications in utils module.
+
+processes/electromagnetic/highenergy             emhighenergy-V10-03-05
+------------------------------------
+- G4hBremsstrahlung, G4hPairProduction: updated process description text.
+
+processes/electromagnetic/lowenergy              emlowen-V10-03-19
+-----------------------------------
+- G4RayleighScattering: added process description text.
+- G4LivermorePhotoElectricModel: fixed diagnostic text in case of G4Exception.
+
+processes/electromagnetic/muons                  emmuons-V10-03-06
+-------------------------------
+- Modified process description text in various processes.
+
+processes/electromagnetic/standard               emstand-V10-03-51
+----------------------------------
+- G4UrbanMscModel: renamed flag for displacement; if its value is "true"
+  then the old lateral displacment algorithm is used, else a new one is
+  applied.
+- G4GoudsmitSaundersonTable: fixed scattering power correction table.
+- Modified process description text in various processes.
+- G4CoulombScattering: improved printout.
+
+processes/electromagnetic/utils                  emutils-V10-03-31
+-------------------------------
+- G4EmParameters: fixed SetDeexcitationIgnoreCut() method.
+  Set lateral displacement algorithm to 9.6 version as the default,
+  Fixed typo in dump of parameters.
+- G4EmParametersMessenger: allow atomic de-excitation commands in Init state.
+- Fixed process description text in various processes.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-03-14)
+  o Added method AddDataSet(G4VCrossSectionDataSet*,size_t), where the second
+    argument specifies the priority of the data set in list.
+  o G4ElectroNuclearCrossSection: fixed minor memory leak.
+- models/cascade (hadr-casc-V10-03-06)
+  o G4CascadeInterface: removed unnecessary rotation to z-axis in
+    createBullet() and ApplyYourself(), which may cause irreproducibility.
+    Addressing problem report #1990.
+- models/de_excitation (hadr-deex-V10-03-51)
+  o G4NeutronRadCapture, G4StatMFChannel, G4StatMFFragment, G4GEMChannel,
+    G4CompetitiveFission, G4FermiPhaseSpaceDecay: use G4RandomDirection()
+    for better CPU performance.
+  o G4DeexPrecoParameters: fixed printout of parameters.
+- models/im_r_matrix (had-im_r_V10-03-01)
+  o G4ParticleTypeConverter: all methods become const.
+  o G4ConcreteMesonBaryonToResonance: fixed memory leak. Adding static
+    objects with const only methods.
+- models/inclxx (hadr-inclxx-V10-03-20)
+  o Fixed bugs in eta/omega channels.
+  o G4INCLRandom: fix to avoid reproducibility problems. The method
+    gaussWithMemory() should be called twice for drawing a pair
+    of correlated Gaussian variables, whereas the method gauss() should
+    be used for usual, single and independent Gaussian variables.
+- models/lend (hadr-lend-V10-03-12)
+  o Fixed gamma(2.2MeV) emission from n captured by H.
+  o Fixed minor problem on DumpLENDTargetInfo.
+  o Fixed typo in names of cross-section data set.
+- models/particle_hp (hadr-hpp-V10-03-09)
+  o Added NRESP71 model for n on C reaction.
+  o Changed tolerance value and implementation in calculation of KallbachZero, 
+    to overcome cases of FPE errors.
+- models/parton_string/diffraction (hadr-string-diff-V10-03-10)
+  o Backported FTF/diffraction configuration interface for baryon projectile
+    Affected classes: G4FTFParameters, G4FTFModel.
+  o G4FTFAnnihilation: improved anisotropy of secondary pions in annihilation.
+  o Minor code cleanup.
+- models/parton_string/management (hadr-partonstring-mgt-V10-03-04)
+  o Minor code cleanup.
+- models/pre_equilibrium (hadr-pre-V10-03-03)
+  o G4PreCompoundEmission: use G4RandomDirection() if angular sampling
+    is disabled.
+- models/radioactive_decay (radioactive_decay-V10-03-20)
+  o G4RadioactiveDecay: added StreamInfo() method for printing radioactive
+    decay parameters; call this method in BuildPhysicsTable().
+    Disabled correlated gamma and removed unused EM headers.
+    In DecayIt() use GetPDGStable() in the variance reduction branch, to
+    allow the stable nucleus at the end of the decay chain to be added to
+    the final state particle stack; addresses problem report #2007.
+  o G4ECDecay: set the probability for selection of L and M subshells to
+    PL1/PL=0.995, PL2/PL=0.005, PM1/PM=0.995 and PM2/PM=0.005. Close to Fe55
+    case.
+- models/util (hadr-mod-util-V10-03-15)
+  o G4SampleResonance: added protection for rare cases when a wide parent
+    resonance, with a very small dynamic mass, decays into another wide
+    (daughter) resonance.
+
+run                                              run-V10-03-16
+---
+- Properly delete G4RNGHelper singleton object at the end of program.
+
+track                                            track-V10-03-00
+-----
+- G4VelocityTable: use G4ThreadLocalSingleton pattern for proper instance
+  deletion at the end of run; use G4Log and G4Exp consistently.
+
+visualization                                    vis-V10-03-10
+-------------
+- OpenGL (opengl-V10-03-04):
+  o Refine content of output of picking.
+
+data sets:
+---------
+- G4PhotonEvaporation-5.2
+  o Changes in U234 (z92.a234): corrected decay from 809.907 to the ground
+    according to gamma input in DDEP pdf table. Info is missing in ENSDF.
+    Correction addressing problem report #1967.
+    Corrected gamma intensities from level 1040.536 according to input in
+    ENSDF file from DDEP.
+
+examples                                         examples-V10-04-00
+--------
+- Updated documentation and reference outputs.
+- advanced/brachytherapy (brachy-V10-03-01)
+  o Avoid setting the initial seed to zero.
+- advanced/ChargeExchangeMC (ChargeExchangeMC-V10-03-08)
+  o Fixed CMake script for Root flags.
+- advanced/eRosita (eRosita-V10-03-02)
+  o Fixed compilation errors and updated build scripts.
+- advanced/iort_therapy (iort_therapy-V10-03-01)
+  o Fixed CMake script for Root flags.
+- advanced/medical_linac (medical_linac-V10-03-02)
+  o Updated batch.mac macro.
+- extended/analysis/AnaEx02 (AnaEx02-V10-03-01)
+  o Fixed CMake script for Root flags.
+- extended/biasing/ReverseMC01 (ReverseMC01-V10-03-01)
+  o G4AdjointPhysicsList: use SetEmModel() instead of AddEmModel()
+    where possible in order to get rid of initialisation warning.
+- extended/electromagnetic/TestEm0 (testem0-V10-03-01)
+  o RunAction: write html documentation of physics list if G4PhysListName
+    and G4PhysListDocDir are set.
+- extended/electromagnetic/TestEm5 (testem5-V10-03-08)
+  o Updated fluo.mac macro and READMEs.
+- extended/electromagnetic/TestEm7 (testem7-V10-03-01)
+  o Fixed macros.
+- extended/electromagnetic/TestEm17 (testem17-V10-03-00)
+  o PhysicsList: fixed EM standard setting; added emstandard_opt4.
+- extended/exoticphysics/monopole (monopole-V10-03-04)
+  o Fixed lost functionality of histograms and monopole parameter definitions.
+    Simplified histograms definition and filling.
+- extended/exoticphysics/phonon (phononExample-V10-03-08)
+  o Updated example reference output files.
+- examples/extended/hadronic (exHadronic-V10-03-00)
+  o Fixed documentation and archived example Hadr05.
+- examples/extended/hadronic/Hadr01 (exhadr01-V10-03-00)
+  o Fixed histograms and radioactive decay.
+- extended/hadronic/Hadr06 (exhadr06-V10-03-04)
+- extended/hadronic/Hadr07 (exhadr07-V10-03-02)
+- extended/hadronic/NeutronSource (NeutronSource-V10-03-04)
+  o Fixed Doxygen documentation.
+- extended/medical/DICOM (DICOM-V10-03-12)
+  o DICOM_HEAD library can be used as input data set. Added downloading of
+    DICOM data in CMake build (used only with DICOM_USE_HEAD option).
+    Output files .g4dmc and .g4dcmb are now created in the user directory
+    and no longer in the DICOM data library.
+  o Updated DICOM data to G4DICOM-1.1.
+- extended/medical/dna (exdna-V10-03-02)
+  o Fixed documentation.
+- extended/medical/dna/chem3 (chem3-V10-03-00)
+  o Fixed typo in main().
+- extended/medical/dna/dnaphysics (dnaphysics-V10-03-15)
+  o Updated plot.C.
+- extended/medical/dna/microdosimetry (microdosimetry-V10-03-08)
+  o Updated physics-list; manual approach of G4DNA activator.
+  o Updated plot.C
+- extended/medical/dna/neuron (neuron-V10-03-04)
+  o Fixed warning and updated messaging.
+- extended/medical/GammaTherapy (gtherapy-V10-03-08)
+  o Fixed documentation.
+- extended/parallel/MPI (MPI-V10-03-02)
+  o Fixed CMake script for Root flags.
+- extended/parameterisations/Par01 (expar01-V10-03-00)
+  o Fixed documentation.
+- extended/persistency/P01 (exampleP01-V10-03-01)
+- extended/persistency/P02 (exampleP02-V10-03-01)
+  o Include ROOTNewMacros for reflex_generate_dictionary.
+    Updated generated source name.
+  o Fixed CMake script for Root flags.
+- extended/physicslists/extensibleFactory (extFactory-V10-03-00)
+  o New example showing how to define a physics list from Geant4 physics
+    constructors; it demonstrates the usage of g4alt::G4PhysListFactory to
+    build the concrete physics list.
+- extended/physicslists/factory (factory-V10-03-01)
+- extended/physicslists/genericPL (genericPL-V10-03-01)
+- extended/radioactivedecay/Activation (activation-V10-03-05)
+  o Fixed documentation.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-03-13)
+  o In PhysicsList::ConstructProcess(), couple SetARM() and SetAugerCascade().
+
+tests                                            tests-V10-04-00
+-----
+- Updated reference outputs and tools.
+- test03 (test03-V10-03-06)
+  o Check availablility of HDF5 support.
+- test19  (test19-V10-03-00)
+- test23 (test23-V10-03-03)
+  o Fixed CMake script for Root flags.
+- test37 (test37-V10-03-05)
+  o Extended test with Sandia data on Uranium and additional new set of data
+    on Silicon. Updated Plot.C script, provide png otput plots instead of gif.
+- test47 (test47-V10-03-01)
+- test48 (test48-V10-03-00)
+  o Fixed CMake script for Root flags.
+- test53 (test53-V10-03-02)
+- test54 (test54-V10-03-03)
+  o Switch to MixMax random number generator.
+- test67 (test67-V10-03-00)
+- test69 (test69-V10-03-00)
+- test73 (test73-V10-03-00)
+- test75 (test75-V10-03-00)
+  o Fixed CMake script for Root flags.

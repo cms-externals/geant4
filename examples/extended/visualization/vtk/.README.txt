@@ -1,0 +1,43 @@
+///\file "visualization/vtk/.README.txt"
+///\brief Example vtk README page
+
+/*! \page Examplevtk Example vtk
+
+VTK is a graphical pipeline
+(https://book.vtk.org/en/latest/VTKBook/04Chapter4.html#pipeline-design-and-implementation)
+based renderer. There are various pipelines and the state of the
+pipelines can be displayed by issuing this command
+
+\verbatim
+/vis/vtk/printDebug
+\endverbatim
+
+Pipelines can be switched during operation. This is performed by calling
+
+\verbatim
+/vis/vtk/set/polyhedronPipeline (append/tensor/bake/separate)
+\endverbatim
+
+and then a subsequent
+
+\verbatim
+/vis/viewer/flush
+\endverbatim
+
+There is significantly different performance between these pipelines. Append, tensor
+and bake are all designed for large models and high performance. Separate creates
+a pipeline for each polyhedron, each pipeline will ultimately end with a draw call.
+In general with modern pipelined shaders draw calls should be kept to a minimum.
+
+For debugging the VTK viewer it is possible to place a head up display (HUD) which
+gives key information on the viewer performance. The HUD is enabled by issuing
+
+\verbatim
+/vis/vtk/set/hud 1
+\endverbatim
+
+
+Stewart Boogert
+30th September 2023
+
+*/

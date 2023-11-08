@@ -1,0 +1,310 @@
+
+                       geant4-10-02-ref-02
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Introduced new utility class G4MTBarrier implementing a synchronization
+   point between threads.
+ o Added handling of multiple actions to be instantiated and handled by
+   user code. Added G4MultiRunAction, G4MultiPrimaryAction and
+   G4Multi{Stepping,Tracking}Action.
+ o Fix in G4ReplicaNavigation::ComputeStep() for correct setting of copyNo.
+ o Correction in G4ExtrudedSolid for precision treatment in construction of
+   tessels to avoid cases of collinear points and degenerating triangles.
+ o Introduced drawing and filtering by touched volume in visualization.
+ o New data sets G4ENSDFSTATE-1.3, G4RadioactiveDecay-4.3.1 and G4TENDL-1.2.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in release 10.1.p03
+(o)  Fixes included in release 10.2.p01
+(#)  Fixes included in release 10.2.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-02-02             (o)
+-----
+- Updated data sets to G4ENSDFSTATE-1.3 and RadioactiveDecay-4.3.1.
+
+config                                           config-V10-02-00            (o)
+------
+- Added settings for 14 and 17 C++ standards in platform specific scripts.
+
+event                                            event-V10-02-01
+-----
+- Introducing G4MultiEventAction to allow multiple user actions in the same
+  job.
+
+geometry
+--------
+- magneticfield (field-V10-02-01):                                           (o)
+  o Fix for spin tracking of particles with negative magnetic moment.
+    Addressing problem report #1831.
+- navigation (geomnav-V10-02-03):                                            (o)
+  o Fix in G4ReplicaNavigation::ComputeStep() for correct setting of copyNo  (*)
+    for particle entering. Fixes issue of negative copyNo observed in nested
+    replica setups. Addressing problem report #1634.
+  o Relax condition for zero or almost-zero steps in G4ReplicaNavigation and (*)
+    G4Navigator, to allow for faster progression in case of stuck tracks in
+    3D scoring meshes. Addressed old problem report #1432.
+- solids/Boolean (geom-bool-V10-02-00)                                       (o)
+  o Minor optimisation in Inside(p) for G4UnionSolid and G4SubtractionSolid.
+- solids/specific (geom-specific-V10-02-02)
+  o Correction in G4ExtrudedSolid::AddGeneralPolygonFacets() for precision   (o)
+    treatment in construction of tessels to avoid cases of collinear points
+    and consequent degenerating triangles.
+    Address problem report #1777.
+  o Use pre-computed kCarToleranceHalf constant in G4ExtrudedSolid, now      (o)
+    protected in G4TessellatedSolid.
+  o Improved algorithms for computation of area in G4TriangularFacet and
+    G4QuadrangularFacet. Added post-const qualifier to GetArea().
+  o Revised implementation for GetSurfaceArea() and GetCubicVolume() in
+    G4GenericTrap.
+  o Protected debug warning in G4GenericTrap::SurfaceNormal() within         (o)
+    G4SPECSDEBUG.
+  o Fix in G4GenericTrap for computation of extent.                         (*o)
+    Addressing problem report #1809.
+  o Use dot() in formula for computation of GetCubicVolume() in             (*o)
+    G4TessellatedSolid.
+
+global                                           global-V10-02-08
+------
+- Introduced new utility class G4MTBarrier implementing a synchronization
+  point between threads.
+- Changed exception code in G4TWorkspacePool from G4TWorkspacePool
+  to "WorkspaceNN".
+
+materials                                        materials-V10-02-02         (o)
+---------
+- G4NistElementBuilder: fixed typo in print-out.                             (*)
+  Addressing problem report #1786.
+- Fixed rare data-race in G4MaterialPropertiesTable for optical physics.
+
+particles                                        particles-V10-02-07
+---------
+- Changed default life of ion and hyper nucleus from -1 to 0.
+- Preliminary tag to review of MT treatment for SetDaughter() in             (#)
+  G4VDecayChannel: raise exception if re-definition of daughters
+  is requested
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-02-02)
+  o Added SetScintillationTrackInfo() method to G4OpticalPhysics with
+    associated command in G4OpticalPhysicsMessenger.
+    Fixed memory leak in G4OpticalPhysicsMessenger.
+  o Partial fix for allowing calls to optical UI commands in "PreInit" state.
+    Partially addressing problem report #1832.
+- constructors/hadron_elastic (phys-ctor-helastic-V10-02-00)                 (o)
+  o Added missing hadron elastic for He3 in G4HadronElasticPhysics,
+    using Glauber-Gribov elastic cross-section (Gheisha does not have
+    hadronic - elastic and inelastic - cross-sections for He3).
+- constructors/limiters (phys-ctor-limiters-V10-02-00)                       (o)
+  o G4ParallelWorldPhysics: fixed process order index of                     (*)
+    G4ParallelWorldProcess to 9900 to make sure it is registered
+    prior to G4OpBoundaryProcess.
+- lists (phys-lists-V10-02-02)
+  o FTFP_BERT_TRV: use GS multiple scattering with most precise option (Opt3)
+    instead of the default (Opt0), for the purpose of studying the impact of
+    multiple scattering on hadronic showers.
+
+processes/electromagnetic/dna                    emdna-V10-02-02
+-----------------------------
+- G4MoleculeCounter: removed check of c++ version for unique_ptr/auto_ptr
+  selection.
+
+processes/electromagnetic/standard               emstand-V10-02-02
+----------------------------------
+- G4UniversalFluctuation: fixed bug in Glandz part, Gaussian sampling.
+  The sampling is symmetrical around mean-energy now.
+  Some code cleanup.
+- Fixed sampling of scattering angle in G4eSingleCoulombScatteringModel.     (o)
+  Addressing problem report #1823.
+- G4GoudsmitSaundersonMscModel: handle special case (when gun is on          (o)
+  the boundary) for the step limitation.
+- G4ASTARStopping, G4PSTARStopping, G4NISTStoppingData, G4BraggModel:
+  data arrays change to float, computation left as double.
+  Use float for local static data, introduced C++11 keyword "delete".
+- G4UniversalFluctuations, G4BohrFulatuations,  G4IonFluctuations:
+  added C++11 keywords explicit, override, delete, final.
+
+processes/electromagnetic/utils                  emutils-V10-02-07
+-------------------------------
+- G4VEmProcess, G4EmModelManager: added extra methods to access models.
+- G4VEnegryLossProcess, G4EmCorrections: removed unused class members.
+- Use C++11 keywords explicit, override, delete and nullptr.
+
+processes/electromagnetic/xrays                  xrays-V10-02-03
+-------------------------------
+- Attach G4ScintillationTrackInformation to the secondary photon only if
+  requesed by user.
+
+processes/hadronic
+------------------
+- models/cascade (hadr-casc-V10-02-00)
+  o G4InuclCollider: removed environment variable which enables
+    "photonuclearOkay()" test. This test will now be used by default,
+    improving the match for production of neutrons and protons in the
+    GDR region.
+- models/de_excitation (hadr-deex-V10-02-05)                                 (o)
+  o G4PhotonEvaporation, G4LevelReader, G4NucLevel: fixed treatment of
+    X-levels (meta-stable nuclear levels which have forbidden gamma
+    transition but opened beta-transitions); this fix excludes creation of
+    very low-energy fake gamma and provides a correct nuclear decay sequence.
+- models/particle_hp (hadr-hpp-V10-02-06)                                    (o)
+  o Fixes for problem on materials with hydrogen or helium.
+  o Fixed problems in deletion of cross-section data set in MT mode
+    and initialisation of cached data.
+  o Fixed Coverity defects.
+- models/qmd (hadr-qmd-V10-02-00)                                            (o)
+  o Fixed bug in handling forbidden decay in G4QMDCollision.
+- models/radioactive_decay (radioactive_decay-V10-02-02)
+  o G4RadioactiveDecay::DoDecay(): added protection for zero pointer
+    in case of missing decay channel.
+- util (hadr-util-V10-02-00)                                                 (o)
+  o G4Nucleus: increased max number of loops allowed in method
+    GetBiasedThermalNucleus().
+
+processes/optical                                op-V10-02-00                (o)
+-----------------
+- Fix to DielectricLUT concerning the sequence of rotations.
+  Addressing problem report #1826.
+
+processes/scoring                                procscore-V10-02-00         (o)
+-----------------
+- G4ParallelWorldProcess: fixed processType from 'fParameterized'            (*)
+  to 'fParallel' and set processSubType to 491.
+
+run                                              run-V10-02-09
+---
+- G4PhysicsListHelper: added entry for G4ParallelWorldProcess.              (*o)
+- G4RunManager, G4WorkerRunManager: fixed process order index of            (*o)
+  G4ParallelWorldProcess to 9900 to make sure it is registered
+  prior to G4OpBoundaryProcess.
+- Added handling of multiple actions to be instantiated and handled by
+  user code. Added G4MultiRunAction class to allow for multiple run actions
+  in a single job; added G4MultiPrimaryAction to allow for multiple
+  user-primary generation actions in a single job.
+- Renamed all MT related exceptions to have new code matching pattern.
+- Use scoped enum for G4MTRunManager::WorkerActionRequest and
+  added PROCESSUI action.
+- Added G4MTRunManager::GetNumberActiveThreads() method.
+- Use new class G4MTBarrier to implement synchronization points.
+- Introduced skeleton for new functionality to force workers to 
+  execute UI commands w/o beamOn.
+  Introduced new UI command: "/run/workersProcessCmds" to trigger
+  execution of UI commands by workers even without a "/run/beamOn";
+  C++ API is G4MTRunManager::RequestWorkersProcessCommandsStack().
+- When workers are terminated they execute the UI commands issued
+  after the last /run/beamOn
+- Fixed potential memory leak in G4RunMessenger.
+
+tracking                                         tracking-V10-02-01
+--------
+- G4SteppingManager: fix to properly set 'OriginTouchableHandle' for the    (*o)
+  primary track. Addressing problem report #1773.
+- New G4Multi{Stepping,Tracking}Action classes to allow for multiple
+  user-actions in the same job.
+
+visualization
+-------------
+- management (visman-V10-02-04):
+  o G4VisExecutive: registered drawing and filtering by touched volume.
+- modeling (modeling-V10-02-02):
+  o Introduced drawing and filtering by touched volume.
+    i.e., "/vis/modeling/trajectories/create/drawByTouchedVolume"
+          "/vis/filtering/trajectories/create/touchedVolumeFilter"
+    and their associated commands.
+    This selects only by a single string, the physical volume name. If there
+    are more than one physical volumes with that name then any trajectory
+    touching any one of those volumes will be selected.
+    If the user sets more than one physical volume name (by using the set
+    command more than once) the trajectory will be selected if it touches
+    either of those volumes and which of the attributes (e.g., colour)
+    associated with those volumes is chosen is arbitrary.
+    A more comprehensive facility would allow the user to select by
+    touched touchable, i.e., by the full path and copy numbers of the
+    physical volume - but that is a job for the future if a use case arises.
+  o G4TrajectoryModelFactories: added G4TrajectoryDrawByTouchedVolumeFactory.
+  o G4TrajectoryFilterFactories: added G4TrajectoryTouchedVolumeFilterFactory.
+  o Added new files and classes: G4TrajectoryDrawByTouchedVolume and
+    G4TrajectoryTouchedVolumeFilter.  
+  o G4ModelColourMap: sdded new access function GetBasicMap().
+  o G4ModelingParameters: added VisAttributesModifier set commands.
+  o Tidied uo G4TrajectoryDrawByOriginVolume.
+- OpenGL (opengl-V10-02-00)
+  o Fix for notifying multiple OGL X views.
+  o Fix in G4OpenGLViewer::getRealPrintFilename() so that files can easily be
+    referenced in alphanumeric order.
+  o CompareForKernelVisit(): tested for total visualization attributes
+    modifiers instead of just for size.
+  o Fixed typo for macro G4CONDITIONBROADCAST.
+- XXX (visXXX-V10-02-00)
+  o CompareForKernelVisit(): tested for total visualization attributes
+    modifiers instead of just for size.
+
+data sets:
+---------
+- New data set for nuclides properties G4ENSDFSTATE-1.3 (also 1.2.1):        (o)
+  o Added missing data for RA228, SI24, SI25 and 193RN.
+- New data set for radioactive-decay, G4RadioactiveDecay-4.3.1:
+  o Replace NaN values for intensity by 1 in z71.a157(Lu157),                (o)
+    z55.a136(Cs136) and z59.a129(Pr129).
+- New optional data set for incident particles G4TENDL-1.2:
+  o Compressed version of the library.
+  o Added information of source (ENDF/B-VII.1 or TENDL-2014) for each file.
+  o Fixed problem to Deuteron/Inelastic/F01/1_3_Hydrogen.z.
+
+examples                                         examples-V10-02-02
+--------
+- Updated reference outputs.
+- extended/biasing/B03 (B03-V10-02-00)                                       (o)
+  o B03PhysicsList: corrected process order index of G4ParallelWorldProcess
+    to 9900 to make sure it is registered prior to G4OpBoundaryProcess.
+- extended/electromagnetic/TestEm1 (testem1-V10-02-02)
+  o PhysicsList::AddRadioactiveDecay(): set like threshold to 0.1*picosecond
+    in G4NuclideTable. Updated radioactive.mac.
+- extended/electromagnetic/TestEm5 (testem5-V10-02-02)
+  o EventAction: correct filling of histogram 1.
+- extended/electromagnetic/TestEm8 (testem8-V10-02-00)
+  o TestParameters, Run, PrimaryGeneratorAction, PrimaryGeneratorMessenger:
+    reorganized printout of beam particle; use energy smearing as an addition
+    of noise, so smeared noise should be added in units of energy.
+- extended/electromagnetic/TestEm11 (testem11-V10-02-01)
+  o Physicsist: added radioactiveDecay process
+  o Run: compute energy deposit per absorber
+  o PrimaryGenerator: restored SetDefaultKinematic().
+  o Updated macro radioactive.mac.
+- extended/hadronic/Hadr06 (exhadr06-V10-02-00)
+  o PhysicsList: added G4StoppingPhysics.
+  o Added NE213 material.
+- extended/parallel/TBB (tbbex-V10-02-01)
+  o Ported code following last updates to 'run' category.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-02-02)                    (o)
+  o Improved printout in Run::EndOfRun().
+- extended/radioactivedecay/rdecay02 (rdecay02-V10-02-00)
+  o PhysicsList: register hadronic processes.
+
+tests                                            tests-V10-02-02
+-----
+- Updated reference outputs and tools.
+- tests/test04 (test04-V10-02-02)
+  o Re-organised for testing charged particle HP.
+  o Changed the version of G4TENDL to use G4TENDL-1.2.
+  o Changed default random number engine from Ranecu to Ranlux64.
+  o Added G4_H and G4_He to tested materials.
+  o Increased timelimit to 30 minutes.
+- tests/test11 (test11-V10-02-02)
+  o Changed default random number engine from Ranecu to Ranlux64.
+  o Turned off meaningless printout.
+  o Increased timelimit to 30 minutes.
+- tests/test23 (test23-V10-02-02)
+  o Corrected severe typo in 12GeV/c pi- on C -> pi+ datafile (HARP FW).
+  o Updates for full use of multi-cores.
+  o Sall-scale tweaks to the app code and analysis scripts.
+- tests/test47 (test47-V10-02-00)
+  o Convert processing of p+A->pbar to use GNU "parallel" for per-Core submit.
+- tests/test65 (test65-V10-02-01)
+  o Changed default random number engine from Ranecu to Ranlux64.
+  o Turned off meaningless printout.
