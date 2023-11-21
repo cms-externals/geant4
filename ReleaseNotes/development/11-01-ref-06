@@ -1,0 +1,271 @@
+
+                       geant4-11-01-ref-06
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o New Quantum State Simulation (QSS) integration method, an alternative
+   method of integration offering built-in interpolation capability and
+   enabling faster finding of the intersection of the trajectory with surfaces.
+ o Rewritten G4DNARuddIonisationExtendedModel G4DNA model, applicable for
+   scaled energy interval from 100 eV to 100 MeV.
+ o Major extension of the INCLXX model to handle antiproton annihilation
+   at rest. All INCLXX-based physics lists now use INCLXX for the antiproton
+   annihilation at rest.
+ o First version of the TSG_[QT,X11,XT,WINDOWS]_ZB sub drivers, allowing for
+   interactive 3D rendering bypassing native graphics systems. Temporarly
+   enabled by default with OGL driver choice, to allow support of Qt6.
+ o Fixed minimum supported version for Qt5 to be 5.9.
+ o Updated data-set G4EMLOW-8.4.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(x)  Fixes included in patch release 11.1.2
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-01-21
+-----
+- Fixed minimum supported version for Qt5; requiring Qt5 >= 5.9 if Qt5
+  support is selected.
+- Handling TOOLSSG_[X11,XT,WINDOWS,QT]_ZB vis drivers.
+- Removed obsolete and confusing GEANT4_BUILD_TESTS option and configuration.
+- Updated data-set to G4EMLOW-8.4.
+
+analysis                                         analysis-V11-01-01
+--------
+- Fixed creating histograms with user defined bins.                          (x)
+  Addressing problem report #2541.
+- Improved 'FillH*'' debug message.                                          (x)
+
+event                                            event-V11-01-01
+-----
+- Added missing SetParticleWeight() method to G4ParticleGun.                 (x)
+- G4TrackStack: fixed incorrect information of maximum number of tracks.     (x)
+
+externals
+---------
+- g4tools (g4tools-V11-01-04)
+  o Updated to version 6.2.0: enabling Qt, Xt, X11, Windows viewers
+    for the tools/zbuffer rendering.
+- zlib (zlib-V11-01-00)
+  o Updated to upstream zlib-1.2.13, retaining prior Geant4 patches.
+
+geometry
+--------
+- biasing (geombias-V11-01-01)
+  o Use G4AutoLock in G4IStore and G4ImportanceAlgorithm instead of static
+    mutex data member.
+- magneticfield (field-V11-01-04)
+  o Added new Quantum State Simulation (QSS) integration method, an alternative
+    method of integration which creates approximation functions for each
+    coordinate (x,p), changing the interpolation polynomials when the deviation
+    from exact solution is larger than a threshold value.
+    Offers built-in interpolation capability, enabling faster finding of the
+    intersection of the trajectory with surfaces.
+    Currently restricted to using only with a pure magnetic field.
+  o Applied clang-tidy fixes (readability, modernization, performance, ...).
+- navigation (geomnav-V11-01-01)
+  o G4PropagatorInField: added parameters for big steps.
+    New parameter 'fMaxStepSizeMultiplier', needed to reduce costly unnecessary
+    integration in QSS; new parameter 'fMinBigDistance' used as minimum distance
+    in case of long steps. Updated default values: 
+    'fLargestAcceptableStep' = 100 * meter ( from 1000* meter );
+    'fMaxStepSizeMultiplier' = 0.1 ( from 100 ).
+  o Applied clang-tidy fixes (readability, modernization, performance, ...).
+- solids/specific (geom-specific-V11-01-05)
+  o Fixed uninitialised value in G4VCSGfaceted::SurfaceNormal().             (x)
+  o Use const iterator in G4Voxelizer::GetPointVoxel().
+  o Fixed use of index in G4Tet::GetPointOnSurface().
+
+global                                           global-V11-01-13
+------
+- G4PhysicsModelCatalog: added the new INCLXX model of antiproton annihilation
+  at rest.
+- Added G4VERSION_REFERENCE_TAG macro to distinguish release/development
+  versions and cycle of the latter.
+- Updated date and tag-ID for geant4-11-01-ref-06.
+
+interfaces                                       interfaces-V11-01-20
+----------
+- G4UIQt: fixed implicit size to int precision loss warnings.
+  Reworked double-click to use QTreeWidget::itemDoubleClicked.
+- Removed support for Qt < 5.9 in CMake script.
+
+parameterisations/channeling                     fastsimchanneling-V11-01-02
+----------------------------
+- Fixed warnings from Coverity.
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+particles                                        particles-V11-01-06
+---------
+- G4IonTable: fix for cases of event non-reproducibility for HP physics and
+  isomers with floating levels.
+- Applied core/recommended clang-tidy fixes.
+
+persistency/gdml                                 gdml-V11-01-02
+----------------
+- Fixed cases of failure in exporting tessellated solids: make               (x)
+  G4ThreeVectorCompare:operator(v1,v2) obey the strict weak ordering
+  requirements.
+- Allow setting of alternative grammar for schema validation via an environment
+  variable G4GDML_SCHEMA_FILE; it overrides the value set by SetImportSchema()
+  if both are non-empty strings.
+- Updated checking of grammar and schema override to fail on missing schema,
+  and to force parser to ignore any schema set in the input GDML file.
+
+physics_lists
+-------------
+- constructors/factory (phys-ctor-fact-V11-01-00)
+  o Added G4StoppingPhysicsWithINCLXX in G4RegisterPhysicsConstructors.
+- constructors/stopping (phys-ctor-stopping-V11-01-00)
+  o G4StoppingPhysicsWithINCLXX: new class, similar to G4StoppingPhysics,
+    with the only difference that the INCLXX model (instead of FTFP) is 
+    utilized for the antiproton annihilation at rest.
+- lists (phys-lists-V11-01-03)
+  o Use the new class G4StoppingPhysicsWithINCLXX (instead of G4StoppingPhysics)
+    in INCLXXPhysicsListHelper: all the INCLXX-based physics lists use INCLXX
+    for the antiproton annihilation at rest.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-01-15)
+  o G4DNARuddIonisationExtendedModel: rewrite of the model, applicable for
+    scaled energy interval from 100 eV to 100 MeV. If for an ion data is not
+    available, proton x-section and effective charge are used, sampling of
+    delta-electron is done using the two regions regression method.
+    Sharing data between threads.
+  o Use analytical method for DNA material in option6, water is unchanged.
+    Minor correction for DNA material in option6.
+  o Modified DNA cross-section file name, according to new G4EMLOW-8.4 data set.
+- highenergy (emhighenergy-V11-01-01)
+  o G4GammaConversionToMuons: fixed FPE exception in compound, when          (x)
+    selecting element and addressed cross-section factor issue responsible
+    for differences in muon/pion production.
+    Addressing problem report #2543.
+  o G4GammaConversionToMuons, G4AnnihiToMuPair: removed using namespace std
+    and applied cling-tidy base fixes.
+- standard (emstand-V11-01-16)
+  o G4BetheHeitlerModel, G4PairProductionRelModel, G4eBremsstrahlungRelModel,
+    G4SeltzerBergerModel: reorganized initialisation. Initialisation of static
+    element data is performamed only once for the first object independently on
+    how many objects of this kind is created in a thread. Results of simulation
+    are identical. Addressing problem report #2543.
+  o G4LindHardSorensenIonModel: avoid to use ICRU73 data for projectile      (x)
+    Z>80.
+  o G4eBremsstrahlung, G4SeltzerBergerModel: avoid changing LPM flag at
+    initialisation; avoid repeating base class initialisation; improved
+    comments in code.
+  o G4eBremsstrahlungRelModel: use LPM flag from G4EmParameters and improved
+    comments in code.
+- utils (emutils-V11-01-13)
+  o G4LossTableManager: reserve memory for internal vectors; simplified
+    destructor; move a part of initialisation of class members to header.
+  o Fixes to G4TransportationWithMsc: protected code for MultipleScattering; (x)
+    fixed type of particle change.
+  o G4VEmModel: use LPM flag from G4EmParameters.
+  o G4ionEffectiveCharge: minor optimisation.
+  o G4LossTableManager: fixed trivial Coverity warning.
+
+processes/hadronic
+------------------
+- models/inclxx (had-inclxx-V11-01-01)
+  o Major extension of the INCLXX model to handle antiproton annihilation
+    at rest.
+- models/particle_hp (hadr-hpp-V11-01-09)
+  o G4ParticleHPInelasticBaseFS: fixed memory leak reported by Coverity.     (x)
+  o G4ParticleHPEnergyDistribution, G4ParticleHPContAngularPar,
+    G4ParticleHPEnAngCorrelation: fixed Coverity warnings.
+- models/qmd (hadr-qmd-V11-01-01)
+  o Code cleanup in G4QMDMeanField in attempt to fix false positive on
+    gcc-13.1 diagnostics on alma9.
+- models/radioactive_decay (radioactive_decay-V11-01-02)
+  o G4RadioactiveDecay, G4BetaSpectrumSampler: fixed Coverity warnings on
+    non-initialized class members.
+- processes (hadr-proc-V11-01-11)
+  o G4NuVacOscProcess: code cleanup to resolve Coverity warning; removed
+    unused class members.
+  o G4TauNeutrinoNucleusProcess: cleanup of constructor and destructor to
+    fix Coverity warning.
+- stopping (hadr-stopping-V11-01-00)
+  o G4HadronicAbsorptionINCLXX: new class to handle annihilation at rest by
+    INCLXX; for the time being, only antiproton.
+
+processes/scoring                                procscore-V11-01-01
+-----------------
+- Applied core clang-tidy/format fixes.
+- Make G4EnergySplitter a private implementation detail of the module.
+  Make dependency to 'intercoms' private.
+
+run                                              run-V11-01-04
+---
+- Refactor random state file copying to use std::filesystem for portability.
+- Applied core and optional clang-tidy fixes, plus clang-format and tidying:
+  removed obsolete comments/dead blocks; normal order access specifiers and
+  make docstrings Doxygen/IDE compatible.
+
+visualization
+-------------
+- management (visman-V11-01-15)
+  o In G4VisExecutive, temporary divert OGL to TSG for allowing support of Qt6.
+    Declare TOOLSSG_[X11,XT,WINDOWS,QT]_ZB drivers.
+  o In G4VisCommandsTouchable, introduced UI command "/vis/touchable/twinkle".
+  o Improved layout in G4VViewer::SceneTreeScene::FindOrInsertModel().
+  o Rework issue of implicit type conversion.
+- modeling (modeling-V11-01-05)
+  o Fixed Coverity warnings in G4PhysicalVolumeModel.
+- OpenGL (opengl-V11-01-09)
+  o Removed support for Qt less than version 5.9. Clarify remaining version
+    checks using QT_VERSION_CHECK instead of raw hex.
+  o Added inclusion of qdesktopwidget header required by Qt < 5.10.
+- ToolsSG (vis_toolssg-V11-01-08)
+  o First version of the TSG_[QT,X11,XT,WINDOWS]_ZB sub drivers, allowing the
+    rendering with g4tools/zbuffer (the same used by TSG_OFFSCREEN). They allow
+    to do interactive 3D rendering bypassing native graphics systems.
+    It is fully standalone over the standard C/C++ libs and the standard pixmap
+    logic of X11, Xt, Qt, Windows, running only the CPU.
+    Tested with Qt5 and Qt6.
+
+data
+----
+- G4EMLOW-8.4:
+  o Updated DNA data.
+  o Added README to all subdirectories.
+
+examples                                         examples-V11-01-06
+--------
+- Updated documentation and reference outputs.
+- advanced/eFLASH_radiotherapy (eFLASH_radiotherapy-V11-01-00)
+  o Removed visualization in batch mode.
+- extended/hadronic/Hadr04 (exhadr04-V11-01-00)
+  o PhysicsList: removed definition of meV.
+  o Code revision of all headers.
+- extended/hadronic/Hadr06 (exhadr06-V11-01-01)
+  o Code revision of all headers.
+- extended/medical/dna/moleculardna (molecularDNA-V11-01-04)
+  o Restored correction on material which was withdrawn by mistake.
+- extended/medical/dna/range (range-V11-01-01)
+  o Simplified PhysicsList.
+  o Use G4RunManagerFactory in main().
+- extended/medical/dna/spower (spower-V11-01-01)
+  o Simplified PhysicsList.
+  o Added extra macro alpha.in.
+  o Code cleanup in main().
+- extended/parameterisations/gflash (exgflash-V11-01-01)
+  o gflasha: use G4PhysListFactory for physics list initialization.
+  o gflash2: removed unused statics from DetectorConstruction class.
+  o Some code cleanup in gflash1,2,3,a.
+
+tests                                            tests-V11-01-06
+-----
+- Updated reference outputs and tools.
+- tests/test03 (test03-V11-01-00)
+  o Added test for histograms with user defined bins.                        (x)
+- tests/test15 (test15-V11-01-00)
+  o Removed settings for GDML parser from main() and some cleanup.
+- tests/test55 (test55-V11-01-00)
+  o Added test on DNA ion ionisation cross-section.
+- tests/test69 (test69-V11-01-00)
+  o Added extension of INCLXX for antiproton annihilation at rest:
+    modified Tst69INCLXXTallyAnalysis class.
+  o Added new macros: pbar_0MeV_C.in, pbar_0MeV_Pb.in pbar_100MeV_C.in.

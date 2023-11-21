@@ -1,0 +1,374 @@
+
+                       geant4-11-01-ref-10
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o In G4MaterialPropertiesTable, improved building of vectors of material
+   property names.
+ o Added new G4VNavigation common navigation interface class and stremlined
+   code in navigation classes to use the new common interface.
+ o Revised version of the Baier-Katkov method with a new features of increasing
+   of the photon statistics in certain intervals of spectrum.
+ o Use a specific FTF tune meant to overcome the problem of too optimistic
+   (i.e. narrow) pion shower energy resolutions in ATLAS calorimeters with
+   respect to test-beam data.
+ o Improved equilibrium processes in G4-DNA, introduced G4ChemEquilibrium.
+ o More accurate implementation and instantiation of the neutron general
+   process.
+ o Updated and extended Vtk visualization driver with new features and fixes.
+ o Synchronised with CLHEP-2.4.7.1.
+ o Updated data-sets G4INCL-1.2 and G4EMLOW-8.5.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-01-27
+-----
+- Use FindPython in place of deprecated FindPythonInterp in FindStatTest.
+- Updated VTK module dependencies for geometry IO and updated module init.
+- Updated to data-sets G4INCL-1.2 and G4EMLOW-8.5.
+
+event                                            event-V11-01-05
+-----
+- G4EventManager: fixed warning detected when G4VERBOSE is not defined.
+- Fixed few minor reported Coverity defects.
+- Applied core clang-tidy fixes.
+
+externals
+---------
+- clhep (clhep-V11-01-03)
+  o Synchronised with CLHEP-2.4.7.1.
+  o Added missing shootArray() implementation in RandPoissonQ.
+- ptl (ptl-V11-01-11)
+  o Disabled optimization of ThreadPool::execute_thread() on Apple/Intel builds.
+    Addressing problem report #2564.
+
+geometry/management                              geommng-V11-01-05
+-------------------
+- Restored virtual methods in G4TouchableHistory to allow for backwards
+  compatibility with visualization modeling code.
+
+geometry/navigation                              geomnav-V11-01-04
+-------------------
+- Added new G4VNavigation common navigation interface class.
+- Added RelocateWithinVolume() method to G4VoxelNavigation and to
+  G4ParameterisedNavigation.
+- Updated existing navigators to make use of the new common interface.
+
+geometry/solids/Boolean                          geom-bool-V11-01-05
+-----------------------
+- In G4MultiUnion, fixed problem with downcast in external Boolean processor,
+  which could result in incorrect nullptr.
+
+geometry/volumes                                 geomvol-V11-01-02
+----------------
+- Minor cleanup and code indentation. No functional changes.
+
+global                                           global-V11-01-19
+------
+- G4PhysicsVector, G4PhysicsFreeVector, G4PhysicsLogVector and
+  G4PhysicsLinearVector: added extra method to support optional logarithmic
+  search for bin in free vector needed for particleHP module update.
+  Code formatting.
+- Updated date and tag-ID for geant4-11-01-ref-10.
+
+graphics_reps                                    greps-V11-01-06
+-------------
+- Added centre calculation to HepPolyhedron for use in visualization systems.
+
+intercoms                                        intercoms-V11-01-08
+---------
+- Added missing converter LtoS() in G4UImessenger.
+
+interfaces                                       interfaces-V11-01-29
+----------
+- G4UIQt: in BuildPVQTree(), reduce tooltip for a touchable to a simple
+  two-lines; in NewSceneTreeItemTreeWidget::ActWithoutParameter(), added
+  special case for right-click "dump": pop up message window that may be
+  suppressed and message the first 1000 characters but suggest a full dump
+  to session output if desired, or close; in SceneTreeItemClicked(), make
+  daughters invisible when volume checked invisible, pop up a window of
+  explanation; in CreateCommandWidget(), fixed typo: "green" should be "blue".
+
+materials                                        materials-V11-01-11
+---------
+- G4NistMaterialBuilder: changed mean ionisation potential of carbon and
+  graphite from 78 eV (ICRU73 recommendation) to 81 eV (ICRU90 recommendation);
+  define state as kStateLiquid for several liquids including G4WATER.
+  Addressing problem report #2568. 
+- G4ICRU90StoppingData: use 'const' where possible; use std::size_t;
+  use arrays of energies as G4float.
+- G4Material: use std::size_t and added extra comments to setter methods.
+  Addressing problem report #2569.  
+- In G4IonisParamMat, use std::size_t.
+- G4MaterialPropertiesIndex, G4MaterialPropertiesTable: added material constant
+  properties for G4Scintillation particle-dependent time constants.
+  In SetMaterialPropertiesTable() added nullptr check.
+- G4MaterialPropertiesTable: improved Exception messages; improved building of
+  vectors of material property names; issue a warning for material properties
+  vector of length 1.
+- G4ElementData: allow index 0 in data structure (before there was a limitation
+  Z > 0), useful for pair production model.
+
+parameterisations/gflash                         gflash-V11-01-01
+------------------------
+- Replaced use of deprecated functions with modern equivalents.
+
+parameterisations/channeling                     fastsimchanneling-V11-01-04
+----------------------------
+- Revised version of the Baier-Katkov method with a new features of increasing
+  of the photon statistics in certain intervals of spectrum.
+  Updates in defaults and corrected some bugs.
+- Simulated and preliminarly validated the electromagnetic shower in W 
+  with experimental data from Eur. Phys. J. C 82, 699 (2022).
+- Added the Crystalline Undulator (CU) as a periodically bent crystal 
+  to the internal crystal geometry (to be validated still).
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-01-10)
+  o G4EmStandardPhysicsSS: allow to use G4TransportationWithMscType.
+  o G4EmDNABuilder: for DNA Opt4 and Opt6, restored configuration as of
+    Geant4 11.1.2 for protons, in order to have under control results of
+    various tests.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V11-01-01)
+  o G4EmExtraPhysics, G4EmMessenger: activating neutrino oscillation and
+    oscillation distance biasing.
+- constructors/hadron_elastic (phys-ctor-helastic-V11-01-05)
+  o G4ChargeExchangePhysics:  added setter method for the factor multiplying
+    the cross-section (NA64 request). 
+    Added low energy limit to cross-section of the charge exchange process to
+    allow use of it on top of any physics without any cross-section correction.
+  o G4HadronElasticPhysics, G4HadronElasticPhysicsXS, G4HadronElasticPhysicsHP, 
+    and G4HadronElasticPhysicsPHP: more accurate instantiation of models,
+    cross-sections and the neutron general process.
+  o G4HadronElasticPhysicsVI: use alternative HP model and cross-sections.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V11-01-01)
+  o G4HadronInelasticQBBC: more accurate instantiation of the neutron general
+    process.
+  o G4HadrocPhysicsQGSP_BERT_HP: use alternative HP models and cross-sections.
+- lists (phys-lists-V11-01-05)
+  o FTFP_BERT_ATL: use a specific FTF tune meant to overcome the problem of
+    too optimistic (i.e. narrow) pion shower energy resolutions in ATLAS
+    calorimeters with respect to test-beam data.
+  o QGSP_BERT_HP: use alternative HP models and cross-sections.
+  o QGSP_BERT_AllHP: use default HP elastic builder.
+- util (phys-util-V11-01-01)
+  o G4HadProcesses: more accurate implementation for the neutron general
+    process.
+
+processes/cuts                                   proccuts-V11-01-01
+-----------------
+- G4ProductionCutsTable: added method SetEnergyCutVector() requested by ALICE;
+  added method CreateCoupleTables() separated from UpdateCoupleTable(), needed
+  to prepare class data.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-01-23)
+  o Improved equilibrium processes, introduced G4ChemEquilibrium.
+  o Corrected scavenger counter for oxygen.
+  o Fixed a K shell bug in G4DNARuddIonisationExtendedModel.
+- lowenergy (emlowen-V11-01-09)
+  o G4LivermorePhotoeffectModel: use logarithmic search of bin for free
+    vectors, updated use of G4ElementData.
+- muons (emmuons-V11-01-03)
+  o G4MuPairProductionModel, G4MuonToMuonPairProductionModel: updated usage 
+    of G4ElementData; do not use IsMaster() to fill sampling table; use only
+    5 2-D tables for sampling; code clean-up.
+  o G4MuBremsstrahlungModel: moved filling of static data to constructor.
+  o G4TablesForExtrapolator: define particle type when constructing muon models.
+- standard (emstand-V11-01-23)
+  o G4UrbanMscModel: tuned step limit parameterisation for the case of enabled
+    optional algorithm of lateral displacement. Default tracking unaffected.
+    Rewritten optional method SampleDisplacementNew(); this method is not used
+    so far in any EM physics configurations by default but may be enabled via
+    UI command and/or C++ interface.
+  o G4ASTARStopping, G4PSTARStopping, G4IonICRU73Data: use logarithmic search
+    of bin for free vectors.
+  o G4eBremsstrahlungRelModel: fix for potential division by zero; use G4Pow.
+- utils (emutils-V11-01-15)
+  o Added SingleScattering option to G4TransportationWithMsc.
+  o In G4TransportationWithMsc, always update momentum direction.
+  o G4OpticalParameters: set default verbosity to 1.
+    Removed unused scintillation declarations.
+  o G4VEmModel: restore obsolete SetLPMFlag() method to allow backwards
+    compatibility; added warning about use of obsolete method.
+    Use std::size_t in all places.
+  o G4EmParameters: added Get/Set method for a new integer number used
+    for logarithmic bin search in free vector.
+  o G4EmParametersMessanger: added UI command "/process/em/nForFreeVector".
+  o G4LossTableManager: apply modified interface to G4LossTableBuilder.
+  o G4LossTableBuilder: define logarithmic search method for inverse range
+    table.
+  o G4EmCorrection: introduce "const" to variables where possible; reduce
+    number of "if" statements, replace 'isMaster' flag with new flag
+    'isInitializer', use CLHEP prefix. Expected minor speed-up.
+- xrays (xrays-V11-01-06)
+  o First implementation of new process G4XrayReflection, using data from
+    G4EMLOW-8.5.
+  o G4Scintillation: verbosity of 0 silences run-time warnings.
+    Allow different decay time constants for different particles, with
+    particle-dependent scintillation. Improved an error message.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-01-15)
+  o G4ChargeExchangeXS: added setter method for the factor multiplying the
+    cross-section (NA64 request). 
+    Added parameterisation of cross-section of eta_prime, omega(982), and
+    f2(1270) mesons; optimized usage of G4Pow and avoid recomputation of the
+    same values; added low energy limit, below which cross-section is set to
+    zero.
+  o G4ParticleInelasticXS: make upper energy limit for light ions the same as
+    in FTFP_BERT.
+- models/de_excitation (hadr-deex-V11-01-07)
+  o Technical improvements to G4GEMProbability evaporation class.
+- models/particle_hp (hadr-hpp-V11-01-22)
+  o G4NeutronHPInelasticVI, G4NeutronHPElasticVI: new alternative model classes.
+  o G4NeutronHPCaptureXS, G4NeutronHPElasticXS, G4NeutronHPInelasticXS,
+    G4NeutronHPFissionXS, G4CrossSectionHP, G4NeutronFissionVI,
+    G4NeutronRadCaptureHP: updated models/cross-sections for physics list
+    QGSP_BERT_HP, which includes these models and cross-sections.
+  o G4NeutronHPCaptureXS, G4NeutronHPElasticXS, G4NeutronHPInelasticXS,
+    G4NeutronHPFissionXS: improved comments to the code and description text.
+  o G4ParticleHPInelasticXS - fixed constructor
+  o In G4CrossSectionHP, fixed compilation warnings for implicit type
+    conversions on macOS/XCode
+  o Fixed compilation when G4VERBOSE is not defined.
+- models/parton_string/diffraction (hadr-string-diff-V11-01-00)
+  o G4FTFTunings: introduced a new FTF tune meant to overcome the problem of
+    too optimistic (i.e. narrow) pion shower energy resolutions in ATLAS
+    calorimeters with respect to test-beam data.
+- models/radioactive_decay (radioactive_decay-V11-01-07)
+  o G4RadioactiveDecay: removed debug printout.
+  o G4Radioactivation: fixed Coverity report.
+
+processes/optical                                op-V11-01-00
+-----------------
+- G4OpBoundaryProcess: verbosity of 0 silences run-time warnings.
+
+processes/parameterisation                       param-V11-01-03
+--------------------------
+- Applied standard and extended clang-tidy fixes.
+  Applied standard clang-format-ing.
+- Mark empty/obsolete functions as deprecated.
+- Normal order accessors and docstrings.
+
+run                                              run-V11-01-08
+---
+- Reverted G4RunManager back to 11.2-beta, to avoid crash on exit and
+  between runs in interactive mode.
+
+visualization
+-------------
+- management (visman-V11-01-30)
+  o G4VisExecutive: in SetDefaultsByBuildFlags(), added missing default for
+    TOOLSSG...ZB drivers.
+    Fixed default TSG nickname when Vtk suppresses OpenGL.
+  o G4VisManager: minor message improvement.
+  o Updated configuration so that GLES "toolssg" drivers are not used in the
+    case VTK is used.
+- Qt3D (visQt3D-V11-01-07)
+  o G4Qt3DSceneHandler: added dummy normal line attributes, as Qt6 seems to
+    require that; fixes wireframe drawing; does not seem to fix trajectory
+    line drawing, though.
+    Establish the top physical volume Qt3D entities from the scene.
+- Vtk (visVtk-V11-01-12)
+  o Updated VTK viewer: added off screen rendering; fixed bug which locked UI
+    interaction with VtkNative viewer; many 3D output formats working including
+    GLTF, PLY, OBJ, VRML; removed cuboid offset present in rectilinear scoring
+    meshes (caused an explosion of draw calls); fixed spherical marker size;
+    added a VTK example to highlight capabilities.
+
+data
+----
+- G4INCL-1.2:
+  o Added new data files for in-flight antiprotons (Channel probabilities):
+    inflight*FS*.dat.
+- G4EMLOW-8.5:
+  o Added new data subdirectory for XRayReflection.
+  o Updated MicroElec data inside Inelastic and Structure subdirectories.
+
+examples                                         examples-V11-01-10
+--------
+- Updated documentation and reference outputs.
+- advanced/eRosita (eRosita-V11-01-00)
+- advanced/ICRP110_HumanPhantoms (ICRP110Phantoms-V11-01-04)
+- advanced/HGCal_testbeam (exhgcaltb-V11-01-00)
+- advanced/microbeam (microbeam-V11-01-00)
+  o In vis.mac, removed defunct command /vis/ogl/set/displayListLimit.
+- extended/electromagnetic/TestEm16 (testem16-V11-01-03)
+  o Use XRayReflection_data from G4EMLOW-8.5.
+  o Minor update of SteppingAction.
+- extended/hadronic/FissionFragment (exExtHadFissFrag-V11-01-00)
+  o Documented macro batch.in in README.
+- extended/hadronic/FlukaCern (FlukaCern-V11-01-00)
+  o Renamed FlukaInterface's Makefile to GNUmakefile to avoid file being
+    ignored in export.
+- extended/hadronic/Hadr01 (exhadr01-V11-01-03)
+  o Fixed bug in profile histogram; removed methods not needed; replaced
+    virtual keywords with override; use default and deleted constructor in
+    modified classes.
+- extended/hadronic/Hadr08 (exhadr08-V11-01-01)
+  o In BiasingOperation::ApplyFinalStateBiasing(), fixed line with more
+    than 100 characters.
+- extended/hadronic/Hadr09 (exhadr09-V11-01-00)
+  o Documented macro hadr09.in in README.
+- extended/hadronic/ParticleFluence (exhadrParticleFluence-V11-01-00)
+  o Renamed macro files from *.g4 to *.in, and documented them in README.
+- extended/medical/DICOM2 (DICOM2-V11-01-00)
+- extended/medical/dna/chem1 (chem1-V11-01-00)
+- extended/medical/dna/chem3 (chem3-V11-01-00)
+  o In vis.mac, removed defunct command /vis/ogl/set/displayListLimit.
+- extended/medical/dna/dnadamage1 (dnadamage1-V11-01-00)
+  o Changes in analysis macros: fixed bug where Boolean 'Primaryflag' was not
+    updated for new primary; count direct and indirect SB (strand break);
+    introduced clustering algorithm to extract SSB, DSB (simple, complex);
+    renamed plot.C to scandamages.C.
+- extended/medical/dna/jetcounter (jetcounter-V11-01-00)
+- extended/medical/dna/neuron (neuron-V11-01-01)
+  o In vis.mac, removed defunct command /vis/ogl/set/displayListLimit.
+- extended/medical/dna/splitting (splitting-V11-01-00)
+  o Fixes in usage of analysis: close analysis file in EndOfRunAction,
+    instead of destructor; do not delete analysis manager.
+  o Fixed the Root file name in plot.C.
+- extended/medical/dna/UHDR (UHDR-V11-01-02)
+  o Updated equilibrium processes.
+  o Corrected scavenger counter.
+- extended/optical/LXe (LXe-V11-01-00)
+- extended/optical/OpNovice (OpNovice-V11-01-00)
+  o Applied coding guidelines, especially use of override and variable
+    initialization.
+- extended/optical/OpNovice2 (OpNovice2-V11-01-03)
+  o In scint_by_particle.mac, use normal verbosity (1).
+    Use particle-specific time constants.
+  o Applied coding guidelines, especially use of override and variable
+    initialization.
+- extended/optical/wls (WLS-V11-01-00)
+  o Applied coding guidelines, especially use of override and variable
+    initialization.
+- extended/parameterisations (exParameterisations-V11-01-00)
+  o Applied clang-tidy on Par01, Par02, Par03 and Par04 examples.
+- extended/parameterisations/Par03 (expar03-V11-01-00)
+  o Replaced use of deprecated functions with modern equivalents.
+- extended/parameterisations/Par04 (expar04-V11-01-01)
+  o Introduce physical readout structure in parallel world.
+  o Set run manager type from command line.
+  o ONNX version upgrade; verified on 1.14.
+- extended/visualization/movies (exam-ext-vis-movies-V11-01-00)
+  o In vis.mac, removed defunct command /vis/ogl/set/displayListLimit.
+- extended/visualization/vtk (exam-ext-vis-vtk-V11-01-00)
+  o New Vtk specific example demonstrating new features only available
+    in the VTK viewer.
+
+tests                                            tests-V11-01-10
+-----
+- Updated reference outputs and tools.
+- tests/test68 (test68-V11-01-00)
+  o In main(), migrated to use MixMax random number generator engine.
+- tests/test202 (test202-V11-01-04)
+  o In vis macros, removed defunct command /vis/ogl/set/displayListLimit.

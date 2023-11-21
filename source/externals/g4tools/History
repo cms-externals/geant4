@@ -1,0 +1,187 @@
+# Category g4tools History
+
+See `CONTRIBUTING.rst` for details of **required** info/format for each entry,
+which **must** added in reverse chronological order (newest at the top).
+It must **not** be used as a substitute for writing good git commit messages!
+
+-------------------------------------------------------------------------------
+
+## 2023-11-09 Guy Barrand (g4tools-V11-01-06)
+- tools/wroot/file: in the constructor, for the streaming of the root directory, take into account the streaming of what would be
+  the fUUID (a TUUID in ROOT) field of the TDirectory version 4. This permits to fix the "G4AnalysisManager creates ROOT files
+  that are not updateable" issue described in bugzilla problem 2570.
+- tools/version: pass to 6.3.0.
+
+## 2023-07-03 Guy Barrand (g4tools-V11-01-05)
+- toolx/Xt/session: quiet Coverity CID=104821: in copy constructor, initialise m_app_owner(false).
+- tools/version: pass to 6.2.1.
+
+## 2023-06-15 Gabriele Cosmo (g4tools-V11-01-04)
+- Fixed compilation warning for implicit type conversions on macOS/XCode 14.1
+  in toolsx/Xt/zb_viewer.
+
+## 2023-05-29 Guy Barrand (g4tools-V11-01-03)
+- toolx/Qt: zb_viewer, pixwin, session, s2q: have a Qt viewer for the tools/zbuffer rendering.
+- toolx/Xt: zb_viewer, ImageArea, session: have a Xt viewer for the tools/zbuffer rendering.
+- toolx/X11: zb_viewer, pixwin, colors, base_session: have a X11 viewer for the tools/zbuffer rendering.
+- toolx/Windows: zb_viewer, pixwin, ession: have a Windows viewer for the tools/zbuffer rendering.
+- tools/sg/zb_viewer: generic code used by the upper zb_viewer doing the connection with a windowing system.
+- tools: sg/zb_action, sg/write_paper, mat4f, buffer, mat4: modifications used by the upper files.
+- tools: zb/buffer: optimizations. In particular by avoiding the usage of the point_writer class (now removed).
+
+## 2023-04-13 Guy Barrand (g4tools-V11-01-02)
+- toolx/Xt/session: quiet coverity: remove unused field m_app_owner.
+- toolx/sg/GL_manager: quiet coverity: remove unused field m_gsto_on_cardsy.
+- toolx/sg/gl: quiet coverity: in gl_dump_if_errors(), avoid to set the std::hex format on arg a_out. Have a local std::ostringstream.
+- tools/version: pass to 6.1.2.
+
+## 2023-01-18 Guy Barrand (g4tools-V11-01-01)
+- toolx/Qt/glarea: handle Qt6.
+- toolx/Qt/glarea: for Qt5, Qt6: in paintGL(), use devicePixelRatio() to set the size of the toolx::sg::GL_viewer.
+
+## 2023-01-16 Guy Barrand (g4tools-V11-01-00)
+- tools/ccontour: intel-icx: fix compilation warnings about argument of type 'double[]' with mismatched bound.
+- tools/rcsv_histo: coverity: quiet coverity about some "Unchecked return value (CHECKED_RETURN)".
+- tools/version: pass to 6.1.1.
+
+## 2022-11-25 Gabriele Cosmo (g4tools-V11-00-13)
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1
+  in files: spline, THistogram and zlib.
+
+## 2022-10-13 Guy Barrand (g4tools-V11-00-12)
+- tools/fpng, fpng.icc: a pure header, thread safe, png writer.
+- tools/toojpeg, toojpeg.icc: a pure header, thread safe, jpeg writer.
+- tools/offscreen/session, sg_viewer: to handle offscreen graphics.
+- tools/sg/gl2ps_action: revisit lightening logic to be closer than the OpenGL one.
+- tools/sg/zb_action: revisit lightening logic to be closer than the OpenGL one.
+- tools/sg/zb_action: handle blending (transparency).
+- tools/sg/plots_viewer: handle blending (transparency).
+- tools/zb/buffer: handle blending (transparency).
+- tools/sg/torche, head_light, gl2ps_action, render_action: handle ambient color lightening.
+- toolx/sg/GL_action: handle ambient color lightening.
+- tools/sg/write_paper: gl2ps, zb formats: handle transparency.
+- tools/gl2ps: handle the TOOLS_GL2PS_PORTABLE_SORT to be able to produce same output
+  file on all platforms. (Related to the fact that qsort, for "same objects", may not
+  produce the same "equal" sub lists on all platforms).
+- tools/version: pass to 6.1.0.
+
+## 2022-10-10 Guy Barrand (g4tools-V11-00-11)
+- intel-icx: fix compilation warnings for the variable "size"
+  set but not used glutess/render/static_RenderFan, static_RenderStrip.
+- intel-icx: fix compilation warnings #3179: deprecated conversion of string literal to char*.
+
+## 2022-10-05 Guy Barrand (g4tools-V11-00-10)
+- tools/typedefs, rroot/file, wroot/file and toolx/Windows/glarea, Qt/session, mpi/wrmpi:
+  some #ifdef for MinGW. The ones in wroot/file are important to produce good .root files.
+- tools/gl2ps: replace the usage of sprintf, by strcpy or std::ostringstream.
+
+## 2022-10-04 Gabriele Cosmo (g4tools-V11-00-09)
+- Fixed compilation warnings on Intel-icx compiler for variables
+  set but not used in plotter::rep_bins2D_xy_random_one() and
+  plots::update_sg().
+
+## 2022-09-22 Ben Morgan (g4tools-V11-00-08)
+- Apply patch for MinGW from [GitHub PR 51](https://github.com/Geant4/geant4/pull/51)
+
+## 2022-06-09 Guy Barrand (g4tools-V11-00-07)
+- toolx/X11/base_session: show_window(): check that the window is not already mapped. (Else it hangs in the XIfEvent).
+- tools/version: pass to 6.0.1.
+
+## 2022-05-18 Guy Barrand (g4tools-V11-00-06)
+- have code related to "externals" under toolx directory and namespaced with "toolx". It concerns code related to Qt, Windows, X11, Xt, OpenGL, hdf5, expat, mpi, zlib.
+- tools/version: pass to 6.0.0.
+
+## 2022-05-03 Guy Barrand (g4tools-V11-00-05)
+- tools/version: pass to 5.7.1.
+- gl2ps: gl2psPrintPostScriptPixmap(): pass greyscale, nbit in arguments to avoid a "Logically dead code" issue.
+- gl2ps: gl2psPDFgroupListInit(): have a gl2psPDFgroupObjectInit(&gro) to avoid an "Uninitialized pointer read" issue.
+- gl2ps: remove commented out code about a "class gl2ps" at end.
+- sg/text: corrections in update_sg() about "Copy-paste error". 
+
+## 2022-03-30 Guy Barrand (g4tools-V11-00-04)
+- tools/version: pass to 5.7.0.
+- gl2ps, gl2ps_def.h, sg/gl2ps_action: have, use a thread safe version of gl2ps-1.4.2.
+- gl2ps_begin.icc, gl2ps_end.icc: remove.
+
+## 2022-03-11 Guy Barrand (g4tools-V11-00-03)
+- tools/version: pass to 5.6.3.
+- in a lot of files (see History_tools for a list): for intel compiler: quiet "hides variable" warnings; mainly by renaming "s" to "_s" to avoid a clash with CLHEP::s.
+
+## 2022-02-11 Guy Barrand (g4tools-V11-00-02)
+- tools/version: pass to 5.6.2.
+- tools/gl2ps: in tools_gl2psFindRoot(), have a '*root = 0" initialisation before the first in "if()" return.
+- tools/gl2ps: in tools_gl2psBuildBspTree(), initialize *prim to NULL.
+
+## 2022-02-09 Guy Barrand (g4tools-V11-00-01)
+- tools/version: pass to 5.6.1.
+- tools/sg/text_hershey: in decode_PAW(), font_type font => font_type hershey_font to quiet "hides variable" warnings with intel compiler.
+- tools/typedefs: static const char s[] => static const char s_v[] to quiet "hides variable" warnings with intel compiler.
+- tools/rroot/rall: in find_dir(), have a "delete tdir;" in the "if(!tdir->stream(b)) {}". Seen by Coverity.
+
+## 2021-12-10 Ben Morgan (g4tools-V11-00-00)
+- Change to new Markdown History format
+
+---
+
+# History entries prior to 11.0
+
+9 November 2021  I. Hrivnacova (g4tools-V10-07-11)
+- Restored files for MPI
+
+25 October 2021, G. Barrand (g4tools-V10-07-10)
+- tools/tokenize: to help parsing some Geant4 commands "new value".
+  It permits to get arguments within double quotes to handle, for example, file path that
+  may contains spaces or a color given as "r g b".
+- tools/sg/event_dispatcher,bcbk,ecbk,cbks: classes to have a mechanism in G4/G4ToolsSGSceneHandler
+  so that tools::sg::plots be properly resized when doing a mouse G4Viewer resize.
+- tools/sg/plotter_some_styles: have the plotting setup of ROOT_default, hippodraw, style done in C++
+  to avoid the usage of expat for these defaults styles.
+- tools/sg/light_off: a node to switch off light in a sub scene graph.
+- tools/Qt/sg_viewer: in dstor, reset the "interactors" to null in the glarea.
+
+21 October 2021  G. Barrand (g4tools-V10-07-09)
+- tools/hdf5/ntuple: add code to write/read a column of vectors of strings.
+- tools/waxml/ntuple: add code to write a column of vectors of strings.
+
+19 October 2021  I. Hrivnacova (g4tools-V10-07-08)
+- Added rroot/rall and rroot/THistogram needed for
+  tools::rroot::find_dir (used in Root analysis reader)
+
+13 October 2021  Guy Barrand  (g4tools-V10-07-07)
+- sg/base_freetype, text_freetype: modifs to be able to handle embedded fonts.
+- font/lato_regular_ttf: embedded lato_regular.ttf font.
+- font/roboto_bold_ttf: embedded roboto_bold.ttf font.
+- sg/text_hershey_marker, text_freetype_marker: modifs to avoid 'squashing' of text.
+- sg/render_action, GL_viewer, atb_vertices: handle transparency by using a two pass rendering method.
+- sg/gl2ps_actions/2format: avoid a warning if returning false.
+- have 5.6.0 in tools/version.
+
+08th October 2021, G. Barrand (g4tools-V10-07-06)
+- remove the files not used by other Geant4 categories (up so far analysis and visualization).
+- remove the test directory. It will be maintained in github/gbarrand/g4tools.
+- remove the not used src/csz_inflate.cc file but have a dummy.cc for Geant4/cmake.
+- CMakeLists.txt: refer to src/dummy.cc (instead of src/csz_inflate.cc) when declaring the g4tools module.
+- have 5.5.0 in tools/version.
+
+25th May 2021, B. Morgan (g4tools-V10-07-05)
+- Move fonts from analysis category to tools to assist cross-category use
+
+18th May 2021, G. Barrand (g4tools-V10-07-04)
+- tools/zb/polygon: in scan() : initialize ET,AET,SLLBlock, before calling
+  CreateETandAET, to quiet g++-11 -Wmaybe-uninitialized warnings.
+
+5th May 2021, J. Allison (g4tools-V10-07-03)
+- Rename g4tools/include/tools/sg/gL_manager to GL_manager.
+
+16th April 2021, I. Hrivnacova (g4tools-V10-07-02)
+- Updated to g4tools 5.4.0 (Guy Barrand):
+  “Windowing” code update needed for the new “ToolsSG” vis drivers.
+  See History_tools for the complete list of modifications.
+
+04th March 2021, I. Hrivnacova (g4tools-V10-07-01)
+- Updated to g4tools 5.3.1 (Guy Barrand):
+  "Windowing" code needed for G4/vis/tools_sg
+  See History_tools for the complete list of modifications.
+
+18th February 2021, B. Morgan (g4tools-V10-07-00)
+- Move g4tools from g4analysis to externals category

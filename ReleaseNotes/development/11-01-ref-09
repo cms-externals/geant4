@@ -1,0 +1,250 @@
+
+                       geant4-11-01-ref-09
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added new G4AnalysisManager functions and UI commands for deleting
+   selected n-tuples.
+ o First implementation of G4SubEvent and related mechanism for registration
+   and merging in a run.
+ o Fixes to MixMax random generator to resolve detected reproducibility issues.
+ o Removed inheritance level for G4TouchableHistory and making G4VTouchable a
+   simple typdef of G4TouchableHistory, simplifying touchables handling.
+ o New G4ElementDataRegistry management class for shared data in materials.
+ o In G4LivermorePhotoElectricModel, updated initialisation of static tables
+   for thread safety and setting of shell cross-sections.
+ o Safer initialisation of static data in hadronic cross-section classes.
+   Added new HP cross-section classes.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-01-24
+-----
+- Allow source code modules to have an AUTOMOC property and promote this to
+  consuming target to remove hardcoding of Qt-using modules.
+
+analysis                                         analysis-V11-01-09
+--------
+- Updated GetNofNtuples implementation to take into account new 'onlyIfExists'
+  parameter.
+- Added new G4AnalysisManager functions and UI commands for deleting selected
+  n-tuples.
+- Added GetNtuple() functions in G4GenericAnalysisManager, that in difference
+  from output specific managers, returns n-tuple booking, that is common to
+  all output types. Added UI commands for creating n-tuple.
+- Changed verbosity level for "merge" information from 1 to 2.
+- Fixed Coverity defects.
+
+event
+-----
+- Introducing G4SubEvent and related classes.
+- Addressing to the new track status 'fSuspendAndWait'.
+
+externals
+---------
+- clhep (clhep-V11-01-02)
+  o Fixes to MixMax to resolve reproducibility issues. Removed obsolete
+    MixMax coefficient files mixmax_skip_N8.icc and mixmax_skip_N240.icc.
+
+geometry/management                              geommng-V11-01-04
+-------------------
+- Removed inheritance level for G4TouchableHistory and making G4VTouchable a
+  simple typdef of G4TouchableHistory, therefore no longer acting as base class.
+- Imported G4NavigationHistory, G4NavigationHistoryPool, G4NavigationLevel and
+  G4NavigationLevelRep classes and translation units from "volumes" module.
+- Made G4TouchableHistoryHandle a typedef of G4TouchableHandle.
+
+geometry/navigation                              geomnav-V11-01-03
+-------------------
+- In G4Navigator, removed references to unused classes G4GRSSolid and
+  G4GRSVolume; use G4TouchableHandle in place of G4TouchableHistoryHandle
+  which is now deprecated. Same in G4MultiNavigator, G4DrawVoxels and
+  G4VIntersectionLocator.
+- Removed use of forward declarations to G4VTouchable in phantom
+  parameterisation classes.
+
+geometry/solids/Boolean                          geom-bool-V11-01-04
+-----------------------
+- Define distinct statistics value in G4BooleanSolid for area and cubic volume.
+- Reduce internal statistics for calculation of cubic volume in G4UnionSolid
+  and G4SubtractionSolid.
+
+geometry/volumes                                 geomvol-V11-01-01
+----------------
+- Moved to "management" the following classes and translation units:
+  G4NavigationHistory, G4NavigationHistoryPool, G4NavigationLevel and
+  G4NavigationLevelRep.
+- Removed unused classes G4GRSSolid and G4GRSVolume.
+
+global                                           global-V11-01-17
+------
+- Added new 'IgnoreTheIssue' enum entry in G4ExceptionSeverity.
+- Updated date and tag-ID for geant4-11-01-ref-09.
+
+interfaces                                       interfaces-V11-01-25
+----------
+- G4UIQt: fixed bug in SceneTreeItemClicked() when invoking
+  "/vis/scene/activateModel": the description may have spaces; use substring
+  up to first space.
+- Set AUTOMOC property on module when Qt used.
+
+materials                                        materials-V11-01-06
+---------
+- Added G4ElementDataRegistry, a new management class for shared data.
+  Modified G4ElementData to make use of G4ElementDataRegistry.
+- G4NistManager: simplified for loops; added MT protection to instance
+  access method.
+- G4ElementData: added G4Physics2Dvector component optional structure;
+  subdivide run time method in two groups: with or without check on input
+  parameters; use std::size_t type.
+
+parameterisations/gflash                         gflash-V11-01-00
+------------------------
+- Fixed reported Coverity defects for uninitialized data members.
+
+physics_lists
+-------------
+- constructors/limiters (phys-ctor-limiters-V11-01-00)
+  o Fixed reported Coverity defects for unreachable code.
+
+processes/biasing
+-----------------
+- importance (proc-biasimp-V11-01-00)
+  o Removed forward declarations to G4VTouchable.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-01-20)
+  o In navigation classes, removed references to G4TouchableHistoryHandle,
+    which is now deprecated. Removed references to unused G4GRSSolid and
+    G4GRSVolume.
+  o Fixed minor/obvious reported Coverity defects.
+- lowenergy (emlowen-V11-01-08)
+  o G4LivermorePhotoElectricModel: updated initialisation of static tables
+    and setting of shell cross-sections.
+  o In G4LivermoreBremsstrahlungModel, do not setup LPLM flag.
+  o Fixed trivial reported Coverity defects in G4MicroElecLOPhononModel
+    and G4MicroElecSurface.
+  o Minor code cleanup in G4MicroElecLOPhononModel.
+- muons (emmuons-V11-01-02)
+  o G4MuonToMuonPairProductionModel: updated usage of G4ElementData.
+  o G4TablesForExtrapolator: do not delete intermediate G4VEmModels created 
+    for initialisation.
+- pii (empii-V11-01-00)
+  o Fixed few reported Coverity defects.
+- utils (emutils-V11-01-15)
+  o In G4VEmModel, do not delete G4ElementData; do not define LPM flag.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-01-12)
+  o G4NeutronCaptureXS, G4NeutronInelasticXS, G4ParticleInelasticXS: use 
+    GetComponentByID() instead of GetComponentByIndex() allowing to reduce
+    memory for isotope data.
+  o G4NeutronCaptureXS, G4NeutronInelasticXS, G4GammaNuclearXS and
+    G4ParticleInelasticXS: use std::once_flag and std::call_once() to
+    initialize static data.
+  o G4GammaNuclearXS: removed debug printout.
+  o G4IsotopeList: extended arrays to be applicable both for G4PARTICLEXSDATA
+    and G4PARTICLEHPDATA.
+  o Fixed use of units in G4ChargeExchangeXS.
+- models/coherent_elastic (hadr-cohe-V11-01-03)
+  o G4ChargeExchange: fixed reported Coverity defect on dead code.
+- models/lepto_nuclear (hadr-lepnuc-V11-01-00)
+  o G4ElectroVDNuclearModel: updated initialisation of data tables.
+- models/particle_hp (hadr-hpp-V11-01-17)
+  o Added new cross-section classes G4NeutronHPCaptureXS, G4NeutronHPElasticXS,
+    G4NeutronHPInelasticXS, G4NeutronHPFissionXS, G4ParticleHPInelasticXS
+    and G4CrossSectionHP.
+- models/radioactive_decay (radioactive_decay-V11-01-05)
+  o G4Radioactivation: fixed reported Coverity defect.
+
+processes/parameterisation                       param-V11-01-01
+--------------------------
+- In G4FastTrack, removed references to G4TouchableHistoryHandle,
+  which is now deprecated.
+
+processes/scoring                                procscore-V11-01-03
+-----------------
+- Removed unnecessary forward declarations of G4VTouchable.
+- Minor code cleanup.
+
+run                                              run-V11-01-07
+---
+- Added handling (registration and merging) of sub-events in G4Run and
+  G4RunManager.
+
+track                                            track-V11-01-01
+-----
+- Added new state "fSuspendAndWait" to G4TrackStatus.
+- G4TrackStatus is made mutable in G4Track so it can be modified in stacking.
+
+tracking                                         tracking-V11-01-02
+--------
+- Removed references to G4TouchableHistoryHandle, which is now deprecated.
+
+visualization
+-------------
+- OpenGL (opengl-V11-01-13)
+- OpenInventor (openinventor-V11-01-10)
+- ToolsSG (vis_toolssg-V11-01-12)
+  o Set AUTOMOC property on module when Qt used.
+
+examples                                         examples-V11-01-09
+--------
+- Updated documentation and reference outputs.
+- advanced/ICRP110_HumanPhantoms (ICRP110Phantoms-V11-01-02)
+  o Removed forward declaration of G4VTouchable.
+- basic/B1 (exampleB1-V11-01-01)
+  o Use new flexible run-time graphics system options: in main(), use
+    constructor with arguments G4VisExecutive(argc, argv).
+    In vis.mac: changed "/vis/open OGL 600x600-0+0" to "/vis/open" to allow
+    new choices.
+  o Added some guidance.
+  o Moved tsg_offscreen.mac to example B5.
+- basic/B2 (exampleB2-V11-01-00)
+  o Use new flexible run-time graphics system options as in example B1.
+- basic/B5 (exampleB5-V11-01-00)
+  o Added tsg_offscreen.mac (moved from example B1).
+  o Removed unused init.mac macro.
+- extended/analysis/B1Con (B1Con-V11-01-01)
+  o Removed unused files: init.mac, B1Run.hh, B1ConRun.hh
+  o Added description of run*.mac in README's
+- extended/biasing/GB06 (GB06-V11-01-00)
+- extended/field/field04 (fieldex04-V11-01-01)
+  o Replaced use of deprecated G4TouchableHistoryHandle with G4TouchableHandle.
+- extended/hadronic/FlukaCern/ProcessLevel/FinalState (exHadNucIneEvents-V11-01-01)
+  o Removed unused function HadronicGenerator::getAllHadronicProcesses().
+- extended/medical/DICOM (DICOM-V11-01-00)
+  o Removed forward declaration for G4VTouchable.
+- extended/medical/dna/dnaphysics (dnaphysics-V11-01-00)
+  o Update SteppingAction with units and addition of gamma processes.
+- extended/medical/dna/moleculardna  (molecularDNA-V11-01-06)
+  o Removed unused public data member 'nLineCounter' in
+    PrimaryGeneratorSourceGRASCSV.
+- extended/optical/OpNovice2 (OpNovice2-V11-01-00)
+  o Added command to kill photons on reaching second surface; provides a way
+    to visualize boundary scattering.
+- extended/persistency/P03 (exampleP03-V11-01-00)
+  o Removed visualization settings from batch macros. 
+- extended/runAndEvent/RE02 (exampleRE02-V11-01-00)
+  o Removed forward declaration of G4VTouchable.
+
+tests                                            tests-V11-01-09
+-----
+- Updated reference outputs and tools.
+- tests/test22 (test22-V11-01-00)
+- tests/test23 (test23-V11-01-01)
+- tests/test30 (test30-V11-01-00)
+- tests/test35 (test35-V11-01-00)
+- tests/test48 (test48-V11-01-00)
+  o Removed references to obsolete and unused G4GRSSolid and G4GRSVolume types.
+- tests/test202 (test202-V11-01-01)
+  o In vis.mac, removed arguments from "/vis/open", allowing use of new
+    flexible graphics system choice.
+- tests/test320 (test320-V11-01-03)
+  o Added deleting and recreating n-tuples.
