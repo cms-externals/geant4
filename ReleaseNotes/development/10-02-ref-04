@@ -1,0 +1,267 @@
+
+                       geant4-10-02-ref-04
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Introducing floating level base to G4Ions and related classes.
+ o Disabled multiple-scattering at post-step for position change,
+   now all happening along-step.
+ o Modified randomisation of true path length in G4UrbanMscModel.
+ o Added experimental physics-list FTFP_BERT_ATL with modified transition
+   region between BERT and FTFP, meant to reduce jet energy scale difference
+   observed in ATLAS.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in release 10.2.p02
+(o)  Fixes included in release 10.2.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-02-09
+-----
+- Corrected Modules/genwindef/LibSymbolInfo.cpp for use with Windows         (*)
+  VC++ 64 bits compilation.
+
+config                                           config-V10-02-02            (*)
+------
+- Added flags for partial use of USolids/VecGeom types.
+- Added Linux-clang.gmk script for use of clang compiler on Linux system.
+
+analysis                                         analysis-V10-02-01          (o)
+--------
+- Updated to g4tools 1.27.0: fixed incompatibility with ROOT 5.x and
+  6.x formats.
+
+digits_hits                                      digits_hits-V10-02-04       (*)
+-----------
+- Fixed shadowing compilation warnings in G4VScoringMesh for 'ps'.
+- Fixed typo in printing on cout in G4SDManager::AddNewDetector().
+
+event                                            event-V10-02-02
+-----
+- Fixed shadowing compilation warnings in G4GeneralParticleSourceMessenger   (*)
+  for 'ps'.
+
+externals                                        externals-V10-02-06
+---------
+- CLHEP: updated to CLHEP-2.3.2.2:
+  o Added use_atomic.h header to use std::atomic if compiler supports it.
+  o MixMaxRng: corrected initialisation and use of 'numberOfEngines'
+    when more than one threads calls the constructor.
+  o HepRandom: revised settings of "defaults" to use a single thread_local
+    pointer.
+- CLHEP, MixMaxRng: use simple loop for flatArray() to increase efficiency;
+  introduced temporary workaround to speedup setSeeds(), by avoiding forced
+  skipping of sequences and adopt simple seeding mechanism in mixmax; use
+  seed_spbox() for seeding MixMax with single seed.
+- zlib:
+  o Fix in gzguts.h for Windows with Visual Studio 2015 in 64 bit            (*)
+    compilation.
+
+geometry
+--------
+- management (geommng-V10-02-03):
+  o Throw exception in call to CreatePolyhedron() for base class G4USolid.   (*)
+    Method is now implemented in the concrete wrappers. Code cleanup.
+  o Added flag to USolids wrappers for partial use of USolids/VecGeom types. (*)
+- navigation (geomnav-V10-02-06):                                            (*)
+  o Avoid static constant definition of surface tolerance in G4VoxelNavigation
+    in method LocateNextVoxel() to clear spurious warnings for data-race
+    conflicts from Valgrind/DRD tool; defined as class data member.
+    Cleared up use of static constants also in other navigation classes.
+  o Improved diagnostic in G4Navigator. Moved some debug checks in "check-mode".
+- solids/CSG (geom-csg-V10-02-03)                                            (*)
+  o Added overloaded CreatePolyhedron() method to USolids wrappers.
+    It is now possible to visualize supported VecGeom shapes.
+    Added flag for partial use of USolids/VecGeom types.
+  o G4Orb: fixed typo in G4Exception message.
+- solids/specific (geom-specific-V10-02-06)
+  o Added overloaded CreatePolyhedron() method to USolids wrappers.          (*)
+    It is now possible to visualize supported VecGeom shapes.
+    Added flag for partial use of USolids/VecGeom types.
+  o Added implementation of CreatePolyhedron() in UExtrudedSolid wrapper.    (*)
+- volumes (geomvol-V10-02-00)                                                (*)
+  o G4NavigationHistory: corrected printout in streaming operator.
+
+global                                           global-V10-02-13
+------
+- Define G4GeometryTolerance singleton instance pointer as tread-local       (*)
+  to get rid of spurious race conflicts at initialisation.
+- Added check for support of atomics for clang compiler in HEPRandom         (*)
+  wrappers.
+
+materials                                        materials-V10-02-07
+---------
+- Added new class G4AtomicShells_EADL.
+- G4SandiaTable: fixed problem for the case when G4VERBOSE flag unset
+  (problem introduced in previous tag).
+
+particles                                        particles-V10-02-13
+---------
+- Introducing floating level base to G4Ions and related classes.
+  Migrated G4NuclideTable to the new floating level base scheme;
+  temporarily disable new scheme for G4IsotopeMagneticMomentTable.
+
+physics_lists
+-------------
+- builders (phys-builders-V10-02-01)
+  o Disabled multiple-scattering at post-step in OrderingParameterTable.
+- constructors/electromagnetic (phys-ctor-em-V10-02-09)
+  o G4EmStandardPhysicsGS: changed default step limit type to error-free.
+  o Updated G4EmDNAPhysics_option5 and G4EmDNAChemistry.
+  o Fixed typo in G4EmStandardPhysics_option3.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V10-02-01)
+  o G4HadronPhysicsFTFP_BERT_ATL: new constructor for ATLAS, similar to      (*)
+    G4HadronPhysicsFTFP_BERT but with the transition between BERT and FTFP
+    in the energy region [9, 12] GeV.
+- lists (phys-lists-V10-02-03)
+  o New experimental physics-list FTFP_BERT_ATL, similar to FTFP_BERT but    (*)
+    with the transition between BERT and FTFP in the energy region [9, 12] GeV.
+    Meant to reduce jet energy scale difference observed in ATLAS.
+
+processes/electromagnetic/dna                    emdna-V10-02-15
+-----------------------------
+- G4DNAMeltonAttachmentModel, G4DNASancheExcitationModel: removed usage of
+  internal energy boundaries.
+- Renamed class G4DNAElectronSolvatation to G4DNAElectronSolvation.
+- G4DNASancheExcitationModel: removed warning when SANCHE_VERBOSE is OFF.
+
+processes/electromagnetic/standard               emstand-V10-02-15
+----------------------------------
+- G4UrbanMscModel: modified randomisation of "true path length".
+- Fixed shadowing compilation warnings in G4GoudsmitSaundersonMscModel for 'ps'.
+
+processes/electromagnetic/utils                  emutils-V10-02-16
+-------------------------------
+- G4VMultipleScattering: moved position change to AlongStep.
+- G4VAtomDeexcitation: completed migration to G4EmParameters interface.
+  Addressing data race in MT mode.
+- G4EmParameters: allow to change parameters only from the master thread 
+  and only at PreInit or Idle states.
+- G4EmCorrections: make part of data static, make internal vectors static,
+  shared between threads.
+- G4LossTableManager, G4VEmModel, G4VMultipleScattering: minor cleanup of
+  static const data.
+- G4AtomicShell: make methods inlined.
+
+processes/hadronic
+------------------
+- management (hadr-man-V10-02-00)
+  o G4HadronicProcessStore: call initialisation of all G4HadronicInteractions.
+- models/de_excitation (hadr-deex-V10-02-17)
+  o Renamed G4DeexParameters class to G4DeexPrecoParameters and updated
+    list of parameters; added full list of pre-coumpound parameters and extra
+    de-excitation ones. Allow to change parameters only from the master thread 
+    and only at PreInit or Idle states.
+  o G4ExcitationHandler, G4EvaporationChannel, G4EvaporationProbability,
+    G4NeutronRadCapture: use G4DeexPrecoParameters for initialisation;
+    initialisation is done once at the first event.
+  o G4NucLevel, G4LevelManager, G4LevelReader, G4PhotonEvaporation: changed
+    data structure for the transition data; instead of final energy, index of
+    final level, added multi-polarity of the transition. This will allow for
+    correlated gamma emission.
+  o G4EvaporationChannel, G4EvaporationProbability: improved initialisation of
+    run time members
+  o G4NuclearLevelData: improved FindLevel() method.
+  o Added c++11 keywords in many headers.
+  o G4LevelReader, G4VEvaporationChannel, G4LevelReader, G4ExcitationHandler:
+    removed commented lines, removed empty descructors.
+- models/lend (hadr-lend-V10-02-03)                                          (*)
+  o Fixed problem on setting birth time of delayed neutrons.
+- models/management (hadr-modman-V10-02-01)
+  o G4HadronicInteractionRegistry: added InitialiseModels() method.
+    G4HadronicInteraction: added InitialiseModel() method.
+  o G4VPreCompoundModel, G4VIntraNuclearTransportModel,
+    G4HadronicInteractionRegistry, G4HadronicInteraction: added c++11 keywords,
+    minor cleanup.
+- models/particle_hp (hadr-hpp-V10-02-09)                                    (*)
+  o Corrected message about a behavior under the activation of fission
+    fragment production.
+- models/parton_string/qgsm (hadr-qgsm-V10-02-01)
+  o G4QGSMSplitableHadron: fixed bug in the case of gamma projectile with
+    P_minus = 0.
+- models/pre_equilibrium (hadr-pre-V10-02-06)
+  o Migrated classes to use G4DeexPrecoParameters; removed obsolete class
+    G4PreCompoundParameters.
+  o G4GNASHTransitions: fixed problem in computation of probability.
+  o Use nullptr and define internal const as static const.
+- models/quasi_elastic (hadr-qelastic-V10-02-00)                             (*)
+  o Fixed shadowing compilation warnings in G4QuasiElRatios for 'ps'.
+- models/radioactive_decay (radioactive_decay-V10-02-05)
+  o Removed obsolete class G4RIsotopeTable.
+- models/util (hadr-mod-util-V10-02-02)                                      (*)
+  o G4Fragment: introduced "spin", added accessors and modifiers needed
+    by INCL++; fixes a memory leak discussed on HN PhysicsList Forum #930.
+
+run                                              run-V10-02-10
+---
+- Disabled multi-scattering during post-step in G4PhysicsListHelper.
+
+visualization
+-------------
+- modeling (modeling-V10-02-03):
+  o G4TrajectoryDrawByOriginVolume.cc: tidied #include statements.
+- Tree (vistree-V10-02-00)
+  o G4ASCIITreeSceneHandler: prevent multiple writing of the informational
+    header on the output file.
+
+examples                                         examples-V10-02-04
+--------
+- Updated reference outputs.
+- advanced/amsEcal (amsEcal-V10-02-00)
+  o PhysListEmStandard: use G4EmParameters.
+- extended/electromagnetic/TestEm0 (testem0-V10-02-02)
+  o PhysicsList: use G4EmParameters.
+- extended/electromagnetic/TestEm1 (testem1-V10-02-03)
+- extended/electromagnetic/TestEm2 (testem2-V10-02-01)
+- extended/electromagnetic/TestEm5 (testem5-V10-02-03)
+  o PhysicsList: use G4EmParameters.
+  o Removed geant3 sub-directory.
+- extended/electromagnetic/TestEm11 (testem11-V10-02-05)
+  o PhysicsList: use G4EmParameters.
+  o Removed G4DiscreteScattering.
+- extended/electromagnetic/TestEm12 (testem12-V10-02-02)
+  o PhysicsList, PhysListEmStandard: use G4EmParameters.
+- extended/electromagnetic/TestEm13 (testem13-V10-02-01)
+- extended/electromagnetic/TestEm14 (testem14-V10-02-01)
+  o PhysicsList: use G4EmParameters.
+  o Removed geant3 sub-directory.
+- extended/electromagnetic/TestEm15 (testem15-V10-02-00)
+  o PhysicsList: use G4EmParameters.
+- extended/electromagnetic/TestEm18 (testem18-V10-02-01)
+  o PhysListEmStandard: use G4EmParameters.
+- extended/hadronic (exHadronic-V10-02-00)
+  o Added new example Hadr07.
+- extended/hadronic/Hadr06 (exhadr06-V10-02-01)
+  o EmStandardPhysics: use G4EmParameters.
+- extended/hadronic/Hadr07 (exhadr07-V10-02-01)
+  o New example to survey energy deposition and particle's flux from
+    an hadronic cascade.
+- extended/medical/electronScattering (electronScattering-V10-02-01)
+  o PhysListEmStandard: use G4EmParameters.
+  o PhysListEmStandard_WVI, SS: added SetMscThetaLimit().
+- extended/persistency/gdml/G01 (G01-V10-02-01)
+  o Added missing gdml files to CMake installation script.
+
+tests                                            tests-V10-02-04
+-----
+- Updated reference outputs and tools.
+- test19 (test19-V10-02-00)
+  o Including Ta target as part of standard validation round 
+  o Split HARP-like jobs by target and momentum (otherwise too CPU-greedy
+    for heavy targets like Ta).
+  o Added scripts for Mu2e-like validation.
+  o Added scripts for "signature plots".
+- test23 (test23-V10-02-03)
+  o Added HARP/FW production data for pi- on Al.
+  o Added drawing features for Mu2e-like validation .
+  o Added qgsp_bert and ftfp_bert phys.lists for p+Ta runs.
+- test30 (test30-V10-02-00)
+  o Migrated to G4DeexPrecoParameters.
+- test47 (test47-V10-02-01)
+  o Added configs and scripts for (optional) Mu2e-like validation.
+  o Added scripts for signature G4/HAD plots.
+- test202 (test202-V10-02-00)
+  o Corrected a PV name.
