@@ -1,0 +1,275 @@
+
+                       geant4-11-02-ref-05
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o New revised and optimised implementation of G4GenericTrap shape.
+ o Optimized step limitation algorithm in G4UrbanMscModel.
+ o Simplified computation of cross-section maximum for discrete processes
+   in G4EmUtility.
+ o New class G4XTRGaussRadModel, providing improved account on the origin
+   of XTR photons.
+ o New class G4EmDataRegistry, to keep EM data tables.
+ o First implementation of NuDEX nuclear de-excitation hadronic model.
+ o Ported code to C++20/23 Standard compilation on supported compilers.
+ o Removed configuration/setup of no longer supported TiMemory profiling.
+ o Updated/new datasets: G4NDL-4.7.1, G4NUDEXLIB-1.0.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-02-16
+-----
+- Provide CMake function to assist in linking unit tests to final libraries
+  given required source code modules.
+- Removed configuration/setup of no longer supported TiMemory profiling.
+- Introduced new "FullRelWithDebInfo" build mode, "-O3 -g", so maximum
+  optimization with debugging symbols.
+- Simplifications to Geant4Config.cmake: removed obsolete and never run
+  "whole archive" linking of G4physics_lists; replaced TOOLSSG visualization
+  driver variables that are just synonyms for more fundamental config options
+  (e.g. GEANT4_USE_QT) with the underlying variable.
+- Added optional install of new NuDEXLib data model.
+- Updated/new datasets: G4NDL-4.7.1, G4NUDEXLIB-1.0.
+
+analysis                                         analysis-V11-02-00
+--------
+- Fixed conversion to G4String in G4THnToolsManager, leading to
+  compilation error on gcc compiler with C++23 Standard enabled.
+
+digits_hits                                      digits_hits-V11-02-00
+-----------
+- Fixed compilation error in G4THitsMap on macOS/clang with C++23 Standard
+  enabled.
+
+event                                            event-V11-02-03
+-----
+- G4PrimaryTransformer: adding sanity check of 4-momentum.
+- Removed use of no longer supported TiMemory.
+
+geometry/management                              geommng-V11-02-01
+-------------------
+- Added new methods GetNumOfConstituents() and IsFaceted() to G4VSolid.
+
+geometry/solids/Boolean                          geom-bool-V11-02-01
+-----------------------
+- Implemented new methods GetNumOfConstituents() and IsFaceted().
+
+geometry/solids/CSG                              geom-csg-V11-02-03
+-------------------
+- Implemented new methods GetNumOfConstituents() and IsFaceted().
+
+geometry/solids/specific                         geom-specific-V11-02-04
+------------------------
+- Completely revised and optimised implementation of G4GenericTrap.
+  Addressing problem report #2547.
+- Implemented new methods GetNumOfConstituents() and IsFaceted().
+
+global                                           global-V11-02-12
+------
+- G4PhysicsModelCatalog: added ID for the NuDEX nuclear de-excitation model;
+  removed unnecessary ID (24110) for internal conversion.
+- G4PhysicsTable: avoid crash in printout for the case when a vector in the
+  table is not yet created (useful for debugging).
+- Removed use of no longer supported TiMemory.
+- Updated date and tag-ID for geant4-11-02-ref-05.
+
+intercoms                                        intercoms-V11-02-04
+---------
+- G4GenericMessenger: improved SetNewValue() to further addressing
+  problem report #2606.
+- Unify range checking implementation in G4UIparameter/command; pure refactor
+  to remove code duplication and complexity of user-facing classes.
+- Removed use of no longer supported TiMemory.
+- Moved unit tests to tests/ctests_source.
+
+interfaces                                       interfaces-V11-02-04
+----------
+- Removed use of no longer supported TiMemory.
+
+physics_lists
+-------------
+- constructors/electromagnetic  (phys-ctor-em-V11-02-06)
+  o G4EmStandardPhysics_option3, G4EmStandardPhysics_option4,
+    G4EmLivermorePhysics, G4EmLivermorePhysics, G4EmDNAPhysics: use
+    fAllisonPositronium type of model for sampling of positron annihilation
+    at rest (as in release 11.2).
+  o G4EmStandardPhysics_option4: use model alternative model for positron
+    annihilation on fly with 3-gamma annihilation channel enabled.
+  o G4GammaGeneralProcess: updated according to change in EM data tables.
+- constructors/factory (phys-ctor-fact-V11-02-00)
+  o Minor code cleanup in G4PhysicsConstructorRegistry source.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-02-11)
+  o Fixed compilation error on macOS/clang with C++23 enabled, for the use
+    of std::function in G4OctreeFinder.
+  o Fixed compilation warning on macOS/XCode for implicit type conversion
+    in G4DNADoubleIonisationModel and G4DNAMultipleIonisationManager.
+- electromagnetic/standard (emstand-V11-02-05)
+  o G4UrbanMscModel: optimized DistanceToBoundary step limitation
+    algorithm currently used only in Opt3 EM physics.
+  o G4SimplePositronAtRestModel, G4AllisonAtRestModel: new classes to sample
+    positron annihilation.
+  o G4eplusTo2GammaOKVIModel: removed sampling at rest.
+  o G4eplusAnnihilation: added selection of AtRest model; implemented
+    ApplyCuts() for AtRest; implemented choice of positron annihilation
+    model at rest.
+  o G4eeToTwoGammaModel: minor cosmetic change.
+- utils (emutils-V11-02-08)
+  o G4VPositronAtRestModel: new virtual interface.
+  o G4EmDataRegistry: new class to keep EM data tables.
+  o G4EmUtility: simplified computation of cross-section maximum for discrete 
+    processes to fix FPE issues on alma9 when -O3 compiler option is used.
+  o G4VEmProcess: extended info printout for e+ annihilation at rest.
+  o G4VEmProcess, G4VEnergyLossProcess: improved identification of model ID
+    for atomic de-excitation (fluorescence, Auger e-, PIXE).
+  o G4EmParameters, G4EmLowEParameters, G4EmLowEParametersMessenger: added
+    DNA chemistry time step model.
+  o G4EmParameters, G4EmParametersMessenger: added enumerator and a new flag
+    G4PositronAtRestModel, which allows selection and configuration of
+    the model of positron annihilation at rest.
+  o G4EmDataHandler: extended functionality.
+  o G4LossTableManager: identify master thread using std method.
+  o G4LossTableBUilder: more accurate use of static members and methods.
+  o G4VEmModel, G4VEmProcess, G4VEnergyLossProcess, G4EmTableUtil: updated
+    according to change in the data.
+  o G4VMscModel: moved initialisation of tables for model to G4EmTableUtil.
+  o G4EmBiasingManager: minor cosmetic change.
+- xrays (xrays-V11-02-02)
+  o G4XTRGaussRadModel: new class providing improved account on the origin
+    of XTR photons.
+
+processes/hadronic
+------------------
+- management (hadr-man-V11-02-01)
+  o G4HadronicProcessStore: fixed handling of rare processes; printout, 
+    cross-section maximum search, and deletion at the end of run.
+- models/abla (hadr-abla-V11-02-04)
+  o Added the dissipation parameter for heavy hypernuclei.
+- models/binary_cascade (had-binary-V11-02-00)
+  o Removed throwing of exception if momentum cannot be corrected in rare
+    cases for D + H around 1600 MeV; the initial state is now kept unchanged
+    instead.
+- models/coherent_elastic (hadr-cohe-V11-02-00)
+  o Fixed compilation warnings for potentially initialised local variables in
+    SampleThetaCMS() for G4DiffuseElastic and G4NuclNuclDiffuseElastic.
+- models/de_excitation (hadr-deex-V11-02-04)
+  o G4NuclearLevelData, G4PairingCorrection, G4CameronGilbertPairingCorrections,
+    G4CameronGilbertShellCorrections: simplified computation of corrections;
+    computations are now done in one place only, not spreaded among classes.
+  o G4EvaporationChannel, G4EvaporationProbability: fixed usage of pairing
+    corrections; agreement with test data is improved.
+  o G4EvaporationChannel: fixed computation of minimal kinetic energy of a
+    fragment for odd-even residual nucleus. 
+  o G4DeexPrecoParameters: moved definition of int and bool parameters to
+    source; improved comments; added default width of nuclear level needed
+    for selection of final excitation in a decay of an excited state.
+  o G4VEmissionProbability: use the new width parameter.
+- models/lend (hadr-lend-V11-02-03)
+  o Fixed compilation warnings for potentially initialised local variables in
+    ptwXY_createFromFunctionZeroCrossing().
+- models/nudex (hadr-nudex-V11-02-00)
+  o New alternative and more sophisticated nuclear de-excitation model (NuDEX)
+    as far as the emission of gammas and internal conversion electrons are
+    concerned. The model relies on the data library G4NUDEXLIB-1.0, which is
+    pointed by the environmental variable G4NUDEXLIBDATA.
+    When NuDEX is not applicable - e.g. because the corresponding nucleus is
+    not present in the data library - the G4PhotonEvaporation class is utilised
+    instead. Currently, the model will be used only for the neutron capture
+    process, when ParticleHP is utilised; in the future it can be used more
+    generally as one of the possible "evaporation" models.
+    This, at the beginning, will only be possible for the physics list
+    QGSP_BERT_HP.
+
+run                                              run-V11-02-05
+---
+- G4RunManager: added SetDefaultClassification() methods to enable setting
+  the classification for tracks newly arriving to a stack.
+- Removed use of no longer supported TiMemory.
+
+track                                            track-V11-02-02
+-----
+- Removed use of no longer supported TiMemory.
+
+tracking                                         tracking-V11-02-01
+--------
+- Removed use of no longer supported TiMemory.
+
+visualization
+-------------
+- OpenGL (opengl-V11-02-01)
+  o In G4OpenGLQtViewer, fixed MT issue of possible dead-lock in case multiple
+    OGLI or OGLS viewers are enabled and when issuing "/run/beamOn".
+- Qt3D (visQt3D-V11-02-01)
+  o Added missing call to fpPhysicalVolumeObjects.clear() in
+    G4Qt3DSceneHandler::EstablishG4Qt3DQEntities(). Fixes cases of
+    crash when opening multiple viewers with "/vis/open Qt3D".
+  o In G4Qt3DViewer destructor, call setRootEntity(nullptr) to disconnect
+    the G4Qt3DSceneHandler::fpQt3DScene from a viewer.
+  o In G4Qt3DSceneHandler destructor, clear the scene tree.
+- ToolsSG (vis_toolssg-V11-02-01)
+  o Replace TOOLSSG vis driver variables that are just synonyms for more
+    fundamental config options (e.g. GEANT4_USE_QT) with the underlying
+    variable.
+- Vtk (visVtk-V11-02-03)
+  o In G4VtxQtViewer, fixed MT issue of possible dead-lock in case multiple
+    Vtk viewers are enabled and when issuing "/run/beamOn".
+
+data
+----
+- G4NDL-4.7.1:
+  o Removed all files for Argon-36 and Argon-38 as significantly different
+    from those of ENDF/B-VIII.0.
+  o Reprocessed thermal scattering files after fixing a problem in NJOY.
+    Addressing problem report #2552.
+- G4NUDEXLIB-1.0:
+  o Data set required to enable the NuDEX hadronic model (E. Mendoza et al.,
+    NIMA 1047, 167894 (2023) https://doi.org/10.1016/j.nima.2022.167894).
+    Including: data file with general parameters used by NuDEX; data tables
+    to get internal conversion factors, obtained from BrICC; nuclear level
+    schemes downloaded from the RIPL-3 data library; nuclear level densities
+    downloaded from the RIPL-3 data library; files containing primary capture
+    gamma rays, obtained from ENSDF; photon strength funcion parameters,
+    obtained from RIPL-3 and from the IAEA Photon Strength Function Database;
+    folder to change the default parameters for the decay of specific nuclei.
+
+examples                                         examples-V11-02-05
+--------
+- Updated documentation and reference outputs.
+- basic/B3 (exampleB3-V11-02-00)
+  o Looping over G4THitsMap via range for loop instead of iterators.
+- extended/medical/dna/dnadamage1 (dnadamage1-V11-02-00)
+  o Fixed compilation errors on macOS/clang with C++23 enabled.
+- extended/medical/dna/dnaphysics (dnaphysics-V11-02-02)
+  o Added plotDeexcitation.C analysis and deexcitation.in macro.
+- extended/medical/dna/UHDR (UHDR-V11-02-02)
+  o Implemented PBC based on https://github.com/amentumspace/g4pbc
+    to calculate microdosimetry
+  o Added a maximum dose (2 times of cut-off dose) to abort the event.
+  o Fixed compilation errors on macOS/clang with C++23 enabled, for incomplete
+    types of smart-pointers through defaulted destructors.
+- extended/parallel/ThreadsafeScorers (ThreadsafeScorers-V11-02-00)
+  o Removed use of no longer supported TiMemory.
+- extended/radioactivedecay/rdecay01 (rdecay01-V11-02-02)
+  o In timeWindowBiased.mac and rdecay01.in, removed "/process/had/rdm/BRbias".
+- extended/runAndEvent/RE07 (exampleRE07-V11-02-00)
+  o Fixed compilation warnings for potentially initialised local variable
+    in EmStandardPhysicsTrackingManager::PostStepDoIt().
+
+tests                                            tests-V11-02-05
+-----
+- Updated reference outputs and tools.
+- ctests_integration/test07 (test07-V11-02-00)
+  o T07PhysicsList: added G4GenericIon; moved all includes on the top of file.
+- ctests_integration/test30 (test30-V11-02-03)
+  o In main(), do not define type of thread for EM model.
+- ctests_integration/test36 (test36-V11-02-00)
+  o Added G4GenericIon to the PhysicsList.
+- ctests_integration/test68 (test68-V11-02-00)
+  o Escape backslash in paths on Windows to make them literal and avoid
+    Python syntax warnings.
