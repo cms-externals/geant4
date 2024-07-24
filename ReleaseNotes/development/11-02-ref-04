@@ -1,0 +1,312 @@
+
+                       geant4-11-02-ref-04
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Fix in G4NistMaterialBuilder for few materials, now defined using mass
+   fractions of components instead of number of atoms, in order to have more
+   natural description.
+ o Extended diagnostics and output from material scanner.
+ o New classes for multiple-ionization in Geant4-DNA.
+ o In G4EmDNAPhysics, define default maximum kinetic energy 600 MeV instead
+   of 300 MeV in order to have standard ionisation and multiple scattering
+   always defined for DNA physics configurations
+ o Updated dataset G4EMLOW-8.6.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-02-10
+-----
+- Disabled use of FindPythia6 outside of internal Geant4 examples.
+- Mention the possibility of using cvmfs datasets in the cmake configuration.
+- Fixed find_package(SoXt) and find_package(SoWin).
+- In main CMake source script, VTK driver library requires the application
+  of VTK's vtk_module_autoinit cmake function, but the existence of the
+  target was not checked, leading to configure time errors. Check for the
+  existence of both G4visVTK and G4visVTK-static targets before applying
+  vtk_module_autoinit. Addressing problem report #2600.
+- Updated dataset G4EMLOW-8.6.
+
+externals/ptl                                    ptl-V11-02-00
+-------------
+- Changed Windows.h to windows.h, to allow build Windows/MinGW.
+  Not relevant for native VC++ builds.
+
+geometry/biasing                                 geombias-V11-02-00
+----------------
+- Applied trivial clang-tidy fixes to G4GeometryCell, i.e. use of default
+  constructor/destructor.
+
+geometry/divisions                               geomdiv-V11-02-00
+------------------
+- Applied trivial clang-tidy fixes to G4PVDivisionFactory, i.e. use of default
+  constructor/destructor.
+
+geometry/magneticfield                           field-V11-02-01
+----------------------
+- Applied trivial clang-tidy fixes to classes, i.e. use of default
+  constructor/destructor, auto and using statements.
+- Fixed potential uninitialised data, detected in ATLAS LTO builds.
+- Minor cleanup in QSS classes.
+
+geometry/management                              geommng-V11-02-00
+-------------------
+- Applied trivial clang-tidy fixes to G4ErrorTarget, i.e. use of default
+  constructor.
+
+geometry/navigation                              geomnav-V11-02-01
+-------------------
+- Applied trivial clang-tidy fixes to classes, i.e. use of 'override' and
+  removal of 'virtual' keywords; use of default constructor/destructor.
+- Fixed compilation error in G4Navigator on Windows VC++ with C++20 Standard
+  enabled. Based on [GitHub PR#69](https://github.com/Geant4/geant4/pull/69).
+
+geometry/solids/CSG                              geom-csg-V11-02-02
+-------------------
+- Applied trivial clang-tidy fixes to G4CSGSolid, i.e. use of 'override'.
+
+geometry/solids/specific                         geom-specific-V11-02-01
+------------------------
+- Applied trivial clang-tidy fixes to classes, i.e. use of 'override' and
+  'default' keywords.
+
+geometry/volumes                                 geomvol-V11-02-02
+------------------------
+- Applied trivial clang-tidy fixes to G4AssemblyStore, i.e. removed
+  unnecessary 'if' check for null pointer in Clean() method.
+- Use 'const auto &' for iterator in G4LogicalSkinSurface::CleanSurfaceTable().
+
+global                                           global-V11-02-08
+------
+- Changed Windows.h to windows.h, to allow build Windows/MinGW.
+  Not relevant for native VC++ builds. Use _WIN32 to detect Windows system.
+- Fixed compilation error in G4PhysicsModelCatalog on Windows VC++ with
+  C++20 Standard enabled.
+  Based on [GitHub PR#69](https://github.com/Geant4/geant4/pull/69).
+- Provide helpful error message when GEANT4_DATA_DIR is set to an invalid
+  location.
+- Updated date and tag-ID for geant4-11-02-ref-04.
+
+graphics_reps                                    greps-V11-02-01
+-------------
+- G4Colour: clarify usage; added GetColor (US spelling); added G4Exception.
+
+intercoms                                        intercoms-V11-02-00
+---------
+- G4UIparsing: checking either 'int' or 'long int' parameter value are
+  within range of G4int or G4long.
+- Fix in G4GenericMessenger::DeclareMethod() which was wrongly converting
+  valid Boolean parameters. Addressing problem report #2606.
+
+materials                                        materials-V11-02-00
+---------
+- Fix in G4NistMaterialBuilder::HepAndNuclearMaterials(): G4_BRASS,
+  G4_BRONZE, and G4_STAILESS_STEEL are now defined using mass fractions
+  of components instead of number of atoms, in order to have more natural
+  description. Addressing problem report #2601.
+  Results may be changed on level of 10^-5 due to numerical differences.
+
+physics_lists
+-------------
+- constructors/electromagnetic  (phys-ctor-em-V11-02-04)
+  o G4EmDNAPhysics: define default maximum kinetic energy 600 MeV instead of
+    300 MeV in order to have standard ionisation and multiple scattering always
+    defined for DNA physics configurations. This allows to avoid situations
+    when low-energy ions pass through DNA regions without interaction.
+  o G4EmDNAPhysics, G4EmDNAPhysicsActivator, G4EmDNAPhysics_option2,
+    G4EmDNAPhysics_option4, G4EmDNAPhysics_option6 and G4EmDNAPhysics_option8:
+    changed upper limit for DNA physics of Helium ions from 300 MeV to 400 MeV.
+  o G4EmDNABuilder: added nuclear stopping process for G4GenericIon below
+    1 MeV/u.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-02-09)
+  o G4DNARuddIonisationExtendedModel: updated model to not use autolock but
+    rather upload data in the class constructor once in all threads; use
+    effective charge approach for all ions with Z > 2 (in order to have more
+    correct computation of stopping power and ranges); precompute internal
+    variables before sampling; optimized algorithm of sampling (at 10 MeV it
+    becomes ~10 times faster); updated initialisation to allow be called
+    from the general model; removed unused parameters.
+  o G4GeneralIonIonisationModel, G4DNAIonChargeIncreaseModel and
+    G4DNAIonChargeDecreaseModel: new classes implementing general models for
+    ions heavier than Helium
+  o G4DNAChargeDecrease, G4DNAChargeIncrease: removed obsolete definition of
+    min/max model energy inside processes class; some code clean-up.
+  o G4DNAElectronHoleRecombination: changed branch condition in FindReactant()
+    to select only H2O+ ions involved in electron-hole recombination.
+  o G4DNAWaterDissociationDisplacer: added dissociative decay channels for
+    multiple-ionized water ions.
+  o G4DNAMultipleIonisationManager: new class focusing on generation of
+    multiple-ionized water ions and calculation of scale parameter to compute
+    cross-section of each multiple-ionization process.
+  o G4DNADoubleIonisation, G4DNATripleIonisation and G4DNAQuadrupleIonisation:
+    new process classes for multiple-ionization.
+  o G4DNADoubleIonisationModel, G4DNATripleIonisationModel and
+    G4DNAQuadrupleIonisationModel: new model classes related to
+    multiple-ionization.
+  o G4DNAELSEPAElasticModel: modified to be compatible with density scaling.
+  o Fixed compilation error on Windows VC++ with C++20 Standard enabled.
+    Added missing declarations for TG4MoleculeShoot specialisations on G4Track.
+    Based on [GitHub PR#69](https://github.com/Geant4/geant4/pull/69).
+  o Debug invalid KDTree node.
+  o Deleted DelayLists at the end of chemistry stage
+  o Cleaned G4Scheduler and cleanup in CMake scripts.
+- utils (emutils-V11-02-03)
+  o G4EmParameters: increased low-limit on 'maxKinEnergy' parameter from
+    10 MeV to 600 MeV in order to have standard ionisation and multiple
+    scattering always defined for DNA physics configurations. 
+  o G4LowEnergyEmProcessSubType: added 'fLowEnergyTripleIonisation' and
+    'fLowEnergyQuadrupleIonisation' for implementing multiple-ionization
+    processes in Geant4-DNA.
+  o Fixed compilation error in G4EmConfigurator on Windows VC++ with
+    C++20 Standard enabled.
+    Based on [GitHub PR#69](https://github.com/Geant4/geant4/pull/69).
+
+processes/hadronic
+------------------
+- models/abla (hadr-abla-V11-02-03)
+  o Added array extension for super-heavy nuclei.
+  o General code cleanup; removed unused data structures; consistently use
+    G4 types; added pragma once for compilation.
+- models/inclxx (hadr-inclxx-V11-02-00)
+  o Fix in G4INCLInteractionAvatar to not use local energy for all antibaryons.
+- models/lend (hadr-lend-V11-02-02)
+  o Define _USE_MATH_DEFINES before inclusion of <cmath> to define
+    non-standard math macros such as M_PI on Windows. Use _WIN32 instead of
+    WIN32 to detect Windows system. Use basetsd.h instead of BaseTsd.h to
+    allow for compilation on Windows/MinGW.
+- models/particle_hp (hadr-hpp-V11-02-04)
+  o Fixed compilation error in G4ParticleHPManager and G4ParticleHPNames on
+    Windows VC++ with C++20 Standard enabled.
+    Based on [GitHub PR#69](https://github.com/Geant4/geant4/pull/69).
+- models/radioactive_decay (radioactive_decay-V11-02-03)
+  o G4BetaPlusDecay, G4BetaMinusDecay: minor fix. In case Q-value is bigger
+    than mass difference, betas in the tail of the spectrum may have more
+    energy than residual free energy. To minimize the non-conservation
+    of 4-momentum, in such cases neutrino and daughter nucleus are given 1 eV,
+    leading to non conservation of linear momentum because momentum of beta
+    is not counterbalanced.
+
+processes/solidstate/phonon                      prophonon-V11-02-00
+---------------------------
+- Fixed compilation error in G4LatticeManager on Windows VC++ with
+  C++20 Standard enabled.
+  Based on [GitHub PR#69](https://github.com/Geant4/geant4/pull/69).
+
+run                                              run-V11-02-03
+---
+- Extended diagnostics and output from material scanner.
+- G4PhysicsListHelper: added 'DNATripleIoni' and 'DNAQuadrupleIoni' for the
+  implementation of multiple-ionisation processes in Geant4-DNA.
+- Fixed compilation warnings for implicit type conversions on macOS/XCode
+  on G4MSSteppingAction. Use consistently G4 types.
+
+track                                            track-V11-02-01
+-----
+- Some code cleanup, providing more easy reading of class headers; expected
+  tiny CPU speedup; identical results.
+- G4Track, G4Step, G4StepPoint: added keyword "inline" to all inline method
+  declaration; improved comments.
+- G4Step: move methods to compute delta energy and momentum to inline removing
+  G4Exception but improving comments to these methods; removed G4ThreadLocal
+  variable.
+- G4VParticleChange: improved layout of variables.
+- G4ParticleChangeForGamma, G4ParticleChangeForLoss: reserve vector of
+  secondaries.
+- Fixed compilation error in G4VParticleChange on Windows VC++ with
+  C++20 Standard enabled.
+  Based on [GitHub PR#69](https://github.com/Geant4/geant4/pull/69).
+
+data
+----
+- G4EMLOW-8.6:
+  o Added new data for multi-ionisation DNA processes.
+
+examples                                         examples-V11-02-04
+--------
+- Updated documentation and reference outputs.
+- advanced/hadrontherapy (hadrontherapy-V11-02-01)
+  o Fixed compilation error on Windows VC++ with C++20 Standard enabled.
+    Make proper use of G4String in HadrontherapyInteractionParameters.
+- advanced/medical_linac (medical_linac-V11-02-00)
+  o Fixed a critical bug in the geometry of the medical linear accelerator's
+    collimator. Reduced the cut for TargetR in the medical linear accelerator
+    from 1 cm to 1 mm.
+- extended/electromagnetic/TestEm0 (testem0-V11-02-00)
+  o DetectorConstruction: introduced Xenon gas.
+  o Added new macro xenonGas.mac.
+- extended/electromagnetic/TestEm2 (testem2-V11-02-00)
+- extended/electromagnetic/TestEm3 (testem3-V11-02-00)
+  o Updated READMEs.
+- extended/electromagnetic/TestEm4 (testem4-V11-02-01)
+  o PhysicsLists: fixed annoyng warnings on decay table;
+    removed obsolete methods.
+  o Run: code cleanup; removed Tabs.
+  o Updated READMEs.
+- extended/electromagnetic/TestEm5 (testem5-V11-02-00)
+  o Removed macro subcut.mac.
+- extended/electromagnetic/TestEm7 (testem7-V11-02-01)
+  o RunAction: added protection to histogram binning for very low step limit.
+- extended/electromagnetic/TestEm13 (testem13-V11-02-00)
+- extended/electromagnetic/TestEm14 (testem14-V11-02-00)
+  o Updated READMEs.
+- extended/electromagnetic/TestEm15 (testem15-V11-02-00)
+  o SteppingAction: code cleanup; removed Tabs.
+- extended/eventgenerator (exEventGenerator-V11-02-01)
+- extended/eventgenerator/HepMC/HepMCEx01 (HepMCEx01-V11-02-00)
+- extended/eventgenerator/HepMC/HepMCEx02 (HepMCEx02-V11-02-00)
+- extended/eventgenerator/pythia/decayer6 (p6decayer-V11-02-00)
+  o Updated CMake script to use new Pythia6 setup/build variables.
+- extended/hadronic/FlukaCern/ProcessLevel/FinalState (exHadNucIneEvents-V11-02-00)
+  o Fixed compilation error on Windows VC++ with C++20 Standard enabled.
+    Make proper use of G4String in HadNucIneEvents main() and
+    in FinalStateHistoManager.
+- extended/hadronic/Hadr09 (exhadr09-V11-02-00)
+  o Fixed compilation error on Windows VC++ with C++20 Standard enabled.
+    Make proper use of G4String in main().
+- extended/medical/dna (exdna-V11-02-00)
+  o Correction to main CMake script.
+- extended/medical/dna/mfp (mfp-V11-02-01)
+  o General code cleanup.
+- extended/medical/dna/moleculardna (molecularDNA-V11-02-00)
+  o Updated /dnageom/interactionDirectRange to 2.0 angstrom.
+- extended/medical/dna/range (range-V11-02-00)
+- extended/medical/dna/slowing (slowing-V11-02-00)
+- extended/medical/dna/spower (spower-V11-02-01)
+  o General code cleanup.
+- extended/medical/dna/UHDR (UHDR-V11-02-00)
+  o Updated bounce off condition based on:
+    Karamitros M. et al.2020,arXiv:2006.14225 (2020).
+- extended/medical/fanoCavity (fano-V11-02-01)
+  o PhysicsLists: fixed annoying warnings on decay table.
+
+tests                                            tests-V11-02-04
+-----
+- Updated reference outputs and tools.
+- tests/test19 (test19-V11-02-01)
+  o Added scripts to interface to geant-val study case(s) hadron-C and
+    hadron-Ta at 8GeV/c (benchmark vs HARP data).
+  o Added proper README documentation.
+  o Added application code to benchmark Geant4 results vs NA61 data for
+    pi+ beam.
+  o Updated several batch scripts for running jobs at FNAL resources
+    (per migration to EL8).
+  o Fixed compilation warnings and minor cleanups.
+- tests/test30 (test30-V11-02-02)
+  o Added histogram with energy of the relative motion of two alpha particles
+    Erel(MeV).
+  o Added calculations of energy of the relative motion of two alpha particles.
+  o Added testGamma.in macro file for gamma_nuc generator testing.
+- tests/test33 (test33-V11-02-02)
+  o Removed archaic and osbolete ParallelWordScoringProcess from
+    Tst33PhysicsList and replaced with ParallelWorldProcess.
+  o Fixed compilation warning for unused local variable in function
+    Tst33ScorerBuilder::CreateScorer().
+  o Fixed internal visualisation/UI settings and some code cleanup.
+  o Updated README.
