@@ -1,0 +1,276 @@
+
+                       geant4-11-02-ref-08
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Fixed setting of file compression level in G4GenericFileManager.
+ o Implemented new model of ionization losses for e+- ionization for
+   channeling using the new channeling dataset.
+ o Implemented production and decay of omega(780) and f2(1270) for pion
+   projectile and implemented decay of unstable isomeres if recoil nucleus
+   if not a natural isotope.
+ o New dataset: G4ENSDFSTATE-3.0, PhotonEvaporation-6.0 and
+   RadioactiveDecay-6.0.1.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-02-25
+-----
+- Support running example build-and-run tests in XCode on macOS.
+- Set default for GEANT4_INSTALL_PACKAGE_CACHE to be OFF.
+  This file is highly unstable on macOS and Spack installs, causing more
+  problems for most users than it solves. Retain the ability to install
+  this file if really wanted, but change the default to NOT install it; in
+  general this will not change anything for users provided they have a
+  reproducible build environment setup.
+- New datasets: G4ENSDFSTATE-3.0, PhotonEvaporation-6.0 and
+  RadioactiveDecay-6.0.1.
+
+analysis                                         analysis-V11-02-06
+--------
+- Fixed setting of file compression level in G4GenericFileManager:
+  propagate setting to all registered file managers.
+  Addressing problem report #2625.
+- Fixed reported Coverity defects (use std::move and const auto&, to avoid
+  copying).
+- Fixed compilation warning on macOS/XCode for implicit type conversion in
+  G4AccumulableManager.
+
+externals
+---------
+- g4tools (g4tools-V11-02-03)
+  o Updated to g4tools-6.3.2. Fixed reported Coverity defects for use of
+    std::move() and potential divide by zero. 
+
+geometry/magneticfield                           field-V11-02-04
+----------------------
+- Fixed reported Coverity defects for use of std::move() and const auto&,
+  to avoid copying.
+
+geometry/volumes                                 geomvol-V11-02-04
+----------------
+- Fixed reported Coverity defect in G4ReflectionFactory, to not pass the same
+  G4VisAttributes object to the reflected logical volume.
+
+global                                           global-V11-02-18
+------
+- Added protection in G4ConvergenceTester::calStat() in case of zero histories.
+- Updated date and tag-ID for geant4-11-02-ref-08.
+
+graphics_reps                                    greps-V11-02-06
+-------------
+- In G4AttDef, deprecated output operator<< that uses pointer.
+- Minor improvements to messages in output operator<< in G4VMarker and
+  G4Visible.
+- Fixed reported Coverity defect in BooleanProcessor.
+
+materials                                        materials-V11-02-04
+---------
+- G4IonisParamMat: added parameter for fraction of Orto positronium at rest.
+- G4NistMessenger: added extra UI command for Orto positronium fraction;
+  updated all commands for multi-threading.
+- Fixed reported Coverity defects.
+
+parameterisations/channeling                     fastsimchanneling-V11-02-02
+----------------------------
+- Corrected semantic errors in G4BaierKatkov::RadIntegral() and
+  in G4VChannelingFastSimCrystalData::CoulombElectronScattering().
+- Implemented new model of ionization losses for e+- ionization
+  G4VChannelingFastSimCrystalData with some updates in
+  G4ChannelingFastSimModel and G4ChannelingFastSimCrystalData; fixed
+  some bugs concerning particles of higher charges.
+- Updated G4ChannelingFastSimCrystalData to be compatible with the new
+  channeling dataset accessed through G4CHANNELINGDATA. Added option to use
+  a custom input file.
+- Added some new accessor methods.
+
+parameterisations/gflash                         gflash-V11-02-00
+------------------------
+- Applied clang-format to code.
+
+physics_lists
+-------------
+- constructors/electromagnetic  (phys-ctor-em-V11-02-09)
+  o G4ChargedUnknownPhysics: replaced G4hIonisation and G4hMultipleScattering
+    (which use G4ParticleDefinition) with the corresponding new classes
+    G4DynamicParticleIonisation and G4DynamicParticleMSC (which use only
+    G4DynamicParticle), respectively.
+
+processes/electromagnetic
+-------------------------
+- adjoint (emadjoint-V11-02-00)
+  o Fixed reported Coverity defects for use of const G4String& and std::move().
+  o Minor code cleanup (use of default destructor, std::size_t, G4 types, ...).
+- electromagnetic/highenergy (emhighenergy-V11-02-01)
+  o G4DynamicParticleIonisation, G4DynamicParticleMSC: added missing methods
+    GetMeanFreePath() and GetContinuousStepLimit() to make them concrete
+    classes.
+- electromagnetic/lowenergy (emlowen-V11-02-05)
+  o Fix in G4PenelopeBremsstrahlungAngular, for a crash observed when the 
+    angular generator is used with a Bremsstrahlung model other than 
+    G4PenelopeBremsstrahungModel.
+  o Fixed reported Coverity defect in G4hIonEffChargeSquare.
+- electromagnetic/standard (emstand-V11-02-16)
+  o G4eplusAnnihilation: use orto positronium fraction from material property
+    and not from EM parameters.
+  o Fixed reported Coverity defect in G4WentzelVIModel.
+- utils (emutils-V11-02-15)
+  o G4EmParameters, G4EmParametersMessenger: removed parameter defining
+    fraction of orto positronium for all materials.
+  o Fixed reported Coverity defects in G4EmSaturation, G4EmCalculator and
+    G4EmLowEParameters.
+- electromagnetic/xrays (xrays-V11-02-04)
+  o G4VTRModel: added empty implementation to GenerateSecondaries() method 
+    to resolve linker error on clang compiler.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-02-14)
+  o New class G4InterfaceToXS renamed from G4XSectionXS; code cleanup.
+  o Fixed reported Coverity defects in G4ParticleInelasticXS and
+    G4NeutronInelasticXS and some code cleanup.
+- models/abla (hadr-abla-V11-02-06)
+  o Fixed reported Coverity defects for uninitialised data in G4Abla.
+- models/coherent_elastic (hadr-cohe-V11-02-02)
+  o G4ChargeExchange: implemented production and decay of omega(780) and
+    f2(1270) for pion projectile; implemented decay of unstable isomeres if
+    recoil nucleus if not a natural isotope. Addressing problem report #2618.
+- models/de_excitation (hadr-deex-V11-02-15)
+  o G4LevelReader: added two new protections to handle broken files with
+    gamma level data: next level energy below previous one is ignored;
+    transition from given level to itself with zero transition energy is
+    ignored. Added two counters for limitation of warning printouts.
+    Code clean-up and improved comments to code.
+  o G4DeexPrecoParameters: for pre-compound model return applicability
+    interval Eex/A = (0.1 - 30) MeV as used in version 11.2.
+  o G4XSectionXS is renamed to G4InterfaceToXS and moved to cross_section
+    module. G4EvaporationProbability uses G4InterfaceToXS.
+- models/inclxx (hadr-inclxx-V11-02-01)
+  o Fixed reported Coverity defects for use of std::move().
+- models/particle_hp (hadr-hpp-V11-02-13)
+  o Fixed cross-section computation with Doppler broading effect due to
+    media temperature in G4CrossSectionXP.
+- models/pre_equilibrium (hadr-pre-V11-02-03)
+  o G4PreCompoundFragment, G4VPreCompoundFragment: use G4InterfaceToXS class
+    instead of obsolete G4XSectionXS.
+- util (hadr-util-V11-02-04)
+  o G4IsotopeList: added table with low-energy threshold energies per atomic
+    number.
+  o G4NucleaRadii: added two static functions to describe threshold shape by
+    the old parameterisations derived from GHEISHA.
+
+run                                              run-V11-02-17
+---
+- G4RunManagerKernel: removed call to ResetNavigator() during initialisation.
+  ResetNavigator() is now invoked only at the beginning of BeamOn().
+- In G4WorkerSubEvtRunManager, fixed double-counting of the scores of
+  command-based scorers; print number of sub-events rather than number of
+  events at the end of run.
+
+tracking                                         tracking-V11-02-02
+--------
+- Fixed reported Coverity defects for use of std::move() in
+  G4AdjointCrossSurfChecker.
+
+visualization
+-------------
+- management (visman-V11-02-21)
+  o G4ViewParameters: minor improvements to messages in output operator<<().
+  o G4VisCommandsSceneAdd: ensure the logo respects the current requested
+    number of sides per circle in "/vis/scene/add/logo".
+  o G4VisCommandsViewer: simplified use of view parameters of a pre-existing
+    viewer; use the parameters of the most recent viewer whatever its type in
+    "/vis/viewer/create".
+    Exclude GlobalMarkerScale from parameters copied from pre-existing viewer,
+    thus each viewer is allowed to specify its own GlobalMarkerScale.
+  o Fixed reported Coverity defects.
+- modeling (modeling-V11-02-03)
+- gMocren (gMocren-V11-02-01)
+  o Fixed reported Coverity defects.
+
+data
+----
+- PhotonEvaporation-6.0:
+  o New database compliant with ENSDF version of March 5th 2024.
+- RadioactiveDecay-6.0.1:
+  o New database compliant with ENSDF version of March 5th 2024.
+  o Fixed z2.a5 and z3.a5 elements.
+- G4ENSDFSTATE-3.0:
+  o New database compliant with ENSDF version of March 5th 2024.
+
+examples                                         examples-V11-02-08
+--------
+- Updated documentation and reference outputs.
+- advanced/eRosita (eRosita-V11-02-00)
+  o Avoid deleting anything after deletion of run-manager in main().
+- basic (exbasic-V11-02-04)
+  o Added information about gui.mac and icons.mac
+    in the USER INTERFACES section in README.
+  o Added information about TSG visualization driver and tsg_offscreen.mac
+    in the VISUALIZATION section in README.
+- extended/analysis/AnaEx03 (AnaEx03-V11-02-00)
+  o Added info about plotter.mac in README.
+- extended/eventgenerator/HepMC/HepMCEx01 (HepMCEx01-V11-02-01)
+  o Avoid deleting anything after deletion of run-manager in main().
+- extended/field/field01 (fieldex01-V11-02-01)
+  o Use default Tasking run-manager from G4RunManagerFactory.
+  o Use default random number generator.
+- extended/field/field02 (fieldex02-V11-02-01)
+  o Migrated to use G4RunManagerFactory.
+  o Use default random number generator.
+- extended/field/field03 (fieldex03-V11-02-02)
+  o Migrated to use G4RunManagerFactory.
+  o Use default random number generator.
+  o Simplified F03DetectorConstruction() constructor.
+- extended/field/field04 (fieldex04-V11-02-00)
+  o Migrated to use G4RunManagerFactory.
+  o Use default random number generator.
+  o Avoid use of G4AutoDelete for G4StepMax, as clashing with thread-local
+    singletons deletion operated by G4TaskingRunManager.
+- extended/field/field05 (fieldex05-V11-02-00)
+  o Migrated to use G4RunManagerFactory.
+  o Use default random number generator.
+- extended/field/field06 (fieldex06-V11-02-00)
+  o Use default random number generator.
+- extended/medical/dna/chem1 (chem1-V11-02-00)
+  o Changed world volume colour to make it different from the white background.
+  o Added HOW TO START section in README.
+- extended/medical/dna/chem2 (chem2-V11-02-00)
+  o Added HOW TO START section in README.
+- extended/medical/dna/chem3 (chem3-V11-02-01)
+  o Extended HOW TO START section in README.
+- extended/medical/dna/chem4 (chem4-V11-02-00)
+- extended/medical/dna/chem5 (chem5-V11-02-00)
+  o Added HOW TO START section in README.
+- extended/medical/dna/microyz (microyz-V11-02-01)
+  o Fixed coding guidelines violations.
+- extended/medical/dna/moleculardna (molecularDNA-V11-02-05)
+  o Fixed coding guidelines violations.
+  o Commented macros and updated README.
+- extended/runAndEvent/RE05 (exampleRE05-V11-02-00)
+  o Avoid deleting anything after deletion of run-manager in main().
+- extended/visualization/userVisAction (exam-ext-vis-UVA-V11-02-00)
+  o Removed run1.mac and run2.mac macros, as not useful in this example context.
+- extended/visualization/vtk (exam-ext-vis-vtk-V11-02-01)
+  o Removed unused macro vtkExample.in.
+
+tests                                            tests-V11-02-08
+-----
+- Updated reference outputs and tools.
+- ctests_examples (ctests_examples-V11-02-08)
+  o Tidy test definitions to remove unneeded arguments.
+  o Removed userVisAction tests with the run1.mac, run2.mac macros.
+  o Moved channeling example to a new slot now named ch0 within 'channeling'.
+    Added new test of ch1 example in 'channeling/ch1'.
+- ctests_integration (ctests_integration-V11-02-02)
+  o Migrated to use G4RunManagerFactory with default Tasking run-manager
+    the following integration tests: test04, test08, test11, test13, test14,
+    test15, test16, test18, test23, test25, test28, test40, test61, test65,
+    test67, test68, test74, test78, test202, test320.
+- ctests_source (ctests_source-V11-02-01)
+  o Provide new CMake functions to allow easy setup and declaration
+    of GoogleTest-based unit tests.
