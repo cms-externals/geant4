@@ -1,0 +1,421 @@
+
+                       geant4-10-06-ref-10
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added G4Backtrace header for printing backtraces from raised signals.
+ o Improved speed for detection of volume overlaps either through
+   UI commands or at geometry construction.
+ o Introducing templated field classes to avoid virtual calls for field,
+   equation, steppers.
+ o Optimized parameterisation of limit on distance for e+- step in
+   Urban multiple-scattering.
+ o Added G4PenelopeRayleighModelMI model and ancillary class G4MIData.
+ o Introduced general facilities based on GFlash implementation to facilitate
+   multiple hit (energy & position) creation from fast simulation models.
+   New extended example demonstrating how to create multiple energy deposits
+   from the fast simulation model.
+ o Migrated scorers to use G4PrimitivePlotter to directly fill histograms.
+ o Major upgrade of analysis module, including support for multiple files
+   and multiple output types.
+ o Introduced new beta-version of a Qt3D visualization driver, based
+   on native Qt rendering.
+ o New data sets G4PARTICLEXS-3.1, G4RealSurface-2.2.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(+)  Fixes included in release 10.6.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-06-37
+-----
+- Support for CMake versions 3.8 through 3.18.
+  Allow specification of C++20 for CMake 3.12 and above.
+- Introduced configuration support for Qt3D visualization driver.
+- Updated functions to use G4expat{-static} as custom built targets.
+- Added possibility to download and install optional TENDL data set.
+- Updated to data sets G4PARTICLEXS-3.1 and G4RealSurface-2.2.
+
+config                                           config-V10-06-07
+------
+- Added configuration for Qt3D visualization driver.
+
+environments/g4py                                geant4py-V10-06-02
+-----------------
+- Added binding to G4PhysListFactory and a simple test.
+  Addressing GitHub PR #14.
+
+analysis                                         analysis-V10-06-05
+--------
+- Major upgrade including the support for multiple files and multiple output
+  types:
+  o New G4GenericAnalysisManager, G4GenericFileManager classes in factory
+    category.
+  o New G4VAnalysisManager functions to set file-names and corresponding
+    UI commands.
+  o Redesigned management classes to separate object file handling from
+    output specific analysis managers.
+- Updated G4PlotManager for use of new fonts.
+- Updated to g4tools 5.2.1:
+  o Changed usage of Google style fonts.                                     (+)
+  o Modifications in tools/hdf5 to use H5free_memory() instead free() at
+    some places (needed for HDF5/1.12.0).
+  o Modifications in graphics to be in sync with the code in inlib/exlib
+    around Apple/Metal (no impact on offscreen plotting).
+  o See History_tools for the complete list of modifications.
+
+digits_hits/scorer                               detscorer-V10-06-01
+------------------
+- Migrated scorers to use G4PrimitivePlotter to directly fill histograms.
+
+event                                            event-V10-06-06
+-----
+- Fixed misleading error message in G4SPSPosDistribution.                    (+)
+  Addressing problem report #2275.
+
+externals
+---------
+- expat (expat-V10-06-00)
+  o Migrated build of G4expat to locally defined targets, allowing
+    cleaner specification of usage requirements.
+- ptl (ptl-V10-06-07)
+  o Stability fixes for ensuring that stack variables are copied
+    into task-group functions.
+  o Export interface targets used by both static and shared variants of
+    PTL to a dedicated file in the build directory. Required to avoid
+    missing/double definitions of targets when building Geant4/PTL with
+    shared/static at the same time.
+
+geometry/magneticfield                           field-V10-06-08
+----------------------
+- Introducing templated classes to avoid virtual calls for field, equation,
+  steppers (from Google Summer of Code 2014 project):
+  * equation of motion templated on the field type;
+  * steppers templated on the type of equation and the number of integration
+    variables.
+  These classes can be combined also with the templated drivers to avoid
+  virtual calls in all the levels up to the chord finder's call to
+  the integration driver.
+  The types of stepper currently available are
+  i) the originally developed intermediate order stepper:
+     G4TClassicalRK4: G4ClassicalRK4, 4th order - robust, old default;
+     G4TCashKarpRKF45: G4CashKarpRKF45, 5th order - first embedded RK in Geant4;
+  ii) the original low order steppers (for specialised uses):
+     G4TSimpleHeum: G4SimpleHeum, 3rd order; lower order alternative;
+     G4TSimpleRunge: G4SimpleRunge, 2nd order; very low order;
+     G4TExplicitEuler: G4ExplicitEuler, 1st order, lowest order (checks only)
+  iii) newly adapted stepper(s):
+     G4TDormandPrince45: G4DormandPrince745, 5th order; the default. 
+  Additional lower-order steppers are not yet available; 'Vector' steppers
+  (using blaze) are not supported.
+  Experimental versions of fields with inline methods (G4TUniformMagField and
+  G4TQuadrupoleMagField) are included to show how the field evaluation
+  GetFieldValue() can also be inlined.
+  Steppers which are not embedded obtain their error estimates by breaking the
+  step into two halves, then comparing with the whole step. As a result many
+  more field/derivative evaluations are needed than embedded steppers of the
+  same order, but the reliability of their error estimation has different
+  properties; so it may be more robust in some cases.
+- Configured G4ChordFinder to use templated G4TDormandPrince45 as the
+  default stepper for magnetic fields (when one is not chosen explicitly by
+  the application).
+
+geometry/navigation                              geomnav-V10-06-06
+-------------------
+- Added G4GeomTestVolume::TestOverlapInTree(), alternative method for testing
+  overlaps on a tree of volumes, avoiding to check hierarchies from copies of
+  the same volume in the tree. Considerably speeding up recursive overlaps
+  check through UI commands.
+- G4ReplicaNavigation: relaxed condition for step correction in ComputeStep(),
+  to reduce cases of zero steps in combined rho/phi replications.
+
+geometry/solids/CSG                              geom-csg-V10-06-04
+-------------------
+- G4Box: migration to use G4QuickRand in GetPointOnSurface().
+- G4Trd: added two pre-calculated values for fast calculation of lateral areas;
+  revised implementation in GetPointOnSurface().
+- G4Trap: added array with precalculated face areas; added SetCachedValues()
+  method and revised implementation in GetPointOnSurface().
+- G4Tubs: revised implementation in GetPointOnSurface().
+- G4CSGSolid: explicit implementation of G4RandomRadiusInRing(rmin,rmax)
+  based on G4QuickRand.
+- G4CutTubs: implemented specific GetCubicVolume() and GetSurfaceArea();
+  revised implementation in GetPointOnSurface(), now faster and uniform;
+  reimplemented IsCrossingCutPlanes(), to now reports a problem only in case
+  cut planes are crossing inside the lateral surface; removed obsolete
+  internal method GetMaxMinZ().
+
+geometry/solids/specific                         geom-specific-V10-06-09
+------------------------
+- G4Polycone, G4GenericPolycone, G4Polyhedra: implemented specific
+  GetSurfaceArea(), GetCubicVolume(); no longer relying on MC method.
+
+geometry/volumes                                 geomvol-V10-06-03
+----------------
+- Use std::map instead of std::vector to define G4LogicalBorderSurfaceTable,
+  to speedup search of surfaces in large tables. Addressing GitHub PR #6.
+- G4PVPlacement: in CheckOverlaps(), added keeping of bounding box from
+  previous solid and complementary comparison of bounding spheres.
+
+global                                           global-V10-06-24
+------
+- Added G4Backtrace header for printing backtraces from raised signals.
+  A more generic implementation of G4FPEDetection that can catch FPE issues
+  but, by default, does not interfere with it. The default backtraced signals
+  are: SIGQUIT, SIGILL, SIGABRT, SIGKILL, SIGBUS, SIGSEGV.
+  The default signals can be overridden within user-code before and after the
+  creation of the run-manager (See "Usage" section in G4Backtrace description).
+  The default signals can be overridden via environment variable G4BACKTRACE.
+- Updated date and tag-ID for geant4-10-06-ref-10.
+
+intercoms                                        intercoms-V10-06-05
+---------
+- Added new parameter type 'L' for long int type; added parameter range
+  check for long int and introducing G4UIcmdWithALongInt command type.
+
+materials                                        materials-V10-06-08
+---------
+- G4OpticalSurface: handle REALSURFACE optical data files zlib-compressed.
+- G4SurfaceProperty, G4OpticalSurface: some c++11 revision and code
+  formatting; added method to select file to read; replaced long if/else
+  construct with switch/case.
+- G4Element, G4NistManager, G4NistMaterialBuilder: fixed spelling in cout text.
+
+persistency                                      persistency-V10-06-01
+-----------
+- Minor c++11 review. Code cleanup and formatting.
+- gdml (gdml-V10-06-04)
+  o Fixed treatment of loops. Addressing problem report #2273.               (+)
+
+physics_lists
+-------------
+- builders (phys-builders-V10-06-13)
+  o G4HadronicBuilder: added methods for FTFQGSP_BERT physics.
+- constructors/electromagnetic (phys-ctor-em-V10-06-18)
+  o G4GammaGeneralProcess: fixed problem of a concrete process assigning
+    a step to post step point.
+- constructors/hadron_elastic (phys-ctor-helastic-V10-06-06)
+  o G4ThermalNeutrons: use G4PhysListUtils to access neutron elastic process.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V10-06-15)
+  o G4HadronInelasticQBBC: use G4HadronicBuilder, apply the Binary
+    cascade to pions below 1.5 GeV.
+  o In G4HadronPhysicsNuBeam, G4HadronPhysicsShielding,
+    G4HadronPhysicsShieldingLEND, G4HadronPhysicsFTF_BIC,
+    G4HadronPhysicsQGS_BIC and G4HadronPhysicsFTFQGSP_BERT:
+    use inheritence from the base class G4HadronPhysicsFTFP_BERT and removed
+    duplicated code; ensure list of models and applicability intervals are
+    the same; implemented b-, c- particle physics and cross-section factor.
+  o Improved comments and info printout in other physics classes.
+  o G4HadronPhysicsQGSP_BERT, G4HadronPhysicsQGSP_FTFP_BERT,
+    G4HadronPhysicsQGSP_BERT_HP: implemented DumpBanner() method.
+  o Removed unused method in G4VHadronPhysics.
+- util (phys-util-V10-06-10)
+  o G4PhysListUtil: added utility method InitialiseParameters(). 
+    Bringing new dependencies to "processes/electromagnetic/utils" and
+    "processes/hadronic/models/de_excitation/management" modules.
+
+processes/electromagnetic/dna                    emdna-V10-06-11
+-----------------------------
+- G4DNAMolecularMaterial: avoid deleting instance of the singleton; removed
+  commented lines.
+
+processes/electromagnetic/highenergy             emhighenergy-V10-06-01
+------------------------------------
+- G4hPairProductionModel: inherit ComputeDMicroscopicCrossSection()
+  from G4MuPairProductionModel to avoid code duplication.
+
+processes/electromagnetic/lowenergy              emlowen-V10-06-11
+-----------------------------------
+- Added G4PenelopeRayleighModelMI model and ancillary class G4MIData.
+- Replaced std::log with G4Log in Penelope and Livermore models.
+- Use GetZasInt() in Penelope models, when applicable.
+
+processes/electromagnetic/muons                  emmuons-V10-06-02
+-------------------------------
+- G4MuPairProductionModel: optimised ComputeDMiscroscopicCrossSection()
+  to speedup initialization.
+
+processes/electromagnetic/standard               emstand-V10-06-16
+----------------------------------
+- G4UrbanMscModel: optimized parameterisation of limit on distance for e+- step.
+
+processes/electromagnetic/xrays                  xrays-V10-06-08
+-------------------------------
+- G4Cerenkov: make GetAverageNumberOfPhotons() method public.
+- G4Cerenkov, G4Scintillation: applied code formatting.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-06-14)
+  o G4ParticleInelasticXS, G4NeutronCaptureXS, G4NeutronElasticXS,
+    G4NeutronInelasticXS: updates in preparation for G4PARTICLEXS-3.x data 
+    structure - for capture and elastic applied low-energy parameterisation
+    starting from second energy point of the data set (better agreement with
+    HP cross-sections); exclude special treatments for Hydrogen and Helium
+    isotopes, because data for fission reactions are available in the new
+    data set; extended list of isotopes. Fixed fusion cross-sections.
+    Moved run-time method GetPhysicsVector() to be inlined; added G4VERBOSE
+    compilation flag and general clean-up of classes (reuse existing high
+    energy Glauber-Gribov cross-section instances).
+  o Added new cross-section class G4GammaNuclearXS.
+  o In G4ParticleInelasticXS, added gamma cross-section.
+  o Removed unused class G4ProjectileFragmentCrossSection.
+- management (hadr-man-V10-06-09)
+  o G4HadronicProcess: fixed warnings when environmental variables
+    G4Hadronic_*Level are used.
+- models/particle_hp (hadr-hpp-V10-06-11)
+  o G4ParticleHPInelastic, G4ParticleHPManager: enabled printout of the physics
+    parameters (only once and with a format similar to Precompound/de-excitation
+    and RadioativeDecay).
+  o G4ParticleHPContAngularPar, G4ParticleHPInelasticBaseFS,
+    G4ParticleHPEnAngCorrelation, G4ParticleHPFinalState: replaced use of the
+    environmental variable G4PHP_DO_NOT_ADJUST_FINAL_STATE  with the equivalent
+    G4ParticleHPManager::GetInstance()->GetDoNotAdjustFinalState().
+- models/parton_string/diffraction (hadr-string-diff-V10-06-08)
+  o G4FTFModel: attempt to fix a crash rarely observed in pion+proton reaction:
+    added tolerance of 1.e-10 for numerical computation; cleaned-up sampling of
+    Pt for residual nucleons (limit argument for G4Exp by 200 instead of 1e+9).
+    Extended debug printout; use pre-increment instead of post-increment in
+    loops; removed commented lines and unused variables.
+- models/parton_string/hadronization (had-hadronization-V10-06-08)
+  o G4VLongitudinalStringDecay: fix in ProduceOneHadron() method, to remove  (+)
+    an inconsistency in the treatment of low-mass strings with respect to the
+    method G4QGSMFragmentation::FragmentString(). As consequence of this
+    inconsistency, interactions with fewer intra-nuclear collisions were
+    favored, therefore producing fewer secondary hadrons.
+- models/parton_string/qgsm (hadr-qgsm-V10-06-06)
+  o G4QGSParticipants: added protection for G4Exp, fixing outstanding precision
+    loss in gamma+proton interactions.
+- util (hadr-util-V10-06-07)
+  o Completely disable G4HadSignalHandler.
+
+processes/optical                                op-V10-06-06
+-----------------
+- G4OpBoundaryProcess: increase geometry tolerance to kCarTolerance.
+- Code formatting.
+
+processes/parameterisation                       param-V10-06-03
+--------------------------
+- Introduced general facilities based on GFlash implementation to facilitate
+  multiple hit (energy & position) creation from fast simulation models.
+
+processes/transportation                         transport-V10-06-00
+------------------------
+- Substantial reorganisation of G4Transportation::AlongStepGPIL() to use values
+  already in cache, to reduce the number of branches, and to use extra local
+  variables for track properties to avoid indirections.
+  Resulting in a persistent reduction of instruction-TLB misses.
+
+run                                              run-V10-06-15
+---
+- Fix for rndmSaveThisEvent() not properly working in multi-threaded mode.   (+)
+  Addressing problem report #2278.
+- Added activation of G4Backtrace to G4RunManagerKernel.
+- Run-managers are now friends of G4RunManagerFactory.
+
+tasking                                          tasking-V10-06-10
+-------
+- Set normal MT as default mode in G4RunManagerFactory.
+- Resolved issues with G4Run number of events being processed.
+- Implemented GetMasterRunManager() in G4RunManagerFactory.
+- Added DoCleanup() for worker task run managers.
+- Replaced worker DoWork(int) with DoWork().
+
+visualization                                    vis-V10-06-11
+-------------
+- Fixed GNUmakefiles in sub-modules to add new dependency to tasking module.
+- management (visman-V10-06-11)
+  o Improved logic in G4VisManager for automatic event keeping.
+  o In MT mode, now keeping one (random) event when end-of-event action
+    is "refresh" and keeping events (up to a user-adjustable maximum number).
+    These may be in addition to events kept by a user in his/her user actions.
+  o Improved messaging.
+  o Use command->CommandFailed(); remove internal 'fErrorCode'.
+  o Implemented G4RunManagerFactory::GetMasterRunManager().
+- modeling (modeling-V10-06-05)
+  o Implemented G4RunManagerFactory::GetMasterRunManager().
+- FukuiRenderer (DAWN-V10-06-03)
+  o G4FukuiRendererViewer: fixed compilation warning for overlapping
+    comparisons always evaluating to true.
+- OpenGL (opengl-V10-06-10)
+  o Implemented G4RunManagerFactory::GetMasterRunManager().
+- OpenInventor (openinventor-V10-06-11)
+  o Completed implementation of features for the OIQt viewer.
+    The Qt based viewer implements all the functionality of the older Xt/Xm
+    based OIXE viewer and can be used as its replacement.
+- Qt3D (visQt3D-V10-06-01)
+  o New driver based on Qt3D for native Qt rendering.
+- RayTracer (raytracer-V10-06-03)
+  o Implemented G4RunManagerFactory::GetMasterRunManager().
+
+data sets:
+---------
+- G4PARTICLEXS-3.1:
+  o Regenerated n, p, d, t, He3, He4, gamma data based on G4NDL4.6 and LEND;
+    provided smooth cross-section shape and fixed fusion cross-sections.
+- G4RealSurface-2.2:
+  o Compressed data with zlib.
+
+examples                                         examples-V10-06-10
+--------
+- Updated documentation and reference outputs.
+- advanced/gorad (gorad-V10-06-02)
+  o Updatied and fixed some typos in printouts.
+- advanced/hadrontherapy (hadrontherapy-V10-06-04)
+  o Fixes in using analysis: added test for open file before calling
+    write & close; uncommented delete of analysis manager in RunAction.
+  o Added protections against FPEs in RBE module.
+- advanced/underground_physics (DMX-V10-06-01)
+  o Removed unnecessary command in neutron.mac and ambe_spectrum.mac macros.
+- extended/electromagnetic/TestEm11 (testem11-V10-06-01)
+- extended/electromagnetic/TestEm12 (testem12-V10-06-00)
+  o Added macros description.
+- extended/electromagnetic/TestEm14 (testem14-V10-06-01)
+  o Added atomicDeexcitation.mac macro.
+- extended/hadronic/Hadr03 (exhadr03-V10-06-04)
+  o Added fusion.mac macro.
+  o Added macros description.
+- extended/hadronic/Hadr04 (exhadr04-V10-06-01)
+  o Added macros description.
+- extended/hadronic/Hadr06 (exhadr06-V10-06-03)
+  o Added singleFission.mac macro.
+  o TrackingAction: added commented code for singleFission.
+- extended/hadronic/Hadr07 (exhadr07-V10-06-02)
+- extended/hadronic/NeutronSource (NeutronSource-V10-06-02)
+  o Added macros description.
+- extended/medical/DICOM (DICOM-V10-06-00)
+  o Distinguish output names of archive lib from DLL and application to
+    fix Windows linking errors for static libraries.
+  o Modernize cmake version detection and policy setting to follow main
+    Geant4 usage.
+- extended/medical/dna/chem4 (chem4-V10-06-00)
+  o Fixed setup for Root in CMake script.
+- extended/optical/LXe (LXe-V10-06-02)
+  o Fixed valgrind errors: added 'delete's and fix initialization of hits
+    counters.
+  o Renamed LXe.in macro to LXe.mac; store random seed in LXe.mac and set 
+    optical verbosity to 1.
+- extended/optical/OpNovice2 (OpNovice2-V10-06-06)
+  o New macro boundary.mac, exercising all 4 boundary models.
+  o Removed glisur.mac and unified.mac macros.
+  o Renamed OpNovice2.in macro to OpNovice2.mac.
+- extended/parameterisations/Par03 (expar03-V10-06-01)
+  o New example demonstrating how to use G4FastSimHitMaker helper class
+    to create multiple energy deposits from the fast simulation model.
+- extended/radioactivedecay/Activation (activation-V10-06-03)
+  o Added macros description.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-06-03)
+  o Added atomicDeexcitation.mac macro.
+  o PhysicsList: added SetDeexcitationIgnoreCut(ARMflag).
+  o Added macros description.
+
+tests                                            tests-V10-06-10
+-----
+- Updated reference outputs and tools.
+- tests/test32 (test32-V10-06-00)
+  o New test for testing analysis output in multiple files.
+- tests/test46 (test46-V10-06-01)
+  o FTFP_BERT_EMM: configuration correspondind to that used in CMS.
+  o Added extra macro file testc.in.

@@ -1,0 +1,153 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+// Created 11.02.2025 V.Ivanchenko & M. Vologzhin
+//                    on base of previous models
+//
+// Russian Goverment grant No 075-15-2024-667 23.08.2024
+//
+// Rudd model of ion ionisation using dynamic mass and charge of an ion
+//
+
+#ifndef G4DNARuddIonisationDynamicModel_h
+#define G4DNARuddIonisationDynamicModel_h 1
+
+#include "G4VEmModel.hh"
+#include "G4ParticleChangeForGamma.hh"
+#include "G4ProductionCutsTable.hh"
+
+#include "G4EmCorrections.hh"
+#include "G4DNAGenericIonsManager.hh"
+#include "G4DNACrossSectionDataSet.hh"
+#include "G4Electron.hh"
+#include "G4Proton.hh"
+#include "G4LogLogInterpolation.hh"
+
+#include "G4DNAWaterIonisationStructure.hh"
+#include "G4VAtomDeexcitation.hh"
+#include "G4NistManager.hh"
+#include <vector>
+
+class G4DNARuddIonisationDynamicModel : public G4VEmModel
+{
+public:
+
+  explicit G4DNARuddIonisationDynamicModel(const G4ParticleDefinition* p = nullptr,
+		           const G4String& nam = "DNARuddIonisationDynamicModel");
+
+  ~G4DNARuddIonisationDynamicModel() override;
+
+  void Initialise(const G4ParticleDefinition*, const G4DataVector&) override;
+
+  G4double CrossSectionPerVolume(const G4Material* material,
+                                 const G4ParticleDefinition* p,
+				 G4double ekin,
+				 G4double emin,
+				 G4double emax) override;
+
+  void SampleSecondaries(std::vector<G4DynamicParticle*>*,
+			 const G4MaterialCutsCouple*,
+			 const G4DynamicParticle*,
+			 G4double tmin,
+			 G4double maxEnergy) override;
+
+  void StartTracking(G4Track*) override;
+
+  // method for unit tests
+  G4double ComputeProbabilityFunction(const G4ParticleDefinition*, G4double kine,
+                                      G4double deltae, G4int shell);
+
+  G4DNARuddIonisationDynamicModel & operator=
+  (const  G4DNARuddIonisationDynamicModel &right) = delete;
+  G4DNARuddIonisationDynamicModel(const G4DNARuddIonisationDynamicModel&) = delete;
+
+private:
+
+  void LoadData();
+  
+  void SetParticle(const G4ParticleDefinition*);
+
+  G4int SelectShell(const G4double energy);
+
+  G4double MaxEnergy(const G4double kine, const G4int shell);
+
+  G4double SampleElectronEnergy(const G4double kine, const G4int shell);
+
+  G4double ProbabilityFunction(const G4double kine, const G4double deltae,
+			       const G4int shell);
+
+  G4double CorrectionFactor(G4double kine, G4int shell);
+
+protected:
+
+  G4ParticleChangeForGamma* fParticleChangeForGamma{nullptr};
+
+private:
+
+  // data for protons
+  static G4DNACrossSectionDataSet* xsdata;
+
+  // Water density table
+  static const std::vector<G4double>* fpWaterDensity;
+
+  const G4ParticleDefinition* fParticle{nullptr};
+  const G4DynamicParticle* fDynParticle{nullptr};
+  
+  G4EmCorrections* fEmCorrections;
+  G4Pow* fGpow;
+ 
+  //deexcitation manager to produce fluo photons and e-
+  G4VAtomDeexcitation* fAtomDeexcitation{nullptr};
+
+  // tracking cut and low-energy limit of proton x-section table
+  G4double fLowestEnergy;
+
+  G4double fMass{0.0};
+  G4double fMassRate{1.0};
+  G4double fTemp[5] = {0.0};
+
+  G4double F1{0.0};
+  G4double F2{0.0};
+  G4double alphaConst{0.0};
+  G4double bEnergy{0.0};
+  G4double u{0.0};
+  G4double v{0.0};
+  G4double wc{0.0};
+
+  G4int verbose{0};
+
+  G4bool isFirst{false};
+  G4bool isInitialised{false};
+  G4bool isIon{false};
+  G4bool statCode{false};
+  G4bool useDNAWaterStructure{true};
+
+  // energy levels of water molecule  
+  G4DNAWaterIonisationStructure waterStructure;
+};
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+#endif

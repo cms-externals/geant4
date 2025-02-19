@@ -1,0 +1,223 @@
+
+                       geant4-11-03-ref-00
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added new 5D model for e+e- pair production by muons; classes
+   G4RiGeMuPairProductionModel and G4RiGeAngularGenerator.
+ o Updated adjoint simulation classes to allow running adjoint simulation
+   in MT mode.
+ o Optimised G4ChargeExchangeXS, switching computations from level of
+   isotopes to level of elements and making the code running faster
+   without loss of accuracy.
+ o Tuned verbose levels to reduce printouts during event loop.
+ o New datasets: G4PhotonEvaporation-6.1, G4RadioactiveDecay-6.1.2.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-02-30
+-----
+- New dataset: G4PhotonEvaporation-6.1, G4RadioactiveDecay-6.1.2.
+
+analysis                                         analysis-V11-02-08
+--------
+- Fixed reported Coverity defects for use of std::move().
+
+externals
+---------
+- ptl (ptl-V11-02-03)
+  o Fixed reported Coverity defects for use of std::move() and removal
+    of structurally dead code.
+  o Added max CMake version in PTLConfig.cmake.in to suppress warnings in
+    latest CMake versions about support for 3.10 being dropped.
+
+geometry/magneticfield                           field-V11-02-06
+----------------------
+- Improved stability of static initialisation for StepperType() and
+  StepperDescription() in G4DormandPrince745.
+- Use better names for the G4EquationType enum constants.
+
+geometry/navigation                              geomnav-V11-02-03
+-------------------
+- In G4MultiLevelLocator::EstimateIntersectionPoint(), moved repeated assertion
+  on invalid intersection within G4DEBUG_FIELD, to avoid excess of warning
+  printouts in rare cases of failed convergence, as reported by CMS.
+
+global                                           global-V11-02-26
+------
+- Improved stability of static initialisation: ensure unique initialisation
+  and finalisation of G4ios.
+- Fixed reported Coverity defects for use of std::move() and potential
+  division by zero in HEPNumerics.
+- Updated date and tag-ID for geant4-11-03-ref-00.
+
+materials                                        materials-V11-02-08
+---------
+- Improved stability of static initialisation: simplified G4NistManager
+  singleton initialisation; migrated Isotopes, Materials, Elements's table
+  to function static; delete the element of table at the same time as the table.
+- Fixed reported Coverity defects in G4IonisParamMat.
+
+parameterisations/channeling                     fastsimchanneling-V11-02-04
+----------------------------
+- Fixed compilation warnings on macOS/XCode for implicit type conversions
+  in G4CoherentPairProduction.
+
+physics_lists
+-------------
+- constructors/factory (phys-ctor-fact-V11-02-01)
+  o G4PhysicsConstructorRegistry: fixed memory leak at exit, adopting
+    G4ThreadLocalSingleton pattern.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V11-02-02)
+  o Updated internal README.
+- constructors/ions (phys-ctor-ions-V11-02-00)
+  o Updated description in G4LightIonQMDPhysics and internal README.
+- lists (phys-list-V11-02-03)
+  o G4PhysListFactory: use std::size_t.
+- util (phys-util-V11-02-00)
+  o Static initialisation improvement for G4HadParticles.
+
+processes/electromagnetic
+-------------------------
+- adjoint (emadjoint-V11-02-01)
+  o Updates to allow running adjoint simulation in MT mode.
+- dna (emdna-V11-02-17)
+  o Fixed missing value in DNA PTB Ionization Structure.
+  o Fixed missing GetMaterial() in DNA PTB Excitation and Elastic models
+    as suggested in [GitHub PR#78](https://github.com/Geant4/geant4/pull/78).
+- lowenergy (emlowen-V11-02-07)
+  o In G4UAtomicDeexcitation, reset vector 'vacancyArray' in GenerateParticles(),
+    to avoid rare case of event non-reproducibility, observed when using EM
+    Opt4 (EMZ) physics-list.
+  o Fixed reported Coverity defect in G4hIonEffChargeSquare.
+- muons (emmuons-V11-01-04)
+  o G4RiGeMuPairProductionModel, G4RiGeAngularGenerator: a new 5D model for e+e-
+    pair production by muons.
+  o Fixed declaration of virtual destructors in several header files.
+  o G4MuPairProductionModel: minor cleanup for better code readability.
+- standard (emstand-V11-02-21)
+  o G4WentzelOKandVIxSection: fixed rejection factor for sampling of single
+    scattering with nuclear form-factor. Addressing problem report #2627.
+  o G4BraggModel: fixed issue observed with 4.12 MeV mu+ range, reported
+    in Users Forum.
+  o Fixed ion ionisation problem reported in Users Forum.
+  o G4BetheBlochModel: set flags 'isIon' and 'isAlpha' at initialisation and
+    not at run time.
+  o Static initialization improvement for G4eBremsstrahlungRelModel.
+    Use std::shared_ptr for LPMFuncs and ElementData.
+  o G4ionIonisation: use G4BraggIonModel only for alpha and G4BraggModel for
+    other ions in the default EM physics.
+  o G4WentzelVIModel: fixed reported Coverity defect.
+- utils (emutils-V11-02-20)
+  o Fixed reported Coverity defect in G4EmCalculator.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-02-18)
+  o G4ChargeExchangeXS: switch computations from level of isotopes to level of
+    elements; code becomes several times faster and accuracy is not lost.
+    Added protections against negative components of cross-section and potential
+    division by zero, which may be only possible at extreme high energy.
+    Fixed problem in pion cross-sections according to prescription in the
+    original paper. Handle special case of positive meson scattering off
+    Hydrogen, the cross-section is propotional to the percent of deuterons.
+- models/coherent_elastic (hadr-cohe-V11-02-03)
+  o In G4ChargeExchange, fixed problem of the Hydrogen target; change event
+    weight if cross-section biasing factor is applied.
+  o Added warning in G4ChargeExchangeProcess.
+
+processes/management                             procman-V11-02-01
+--------------------
+- Fixed use of std::move() in G4ProcessTableMessenger, reported by Coverity.
+
+run                                              run-V11-02-26
+---
+- Updated G4AdjointSimManager and G4AdjointSimMessenger to allow running
+  adjoint simulation in MT mode.
+- Provide static initialization for 'masterWorlds' in G4MTRunManager.
+  Adapted G4SubEvtRunManager and G4TaskRunManager accordingly.
+- Tuned verbose levels to reduce printouts during event loop.
+
+visualization
+-------------
+- OpenGL (opengl-V11-02-09)
+  o G4OpenGLStoredQtSceneHandler: in ClearStore(), commented out some code
+    related to the old scene tree.
+  o G4OpenGLQtViewer: fixed potential compilation error in currentTabActivated().
+    Addressing problem report #2633.
+
+data
+----
+- G4PhotonEvaporation-6.1:
+  o Correction to files z92.a239, z72.a154 and z81.a193.
+- G4RadioactiveDecay-6.1.2:
+  o Corrected and checked files for neutron, proton and sp. fission.
+    Restored some files from 5.7 set, that were already corrected in the past
+    following user comments or from DDEP data: z71.a157, z55.a136, z59.a129,
+    z26.a55, z25.a54, z38.a85', z33.a83, z53.a125, z88.a223, z86.a219, z85.a215,
+    z84.a215, z83.a211, z81.a207, z37.a82, z21.a44, z65.a161, z68.a169, z2.a8,
+    z3.a8, z4.a8, z4.a9, z65.a161, z21.a44, z68.a169', z3.a8, z7.a16, z10.a18,
+    z82.a211, z83.a211, z84.a211, z2.a8, z63.a158.
+
+examples                                         examples-V11-03-00
+--------
+- Updated documentation and reference outputs.
+- advanced/dna/dsbandrepair (dsbandrepair-V11-02-03)
+  o General code cleanup; merged classes that have the same functionality
+    in PhysStage and ChemStage.
+- advanced/dna/moleculardna (molecularDNA-V11-02-13)
+  o Added missing plasmid analysis root macro file.
+  o Added chromosomal geometry related files.
+- advanced/eFLASH_radiotherapy (eFLASH_radiotherapy-V11-02-02)
+  o Added a new geometry in DetectorConstruction; added an array of multiple
+    small size silicon carbide detectors within the water phantom for dose
+    distribution computation.
+  o Added sensitive detector class for the silicon carbide array.
+  o Updated macro files.
+- advanced/exp_microdosimetry (exp_microdosimetry-V11-02-00)
+  o Added SiC microdosimeter geometry in DetectorConstruction.
+- advanced/hadrontherapy (hadrontherapy-V11-02-03)
+  o Updated main(), input macros, physics list, run action and passive
+    proton beamline: general code cleanup, bug fixing and readability
+    improvements. 
+- extended/exoticphysics/channeling/ch3 (ch3-V11-02-00)
+  o New example demonstrating the minimum requirements necessary to
+    integrate the G4CoherentPairProduction process into a project, along
+    with the G4ChannelingFastSimModel and G4BaierKatkov models, to simulate
+    the physics of electromagnetic showers in an oriented crystal.
+- extended/hadronic/FlukaCern (FlukaCern-V11-02-01)
+  o Fixed leakeage issue in fluka_interface, should not propagate the
+    track/projectile's direction from Geant4 to the event generator, as
+    the transformation of the final state is already performed in Geant4.
+    The Fluka event generator shall hence work in Geant4 local frame,
+    while Geant4 is in charge of transforming the final state back to
+    the lab.
+  o Fixed headers re-rodering by clang-format.
+- extended/medical/dna/chem3 (chem3-V11-02-02)
+  o Updated TimeStepAction and added function to show how to get a specific
+    species ID, positions at each time step.
+- extended/runAndEvent/RE03 (exampleRE03-V11-02-01)
+  o Adding ability to run in sub-event parallel mode.
+- extended/runAndEvent/RE07 (exampleRE07-V11-02-01)
+  o Fixed compilation warning on clang-19.
+
+tests                                            tests-V11-03-00
+-----
+- Updated reference outputs and tools.
+- ctests_examples (ctests_examples-V11-02-10)
+  o Added new channeling/ch3 to testing suite.
+  o Switch input macro of extended/runAndEvent/RE03 from batchrun1.mac
+    to run.mac.
+- ctests_integration (ctests_integration-V11-02-03)
+  o Fixed CMake configuration scripts to add missing protection of test
+    definitions under GEANT4_ENABLE_TESTING, in tests: test01, test02, test04,
+    test05, test06, test07, test08, test09, test10, test11, test12, test13,
+    test15, test16, test18, test22, test70, test73, test79.
+- ctests_integration/test48 (test48-V11-02-01)
+  o Fixed compilation warnings on clang-16 for variables set but not used.
+- ctests_integration/test68 (test68-V11-02-02)
+  o Increased time limit for Continuous runs on Windows, to avoid timeouts.

@@ -1,0 +1,624 @@
+
+                       geant4-11-02-ref-00
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Updated particle properties to PDG-2023.
+ o Added new G4SafetyCalculator class, auxiliary to G4Navigator; used in
+   G4Navigator in ComputeSafety() to avoid saving/restoring state.
+ o Improvements on the QSS Stepper: the main QSS integration loop is
+   interrupted when the number of substeps exceeds a predefined threshold.
+ o Added new physics constructor for neutrino physics and its messenger.
+ o Fixed possible incorrect calculatioon of effective charge of a material
+   in G4EmSaturation.
+ o Added classes for QMD model optimised for light ions.
+ o In G4RadioactiveDecay, changed default threshold for the time beyond
+   which radioactive decays are ignored, from twice the age of the
+   Universe to one year.
+ o New advanced example "dsbandrepair", a Geant4-DNA application for
+   evaluating the early radiation-induced DNA damage.
+ o New extended example "radiobiology", realized for dosimetric and
+   radiobiological applications of  proton and ion beams.
+   
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.1.3
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-01-30
+-----
+- Prefix ZLIB/EXPAT variables with "G4" to prevent clash with VTK's own
+  internal find of these packages.
+- Export QT_VERSION value to GNUmake setup script.
+- Bump minimum VecGeom version to 1.2.6.
+
+config                                           config-V11-01-03
+------
+- Updated system scripts for Qt settings: removed Qt4 and added Qt6.
+
+analysis                                         analysis-V11-01-10
+--------
+- Use "G4" prefixed version of EXPAT/ZLIB CMake variables.
+
+event                                            event-V11-01-07
+-----
+- In G4GeneralParticleSource, fixed ListSource command which was failing
+  to list the correct energy of the sources since they need to be accessed
+  as a monoenergetic source distribution, rather than the particle energy.
+- Fixed Coverity reported defect, to avoid use of sub-event pointer after
+  deletion.
+
+externals
+---------
+- g4tools (g4tools-V11-01-06)
+  o Updated to version 6.3.0. Fix in tools/wroot/file, in the constructor,
+    for the streaming of the root directory. Addressing problem report #2570.
+
+geometry/magneticfield                           field-V11-01-06
+----------------------
+- Improvements on the QSS Stepper: the main QSS integration loop is interrupted
+  when the number of substeps exceeds a predefined threshold (set to 1000 by
+  default). DormandPrince745 remains the default stepper.
+
+geometry/navigation                              geomnav-V11-01-08
+-------------------
+- Added new G4SafetyCalculator class, auxiliary to G4Navigator; used in
+  G4Navigator in ComputeSafety() to avoid saving/restoring state.
+- Fixed "/geometry/test/check_parallel" UI command in G4GeometryMessenger.
+- Some code cleanup in G4Navigator and code formatting.
+
+global                                           global-V11-01-26
+------
+- Fixed memory leak in G4StatAnalysis::GetCpuClock(): do not allocate local
+  variable on the heap.
+- Fixed memory leak in G4Type[Recursive]Mutex<T> and simplified code by
+  removing unused function parameter.
+- Fixed compilation error on macOS Apple Silicon when enabling FPE_DEBUG.
+  No guarantee on the correctness of signal handling on this platform.
+  Addressing problem report #2571.
+- Updated date and tag-ID for geant4-11-02-ref-00.
+
+interfaces                                       interfaces-V11-01-31
+----------
+- In G4UIQt::SceneTreeItemClicked, use physical volume name to identify PV
+  model in scene tree; this allows multiple PV models in the scene and each
+  to be separately identified.
+  Avoid setting 'daughtersInvisible' flag if there are no daughters.
+  Use text to identify text models, allowing one to distinguish multiple
+  text models.
+
+materials                                        materials-V11-01-14
+---------
+- In G4ElementData, fixed memory leak at exit.
+- G4NistElementBuilder: minor code clean-up.
+- Use "G4" prefixed version of EXPAT/ZLIB CMake variables.
+- Use G4FindDataDir to access data libraries in place of raw getenv().
+
+particles                                        particles-V11-01-10
+---------
+- Scanned all mesons and baryons, including their resonances, to
+  compare their particle properties with PDG-2023. Updated mass and
+  decay width (lifetime) for particles below with relative error above 1%
+  against PDG-2023.
+  o Mesons:  G4AntiBsMesonZero, G4BsMesonZero, G4EtaPrime
+  o Baryons: G4AntiLambdacPlus, G4AntiOmegacZero, G4AntiSigmabMinus,
+             G4AntiSigmabPlus,  G4AntiSigmacPlus, G4AntiXicPlus, G4AntiXicZero,
+             G4LambdacPlus, G4OmegacZero, G4SigmabMinus, G4SigmabPlus,
+             G4SigmacPlus, G4XicPlus, G4XicZero,
+  o Resonances: G4ExcitedDeltaConstructor, G4ExcitedLambdaConstructor,
+                G4ExcitedMesonConstructor, G4ExcitedNucleonConstructor,
+                G4ExcitedSigmaConstructor, G4ExcitedXiConstructor,
+                mesons and baryons implemened in G4ShortLivedConstructor.
+- G4IonTable: fixed run-time memory leak in GetIonName() methods, now returning
+  G4String instead of a reference to a string; simplified code, with TLS no
+  longer involved.
+
+physics_lists
+-------------
+- builders (phys-builders-V11-01-03)
+  o G4HadronicBuilder: added two methods, BuildINCLXX() and
+    BuildAntiLightIonsINCLXX().
+- constructors/decay (phys-ctor-decay-V11-01-01)
+  o G4RadioactiveDecayPhysics: replaced G4RadioactiveDecay with              (o)
+    G4Radioactivation to be able to run in biasing mode (not only in
+    analogue mode, as before with G4RadioactiveDecay).
+- constructors/electromagnetic (phys-ctor-em-V11-01-10)
+  o Corrected subtype process of G4LowECapture in G4EmDNABuilder.
+  o Corrected G4EmDNABuilder for proton constructors.
+  o In G4EmStandardPhysicsSS, removed unused header inclusions.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V11-01-04)
+  o G4EmExtraPhysics, G4EmMessenger: removed neutrino physics.
+    Fixed instantiation of e+- nuclear processes.
+  o G4NeutrinoPhysics, G4NeutrinoPhysicsMessenger: added new physics
+    constructor for neutrino physics and its messenger.
+  o Clean-up all classes of sub-library.
+- constructors/hadron_elastic (phys-ctor-helastic-V11-01-06)
+  o G4ChargeExchangePhysics, G4ChargeExchangeMessenger: added UI commands.
+- constructors/hadron_inelastic (phys-ctor-inhelastic-V11-01-02)
+  o In G4HadronPhysicsINCLXX, call G4HadronicBuilder::BuildAntiLightIonsINCLXX()
+    to treat antiproton with INCLXX.
+- constructors/ions (phys-ctor-ions-V11-01-01)
+  o Added a physics constructor, G4LightIonQMDPhsysics for light ion QMD.
+- lists (phys-lists-V11-01-07)
+  o Added a option for Shielding to use G4LightIonQMDPhysics,  which is
+    the constructor of light ion QMD.
+  o G4PhysListFactoryMessenger: added UI commands to enable neutrino and 
+    charge exchange physics.
+
+processes/biasing/importance                     proc-biasimp-V11-01-01
+----------------------------
+- G4ImportanceProcess: added protection against potential null pointer on
+  world boundary in PostStepDoIt(). Addressing problem report #1991.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-01-25)
+  o Corrected 'fastercode' section for dna opt6.
+  o Use G4FindDataDir to access data libraries in place of raw getenv().
+- lowenergy (emlowen-V11-01-11)
+  o G4LivermorePhotoElectricModel: more accurate check on atomic number Z to
+    fix Coverity reports.
+  o G4MicroElecInelasticModel_new: changed implementation of Interpolate()
+    method to avoid division by zero identified by Coverity.
+    Fix for potential problem at destruction.
+  o G4MicroElecSurface: removed repeated checks in Initilise() method,
+    addressing Coverity report.
+  o G4MicroElecLOPhononModel: removed unused class member.
+  o Use G4FindDataDir to access data libraries in place of raw getenv().
+- standard (emstand-V11-01-24)
+  o Use "G4" prefixed version of EXPAT/ZLIB CMake variables.
+- utils (emutils-V11-01-25)
+  o G4VEmModel: fixed memory leak at exit.
+  o G4EmSaturation: fixed possible incorrect calculatioon of effective
+    charge of a material. Addressing problem report #2572.
+  o In G4EmParametersMessenger, fixed UI command "/process/eloss/setFluctModel",
+    changed "eloss" to "eLoss".
+  o G4TransportationWithMsc: initialize all members.
+- xrays (xrays-V11-01-09)
+  o G4GaussXTRadiator: fixed issue by renaming virtual function to prevent
+    clash between base and inherited classes; new name SpectralXTRdEdxFS.
+  o G4XrayReflectivity: fixed reported Coverity defect.
+  o G4Scintillation: address Coverity report for possible nullptr dereference.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-01-16)
+  o G4PhotoNuclearCrossSection: fixed potential memory leaks.
+- management (hadr-man-V11-01-08)
+  o G4HadronicProcess, G4HadronicProcessStore, G4HadXSHelper: fixed
+    memory leak at exit.
+  o G4HadronicProcessStore: added printouts for neutrino processes.
+  o G4HadronicProcessType: added new types for neutrino interactions.
+- models/cascade (hadr-casc-V11-01-03)
+  o G4CascadeParamMessenger: fixed memory leak at exit and simplified
+    the code.
+- models/de_excitation (hadr-deex-V11-01-11)
+  o In G4LevelReader, partial fix for problem reports #2566 and #1986 for
+    the case when data on internal conversion (IC) are not available; if IC
+    is disabled, it is assumed that all IC transitions are performed from the
+    K-shell, which means that independently on IC flag the probability of gamma
+    transition is unchanged. For G4PhotonEvaporation, still use only gamma
+    transitions for the case of nuclear level without information (as in
+    11.2-beta).
+  o G4FermiChannels: fixed memory leak at exit.
+- models/inclxx (hadr-inclxx-V11-01-04)
+  o Major extension of the INCLXX model to handle antiproton annihilation
+    in-flight. Requires new dataset G4INCL-1.2.
+  o Few corrections in G4INCLXXInterface.
+  o Deleted obsolete class G4INCLNNbarToNNbarChannel.
+  o Fixed memory leak in G4INCLInteractionAvatar.
+  o Replace raw getenv() calls with G4FindDataDir for G4INCLDATA location.
+- models/lend (hadr-lend-V11-01-02)
+  o Use "G4" prefixed version of EXPAT/ZLIB CMake variables.
+- models/particle_hp (hadr-hpp-V11-01-24)
+  o G4ParticleHPManager: set default upper limit on Doppler broadening,
+    30 keV instead of 100 keV.
+  o G4ParticleHPInelasticXS: set upper limit of cross-section to 30 MeV
+    instead of 20 MeV.
+  o G4CrossSectionHP: removed not needed G4Exception.
+  o Use "G4" prefixed version of EXPAT/ZLIB CMake variables.
+- models/qmd (hadr-qmd-V11-01-03)
+  o Added classes for QMD model opimised for light ions.
+- models/radioactive_decay (radioactive_decay-V11-01-09)
+  o G4RadioactiveDecay: changed default threshold for the time beyond
+    which radioactive decays are ignored, from twice the age of the
+    Universe to one year. Note that this threshold can be changed via
+    the UI command "/process/had/rdm/thresholdForVeryLongDecayTime".
+  o G4RadioactiveDecay, G4Radioactivation: added an extra parameter in the
+    constructor, to be able to set the threshold for the time beyond which
+    radioactive decays are ignored. This is meant for custom physics lists.
+    Moreover, the constructor of these classes has been modified to offer
+    also a C++ interface, via the singleton G4HadronicParameters, to set 
+    the same time threshold for radioactive decays. This is meant for 
+    reference physics lists. Note that, in the unlikely and weird scenario
+    that two time thresholds are specified - one via G4HadronicParameters,
+    and one via the constructor parameter - the larger of the two is
+    considered, to be conservative. In all cases, an eventual time
+    threshold specified via UI command prevails on anything else.
+- processes  (hadr-proc-V11-01-12)
+  o G4NuVacOscProcess, G4TauNeutrinoNucleusProcess, G4MuNeutrinoNucleusProcess,
+    G4ElNeutrinoNucleusProcess, G4NeutrinoElectronProcess: use sub-types of
+    neutrino interactions; avoid destruction of internal cross-section;
+    removed unused class members and methods.
+- stopping (hadr-stopping-V11-01-01)
+  o G4HadronicAbsorptionINCLXX: reduced maximum energy from 10 GeV to 200 MeV.
+- util (hadr-util-V11-01-08)
+  o G4HadronicParameters: introduced methods to get and set the time
+    threshold of radioactive decays (i.e. radioactive decays that happen
+    later than this value are ignored), offering a C++ interface to set
+    this parameter.
+    Added getters and setters of recommended energy limits in physics lists
+    for the intranuclear cascade model INCLXX, for pbar interactions.
+
+
+processes/parameterisation                       param-V11-01-04
+--------------------------
+- Define G4GlobalFastSimulationManager as a G4ThreadLocalSingleton to avoid
+  undeleted allocated object at exit.
+
+run                                              run-V11-01-10
+---
+- Reverting G4RunManager and G4Run back to 11.2-Beta to avoid issues
+  in visualization in MT mode.
+- Do not call WorkerG4ParticleTable() from G4ParticleTable in constructor of
+  G4WorkerRunManager, as called already from G4ParticleTable through
+  GetParticleTable(), which is called beforehand by other Geant4 classes.
+  Duplicate call was causing memory leak at exit.
+
+visualization
+-------------
+- management (visman-V11-01-32)
+  o In G4VisExecutive, added single line message "VTK: OpenGL-based drivers
+    suppressed". Protect all G4cout statements with 'fVerbosity' at startup.
+  o G4VisManager: promote 'fVerbosity' from private to protected.
+  o G4VisCommandsSceneAdd, G4VisCommandSceneAddText2D: improved guidance and
+    description.
+- Vtk (visVtk-V11-01-15)
+  o Fixed missing circles in rendering.
+  o Added missing dependencies on internal modules.
+  o Removed files no longer being built.
+  o Fixed gcc shadowing warnings.
+
+examples                                         examples-V11-02-00
+--------
+- Updated documentation and reference outputs.
+- advanced/air_shower (air_shower-V11-01-01)
+  o Fixed warning message regarding the size of the material property vector.
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/amsEcal (amsEcal-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/brachytherapy (brachy-V11-01-01)
+  o In all macro files, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/CaTS (CaTS-V11-01-00)
+- advanced/composite_calorimeter (ccal-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/doiPET (doiPET-V11-01-01)
+  o In all macro files, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/dsbandrepair (dsbandrepair-V11-01-01)
+  o New Geant4-DNA application for evaluating the early radiation-induced
+    DNA damage. The first development of the simulation chain was carried
+    out by Meylan et al. in 2017 (Sci. Rep. 2017 7:11923).
+    Supports all types of DNA geometries constructed with DNAFabric
+    (Comput. Phys. Comm. 2016 204:159-169). Geometries for human cell nuclei
+    (fibroblast, endothelium) and yeast are also provided.
+- advanced/eFLASH_radiotherapy (eFLASH_radiotherapy-V11-01-02)
+  o In all macro files, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/eRosita (eRosita-V11-01-01)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/exp_microdosimetry (exp_microdosimetry-V11-01-03)
+  o Renamed 'radioprotection' example to 'exp_microdosimetry'.
+  o In all macro files, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/fastAerosol (fastAerosol-V11-01-01)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/gammaknife (gammaknife-V11-01-01)
+- advanced/gammaray_telescope (gammaraytel-V11-01-01)
+  o In all macro files, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/gorad (gorad-V11-01-01)
+- advanced/hadrontherapy (hadrontherapy-V11-01-01)
+  o In some macro files, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/HGCal_testbeam (exhgcaltb-V11-01-01)
+- advanced/human_phantom  (human_phantom-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/ICRP110_HumanPhantoms (ICRP110Phantoms-V11-01-06)
+  o ICRP110PhantomNestedParameterisation: fixed assignment of material pointer
+    in ComputeMaterial().
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/ICRP145_HumanPhantoms (ICRP145Phantoms-V11-01-03)
+- advanced/iort_therapy (iort_therapy-V11-01-00)
+- advanced/lAr_calorimeter (lar_calorimeter-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/medical_linac (medical_linac-V11-01-02)
+  o Use default MixMax random engine.
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/microbeam (microbeam-V11-01-01)
+- advanced/microelectronics microelectronics-V11-01-00)
+- advanced/purging_magnet (purgmag-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/STCyclotron (STCyclotron-V11-01-02)
+  o Correction in PrimaryGeneratorAction. Addressing problem report #2538.
+  o Corrected warning in vacuum_density.
+  o In all macro files, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/stim_pixe_tomography (stim_pixe_tomography-V11-01-02)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/underground_physics (DMX-V11-01-03)
+  o Addressed problem report #2503 and related to #2338; also removed
+    redundant alpha_low.mac macro.
+  o Moved EM model setters in DMXPhysicsList to G4EmParameters.
+  o Updated analysis and ambe_spectrum.mac. Addressing problem report #2338.
+  o In all macro files, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/xray_fluorescence (XRayFluo-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/xray_SiliconPoreOptics (xraysiliconporeoptics-V11-01-02)
+  o In run01.mac, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/xray_telescope (xraytel-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- advanced/xray_TESdetector (xraytesdetector-V11-01-03)
+  o In run02.mac, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- basic/B1 (exampleB1-V11-01-03)
+  o Applied auto in main() where suitable and not done by clang-tidy.
+  o Fixes for Doxygen.
+- basic/B2 (exampleB2-V11-01-03)
+  o Fixed and improved setting of G4VisAttributes.
+  o Do not create vis attributes with new (causing memory leak).
+  o Use Geant4 predefined colours (for clarity).
+  o Removed unsused and unimplemented method declaration
+    PrimaryGeneratorAction::SetRandomFlag().
+  o Applied auto in main() where suitable and not done by clang-tidy.
+  o Minor formatting changes.
+- basic/B3 (exampleB3-V11-01-01)
+  o Applied auto in main() where suitable and not done by clang-tidy.
+  o Activated merging n-tuples with score n-tuple writer.
+  o Added commented setting in run2.mac: /control/cout/ignoreThreadsExcept 0.
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- basic/B4 (exampleB4-V11-01-04)
+  o Fixed and improved setting of G4VisAttributes.
+  o Do not create vis attributes with new (causing memory leak).
+  o Use Geant4 predefined colours (for clarity).
+  o Removed unsused and unimplemented method declaration
+    PrimaryGeneratorAction::SetRandomFlag().
+  o Applied auto in main() where suitable and not done by clang-tidy.
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- basic/B5 (exampleB5-V11-01-03)
+  o Fixed and improved setting of G4VisAttributes.
+  o Do not create vis attributes with new (causing memory leak).
+  o Use Geant4 predefined colours (for clarity).
+  o Applied auto in main() where suitable and not done by clang-tidy.
+  o DetectorConstruction: added initialization of 'fMessenger'.
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/analysis (analysisExample-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/analysis/B1Con (B1Con-V11-01-02)
+  o Fixes for Doxygen.
+- extended/biasing (exbiasing-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/biasing/GB07 (biasingGB07-V11-01-00)
+  o Coding guidelines: removed tabulations in main().
+- extended/common (excommon-V11-01-02)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+  o Fixes for Doxygen.
+- extended/electromagnetic (electromagnetic-V11-01-01)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/electromagnetic/TestEm1 (testem1-V11-01-01)
+  o In radioactive.mac, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+- extended/electromagnetic/TestEm5 (testem5-V11-01-01)
+  o Coding guidelines: document macros in README files.
+- extended/electromagnetic/TestEm6 (testem6-V11-00-02)
+  o Coding guidelines: removed tabulations from RunAction.
+  o Removed useless macro TestEm6_xs.in.
+  o Fixed warning in plotHisto macro.
+- extended/electromagnetic/TestEm10 (testem10-V11-01-00)
+  o Coding guidelines: document macros in README files.
+- extended/electromagnetic/TestEm11 (testem11-V11-01-03)
+  o In radioactive.mac, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+- extended/eventgenerator (exEventGenerator-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/eventgenerator/pythia/decayer6 (p6decayer-V11-01-01)
+  o Fixes for Doxygen: moved class description comments after namespace.
+  o Updated common directory.
+- extended/exoticphysics (exExoticPhysics-V11-01-01)
+- extended/field (fieldex-V11-01-01)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/field/BlineTracer (BlineTracer-V11-01-01)
+  o Coding guidelines: document macro in README.
+- extended/field/field01 (fieldex01-V11-01-01)
+  o Coding guidelines: split long lines.
+- extended/g3tog4 (g3tog4Tests-V11-01-02)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+  o Fixes for Doxygen: moved class description comments after namespace.
+- extended/geometry (exGeometry-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/geometry/vecGeomNavigation (VecGeomNavigation-V11-01-01)
+  o Coding guidelines: split long lines, added separators in
+    VG01ActionInitialization.
+  o Removed duplicate macro run-ntst.mac.
+- extended/hadronic (exHadronic-V11-01-01)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/hadronic/FlukaCern/*/CrossSection (HadronNucleusXS-V11-01-01)
+  o Coding guidelines: split long lines in XSHistoManager.
+- extended/hadronic/Hadr01 (exhadr01-V11-01-04)
+  o In main(), prepare PhysicsList for neutrino and charge exchange physics.
+  o In hadr01.in, added integration test of neutrino and charge exchange 
+    physics.
+  o HistoManager: improved verbose printout.
+- extended/hadronic/Hadr06 (exhadr06-V11-01-02)
+  o In fission.mac and singleFission.mac, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+- extended/hadronic/Hadr07 (exhadr07-V11-01-03)
+  o In Na22.mac, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+- extended/hadronic/NeutronSource (NeutronSource-V11-01-01)
+  o In all macro files, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+- extended/medical (exMedical-V11-01-02)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/medical/DICOM (DICOM-V11-01-02)
+  o DicomNestedPhantomParameterisation: fixed assignment of material pointer
+    in ComputeMaterial(), affecting MT runs.
+  o Fixes in DicomDetectorConstruction: added correct replica depths for x,y,z
+    of G4PSDoseDeposit3D for nested parameterisation and corrected voxel
+    ordering according to the fixed formula within G4PSDoseDeposit3D; added
+    environment variable to switch to standard G4PSDoseDeposit in the case of
+    regular navigation (default).
+  o Corrected README and .README, bringing them up-to-date and including
+    description of G4PSDoseDeposit3D and its usage for nested parameterisation.
+- extended/medical/dna/dnaphysics (dnaphysics-V11-01-03)
+  o PhysicsList: more clear implementation of two cases: usage of a DNA
+    physics constructor or standard physics constructor plus DNA model
+    activator.
+  o Updated dnaphysics.in macro and TrackingCut for heavy ions.
+- extended/medical/dna/scavenger (scavenger-V11-01-00)
+  o Fixes for Doxygen.
+- extended/medical/dna/UHDR (UHDR-V11-01-04)
+  o Code formatting.
+- extended/medical/radiobiology (radiobiology-V11-01-02)
+  o New application realized for dosimetric and radiobiological applications
+    of proton and ion beams. Specific tools were built to evaluate primaries
+    and secondary energy spectra and a set of classes, dedicated to the
+    computation of biological, as LET (Linear Energy Transfer), RBE (Relative
+    Biological Effectiveness), Survival Fraction, and physical (as dose and
+    fluence) quantities are implemented. 
+- extended/optical (exOptical-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/optical/LXe (LXe-V11-01-01)
+- extended/optical/OpNovice (OpNovice-V11-01-01)
+- extended/optical/OpNovice2 (OpNovice2-V11-01-04)
+- extended/optical/wls (WLS-V11-01-01)
+  o Applied clang-tidy fixes to code.
+- extended/parallel (exparallel-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/parallel/MPI (MPI-V11-01-03)
+  o Fixed bug: G4filesystem -> G4Filesystem in RunActionMaster of exMPI04.
+  o Added two new functions in G4MPIrunmanager to access number of events
+    in master / slave.
+  o Updated analysis classes and exMPI04 for changes in analysis.
+  o Promoted struct G4RootMpiPNtupleDescription to class.
+  o Coding guidelines: document examples macros in README files.
+  o Renamed v.mac in vis.mac.
+  o Removed examples README.html (not synchronised with README.md).
+- extended/parameterisations (exParameterisations-V11-01-01)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/parameterisations/Par04 (expar04-V11-01-02)
+  o Added CUDA execution provider to run the inference on GPU with ONNXruntime.
+- extended/persistency (exPersistency-V11-01-00)
+- extended/physicslists (exPhysicsLists-V11-01-01)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/physicslists/factory (factory-V11-01-01)
+  o Coding guidelines: document macros in README files.
+- extended/polarisation (exPolarisation-V11-01-00)
+- extended/radioactivedecay (exRadioactiveDecay-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/radioactivedecay/Activation (activation-V11-01-02)
+- extended/radioactivedecay/rdecay01 (rdecay01-V11-01-01)
+- extended/radioactivedecay/rdecay02 (rdecay02-V11-01-02)
+  o In all macro files, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+- extended/runAndEvent (exRunAndEvent-V11-01-00)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/runAndEvent/RE07 (exampleRE07-V11-01-00)
+  o Coding guidelines: document macros in README files.
+  o Added separators in EmStandardPhysicsTrackingManager.
+- extended/visualization/movies (exam-ext-vis-movies-V11-01-02)
+- extended/visualization/perspective (exam-ext-vis-persp-V11-01-02)
+- extended/visualization/standalone (exam-ext-vis-standalone-V11-01-01)
+  o Updated "/vis/open" command for interactive visualization in input scripts
+    to allow for run-time choices.
+- extended/visualization/vtk (exam-ext-vis-vtk-V11-01-02)
+  o Fixes for Doxygen: moved class description comments after namespace.
+
+tests                                            tests-V11-02-00
+-----
+- Updated reference outputs and tools.
+- tests/test15 (test15-V11-01-02)
+  o Added check on index for l-915 of Test15Run, fixing FPE on CentOS7.
+- tests/test18 (test18-V11-01-00)
+  o In test18.in and test18.large_N.in macro files, introduced the UI command
+    "/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"
+    to allow all radioactive decays (including the very long ones).
+- tests/test61 (test61-V11-01-00)
+  o Updated main() to test the light ion QMD model.
+- tests/test69 (test69-V11-01-01)
+  o Extension of INCLXX for in-flight antiproton interaction:
+    added new macros: pbar_500MeV_C.in, pbar_5GeV_mix_long.in,
+    pbar_50MeV_C.in and pbar_50MeV_mix_long.in.
