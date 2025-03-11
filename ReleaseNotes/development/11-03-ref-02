@@ -1,0 +1,247 @@
+
+                       geant4-11-03-ref-02
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Enabled voxelisation parallelism by default in G4GeometryManager, when
+   MT/tasks are enabled. Enabled also for potential 2nd (and later) calls.
+ o Code optimization in GetPointOnSurface() in specific shapes.
+ o Introduced usage of the new ion ionisation model in DNA Opt8 physics
+   configuration.
+ o Updated algorithms of integration of probabilities and sampling of kinetic
+   energy for emitted fragment in hadronic de-excitation ans pre-equilibrium.
+   Expected more accurate spectra.
+ o First version of generic time windowing of trajectory slices in
+   visualisation.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+event                                            event-V11-03-00
+-----
+- Fixed cut&paste error in G4StackManager::TransferStackedTracks(..),
+  reported by Coverity.
+
+externals/clhep                                  clhep-V11-03-00
+---------------
+- Properly export static symbols in RandFlat for DLL build support on Windows.
+
+geometry/management                              geommng-V11-03-04
+-------------------
+- Enabled voxelisation parallelism by default in G4GeometryManager, when
+  MT/tasks are enabled. Enabled also for potential 2nd (and later) calls.
+- In G4GeometryManager, fix in ConfigureParallelOptimisation() to reset
+  logical volumes iterator; in ReportWorkerIsDoneOptimising(), added checks
+  to report fatal error if incorrect number of volumes was voxelised, and warns
+  if number of workers reporting is not as expected.
+  In ConfigureParallelOptimisation(), reports on the times it was called.
+- Applied clang-tidy fixes fixes (readability, modernization, performance, ...)
+  based on llvm version 19.1.17.
+- G4UAdapter: removed fake default constructor, clearing compilation warnings
+  on gcc-14.
+
+geometry/solids/CSG                              geom-csg-V11-03-00
+-------------------
+- Removed fake default constructor from G4U* wrappers, clearing compilation
+  warnings on gcc-14.
+
+geometry/solids/specific                         geom-specific-V11-03-04
+------------------------
+- G4Ellipsoid, G4EllipticalTube: code optimization in GetPointOnSurface().
+- G4TessellatedSolid, G4TriangularFacet, G4QuadrangularFacet: use G4QuickRand()
+  for generating points on surface.
+- G4EllipticalCone: code optimization in GetPointOnSurface(); moved setters
+  implementations to source.
+- G4Hype: code optimization in GetPointOnSurface().
+- G4Paraboloid: implemented uniform sampling of random points on surface.
+- Removed fake default constructor from G4U* wrappers, clearing compilation
+  warnings on gcc-14.
+
+geometry/volumes                                 geomvol-V11-03-00
+----------------
+- Applied clang-tidy fixes for readability, based on llvm version 19.1.7.
+
+global                                           global-V11-03-03
+------
+- Corrected logic error in G4PhysicsTable when reading data in binary
+  mode on Windows platforms.
+- Migrated "tests" module to "tests/ctests_source" for use in CI and Nightly. 
+- Updated date and tag-ID for geant4-11-03-ref-02.
+
+materials                                        materials-V11-03-00
+---------
+- Made ios flags for Store/Retrieve of G4ExtDEDXTable consistent to avoid
+  issues on Windows platforms.
+- Migrated unit tests under "tests" to dedicated category under
+  "tests/ctests_source" so they are run regularly and always available
+  to developers.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-03-00)
+  o G4EmDNABuilder, G4EmDNAPhysicsActivator: introduced usage of the new ion
+    ionisation model in DNA Opt8 physics configuration.
+  o G4EmDNAPhysics, G4EmDNAPhysics_option2, G4EmDNAPhysics_option4,
+    G4EmDNAPhysics_option6, G4EmDNAPhysics_option8: updated interface to
+    G4EmDNABuilder.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-03-03)
+  o G4DNARuddIonisationModel: added forgotten definition of stationary mode.
+  o G4DNARuddIonisationDynamicModel: use G4Track and not G4DynamicParticle,
+    to allow to store radicals if chemistry is activated; update for ions with
+    full electron shell.
+  o Added new G4DNARuddIonisationDynamicModel, which uses charge from
+    G4DynamicParticle. The model is applicable for all ions.
+- lowenergy (emlowen-V11-03-01)
+  o Fixed reported Coverity defect in G4ShellData.
+- pii (empii-V11-03-00)
+  o Use "const G4String&" in G4hImpactIonisation::InitializeMe() to avoid
+    unnecessary copy, reported by Coverity.
+- standard (emstand-V11-03-02)
+  o G4OrePowellAtRestModel: added missing decay plane rotation.
+  o G4UrbanMscModel: cosmetic change for Opt3 case; updated comments to the
+    code. Not affecting any result.
+- utils (emutils-V11-03-00)
+  o G4VEmProcess: added call to StartTracking(..) for all used models, which
+    need access to G4Track pointer.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-03-00)
+  o G4NeutronElasticXS, G4NeutronInelasticXS, G4ParticleInelasticXS: added
+    option to download data for all elements in class constructor, avoiding
+    lazy initialisation at run-time.
+- models/de_excitation (hadr-deex-V11-03-03)
+  o G4VEmissionProbability, G4EvaporationProbability, G4GEMProbabilityVI:
+    updated algorithms of integration of probabilities and sampling of kinetic
+    energy for emitted fragment. Expected more accurate spectra.
+- models/inclxx (hadr-inclxx-V11-03-00)
+  o Fixed one more reported Coverity defect for use of std::move()
+    in G4INCLCascade.
+- models/pre_equilibrium (hadr-pre-V11-03-01)
+  o G4PreCompoundFragment: updated algorithms of integration of probabilities
+    and sampling of final state. Expected more accurate spectra of particles.
+
+processes/scoring                                procscore-V11-03-00
+-----------------
+- Fixes to G4EnergySplitter to ensure that each call to SplitEnergyInVolumes()
+  utilises the correct phantom parameterisation, according to
+  [GitHub PR#80](https://github.com/Geant4/geant4/pull/80)
+  Addressing problem report #2636.
+
+run                                              run-V11-03-00
+---
+- Correction in G4WorkerRunManager, when InitializeGeometry() calls
+  G4GeometryManager::UndertakeOptimisation() to contribute to parallel
+  voxelisation.
+
+tracking                                         tracking-V11-03-01
+--------
+- G4RichTrajectoryPoint: added accessors for Pre/PostStepPointGlobalTime.
+  This allows fast access for time windowing feature of trajectory modeling.
+
+visualization
+-------------
+- management (visman-V11-03-04)
+  o Split scene processing into its "permanent" (run-duration models) and
+    "transient" (end-of-event and end-of-run models) parts.
+    This allows to update just the transient part, e.g., trajectories, which
+    we might want to display in a different way, leaving the permanent part
+    (e.g., detector) unchanged, avoiding unnecessary re-processing. This is
+    exactly the situation for time windowing - the detector does not change,
+    the trajectories also actually do not change, just the way they are drawn
+    changes.
+  o G4VSceneHandler: introduced ProcessTransients() virtual function.
+    Moved pertinent code from ProcessScene() to ProcessTransients().
+    Copied time parameters into modeling parameters.
+  o G4VViewer: introduced ProcessTransients() method.
+  o G4VVisCommand: in InterpolateViews(), implemented desired time per time
+    step. Computation time per step may cause this to increase.
+  o G4VisCommandsViewer: improved guidance of "/vis/viewer/interpolate" command.
+    In "/vis/viewer/set/timeWindow/displayHeadTime", implemented "current as
+    default". There might be some minor change of behaviour.
+  o Simplified G4ViewParameters. Use single TimeParameters from
+    G4ModelingParameters, to replace 18 time window parameters.
+  o G4VisCommandsViewerSet.cc: update to "/vis/viewer/set/timeWindow" commands
+    according to changes in G4ViewParameters.
+- modeling (modeling-V11-03-07)
+  o G4TrajectoryDrawerUtils: first version of generic time windowing of
+    trajectory slices; draws only slices within the viewer time window. Note:
+    unless the viewer can handled time-sliced trajectories (only OGLS can
+    do this at present), the viewer must request a kernel visit on change of
+    viewer time window.
+    Trap trajectories with very long global times, e.g, products of long-lived
+    radioactive isotopes. Draw as non-time-sliced trajectories.
+    Added fading of trajectory slices if time windowing is active; makes
+    trajectory slices look like little meteors streaking across the screen.
+    Applied clang-format.
+  o G4ModelingParameters: implemented TimeParameters::operator!=().
+    Adjusted defaul values in TimeParameters: set fade factor to 1 (maximum
+    fading); set head time display 2D x-coordinate to zero (centre), while
+    2D y-coordinate remains at -0.9 (bottom).
+    Added struct 'TimeParameters', a prerequisite for "Generic Time-Slicing"
+    for the display of the time evolution of events. With that feature, the
+    display of tracks moving through time will be available to all vis drivers.
+    (drivers will still be alllowed to implement their own time evolution).
+  o G4TrajectoriesModel: in DescribeYourselfTo(), draw display head time if
+    requested and if time windowing is active; removed Begin/EndDraw around
+    the trajectories loop.
+  o G4TrajectoryDrawByEncounteredVolume, G4TrajectoryEncounteredVolumeFilter:
+    use G4VTrajectory::GetAttValues() instead of CreateAttValues(), to speedup
+    repeated visits.
+  o G4VModel: introduced static data member for current modelong parameters
+    and its static accessor, GetCurrentModelingParameters().
+  o G4TrajectoriesModel: call SetCurrentModelingParameters().
+- OpenGL (opengl-V11-03-01)
+  o In G4OpenGLStoredViewer, follow changes introduced in G4ViewParameters.
+- OpenInventor (openinventor-V11-03-01)
+  o In G4OpenInventorViewer::CompareForKernelVisit(), cause kernel visit if
+    viewer start/end time changes; this is to take advantage of the new generic
+    time window.
+- Qt3D (visQt3D-V11-03-01)
+  o In G4Qt3DViewer::CompareForKernelVisit(), cause kernel visit if viewer
+    start/end time changes; this is to take advantage of the new generic
+    time window.
+- ToolsSG (vis_toolssg-V11-03-01)
+  o In G4ToolsSGViewer::CompareForKernelVisit(), cause kernel visit if viewer
+    start/end time changes; this is to take advantage of the new generic
+    time window.
+
+examples                                         examples-V11-03-02
+--------
+- Updated documentation and reference outputs.
+- advanced/dna/moleculardna (molecularDNA-V11-03-06)
+  o Added moleculardna macro, Root macro and geometry files for the simulation
+    of phages.
+  o Updated direct damage range for plasmid.mac and cylinders.mac.
+  o Added fiber.mac macro.
+  o Increased max number of arguments in main().
+  o Added protection to all analysis macros to avoid 'nan' in error calculation.
+  o Added possibility to activate parallel world using dedicated flag from
+    executable.
+- advanced/HGCal_testbeam (exhgcaltb-V11-03-00)
+  o Restore the original beam energy after it is modified.
+  o Ensure non-negative beam energy.
+- extended/biasing/GB03 (GB03-V11-03-00)
+  o Added option -b (biasing on/off).
+  o Set default splitting probability to 0.2.
+  o Instantiate G4GenericBiasingPhysics only if biasing is enabled.
+- extended/biasing/GB06 (GB06-V11-03-00)
+  o Added check for null pointer to shared data; fixing detected crash when
+    biasing is off.
+
+tests                                            tests-V11-03-02
+-----
+- Updated reference outputs and tools.
+- ctests_source/global (global_tests-V11-03-00)
+  o Migrated unit tests from "global/tests" to new unit test location.
+  o Updated test implementations to use GoogleTest where possible.
+- ctests_source/materials (materials_tests-V11-03-00)
+  o Migrated unit tests from "materials/tests" to new unit test location.
+  o Updated test implementations to compile with current toolkit, leaving
+    those testing obsolete classes/functionality in place for review.

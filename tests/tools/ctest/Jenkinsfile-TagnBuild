@@ -1,0 +1,92 @@
+//
+// This pipeline is starting the nightly build. By default,
+//  it creates the nightly tag from staged merged requests,
+//  Then runs g4np-Nightly (Jenkinsfile-Nightly) to continue.
+//
+//  Note: This job runs from master branch, we have no nightly tag yet-(
+//        The job g4np-Nightly runs including all staged MRs, so changes are seen-);
+//        this is to cause to split into 2 jobs.
+//
+//  This is run on a schedule.
+//
+// Gunter Folger, June 2021
+//
+
+pipeline {
+  parameters {
+    booleanParam(name: 'CreateTag',
+                 defaultValue: true,
+                 description: 'Create nightly tag from staged MRs. When false trigger build on exiting nightlTriggerBuildy tag')
+    booleanParam(name: 'TriggerBuild',
+                 defaultValue: true,
+                 description: 'Trigger starting of builds for default platforms')
+
+    string(name: 'SourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: 'branch to checkout')
+    string(name: 'VerificationSourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: 'branch to checkout for verification')
+    string(name: 'BenchmarksSourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: 'branch to checkout for benchmarks')
+
+    choice(name: 'MODE',
+           choices: ['nightly', 'experimental', 'release', 'physicschecks'] ,
+           description: 'set the build mode for CMake')
+    string(name: 'EXTERNALS',
+           defaultValue: '',
+           description: 'version of EXTERNALS to use, leave blank to use default')
+ }
+
+  options {
+    buildDiscarder(logRotator( daysToKeepStr: '14' ))
+    timestamps()
+  }
+
+  environment {
+    GITLAB_API    = 'https://gitlab.cern.ch/api/v4'
+    GITLAB_MR_API = 'projects/geant4%2Fgeant4-dev/merge_requests'
+//                      use https together with deploy token. g4nightly-stage.sh relies on https to insert the token
+    SourceRepoHttpUrl      ='https://gitlab.cern.ch/geant4/geant4-dev.git'
+    VerificationRepoHttpUrl='https://gitlab.cern.ch/geant4/g4tests-verification.git'
+    BenchmarksRepoHttpUrl  ='https://gitlab.cern.ch/geant4/g4tests-benchmarks.git'
+    NightlyTagToken              = credentials('Geant4-GitLabToken')
+  }
+
+  agent none
+  stages {
+    stage('Tag Repositories') {
+      when {
+        beforeAgent true
+        expression { params.CreateTag }
+      }
+      agent {
+        node { label 'docker-host-noafs' }
+      }
+      steps {
+        echo 'Tag repositories'
+        sh 'touch ${WORKSPACE}/controlfile && scripts/tests/tools/ctest/g4nightly-stage.sh'
+      }
+    }
+
+    stage('Launch build via g4np-Nightly') {
+      when {
+        beforeAgent true
+        expression { params.TriggerBuild }
+      }
+      agent {label 'startup-jobs' }
+      steps {
+        build wait: false,
+              job: '/g4np-Nightly',
+              parameters: [
+                string(name: 'MODE', value: "$MODE"),
+                string(name: 'EXTERNALS', value: "${EXTERNALS}"),
+                string(name: 'SourceBranch', value: "${SourceBranch}"),
+                string(name: 'VerificationSourceBranch', value: "${VerificationSourceBranch}"),
+                string(name: 'BenchmarksSourceBranch', value: "${BenchmarksSourceBranch}"),]
+      }
+    }
+  }
+}
+

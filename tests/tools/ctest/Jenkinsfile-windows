@@ -1,0 +1,183 @@
+//
+// This pipeline is running the nightly build and testing for Windows platform
+// - It defines the matrix of combinations to run: x86 or x64, MT mode
+// - No optional build, yet.
+//
+// The builds are run in another pipeline, defined in Jenkinsfile/ Jenklins jobs g4np-bu
+//
+// Gunter Folger, May 2021
+//
+
+pipeline {
+  parameters {
+    choice(name: 'OS_FILTER',
+           choices: ['all', 'windows11', 'windows10'],
+           description: 'Run only for windows11, x86, or both (default)')
+     choice(name: 'Platform_FILTER',
+           choices: ['x64', 'x86', 'all'],
+           description: 'Run only for x64 (default), x86, or both')
+   choice(name: 'MODE',
+           choices: ['nightly', 'experimental', 'release', 'physicschecks'] ,
+           description: 'set the build mode for CMake')
+    choice(name: 'BUILDTYPE',
+           choices: ['RelWithDebInfo', 'Release', 'Debug'] ,
+           description: 'Value for CMAKE_BUILD_TYPE, allowed values are those allowed in CMake')
+    string(name: 'EXTERNALS',
+           defaultValue: '',
+           description: 'CVMFS directory keeping the external libraries, leave blank to use default')
+   string(name: 'BuildOptions',
+           defaultValue: '',
+           description: 'extra build options, like: staticlibs, UseUsolids, BoundsCheck, EpCheck, UseInternalCLHEP, UseGranularCLHEP, MemCheck (valgrind), ....  Combinations allowed, separate options by comma: ,')
+   string(name: 'ExtraCMakeOptions',
+           defaultValue: '',
+           description: 'Additional CMake configuration options of the form "-Doption1=value1 -Doption2=value2"')
+   string(name: 'SourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: 'branch to checkout')
+   string(name: 'VerificationSourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: '')
+   string(name: 'BenchmarksSourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: '')
+  }
+
+  options {
+    buildDiscarder(logRotator( daysToKeepStr: '14' ))
+    timestamps()
+  }
+
+  agent {label 'startup-jobs'}
+  stages {
+    stage('load functions') {
+      steps {
+        script{
+          g4 = load 'scripts/tests/tools/ctest/JenkinsFunctions.groovy'
+        }
+      }
+    }
+
+    stage('BuildAndTest') {
+      matrix {
+        when {
+          anyOf {
+            expression { params.Platform_FILTER == 'all' }
+            expression { params.Platform_FILTER == env.Platform }
+          }
+	  anyOf {
+	    expression { params.OS_FILTER == 'all' }
+            expression { params.OS_FILTER == env.Platform }
+	  }
+        }
+        axes {
+          axis {
+            name 'OS'
+            values 'windows10','windows11'
+          }
+          axis {
+            name 'Platform'
+            values 'x86','x64'
+          }
+          axis {
+            name 'COMPILER'
+            values  'vs19', 'vs22'
+          }
+          axis {
+            name 'THREAD'
+            values 'Seq', 'MT','MTmax'
+          }
+        }
+        excludes {
+          exclude {
+            axis {
+              name 'THREAD'
+              values 'MT'
+            }
+          }
+
+          exclude {
+            axis {
+              name 'COMPILER'
+              values 'vs19'
+            }
+            axis {
+              name 'THREAD'
+              values 'Seq'
+            }
+          }
+          exclude {
+            axis {
+              name 'OS'
+              values 'windows11'
+            }
+            axis {
+              name 'Platform'
+              values 'x86'
+            }
+	  }  
+          exclude {
+            axis {
+              name 'OS'
+              values 'windows11'
+            }
+            axis {
+              name 'COMPILER'
+              values 'vs19'
+            }
+          }
+ 
+        }
+
+        stages {
+          stage('Build and Test') {
+            steps {
+              echo "Do Build for ${OS} - ${Platform} - ${COMPILER} - ${THREAD}"
+              script{
+                g4.doBuild()
+              }
+            }
+          }
+        }
+      }
+    }
+
+    stage('extraBuildAndTest - x64') {
+      environment {
+        Platform='x64'
+        COMPILER='vs22'
+      }
+      when {
+        anyOf {
+          expression { params.Platform_FILTER == 'all' }
+          expression { params.Platform_FILTER == 'x64' }
+       }
+      }
+      steps {
+        script {
+          g4.doOptionalBuilds("windows10", "${COMPILER}", 'MTmax', ['CXX20'])
+          g4.doOptionalBuilds("windows10", "${COMPILER}", 'MTmax', ['CXX23'])
+          g4.doOptionalBuilds("windows10", "${COMPILER}", 'MTmax', ['RM_Serial', 'staticlibs'])
+          g4.doOptionalBuilds("windows10", "${COMPILER}", 'Seq'  , ['staticlibs'])
+        }
+      }
+    }
+
+    stage('extraBuildAndTest - x86') {
+      environment {
+        Platform='x86'
+        COMPILER='vs19'
+      }
+      when {
+        anyOf {
+          expression { params.Platform_FILTER == 'all' }
+          expression { params.Platform_FILTER == 'x86' }
+        }
+      }
+      steps {
+        script{
+           g4.doOptionalBuilds("windows10", "${COMPILER}", 'MTmax', ['RM_Serial'])
+        }
+      }
+    }
+  }
+}

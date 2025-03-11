@@ -1,0 +1,432 @@
+# Category test23 History
+
+See `CONTRIBUTING.rst` for details of **required** info/format for each entry,
+which **must** added in reverse chronological order (newest at the top).
+It must **not** be used as a substitute for writing good git commit messages!
+
+--------------------------------------------------------------------------------
+
+## 2025-01-09 Ben Morgan (test23-V11-03-01)
+- Replace use of Boost string algorithms with `G4StrUtil`.
+  - Boost wasn't being found anyway, and no need to use this external.
+- Replace calls to `sprintf` with `snprintf` to prevent deprecation/security warnings.
+
+## 2024-12-10 Julia Yarba (test23-V11-03-00)
+- Implement pr0visions for optional use of FLUKA.CERN interface (hadronic interactions)
+- Updates and cleanups in plotting scripts
+
+## 2024-09-18 Gabriele Cosmo (test23-V11-02-01)
+- Use default random number generator.
+
+## 2024-06-11 Julia Yarba (test23-V11-02-00)
+- Various updates in the post-analysis plotting macros
+- Minor cleanup in the source code (shared/g4app/src/QGSPWrapper.cc)
+
+## 2023-08-31 Gabriele Cosmo (test23-V11-01-01)
+- Removed references to obsolete and unused G4GRSSolid and G4GRSVolume types.
+
+## 2023-03-17 Julia Yarba (test23-V11-01-00)
+- Update shared-root-macros/Chi2CalcNA49.C to handle 
+  double diff. spectra of secondary antiprotons by NA49
+- Various small scale cleanups and updates, including 
+  some related to FTF "tunes"
+
+## 2022-07-03 Ben Morgan (test23-V11-00-01)
+- Add headers for directly used classes from global/HEPGeometry
+
+## 2021-12-10 Ben Morgan (test23-V11-00-00)
+- Change to new Markdown History format
+
+---
+
+# History entries prior to 11.0
+
+July 1 2021 Vladimir Ivanchenko (test23-V10-07-05)
+- Tst23NA61Histo - fixed write out of the bound
+
+May 5 2021 Ben Morgan (test23-V10-07-04)
+- Do not install tests
+
+March 18 2021 Alberto Ribon (test23-V10-07-03)
+- QGSPStrFragmLundProtonBuilder : removed unused header files.
+- HadronPhysicsNuBeam : replaced G4HadronCaptureProcess with
+  G4NeutronCaptureProcess.
+
+March 08 2021 Alberto Ribon (test23-V10-07-02)
+- QGSPStrFragmLundProtonBuilder : removed header files for old and
+  unused nucleon inelastic cross sections.
+- test23.cc : removed commented reference to Gheisha cross sections
+  (that have been deleted).
+- ProcessWrapper, ExecProcessLevel, TstPrimaryGeneratorAction : replaced
+  old Gheisha inelastic cross section (that has been deleted) with better
+  cross sections.
+
+March 04 2021 Alberto Ribon (test23-V10-07-01)
+- QGSPStrFragmLundProtonBuilder : replaced G4ProtonInelasticProcess
+  (that has been deleted) with G4HadronInelasticProcess.
+
+February 18 2021 Ben Morgan (test23-V10-07-00)
+- Support same CMake version range as core Geant4
+
+May 07 2020 Alberto Ribon (test23-V10-06-01)
+- HadronPhysicsNuBeam : introduced the new class G4HyperonBuilder
+  which is now needed when using G4HyperonFTFPBuilder.
+
+Apr 04 2020 Vladimir Ivanchenko (test23-V10-06-00)
+- fixed initialisation of particles; use default random engine
+
+Aug 20 2019 Gabriele Cosmo (test23-V10-05-05)
+- Get rid of shadowing warnings from ROOT, detected on clang-8.
+
+Aug 2 2019 Gunter Folger (test23-V10-05-04)
+- Remove use of G4DataQuestionaire, following cleanup in
+  physicslists, see phys-lists-V10-05-02 and phys-util-V10-04-02
+
+Feb 7 2019 Julia Yarba (test23-V10-05-03)
+- Add batch scripts for different processin scenarios/quueue in SLURM
+  NOTE: no change to the code itself
+
+Feb 7 2019 Julia Yarba (test23-V10-05-02)
+- Minor clean-ups
+
+Feb 6 2019 Julia Yarba (test23-V10-05-01)
+- Restore updates (exp.datasets, etc.) that were lost in transition
+  from SVN to GitLab (apparently only the latest tagged revision was
+  taken into account but not the trunk revision)
+- Preserve fixes implemented by Alberto R. at the end of Dec.2018
+
+20 Dec 2018 Alberto Ribon (test23-V10-05-00)
+- Tst23Histo , TstHisto : fixed g++ 8.2 warnings.
+
+9 Aug 2018 Alberto Ribon (test23-V10-04-00)
+- QGSPWrapper, QGSPStrFragmLundProtonBuilder : replaced the explicit
+  high-energy limit of hadronic physics with the one from G4HadronicParameters
+
+28 Nov 2017 Ben Morgan (test23-V10-03-03)
+- Replace ROOT_INCLUDE_DIR with ROOT_INCLUDE_DIRS
+
+8 June 2017 Julia Yarba ( test23-V10-03-02)
+- TstHisto.cc: fix size of tmp char array, per complain from gcc7.1
+
+14 Apr 2017 Julia Yarba ( test23-V10-03-01)
+- Change order of includes to avoid annoying (Root-related) compilation warnings
+
+12 Apr 2017 Andrea Dotti (test23-V10-03-00)
+- Move internal builder to new design. Requires phys-builders-V10-03-00
+
+29 Sept 2-16 Julia Yarba (test23-V10-02-08)
+- Add provisions to include kaon beam, Barton data (SAS M6E)
+
+28 July 2016 Julia Yarba (test23-V10-02-07)
+- Fix error in HARP 12GeV/c p+C -> pi+ dataset
+- Minor cleanup in analysis scripts and scripts to generate json specs
+
+15 July 2016 Julia Yarba (test23-V10-02-06)
+- Refine details related to migration to Root6
+
+14 June 2016 Julia Yarba (test23-V10-02-05)
+- Migration to Root6 (a few details may still need an adjustment)
+- Start using DbReader to get NA49 integrated spectra from Val DB (DrawNA49Spectra.C)
+- NOTE: NOT tagged yet since there's a problem with g4svn !!!
+
+16 May 2016 Julia Yarba (test23-V10-02-04)
+- Update PBS submit scripts - use queue amd32_g4val on Wilson cluster
+
+26 Apr 2016 Julia Yarba (test23-V10-02-03)
+- Add HARP/FW production data for pi- on Al
+- Add drawing features for Mu2e-like validation
+- Add qgsp_bert and ftfp_bert phys.lists for p+Ta runs
+
+17 Feb 2016 Julia Yarba (test23-V10-02-02)
+- Correct severe typo in 12GeV/c pi- on C -> pi+ datafile (HARP FW)
+- Minor tweaks in REGRESSION.h
+
+15 Feb 2016 Julia Yarba (test23-V10-02-01)
+- Convert production scripts to using per-Core submission via
+  "parallel" GNU utility
+
+12 Feb 2016 Julia Yarba (test23-V10-02-00)
+- "Intermediate" tag before updating production scripts to full
+   use of multi-cores on the Wilson cluster
+ - Also included various small-scale tweaks to the app code and
+   analysis scripts (nothing major)
+
+17 Sept 2015 Julia Yarba (test23-V10-01-12)
+- Analysis, production scripts adapted to the Wilson cluster (tev.fnal.gov)
+
+8 Sept 2015 Julia Yarba (test23-V10-01-11)
+- Export more HARP data (from test35): C, Cu, Al, Pb
+- Add testing of Shielding&ShieldingM, and corresponding Mu2e-like
+  comparison vs HARP data (theta-spectra in specific momentum bins)
+- Also, this is the last tag that includes production scripts for
+  running validation on cluck.fnal.gov (the following scripts will
+  be for the Wilson cluster tev.fnal.gov)
+
+24 July 2015 Andrea Dotti (test23-V10-01-10)
+- Using macro ROOT_INCLUDE_DIR to identify root/include path
+
+19 May 2015 Julia Yarba (test23-V10-01-09)
+- Adapt to changes in test19, test47 (INCL++ inclusion, etc.)
+- Minor cleanups
+
+
+9 April 2015 Julia Yarba (test23-V10-01-08)
+- Minor updates to scripts (more updates to follow shortly)
+
+8 April 2015 Gabriele Cosmo (test23-V10-01-07)
+- Use G4VSolid as base class for solids in TstTarget.cc.
+
+7 April 2015 Julia Yarba (test23-V10-01-06)
+- Minor cleanups
+
+9 March 2015 Julia Yarba (test23-V10-01-05)
+- Add p+H data (integrated spectra)
+- Update common-use Root scripts ("central" SplitString, etc.)
+- Update CMakeList
+
+5 February 2015 Julia Yarba (test23-V10-01-04)
+- Fix compilation warning in Tst23NA61Histo (comment out unused
+  variable - will be reinstated in future development)
+- Add shared-root-macros/SplitString.C utility
+
+
+3 February 2015 Julia Yarba (test23-V10-01-03)
+- Refine ExecBase (make pointer to rndm engine a member data,
+  for proper memory management)
+
+2 Febuary 2015 Julia Yarba (test23-V10-01-02)
+- Several cleanus and updates (inlcl. rndm handling), partially
+  related to test47 restructuring, but mainly of general nature
+
+13 January 2015 Julia Yarba (test23-V10-01-01)
+- Minor cleanup: restore name MIPS for what is actually MIPP
+
+5 January 2015 Julia Yarba (test23-V10-01-00)
+- Start introducing updates towards restructuring test47
+  (so far, tested vs test19 and test75 - both operational)
+
+16 November 2014 Julia Yarba (test23-V10-00-16)
+- Cleanup g4val-upload-scripts/gen_upload_scripts.sh
+
+
+16 November 2014 Julia Yarba (test23-V10-00-15)
+- Reshuffle G4PHYSICS_* includes
+- Add gen_upload* executable scripts (to replace generate_upload*
+  as one can't change mode in SVN)
+
+14 November 2014 Julia Yarba (test23-V10-00-14)
+- Refine Root drawing scripts - use "histE1" option
+
+13 November 2014 Julia Yarba (test23-V10-00-13)
+- Refine pre-processor conditions for backward compatibility
+
+12 November 2014 Julia Yarba (test23-V10-00-12)
+- Introduce version-specific backward compatibility via pre-processor flag
+- Refine shell scripts; make submit scripts executable
+- Move run_analysis.sh to executable do_analysis.sh
+
+
+7 November 2014 Julia Yarba  (test23-V10-00-11)
+- Revert changes that were necessary for 4.10.0 series (p03,etc.)
+- From now on, compatible with 4.10.0.ref07 and beyond
+
+7 November 2014 Julia Yarba  (test23-V10-00-10)
+- Internal tag explicitly meant to provide backward compatibility
+  with 4.10.0 public releases (e.g. p02 or p03)
+- Will be re-tagged again as soon as validation of p03 is done
+
+28 October 2014 Julia Yarba  (test23-V10-00-09)
+- Restructured analysis scripts
+- Added various scripts for the procedure's automation
+- Updated CMakeList.txt to allow copy ovre necessary scripts
+  to the work/build area
+
+
+05 August 2014 Krzysztof Genser           (test23-V10-00-08)
+- Uses new implementation of ShieldingM
+- co-working with
+                   phys-ctor-hinelastic-V10-00-04
+                   phys-lists-V10-00-06
+
+01 August 2014 Alberto Ribon (test23-V10-00-07)
+- ProcessWrapper : updated the call to ChooseHadronicInteraction
+  according to its new signature.
+
+17 June 2014 Julia Yarba (test23-V10-00-06)
+- Minor cleanup - comment out unsed data member in Tst23NA49
+
+3 June 2014 Julia Yarba (test23-V10-00-05)
+- Port several more HARP subsets (mainly proton+C)
+- Improve analysis of NA61 and HARP data and stat.testing vs simulated results
+- Include ShieldingM in the testing
+- Various small cleanups
+
+13 May 2014 Julia Yarba (test23-V10-00-04)
+- Includes several updates related to restructuring
+- Improve analysis of NA49 data
+- Start incorporating double diff. xsec for p+C -> pi+/- from NA49,
+  both the data and analysis scripts (currently added data for pi+)
+
+8 January 2014 Julia Yarba (test23-V10-00-03)
+- Intermediate tag to include several changes towards
+  restructuring of test47
+- Fully compatible with current tags of test19 and test75
+
+2 January 2014 Julia Yarba (test23-V10-00-02)
+- Re-tag in order to re-submit with the tag of test19
+
+11 December 2013 Julia Yarba (test23-V10-00-01)
+- Refine shared code infrastructure
+- Include utility to extract xsec (beam+target)
+
+10 December 2013 Julia Yarba (test23-V10-00-00)
+- (Re)Activate ActionInit
+- Minor cleanup
+
+9 December 2013  Julia Yarba (test23-V09-06-09)
+- ProcessWrapper now inherits from G4HadronicProcess (instead of G4VDiscreteProcess)
+- Several related adjustments
+
+26 November 2013  Julia Yarba (test23-V09-06-08)
+- Refine MC2Data plotting utility
+- Add SSMD plotting utility
+- Note: G4VUserActionInitialization still NOT activated
+
+20 November 2013  Julia Yarba (test23-V09-06-07)
+- Include functionality to account for decays of short-lived resonances
+  (of lifetime<0.01*ns, such as eta, eta_prime, etc.)
+- Add pp->pions data from NA49
+- Various cleanups
+- Note: G4VUserActionInitialization is NOT activated;
+  will be un-commnted in the next tag
+
+5 November 2013  Julia Yarba (test23-V09-06-06)
+- Refactor, cleanup and update root scripts - the shared pieces now can also be used by test19
+
+5 November 2013  Julia Yarba (test23-V09-06-05)
+- Remove LEP from NuBeam
+- update Root macros, as the 1st attempt to factor out common-use pieces of Root macros
+
+25 October 2013  Julia Yarba (test23-V09-06-04)
+- Remove CommonSW/CMakeList.txt (as the 1st step towards removing the whole subdir)
+
+25 October 2013  Julia Yarba (test23-V09-06-03)
+- Additional batch scripts
+- Minor cleanups (unused variables, etc.)
+
+24 October 2013  Julia Yarba (test23-V09-06-02)
+- Copy over source code and headers from CommonSW into shared
+- Improve CmakeList (now compile/build each test directly with shared, rather than building shared into a library)
+- Several cleanups
+
+21 August 2013  Julia Yarba (test23-V09-06-01)
+----------------------------------------------------
+- First tag for testing physics list, with some focus on NuBeam
+
+10 December 2012  Alberto Ribon (test23-V09-06-00)
+----------------------------------------------------
+- Removed the CHIPS test: the slot is now available.
+
+15 November 2012  Pere Mato (test23-V09-05-07)
+----------------------------------------------------
+- To avoid intermittent build problems on Windows added an
+  artificial dependency between targets to serialize building them.
+
+12 October 2012  Andrea Dotti  (test23-V09-05-06)
+----------------------------------------------------
+- Explicit inclusion of units and constants headers.
+
+9 October 2012  Gabriele Cosmo (test23-V09-05-05)
+----------------------------------------------------
+- Explicit inclusion of units and constants headers.
+
+21 August 2012  Pere Mato (test23-V09-05-04)
+----------------------------------------------------
+- CMakeLists.txt - Changed to avoid two builds of different targets running concurrenly
+                   when CTest is used with -jN
+
+27 July 2012  Vladimir Ivanchenko (test23-V09-05-03)
+----------------------------------------------------
+- Tst22IonPhysics - fixed bugs in ion elastic
+
+25 July 2011, Andrea Dotti (test23-V09-04-02)
+----------------------------------------------
+- Update test23-large_N.in to replace obsolete /run/particle/setCut by /run/SetCut
+
+15 June 2011, Gunter Folger   (test23-V09-04-01)
+----------------------------------------------
+- Update test23.in to replace obsolete /run/particle/SetCut by /run/SetCut
+
+29 Mar 2011, Gunter Folger   (test23-V09-04-00)
+----------------------------------------------
+- Correct GNUmakefile_hadronic_exerciser to work with global shared libs.
+
+18 Mar 2010  Dennis Wright  (test23-V09-03-00)
+----------------------------------------------
+- replace G4MultipleScattering with G4eMultipleScattering, G4MuMultipleScattering,
+  and G4hMultipleScattering
+- add information to README
+
+
+20 October 2009, Hisaya Kurashige (test12-V09-02-01)
+----------------------------------------------------
+- Use /run/setCut command instead of /run/particle/setCut command
+
+
+26 May 2009, Gunter Folger             (test23-V09-02-00)
+---------------------------------------------------------
+- rename hadronic exerciser files; use "_" instead of "." in filename;
+   ("." in fileanme confuses Windows, resulting in warnings)
+
+
+Dec 6, 2005  Gabriele Cosmo
+---------------------------
+- Trivial changes for support of CLHEP-2.0.X series.
+
+
+Jan 27, 2004 Mikhail Kossov
+---------------------------
+- converted to the CHIPS test of nuclear capture at rest
+
+
+Oct 18, 2001  Steve O'Neale (tests-V03-02-03)
+---------------------------------------------
+- update reference outputs in tests directory
+
+
+March 07 2001 H.Kurashige (test23-V03-00-03)
+--------------------------------------------
+-  Add G4MuonMinusCaptureAtRest in G4MuonPhysics
+
+
+Feb 20 2001 Steve O'Neale Update reference outputs following
+            materials-V03-00-04 from tagset268 (test23-V03-00-02)
+
+Feb 15 2001 Steve O'Neale Update large_N output from geant4-03-00-ref-02
+
+Frb 08 2001 Hisaya Kurashige
+- Modify Tst23SteppingAction.cc to fit with new tracking code (tracking-V03-00-05)
+
+Jan 06 2001  Hisaya Kurashige
+- intorduce Modular Physics List
+
+25th November 2000 Steve O'Neale (tagset210)
+- Update test outputs for min.delta energy cut
+
+18th August 2000  Michel Maire
+- standard G4ionIonisation removed from the PhysicsList
+
+June 17, 2000  John Allison  (test23-V01-01-00)
+- Updated test23*.out for geant4-01-01-ref-06.
+
+16 Apr., 1999 H.Kurashige
+- Modify SetCuts() and ConstructParticle() in Tst23PhysicsList
+- Modify BeginOfRunAction() and EndOfRunAction() in Tst23RunAction
+- Modify UserSteppingAction() in Tst23SteppingAction
+
+9th August 1998  John Allison
+- Changed G4UIterminal to G4UIGAG.
+
+June 27, 98 G. Cosmo
+- Created.
+

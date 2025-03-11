@@ -1,0 +1,164 @@
+# Category test65 History
+
+See `CONTRIBUTING.rst` for details of **required** info/format for each entry,
+which **must** added in reverse chronological order (newest at the top).
+It must **not** be used as a substitute for writing good git commit messages!
+
+-------------------------------------------------------------------------------
+
+## 2024-09-18 Gabriele Cosmo (test65-V11-02-00)
+- Migrated to use G4RunManagerFactory with default Tasking run-manager.
+
+## 2021-12-10 Ben Morgan (test65-V11-00-00)
+- Change to new Markdown History format
+
+---
+
+# History entries prior to 11.0
+
+4 August 2021 Ben Morgan (test65-V10-07-05)
+- Modernize CMake script allowing test to be built in system testing
+  or as a standalone project
+
+18th June 2021 Igor Semeniouk (test65-V10-07-04)
+ - fix test65-download status, when downloaded from secondary server
+
+5 May 2021 Ben Morgan (test65-V10-07-03)
+- Do not install tests
+
+18 March 2021 Alberto Ribon (test65-V10-07-02)
+- Tst65PhysicsList : replaced G4HadronCaptureProcess with
+  G4NeutronCaptureProcess, and G4HadronFissionProcess with
+  G4NeutronFissionProcess.
+
+04 March 2021 Alberto Ribon (test65-V10-07-01)
+- Tst65PhysicsList : replaced particle-specific inelastic hadronic
+  processes (that have been deleted) with G4HadronInelasticProcess.
+
+18 February 2021 Ben Morgan (test65-V10-07-00)
+- Support same CMake version range as core Geant4
+
+08 May 2019 Vladimir Ivanchenko (test65-V10-05-00)
+- use ShieldingLEND PhysicsList and Mixmax random engine
+
+09 August 2018  Alberto Ribon (test65-V10-04-03)
+- Tst65PhysicsList : replaced the explicit high-energy limit of hadronic
+  physics with the one from G4HadronicParameters .
+
+16 May 2018  Gunter Folger    (test65-V10-04-02)
+- fix server name. Missed to correct the server name after changes for debug.
+
+16 May 2018  Gunter Folger    (test65-V10-04-01)
+- retag correcting tag name.
+
+15 May 2018  Gunter Folger    (test65-v10-04-00)  rejected, wrong name
+- DownloadLENDData.cmake: Change download file to new path/name.
+    Fixes to enable alternative download when download from LLNL fails.
+
+26 Octorber 2017 Tatsumi Koi  (test65-V10-03-06)
+- Adding G4_Be, G4_Ge, G4_Au and G4_Pb to list of target materials in test of gamma projectiles
+- Using G4LENDCombinedCrossSection and G4LENDorBERTModel for gamma
+
+13 September 2017 Tatsumi Koi  (test65-V10-03-05)
+- Adding gamma projectile reactions in test
+
+25 August 2017 Tatsumi Koi  (test65-V10-03-04)
+- Update address of ftp site for LEND data
+
+22 August 2017 G.Folger  (test65-V10-03-03)
+- Increase timeout for download also in CMakeLists.txt
+
+21 August 2017 G.Folger  (test65-V10-03-02)
+- Increase timeout and inactivity limit for download in DownloadLENDData.cmake
+
+24 January 2016 B.Morgan (test65-V10-03-01)
+- DownloadLENDData.cmake: Previous tag had some non-obvious untar errors
+  on Continuous. Split untar/rename into separate steps to help diagnose
+  issues. Explicitly use "cmake -E tar xfz" for gzip extraction inline with
+  CMake's ExternalProject behaviour.
+
+23 January 2016 B.Morgan (test65-V10-03-00)
+- Make download step a direct CTest-time test
+- DownloadLENDData.cmake: New CMake script to download and unpack LEND data
+  from LLNL or alternate URL. Essentially the same process as was in CMakeLists.txt
+  but delegated to CTest time.
+- CMakeLists.txt: Call DownloadLENDData.cmake script as a test. Make tests
+  of test65 application depend on it so that data will exist before they
+  are run. Note that if data download fails, these tests will still run and
+  consequently fail, but process can be traced.
+
+13 October 2016 G.Folger  (test65-V10-02-06)
+- remove direct use of theParticleIterator, use GetParticleTableIterator().
+    fix required by clang39 on Linux and MAC
+
+2 September 2016 Tatsumi Koi	(test65-V10-02-05)
+- Add MD5 hash value to CMakeLists.txt
+
+27 July 2016Gunter Folger       (test65-V10-02-04)
+- Another attempt to...
+   Correct name of local compressed file used in ExternalProject_Add
+
+27 July 2016Gunter Folger       (test65-V10-02-03)
+- Correct name of local compressed file used in ExternalProject_Add
+
+26 July 2016 Gunter Folger       (test65-V10-02-02)
+- Fix GND download error by enabling fall back to local server download
+
+22 February 2016  Tatsumi  Koi	(test65-V10-02-01)
+- Change default random number engine from Ranecu to Ranlux64.
+- A meaningless output is turned off
+
+22 January 2016  Tatsumi  Koi   (test65-V10-02-00)
+- Fix CMakeLists_Standalone.txt
+
+06 November 2015 Tatsumi Koi  (test65-V10-01-03)
+- Adding process, model and cross sections for gamma incidence
+
+02 November 2015 Alberto Ribon (test65-V10-01-02)
+- Migrated to ParticleHP (although the code is commented out)
+
+31 October 2015 Tatsumi Koi  (test65-V10-01-01)
+- Update for LEND v1.3
+	CMakeLists.txt
+
+29 July 2015 Tatsumi Koi  (test65-V10-01-00)
+- Use parameterised volume for changing material of target box
+
+17 September 2014 Gunter Folger  (test65-V10-00-03)
+- disable test on Windows, code incomplete for Windows;
+- revert back to original download URL
+
+20 August 2014 Gunter Folger  (test65-V10-00-02)
+- Use datafile from geant4 download area; this tar file has symlink xmcf.n_1.map
+   replaced by a copy of 000_n_1.map.
+
+2 June 2014 Tatsumi Koi (test65-V10-00-01)
+Re-tag for testing
+
+2 June 2014 Tatsumi Koi (test65-V10-00-00)
+Migration to v10.00
+        test65.cc
+        include/Tst65ActionInitialization.hh
+        src/Tst65ActionInitialization.cc
+        src/Tst65PhysicsList.cc
+Added CMakeLists_Standalone.txt to be used for stand-alone running
+        CMakeLists_Standalone.txt
+
+14 June 2013 Ben Morgan
+- CMakeLists.txt : Add ExternalProject for downloading LEND data as
+  part of test build. It currently uses the URL provided on the Geant4
+  website. The test65-data target provided by the ExternalProject_Add
+  call is added as a dependency of the main test65 target to ensure
+  the data is created before the executable.
+
+12 June 2013 Tatsumi Koi (test65-V09-06-00)
+Migration to v9.6
+	CMakeLists.txt
+	test65_hadronic_exerciser.cc
+	src/Tst65DetectorConstruction.cc
+	src/Tst65PhysicsList.cc
+	src/Tst65PrimaryGeneratorAction.cc
+	src/Tst65SteppingAction.cc
+
+24 November 2010 Tatsumi Koi (test65-V09-03-00)
+    new test for LEND (Low Energy Nucler Data)

@@ -1,0 +1,1724 @@
+
+        ############################################
+        !!! WARNING - FPE detection is activated !!!
+        ############################################
+
+**************************************************************
+ Geant4 version Name: geant4-11-02-ref-09 [MT]   (31-October-2024)
+  << in Multi-threaded mode >> 
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+/control/cout/ignoreThreadsExcept 0
+/tracking/verbose 0
+/run/numberOfThreads 1
+/run/verbose 1
+#
+#/testem/det/setAbsMat G4_Ti
+#/testem/det/setAbsThick 1.5 um
+/testem/det/setAbsMat G4_Pu
+#/testem/det/setAbsMat G4_U
+#/testem/det/setAbsMat PuO2
+#/testem/det/setAbsMat G4_PbWO4
+/testem/det/setAbsThick 0.7 um
+/testem/det/setAbsYZ 5 cm
+#
+#/testem/phys/addPhysics emstandard_opt0
+/testem/phys/addPhysics emstandard_opt3
+PhysicsList::AddPhysicsList: <emstandard_opt3>
+#/testem/phys/addPhysics emstandard_opt4
+#/process/em/verbose 1
+#/process/em/workerVerbose 0
+#
+/run/setCut 0.001 mm
+#
+/run/initialize
+
+==========================================================================================
+G4TaskRunManager :: Using G4ThreadPool...
+==========================================================================================
+
+
+ Material: G4_Galactic    density:  0.000 mg/cm3  RadL: 204310098.490 pc   Nucl.Int.Length: 3240.779 pc 
+                       Imean:  21.800 eV   temperature:   2.73 K  pressure:   0.00 atm
+
+   --->  Element: H (H)   Z =  1.0   N =     1   A =  1.008 g/mole
+         --->  Isotope:    H1   Z =  1   N =   1   A =   1.01 g/mole   abundance: 99.989 %
+         --->  Isotope:    H2   Z =  1   N =   2   A =   2.01 g/mole   abundance:  0.011 %
+          ElmMassFraction: 100.00 %  ElmAbundance 100.00 % 
+
+
+ Material:    G4_Pu    density: 19.840 g/cm3   RadL:   2.989 mm   Nucl.Int.Length:  11.025 cm 
+                       Imean: 921.000 eV   temperature: 293.15 K  pressure:   1.00 atm
+
+   --->  Element: Pu (Pu)   Z = 94.0   N =   244   A = 244.064 g/mole
+         --->  Isotope: Pu244   Z = 94   N = 244   A = 244.06 g/mole   abundance: 100.000 %
+          ElmMassFraction: 100.00 %  ElmAbundance 100.00 % 
+
+
+ The  WORLD   is made of 840 nm  of G4_Galactic. The transverse size (YZ) of the world is 6 cm 
+ The ABSORBER is made of 700 nm  of G4_Pu. The transverse size (YZ) is 5 cm 
+ X position of the middle of the absorber 0 fm 
+/run/physicsModified
+=======================================================================
+======                 Electromagnetic Physics Parameters      ========
+=======================================================================
+LPM effect enabled                                 1
+Enable creation and use of sampling tables         0
+Apply cuts on all EM processes                     0
+Use combined TransportationWithMsc                 Disabled
+Use general process                                1
+Enable linear polarisation for gamma               0
+Enable photoeffect sampling below K-shell          1
+Enable sampling of quantum entanglement            0
+X-section factor for integral approach             0.8
+Min kinetic energy for tables                      10 eV 
+Max kinetic energy for tables                      100 TeV
+Number of bins per decade of a table               20
+Verbose level                                      1
+Verbose level for worker thread                    0
+Bremsstrahlung energy threshold above which 
+  primary e+- is added to the list of secondary    100 TeV
+Bremsstrahlung energy threshold above which primary
+  muon/hadron is added to the list of secondary    100 TeV
+Positron annihilation at rest model                AllisonPositronium
+Enable 3 gamma annihilation on fly                 0
+Lowest triplet kinetic energy                      1 MeV
+Enable sampling of gamma linear polarisation       0
+5D gamma conversion model type                     0
+5D gamma conversion model on isolated ion          0
+Use Ricardo-Gerardo pair production model          0
+Livermore data directory                           epics_2017
+=======================================================================
+======                 Ionisation Parameters                   ========
+=======================================================================
+Step function for e+-                              (0.2, 0.1 mm)
+Step function for muons/hadrons                    (0.2, 0.05 mm)
+Step function for light ions                       (0.1, 0.02 mm)
+Step function for general ions                     (0.1, 0.001 mm)
+Lowest e+e- kinetic energy                         100 eV 
+Lowest muon/hadron kinetic energy                  1 keV
+Use ICRU90 data                                    1
+Fluctuations of dE/dx are enabled                  1
+Type of fluctuation model for leptons and hadrons  Urban
+Use built-in Birks satuaration                     0
+Build CSDA range enabled                           0
+Use cut as a final range enabled                   0
+Enable angular generator interface                 1
+Max kinetic energy for CSDA tables                 1 GeV
+Max kinetic energy for NIEL computation            1 MeV
+Linear loss limit                                  0.01
+Read data from file for e+e- pair production by mu 0
+=======================================================================
+======                 Multiple Scattering Parameters          ========
+=======================================================================
+Type of msc step limit algorithm for e+-           3
+Type of msc step limit algorithm for muons/hadrons 0
+Msc lateral displacement for e+- enabled           1
+Msc lateral displacement for muons and hadrons     1
+Urban msc model lateral displacement alg96         1
+Range factor for msc step limit for e+-            0.04
+Range factor for msc step limit for muons/hadrons  0.2
+Geometry factor for msc step limitation of e+-     2.5
+Safety factor for msc step limit for e+-           0.6
+Skin parameter for msc step limitation of e+-      1
+Lambda limit for msc step limit for e+-            1 mm
+Use Mott correction for e- scattering              1
+Factor used for dynamic computation of angular 
+  limit between single and multiple scattering     1
+Fixed angular limit between single 
+  and multiple scattering                          3.1416 rad
+Upper energy limit for e+- multiple scattering     100 MeV
+Type of electron single scattering model           0
+Type of nuclear form-factor                        1
+Screening factor                                   1
+=======================================================================
+======                 Atomic Deexcitation Parameters          ========
+=======================================================================
+Fluorescence enabled                               1
+Directory in G4LEDATA for fluorescence data files  fluor
+Auger electron cascade enabled                     0
+PIXE atomic de-excitation enabled                  0
+De-excitation module ignores cuts                  0
+Type of PIXE cross section for hadrons             Empirical
+Type of PIXE cross section for e+-                 Livermore
+=======================================================================
+
+### ===  Deexcitation model UAtomDeexcitation is activated for 1 region:
+          DefaultRegionForTheWorld  1  0  0
+### ===  Ignore cuts flag:   0
+
+phot:  for gamma SubType=12 BuildTable=0
+      LambdaPrime table from 200 keV to 100 TeV in 174 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+ LivermorePhElectric : Emin=    0 eV  Emax=  100 TeV  SauterGavrila Fluo
+
+compt:  for gamma SubType=13 BuildTable=1
+      Lambda table from 10 eV  to 1 MeV, 20 bins/decade, spline: 1
+      LambdaPrime table from 1 MeV to 100 TeV in 160 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        KleinNishina : Emin=    0 eV  Emax=  100 TeV Fluo
+
+conv:  for gamma SubType=14 BuildTable=1
+      Lambda table from 1.022 MeV to 100 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+     BetheHeitlerLPM : Emin=    0 eV  Emax=  100 TeV  ModifiedTsai
+
+Rayl:  for gamma SubType=11 BuildTable=1
+      Lambda table from 10 eV  to 150 keV, 20 bins/decade, spline: 0
+      LambdaPrime table from 150 keV to 100 TeV in 176 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   LivermoreRayleigh : Emin=    0 eV  Emax=  100 TeV  CullenGenerator
+
+msc:  for e-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
+          StepLim=DistanceToBoundary Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+eIoni:  for e-  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    0 eV  Emax=  100 TeV  deltaVI
+
+eBrem:  for e-  XStype:4  SubType=3
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      LPM flag: 1 for E > 1 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    0 eV  Emax=    1 GeV  AngularGen2BS
+            eBremLPM : Emin=    1 GeV Emax=  100 TeV  AngularGen2BS
+
+ePairProd:  for e-  XStype:1  SubType=4
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 0
+      Sampling table 25x1001; from 0.1 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           ePairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+msc:  for e+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
+          StepLim=DistanceToBoundary Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+eIoni:  for e+  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    0 eV  Emax=  100 TeV  deltaVI
+
+eBrem:  for e+  XStype:4  SubType=3
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      LPM flag: 1 for E > 1 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    0 eV  Emax=    1 GeV  AngularGen2BS
+            eBremLPM : Emin=    1 GeV Emax=  100 TeV  AngularGen2BS
+
+ePairProd:  for e+  XStype:1  SubType=4
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 0
+      Sampling table 25x1001; from 0.1 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           ePairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+annihil:  for e+ XStype:2 SubType=5 AtRestModel:Allison BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            eplus2gg : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for proton  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+hIoni:  for proton  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=    2 MeV  deltaVI
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV  deltaVI
+
+hBrems:  for proton  XStype:1  SubType=3
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+hPairProd:  for proton  XStype:1  SubType=4
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      Sampling table 17x1001; from 7.50618 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+nuclearStopping:  for proton SubType=8 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   ICRU49NucStopping : Emin=    0 eV  Emax=    1 MeV
+
+msc:  for GenericIon  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+%%% G4_Galactic  iMolecula= -1  iPSTAR= -1  iICRU90= -1
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.00025 Eloss=3.73206e-05 ZF=1e-19
+E=0.000251189 Eloss=3.74092e-05 ZF=1e-19
+E=0.000281838 Eloss=3.96258e-05 ZF=1e-19
+E=0.000316228 Eloss=4.19738e-05 ZF=1e-19
+E=0.000354813 Eloss=4.44609e-05 ZF=1e-19
+E=0.000398107 Eloss=4.70954e-05 ZF=1e-19
+E=0.000446684 Eloss=4.9886e-05 ZF=1e-19
+E=0.000501187 Eloss=5.28419e-05 ZF=1e-19
+E=0.000562341 Eloss=5.5973e-05 ZF=1e-19
+E=0.000630957 Eloss=5.92896e-05 ZF=1e-19
+E=0.000707946 Eloss=6.28027e-05 ZF=1e-19
+E=0.000794328 Eloss=6.6524e-05 ZF=1e-19
+E=0.000891251 Eloss=7.04658e-05 ZF=1e-19
+E=0.001 Eloss=7.46412e-05 ZF=1e-19
+E=0.00112202 Eloss=7.9064e-05 ZF=1e-19
+E=0.00125893 Eloss=8.37488e-05 ZF=1e-19
+E=0.00141254 Eloss=8.87112e-05 ZF=1e-19
+E=0.00158489 Eloss=9.39677e-05 ZF=1e-19
+E=0.00177828 Eloss=9.95356e-05 ZF=1e-19
+E=0.00199526 Eloss=0.000105433 ZF=1e-19
+E=0.00223872 Eloss=0.000111681 ZF=1e-19
+E=0.00251189 Eloss=0.000118298 ZF=1e-19
+E=0.00281838 Eloss=0.000125308 ZF=1e-19
+E=0.00316228 Eloss=0.000132733 ZF=1e-19
+E=0.00354813 Eloss=0.000140598 ZF=1e-19
+E=0.00398107 Eloss=0.000148929 ZF=1e-19
+E=0.00446684 Eloss=0.000157753 ZF=1e-19
+E=0.00501187 Eloss=0.000167101 ZF=1e-19
+E=0.00562341 Eloss=0.000177002 ZF=1e-19
+E=0.00630957 Eloss=0.00018749 ZF=1e-19
+E=0.00707946 Eloss=0.0001986 ZF=1e-19
+E=0.00794328 Eloss=0.000210367 ZF=1e-19
+E=0.00891251 Eloss=0.000222832 ZF=1e-19
+E=0.01 Eloss=0.000236036 ZF=1e-19
+E=0.0112202 Eloss=0.000247608 ZF=1e-19
+E=0.0125893 Eloss=0.000259351 ZF=1e-19
+E=0.0141254 Eloss=0.00027136 ZF=1e-19
+E=0.0158489 Eloss=0.000283562 ZF=1e-19
+E=0.0177828 Eloss=0.000295865 ZF=1e-19
+E=0.0199526 Eloss=0.000308148 ZF=1e-19
+E=0.0223872 Eloss=0.000320262 ZF=1e-19
+E=0.0251189 Eloss=0.000332025 ZF=1e-19
+E=0.0281838 Eloss=0.000343221 ZF=1e-19
+E=0.0316228 Eloss=0.000353597 ZF=1e-19
+E=0.0354813 Eloss=0.000362865 ZF=1e-19
+E=0.0398107 Eloss=0.000370712 ZF=1e-19
+E=0.0446684 Eloss=0.000376807 ZF=1e-19
+E=0.0501187 Eloss=0.00038082 ZF=1e-19
+E=0.0562341 Eloss=0.00038244 ZF=1e-19
+E=0.0630957 Eloss=0.000381407 ZF=1e-19
+E=0.0707946 Eloss=0.000377535 ZF=1e-19
+E=0.0794328 Eloss=0.000370742 ZF=1e-19
+E=0.0891251 Eloss=0.000361072 ZF=1e-19
+E=0.1 Eloss=0.0003487 ZF=1e-19
+E=0.112202 Eloss=0.000333933 ZF=1e-19
+E=0.125893 Eloss=0.000317187 ZF=1e-19
+E=0.141254 Eloss=0.000298957 ZF=1e-19
+E=0.158489 Eloss=0.000279777 ZF=1e-19
+E=0.177828 Eloss=0.000260173 ZF=1e-19
+E=0.199526 Eloss=0.000240633 ZF=1e-19
+E=0.223872 Eloss=0.000221569 ZF=1e-19
+E=0.251189 Eloss=0.000203308 ZF=1e-19
+E=0.281838 Eloss=0.000186078 ZF=1e-19
+E=0.316228 Eloss=0.000170018 ZF=1e-19
+E=0.354813 Eloss=0.00015519 ZF=1e-19
+E=0.398107 Eloss=0.000141592 ZF=1e-19
+E=0.446684 Eloss=0.000129177 ZF=1e-19
+E=0.501187 Eloss=0.000117871 ZF=1e-19
+E=0.562341 Eloss=0.000107585 ZF=1e-19
+E=0.630957 Eloss=9.82239e-05 ZF=1e-19
+E=0.707946 Eloss=8.96982e-05 ZF=1e-19
+E=0.794328 Eloss=8.19236e-05 ZF=1e-19
+E=0.891251 Eloss=7.48247e-05 ZF=1e-19
+E=1 Eloss=6.8335e-05 ZF=1e-19
+E=1.12202 Eloss=6.23965e-05 ZF=1e-19
+E=1.25893 Eloss=5.69586e-05 ZF=1e-19
+E=1.41254 Eloss=5.19769e-05 ZF=1e-19
+E=1.58489 Eloss=4.74123e-05 ZF=1e-19
+E=1.77828 Eloss=4.32301e-05 ZF=1e-19
+E=1.99526 Eloss=3.93991e-05 ZF=1e-19
+%%% G4_Pu  iMolecula= -1  iPSTAR= -1  iICRU90= -1
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.00025 Eloss=1.778e+20 ZF=1e-19
+E=0.000251189 Eloss=1.78222e+20 ZF=1e-19
+E=0.000281838 Eloss=1.88782e+20 ZF=1e-19
+E=0.000316228 Eloss=1.99969e+20 ZF=1e-19
+E=0.000354813 Eloss=2.11817e+20 ZF=1e-19
+E=0.000398107 Eloss=2.24368e+20 ZF=1e-19
+E=0.000446684 Eloss=2.37663e+20 ZF=1e-19
+E=0.000501187 Eloss=2.51745e+20 ZF=1e-19
+E=0.000562341 Eloss=2.66662e+20 ZF=1e-19
+E=0.000630957 Eloss=2.82463e+20 ZF=1e-19
+E=0.000707946 Eloss=2.992e+20 ZF=1e-19
+E=0.000794328 Eloss=3.16929e+20 ZF=1e-19
+E=0.000891251 Eloss=3.35708e+20 ZF=1e-19
+E=0.001 Eloss=3.556e+20 ZF=1e-19
+E=0.00112202 Eloss=3.76671e+20 ZF=1e-19
+E=0.00125893 Eloss=3.9899e+20 ZF=1e-19
+E=0.00141254 Eloss=4.22631e+20 ZF=1e-19
+E=0.00158489 Eloss=4.47674e+20 ZF=1e-19
+E=0.00177828 Eloss=4.742e+20 ZF=1e-19
+E=0.00199526 Eloss=5.02298e+20 ZF=1e-19
+E=0.00223872 Eloss=5.32061e+20 ZF=1e-19
+E=0.00251189 Eloss=5.63588e+20 ZF=1e-19
+E=0.00281838 Eloss=5.96983e+20 ZF=1e-19
+E=0.00316228 Eloss=6.32356e+20 ZF=1e-19
+E=0.00354813 Eloss=6.69825e+20 ZF=1e-19
+E=0.00398107 Eloss=7.09515e+20 ZF=1e-19
+E=0.00446684 Eloss=7.51557e+20 ZF=1e-19
+E=0.00501187 Eloss=7.96089e+20 ZF=1e-19
+E=0.00562341 Eloss=8.4326e+20 ZF=1e-19
+E=0.00630957 Eloss=8.93227e+20 ZF=1e-19
+E=0.00707946 Eloss=9.46154e+20 ZF=1e-19
+E=0.00794328 Eloss=1.00222e+21 ZF=1e-19
+E=0.00891251 Eloss=1.0616e+21 ZF=1e-19
+E=0.01 Eloss=1.12451e+21 ZF=1e-19
+E=0.0112202 Eloss=1.18403e+21 ZF=1e-19
+E=0.0125893 Eloss=1.24604e+21 ZF=1e-19
+E=0.0141254 Eloss=1.31108e+21 ZF=1e-19
+E=0.0158489 Eloss=1.37923e+21 ZF=1e-19
+E=0.0177828 Eloss=1.45055e+21 ZF=1e-19
+E=0.0199526 Eloss=1.52509e+21 ZF=1e-19
+E=0.0223872 Eloss=1.60285e+21 ZF=1e-19
+E=0.0251189 Eloss=1.68379e+21 ZF=1e-19
+E=0.0281838 Eloss=1.76781e+21 ZF=1e-19
+E=0.0316228 Eloss=1.85471e+21 ZF=1e-19
+E=0.0354813 Eloss=1.9442e+21 ZF=1e-19
+E=0.0398107 Eloss=2.03584e+21 ZF=1e-19
+E=0.0446684 Eloss=2.12903e+21 ZF=1e-19
+E=0.0501187 Eloss=2.22294e+21 ZF=1e-19
+E=0.0562341 Eloss=2.31647e+21 ZF=1e-19
+E=0.0630957 Eloss=2.40822e+21 ZF=1e-19
+E=0.0707946 Eloss=2.49643e+21 ZF=1e-19
+E=0.0794328 Eloss=2.57893e+21 ZF=1e-19
+E=0.0891251 Eloss=2.65317e+21 ZF=1e-19
+E=0.1 Eloss=2.71623e+21 ZF=1e-19
+E=0.112202 Eloss=2.76493e+21 ZF=1e-19
+E=0.125893 Eloss=2.79603e+21 ZF=1e-19
+E=0.141254 Eloss=2.80653e+21 ZF=1e-19
+E=0.158489 Eloss=2.79402e+21 ZF=1e-19
+E=0.177828 Eloss=2.75712e+21 ZF=1e-19
+E=0.199526 Eloss=2.69579e+21 ZF=1e-19
+E=0.223872 Eloss=2.61163e+21 ZF=1e-19
+E=0.251189 Eloss=2.5078e+21 ZF=1e-19
+E=0.281838 Eloss=2.38875e+21 ZF=1e-19
+E=0.316228 Eloss=2.2597e+21 ZF=1e-19
+E=0.354813 Eloss=2.126e+21 ZF=1e-19
+E=0.398107 Eloss=1.9925e+21 ZF=1e-19
+E=0.446684 Eloss=1.86315e+21 ZF=1e-19
+E=0.501187 Eloss=1.74074e+21 ZF=1e-19
+E=0.562341 Eloss=1.62689e+21 ZF=1e-19
+E=0.630957 Eloss=1.52222e+21 ZF=1e-19
+E=0.707946 Eloss=1.42661e+21 ZF=1e-19
+E=0.794328 Eloss=1.33937e+21 ZF=1e-19
+E=0.891251 Eloss=1.25959e+21 ZF=1e-19
+E=1 Eloss=1.18621e+21 ZF=1e-19
+E=1.12202 Eloss=1.11824e+21 ZF=1e-19
+E=1.25893 Eloss=1.05477e+21 ZF=1e-19
+E=1.41254 Eloss=9.95034e+20 ZF=1e-19
+E=1.58489 Eloss=9.38437e+20 ZF=1e-19
+E=1.77828 Eloss=8.84518e+20 ZF=1e-19
+E=1.99526 Eloss=8.32946e+20 ZF=1e-19
+
+ionIoni:  for GenericIon  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.001 mm), integ: 3, fluct: 1, linLossLim= 0.02
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+    LindhardSorensen : Emin=    0 eV  Emax=  100 TeV  deltaVI
+
+nuclearStopping:  for GenericIon SubType=8 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   ICRU49NucStopping : Emin=    0 eV  Emax=    1 MeV
+
+msc:  for alpha  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+ionIoni:  for alpha  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.1, 0.02 mm), integ: 3, fluct: 1, linLossLim= 0.02
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            BraggIon : Emin=    0 eV  Emax=7.9452 MeV  deltaVI
+          BetheBloch : Emin=7.9452 MeV Emax=  100 TeV  deltaVI
+
+nuclearStopping:  for alpha SubType=8 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   ICRU49NucStopping : Emin=    0 eV  Emax=    1 MeV
+
+msc:  for anti_proton  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+hIoni:  for anti_proton  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=    2 MeV  deltaVI
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV  deltaVI
+
+hBrems:  for anti_proton  XStype:1  SubType=3
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+hPairProd:  for anti_proton  XStype:1  SubType=4
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      Sampling table 17x1001; from 7.50618 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+msc:  for kaon+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+hIoni:  for kaon+  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=1.05231 MeV  deltaVI
+          BetheBloch : Emin=1.05231 MeV Emax=  100 TeV  deltaVI
+
+hBrems:  for kaon+  XStype:1  SubType=3
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+hPairProd:  for kaon+  XStype:1  SubType=4
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      Sampling table 18x1001; from 3.94942 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+msc:  for kaon-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+hIoni:  for kaon-  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=1.05231 MeV  deltaVI
+          BetheBloch : Emin=1.05231 MeV Emax=  100 TeV  deltaVI
+
+hBrems:  for kaon-  XStype:1  SubType=3
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+hPairProd:  for kaon-  XStype:1  SubType=4
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      Sampling table 18x1001; from 3.94942 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+msc:  for mu+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+muIoni:  for mu+  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=  200 keV  deltaVI
+        MuBetheBloch : Emin=  200 keV Emax=  100 TeV  deltaVI
+
+muBrems:  for mu+  XStype:1  SubType=3
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+              MuBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+muPairProd:  for mu+  XStype:1  SubType=4
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      Sampling table 21x1001; from 0.85 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          muPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+msc:  for mu-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+muIoni:  for mu-  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=  200 keV  deltaVI
+        MuBetheBloch : Emin=  200 keV Emax=  100 TeV  deltaVI
+
+muBrems:  for mu-  XStype:1  SubType=3
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+              MuBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+muPairProd:  for mu-  XStype:1  SubType=4
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      Sampling table 21x1001; from 0.85 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          muPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+msc:  for pi+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+hIoni:  for pi+  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=297.505 keV  deltaVI
+          BetheBloch : Emin=297.505 keV Emax=  100 TeV  deltaVI
+
+hBrems:  for pi+  XStype:1  SubType=3
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+hPairProd:  for pi+  XStype:1  SubType=4
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      Sampling table 20x1001; from 1.11656 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+msc:  for pi-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+hIoni:  for pi-  XStype:3  SubType=2
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=297.505 keV  deltaVI
+          BetheBloch : Emin=297.505 keV Emax=  100 TeV  deltaVI
+
+hBrems:  for pi-  XStype:1  SubType=3
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+hPairProd:  for pi-  XStype:1  SubType=4
+      dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
+      Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
+      Sampling table 20x1001; from 1.11656 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+=========================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Initializing workers...
+=========================================================================
+
+G4WT0 > /control/cout/ignoreThreadsExcept 0
+G4WT0 > /tracking/verbose 0
+G4WT0 > /run/verbose 1
+G4WT0 > /run/setCut 0.001 mm
+G4WT0 > /run/initialize 
+G4WT0 > /run/physicsModified 
+G4WT0 > /control/verbose 2
+G4WT0 > /control/cout/ignoreThreadsExcept 0
+G4WT0 > /tracking/verbose 0
+G4WT0 > /run/verbose 1
+G4WT0 > /run/setCut 0.001 mm
+G4WT0 > /run/initialize 
+G4WT0 > /run/physicsModified 
+#
+/testem/gun/setDefault
+/gun/particle ion
+/gun/ion 22 50
+/gun/energy 280 MeV
+#
+/run/printProgress 10000
+/run/beamOn 100
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : G4_Galactic
+ Range cuts        :  gamma  1 um     e-  1 um     e+  1 um  proton 1 um 
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 100 eV 
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : Yes
+ Material : G4_Pu
+ Range cuts        :  gamma  1 um     e-  1 um     e+  1 um  proton 1 um 
+ Energy thresholds :  gamma  1.97892 keV    e-  13.2725 keV    e+  12.9305 keV proton 100 eV 
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 0 starts.
+
+------- MixMaxRng engine status -------
+ Current state vector is:
+mixmax state, file version 1.0
+N=17; V[N]={906770732717044781, 629165745432651234, 1235682547346241386, 68420008233404568, 2262190991329242458, 2266470399991071809, 1976726662926872232, 245458862506414172, 1955974201201518530, 2155248512522080758, 604170912935414061, 1116171330120743511, 1861018313684488333, 1296715403254578286, 1549011045957234151, 370819759640195970, 2230139271784837643}; counter= 17sumtot= 1977567618660788324
+---------------------------------------
+G4WT0 > /testem/gun/setDefault 
+G4WT0 > /gun/particle ion
+G4WT0 > /gun/ion 22 50
+G4WT0 > /gun/energy 280 MeV
+G4WT0 > /run/printProgress 10000
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 0 starts on worker thread 0.
+G4WT0 > --> Event 0 starts with initial seeds (13049039,61775110).
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.7939 fluc= 2.89405 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07475e-26 Escaled=5.36992 R=3.18831e+23 L=7.00104e-05 fFactor=324.256 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07475e-26 length=7.00104e-05 fFactor=324.256
+G4WT0 > After fluct: eloss(MeV)= 2.86357e-26 fluc= -2.11176e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117314
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.2938 fluc= 2.39391 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.0713e-26 Escaled=5.37994 R=3.19751e+23 L=7.00023e-05 fFactor=324.47 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.0713e-26 length=7.00023e-05 fFactor=324.47
+G4WT0 > After fluct: eloss(MeV)= 2.86049e-26 fluc= -2.10815e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117534
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.2743 fluc= 2.37444 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07116e-26 Escaled=5.38035 R=3.19789e+23 L=7.00019e-05 fFactor=324.479 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07116e-26 length=7.00019e-05 fFactor=324.479
+G4WT0 > After fluct: eloss(MeV)= 2.86036e-26 fluc= -2.108e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117543
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3258 fluc= 2.42587 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07556e-26 Escaled=5.37933 R=3.19695e+23 L=7.00951e-05 fFactor=324.457 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07556e-26 length=7.00951e-05 fFactor=324.457
+G4WT0 > After fluct: eloss(MeV)= 2.86445e-26 fluc= -2.11115e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.011752
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 12.9752 fluc= 2.0753 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06927e-26 Escaled=5.38637 R=3.20343e+23 L=7.0001e-05 fFactor=324.607 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06927e-26 length=7.0001e-05 fFactor=324.607
+G4WT0 > After fluct: eloss(MeV)= 2.85867e-26 fluc= -2.10595e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117675
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 12.9798 fluc= 2.07986 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06926e-26 Escaled=5.38626 R=3.20333e+23 L=7.00001e-05 fFactor=324.605 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06926e-26 length=7.00001e-05 fFactor=324.605
+G4WT0 > After fluct: eloss(MeV)= 2.85867e-26 fluc= -2.10597e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117672
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.2676 fluc= 2.3677 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07118e-26 Escaled=5.38049 R=3.19802e+23 L=7.00034e-05 fFactor=324.482 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07118e-26 length=7.00034e-05 fFactor=324.482
+G4WT0 > After fluct: eloss(MeV)= 2.86038e-26 fluc= -2.10799e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117546
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 12.546 fluc= 1.64615 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.0666e-26 Escaled=5.39507 R=3.21144e+23 L=7.00011e-05 fFactor=324.793 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.0666e-26 length=7.00011e-05 fFactor=324.793
+G4WT0 > After fluct: eloss(MeV)= 2.85629e-26 fluc= -2.10305e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117865
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.0622 fluc= 2.16228 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06979e-26 Escaled=5.38465 R=3.20184e+23 L=7.00008e-05 fFactor=324.57 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06979e-26 length=7.00008e-05 fFactor=324.57
+G4WT0 > After fluct: eloss(MeV)= 2.85913e-26 fluc= -2.10652e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117637
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3895 fluc= 2.48959 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07179e-26 Escaled=5.37809 R=3.19582e+23 L=7.00004e-05 fFactor=324.431 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07179e-26 length=7.00004e-05 fFactor=324.431
+G4WT0 > After fluct: eloss(MeV)= 2.86092e-26 fluc= -2.10871e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117493
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.4543 fluc= 2.55443 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07228e-26 Escaled=5.37675 R=3.19458e+23 L=7.00022e-05 fFactor=324.402 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07228e-26 length=7.00022e-05 fFactor=324.402
+G4WT0 > After fluct: eloss(MeV)= 2.86136e-26 fluc= -2.10921e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117464
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.1947 fluc= 2.29481 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07065e-26 Escaled=5.38196 R=3.19937e+23 L=7.00017e-05 fFactor=324.513 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07065e-26 length=7.00017e-05 fFactor=324.513
+G4WT0 > After fluct: eloss(MeV)= 2.85991e-26 fluc= -2.10745e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117578
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.6753 fluc= 2.77546 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07361e-26 Escaled=5.37228 R=3.19048e+23 L=7.00011e-05 fFactor=324.306 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07361e-26 length=7.00011e-05 fFactor=324.306
+G4WT0 > After fluct: eloss(MeV)= 2.86254e-26 fluc= -2.11068e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117366
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.536 fluc= 2.63613 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07275e-26 Escaled=5.37512 R=3.19308e+23 L=7.00014e-05 fFactor=324.367 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07275e-26 length=7.00014e-05 fFactor=324.367
+G4WT0 > After fluct: eloss(MeV)= 2.86177e-26 fluc= -2.10974e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117428
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.5243 fluc= 2.62441 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07272e-26 Escaled=5.37532 R=3.19327e+23 L=7.00022e-05 fFactor=324.371 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07272e-26 length=7.00022e-05 fFactor=324.371
+G4WT0 > After fluct: eloss(MeV)= 2.86175e-26 fluc= -2.10969e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117433
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.6198 fluc= 2.71991 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07323e-26 Escaled=5.37342 R=3.19152e+23 L=7.00003e-05 fFactor=324.331 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07323e-26 length=7.00003e-05 fFactor=324.331
+G4WT0 > After fluct: eloss(MeV)= 2.8622e-26 fluc= -2.11028e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117391
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.5924 fluc= 2.69249 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07325e-26 Escaled=5.37395 R=3.19201e+23 L=7.00045e-05 fFactor=324.342 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07325e-26 length=7.00045e-05 fFactor=324.342
+G4WT0 > After fluct: eloss(MeV)= 2.86222e-26 fluc= -2.11023e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117402
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 12.7737 fluc= 1.87377 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06799e-26 Escaled=5.39043 R=3.20716e+23 L=7.00004e-05 fFactor=324.694 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06799e-26 length=7.00004e-05 fFactor=324.694
+G4WT0 > After fluct: eloss(MeV)= 2.85753e-26 fluc= -2.10458e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117763
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.0244 fluc= 2.12451 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06969e-26 Escaled=5.38548 R=3.20261e+23 L=7.00043e-05 fFactor=324.588 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06969e-26 length=7.00043e-05 fFactor=324.588
+G4WT0 > After fluct: eloss(MeV)= 2.85905e-26 fluc= -2.10635e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117655
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.1937 fluc= 2.29381 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07068e-26 Escaled=5.382 R=3.19941e+23 L=7.00025e-05 fFactor=324.514 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07068e-26 length=7.00025e-05 fFactor=324.514
+G4WT0 > After fluct: eloss(MeV)= 2.85993e-26 fluc= -2.10746e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117579
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.498 fluc= 2.59816 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07268e-26 Escaled=5.37585 R=3.19376e+23 L=7.00051e-05 fFactor=324.383 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07268e-26 length=7.00051e-05 fFactor=324.383
+G4WT0 > After fluct: eloss(MeV)= 2.86172e-26 fluc= -2.1096e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117444
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.6604 fluc= 2.76048 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.0735e-26 Escaled=5.37262 R=3.19078e+23 L=7.0001e-05 fFactor=324.313 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.0735e-26 length=7.0001e-05 fFactor=324.313
+G4WT0 > After fluct: eloss(MeV)= 2.86244e-26 fluc= -2.11057e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117373
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3163 fluc= 2.41641 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07134e-26 Escaled=5.37951 R=3.19711e+23 L=7.00002e-05 fFactor=324.461 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07134e-26 length=7.00002e-05 fFactor=324.461
+G4WT0 > After fluct: eloss(MeV)= 2.86052e-26 fluc= -2.10823e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117524
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.2145 fluc= 2.31456 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07083e-26 Escaled=5.38159 R=3.19903e+23 L=7.00032e-05 fFactor=324.505 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07083e-26 length=7.00032e-05 fFactor=324.505
+G4WT0 > After fluct: eloss(MeV)= 2.86007e-26 fluc= -2.10762e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.011757
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.29 fluc= 2.39011 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.0718e-26 Escaled=5.38004 R=3.19761e+23 L=7.00143e-05 fFactor=324.472 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.0718e-26 length=7.00143e-05 fFactor=324.472
+G4WT0 > After fluct: eloss(MeV)= 2.86095e-26 fluc= -2.10847e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117536
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.1353 fluc= 2.2354 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07022e-26 Escaled=5.3832 R=3.20051e+23 L=7.00006e-05 fFactor=324.539 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07022e-26 length=7.00006e-05 fFactor=324.539
+G4WT0 > After fluct: eloss(MeV)= 2.85952e-26 fluc= -2.107e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117605
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 12.9708 fluc= 2.07087 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06921e-26 Escaled=5.38651 R=3.20356e+23 L=7.00008e-05 fFactor=324.61 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06921e-26 length=7.00008e-05 fFactor=324.61
+G4WT0 > After fluct: eloss(MeV)= 2.85862e-26 fluc= -2.1059e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117678
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3323 fluc= 2.43238 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07146e-26 Escaled=5.37915 R=3.19678e+23 L=7.00002e-05 fFactor=324.453 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07146e-26 length=7.00002e-05 fFactor=324.453
+G4WT0 > After fluct: eloss(MeV)= 2.86062e-26 fluc= -2.10835e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117516
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.2915 fluc= 2.39162 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07139e-26 Escaled=5.38005 R=3.19761e+23 L=7.0005e-05 fFactor=324.472 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07139e-26 length=7.0005e-05 fFactor=324.472
+G4WT0 > After fluct: eloss(MeV)= 2.86057e-26 fluc= -2.10819e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117536
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3379 fluc= 2.43801 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07165e-26 Escaled=5.3791 R=3.19674e+23 L=7.00043e-05 fFactor=324.452 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07165e-26 length=7.00043e-05 fFactor=324.452
+G4WT0 > After fluct: eloss(MeV)= 2.8608e-26 fluc= -2.10849e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117515
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.6122 fluc= 2.71226 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07319e-26 Escaled=5.37356 R=3.19165e+23 L=7.00006e-05 fFactor=324.334 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07319e-26 length=7.00006e-05 fFactor=324.334
+G4WT0 > After fluct: eloss(MeV)= 2.86217e-26 fluc= -2.11024e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117394
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.4044 fluc= 2.5045 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.0719e-26 Escaled=5.37773 R=3.19548e+23 L=7.00004e-05 fFactor=324.423 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.0719e-26 length=7.00004e-05 fFactor=324.423
+G4WT0 > After fluct: eloss(MeV)= 2.86102e-26 fluc= -2.10883e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117485
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3144 fluc= 2.41452 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07134e-26 Escaled=5.37955 R=3.19716e+23 L=7.00004e-05 fFactor=324.462 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07134e-26 length=7.00004e-05 fFactor=324.462
+G4WT0 > After fluct: eloss(MeV)= 2.86052e-26 fluc= -2.10822e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117525
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.1218 fluc= 2.22189 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07021e-26 Escaled=5.38338 R=3.20068e+23 L=7.00016e-05 fFactor=324.543 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07021e-26 length=7.00016e-05 fFactor=324.543
+G4WT0 > After fluct: eloss(MeV)= 2.85951e-26 fluc= -2.10697e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117609
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.1991 fluc= 2.29916 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07063e-26 Escaled=5.38194 R=3.19935e+23 L=7.00009e-05 fFactor=324.513 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07063e-26 length=7.00009e-05 fFactor=324.513
+G4WT0 > After fluct: eloss(MeV)= 2.85988e-26 fluc= -2.10744e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117577
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.5826 fluc= 2.68271 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07298e-26 Escaled=5.37417 R=3.19221e+23 L=7.00001e-05 fFactor=324.347 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07298e-26 length=7.00001e-05 fFactor=324.347
+G4WT0 > After fluct: eloss(MeV)= 2.86198e-26 fluc= -2.11002e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117407
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.8419 fluc= 2.942 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07467e-26 Escaled=5.36889 R=3.18736e+23 L=7.00013e-05 fFactor=324.234 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07467e-26 length=7.00013e-05 fFactor=324.234
+G4WT0 > After fluct: eloss(MeV)= 2.86348e-26 fluc= -2.11183e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117292
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3031 fluc= 2.40316 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07135e-26 Escaled=5.37979 R=3.19738e+23 L=7.00024e-05 fFactor=324.467 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07135e-26 length=7.00024e-05 fFactor=324.467
+G4WT0 > After fluct: eloss(MeV)= 2.86053e-26 fluc= -2.1082e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.011753
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.6835 fluc= 2.78363 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07371e-26 Escaled=5.37209 R=3.1903e+23 L=7.0002e-05 fFactor=324.302 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07371e-26 length=7.0002e-05 fFactor=324.302
+G4WT0 > After fluct: eloss(MeV)= 2.86263e-26 fluc= -2.11077e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117362
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3217 fluc= 2.4218 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07141e-26 Escaled=5.37939 R=3.197e+23 L=7.00009e-05 fFactor=324.458 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07141e-26 length=7.00009e-05 fFactor=324.458
+G4WT0 > After fluct: eloss(MeV)= 2.86058e-26 fluc= -2.10829e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117522
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.1873 fluc= 2.28741 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07063e-26 Escaled=5.3821 R=3.1995e+23 L=7.00021e-05 fFactor=324.516 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07063e-26 length=7.00021e-05 fFactor=324.516
+G4WT0 > After fluct: eloss(MeV)= 2.85989e-26 fluc= -2.10742e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117581
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.0326 fluc= 2.13266 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06958e-26 Escaled=5.38525 R=3.20239e+23 L=7.00003e-05 fFactor=324.583 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06958e-26 length=7.00003e-05 fFactor=324.583
+G4WT0 > After fluct: eloss(MeV)= 2.85895e-26 fluc= -2.10631e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.011765
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.2775 fluc= 2.37759 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.0711e-26 Escaled=5.38034 R=3.19788e+23 L=7.00005e-05 fFactor=324.478 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.0711e-26 length=7.00005e-05 fFactor=324.478
+G4WT0 > After fluct: eloss(MeV)= 2.8603e-26 fluc= -2.10796e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117542
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.4183 fluc= 2.51844 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07199e-26 Escaled=5.37749 R=3.19526e+23 L=7.00006e-05 fFactor=324.418 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07199e-26 length=7.00006e-05 fFactor=324.418
+G4WT0 > After fluct: eloss(MeV)= 2.86109e-26 fluc= -2.10892e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.011748
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.1384 fluc= 2.23851 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07033e-26 Escaled=5.38313 R=3.20045e+23 L=7.00026e-05 fFactor=324.538 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07033e-26 length=7.00026e-05 fFactor=324.538
+G4WT0 > After fluct: eloss(MeV)= 2.85963e-26 fluc= -2.10709e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117604
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.4341 fluc= 2.53421 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07213e-26 Escaled=5.37712 R=3.19492e+23 L=7.00013e-05 fFactor=324.41 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07213e-26 length=7.00013e-05 fFactor=324.41
+G4WT0 > After fluct: eloss(MeV)= 2.86122e-26 fluc= -2.10906e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117472
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3235 fluc= 2.42364 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07137e-26 Escaled=5.37942 R=3.19703e+23 L=7.00003e-05 fFactor=324.459 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07137e-26 length=7.00003e-05 fFactor=324.459
+G4WT0 > After fluct: eloss(MeV)= 2.86055e-26 fluc= -2.10826e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117522
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.5464 fluc= 2.64646 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07277e-26 Escaled=5.37486 R=3.19284e+23 L=7e-05 fFactor=324.361 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07277e-26 length=7e-05 fFactor=324.361
+G4WT0 > After fluct: eloss(MeV)= 2.86179e-26 fluc= -2.10979e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117422
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.6867 fluc= 2.7868 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.074e-26 Escaled=5.37206 R=3.19027e+23 L=7.00084e-05 fFactor=324.301 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.074e-26 length=7.00084e-05 fFactor=324.301
+G4WT0 > After fluct: eloss(MeV)= 2.8629e-26 fluc= -2.11098e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117361
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3723 fluc= 2.47242 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07179e-26 Escaled=5.37839 R=3.19609e+23 L=7.00024e-05 fFactor=324.437 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07179e-26 length=7.00024e-05 fFactor=324.437
+G4WT0 > After fluct: eloss(MeV)= 2.86092e-26 fluc= -2.10867e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.01175
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.5774 fluc= 2.67747 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07301e-26 Escaled=5.37425 R=3.19228e+23 L=7.00012e-05 fFactor=324.348 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07301e-26 length=7.00012e-05 fFactor=324.348
+G4WT0 > After fluct: eloss(MeV)= 2.86201e-26 fluc= -2.11003e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117409
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.0456 fluc= 2.14574 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06964e-26 Escaled=5.385 R=3.20217e+23 L=7e-05 fFactor=324.578 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06964e-26 length=7e-05 fFactor=324.578
+G4WT0 > After fluct: eloss(MeV)= 2.85901e-26 fluc= -2.10638e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117645
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.4025 fluc= 2.50258 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07192e-26 Escaled=5.37781 R=3.19555e+23 L=7.00015e-05 fFactor=324.424 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07192e-26 length=7.00015e-05 fFactor=324.424
+G4WT0 > After fluct: eloss(MeV)= 2.86104e-26 fluc= -2.10884e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117487
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3433 fluc= 2.4434 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07154e-26 Escaled=5.37896 R=3.19662e+23 L=7.00009e-05 fFactor=324.449 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07154e-26 length=7.00009e-05 fFactor=324.449
+G4WT0 > After fluct: eloss(MeV)= 2.8607e-26 fluc= -2.10844e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117512
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.0601 fluc= 2.16018 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06982e-26 Escaled=5.38464 R=3.20184e+23 L=7.00016e-05 fFactor=324.57 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06982e-26 length=7.00016e-05 fFactor=324.57
+G4WT0 > After fluct: eloss(MeV)= 2.85917e-26 fluc= -2.10655e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117637
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.5543 fluc= 2.65437 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.0731e-26 Escaled=5.37474 R=3.19274e+23 L=7.00067e-05 fFactor=324.359 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.0731e-26 length=7.00067e-05 fFactor=324.359
+G4WT0 > After fluct: eloss(MeV)= 2.86209e-26 fluc= -2.11002e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.011742
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.2095 fluc= 2.30956 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07069e-26 Escaled=5.38165 R=3.19908e+23 L=7.00003e-05 fFactor=324.506 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07069e-26 length=7.00003e-05 fFactor=324.506
+G4WT0 > After fluct: eloss(MeV)= 2.85994e-26 fluc= -2.10751e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117571
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.2634 fluc= 2.36349 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.071e-26 Escaled=5.38062 R=3.19814e+23 L=7.00001e-05 fFactor=324.484 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.071e-26 length=7.00001e-05 fFactor=324.484
+G4WT0 > After fluct: eloss(MeV)= 2.86021e-26 fluc= -2.10786e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117549
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.4837 fluc= 2.58385 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07254e-26 Escaled=5.37611 R=3.19399e+23 L=7.00035e-05 fFactor=324.388 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07254e-26 length=7.00035e-05 fFactor=324.388
+G4WT0 > After fluct: eloss(MeV)= 2.86159e-26 fluc= -2.10947e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.011745
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.5893 fluc= 2.68943 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07311e-26 Escaled=5.37403 R=3.19208e+23 L=7.0002e-05 fFactor=324.344 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07311e-26 length=7.0002e-05 fFactor=324.344
+G4WT0 > After fluct: eloss(MeV)= 2.8621e-26 fluc= -2.11012e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117404
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 12.9772 fluc= 2.07734 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06928e-26 Escaled=5.38635 R=3.20341e+23 L=7.0001e-05 fFactor=324.607 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06928e-26 length=7.0001e-05 fFactor=324.607
+G4WT0 > After fluct: eloss(MeV)= 2.85868e-26 fluc= -2.10596e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117674
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.6401 fluc= 2.7402 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.0734e-26 Escaled=5.37298 R=3.19111e+23 L=7.00013e-05 fFactor=324.321 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.0734e-26 length=7.00013e-05 fFactor=324.321
+G4WT0 > After fluct: eloss(MeV)= 2.86236e-26 fluc= -2.11045e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117381
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.5184 fluc= 2.61854 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.0726e-26 Escaled=5.37545 R=3.19339e+23 L=7.00003e-05 fFactor=324.374 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.0726e-26 length=7.00003e-05 fFactor=324.374
+G4WT0 > After fluct: eloss(MeV)= 2.86164e-26 fluc= -2.10959e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117435
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.1644 fluc= 2.26449 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07047e-26 Escaled=5.38258 R=3.19994e+23 L=7.00019e-05 fFactor=324.526 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07047e-26 length=7.00019e-05 fFactor=324.526
+G4WT0 > After fluct: eloss(MeV)= 2.85975e-26 fluc= -2.10725e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117592
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.2395 fluc= 2.33956 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.071e-26 Escaled=5.38104 R=3.19852e+23 L=7.00031e-05 fFactor=324.493 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.071e-26 length=7.00031e-05 fFactor=324.493
+G4WT0 > After fluct: eloss(MeV)= 2.86022e-26 fluc= -2.1078e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117558
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.4263 fluc= 2.52644 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07205e-26 Escaled=5.37724 R=3.19503e+23 L=7.00005e-05 fFactor=324.412 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07205e-26 length=7.00005e-05 fFactor=324.412
+G4WT0 > After fluct: eloss(MeV)= 2.86115e-26 fluc= -2.109e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117474
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3035 fluc= 2.40363 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07126e-26 Escaled=5.37977 R=3.19736e+23 L=7.00001e-05 fFactor=324.466 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07126e-26 length=7.00001e-05 fFactor=324.466
+G4WT0 > After fluct: eloss(MeV)= 2.86044e-26 fluc= -2.10814e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.011753
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 12.6666 fluc= 1.7667 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06732e-26 Escaled=5.39265 R=3.20921e+23 L=7.00006e-05 fFactor=324.741 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06732e-26 length=7.00006e-05 fFactor=324.741
+G4WT0 > After fluct: eloss(MeV)= 2.85693e-26 fluc= -2.10384e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117812
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.0954 fluc= 2.19547 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06998e-26 Escaled=5.38402 R=3.20126e+23 L=7.00007e-05 fFactor=324.557 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06998e-26 length=7.00007e-05 fFactor=324.557
+G4WT0 > After fluct: eloss(MeV)= 2.85931e-26 fluc= -2.10674e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117623
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.1385 fluc= 2.23862 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07049e-26 Escaled=5.38308 R=3.2004e+23 L=7.00059e-05 fFactor=324.537 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07049e-26 length=7.00059e-05 fFactor=324.537
+G4WT0 > After fluct: eloss(MeV)= 2.85977e-26 fluc= -2.1072e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117602
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 12.8852 fluc= 1.9853 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06909e-26 Escaled=5.38822 R=3.20513e+23 L=7.001e-05 fFactor=324.647 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06909e-26 length=7.001e-05 fFactor=324.647
+G4WT0 > After fluct: eloss(MeV)= 2.85853e-26 fluc= -2.1056e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117715
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.2558 fluc= 2.35592 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07096e-26 Escaled=5.38072 R=3.19823e+23 L=7.00001e-05 fFactor=324.487 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07096e-26 length=7.00001e-05 fFactor=324.487
+G4WT0 > After fluct: eloss(MeV)= 2.86018e-26 fluc= -2.10782e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117551
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 12.8188 fluc= 1.91889 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06825e-26 Escaled=5.38956 R=3.20636e+23 L=7.00002e-05 fFactor=324.675 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06825e-26 length=7.00002e-05 fFactor=324.675
+G4WT0 > After fluct: eloss(MeV)= 2.85776e-26 fluc= -2.10486e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117744
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.473 fluc= 2.57308 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07233e-26 Escaled=5.37636 R=3.19422e+23 L=7.00005e-05 fFactor=324.393 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07233e-26 length=7.00005e-05 fFactor=324.393
+G4WT0 > After fluct: eloss(MeV)= 2.8614e-26 fluc= -2.1093e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117455
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.1681 fluc= 2.26823 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07042e-26 Escaled=5.38251 R=3.19988e+23 L=7.00003e-05 fFactor=324.525 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07042e-26 length=7.00003e-05 fFactor=324.525
+G4WT0 > After fluct: eloss(MeV)= 2.8597e-26 fluc= -2.10723e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.011759
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.0518 fluc= 2.15195 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06971e-26 Escaled=5.38485 R=3.20203e+23 L=7.00004e-05 fFactor=324.575 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06971e-26 length=7.00004e-05 fFactor=324.575
+G4WT0 > After fluct: eloss(MeV)= 2.85906e-26 fluc= -2.10644e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117641
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3739 fluc= 2.47402 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07188e-26 Escaled=5.37836 R=3.19606e+23 L=7.00043e-05 fFactor=324.436 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07188e-26 length=7.00043e-05 fFactor=324.436
+G4WT0 > After fluct: eloss(MeV)= 2.861e-26 fluc= -2.10874e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117499
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.4778 fluc= 2.57787 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07238e-26 Escaled=5.37631 R=3.19418e+23 L=7.00013e-05 fFactor=324.392 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07238e-26 length=7.00013e-05 fFactor=324.392
+G4WT0 > After fluct: eloss(MeV)= 2.86144e-26 fluc= -2.10934e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117454
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.0869 fluc= 2.18705 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06993e-26 Escaled=5.38415 R=3.20138e+23 L=7.00005e-05 fFactor=324.56 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06993e-26 length=7.00005e-05 fFactor=324.56
+G4WT0 > After fluct: eloss(MeV)= 2.85926e-26 fluc= -2.10668e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117626
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3953 fluc= 2.49538 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07194e-26 Escaled=5.37791 R=3.19565e+23 L=7.00026e-05 fFactor=324.427 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07194e-26 length=7.00026e-05 fFactor=324.427
+G4WT0 > After fluct: eloss(MeV)= 2.86106e-26 fluc= -2.10884e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117489
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.2533 fluc= 2.35339 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07111e-26 Escaled=5.38079 R=3.19829e+23 L=7.00039e-05 fFactor=324.488 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07111e-26 length=7.00039e-05 fFactor=324.488
+G4WT0 > After fluct: eloss(MeV)= 2.86032e-26 fluc= -2.10791e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117552
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.0404 fluc= 2.14052 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06964e-26 Escaled=5.38508 R=3.20224e+23 L=7.00005e-05 fFactor=324.58 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06964e-26 length=7.00005e-05 fFactor=324.58
+G4WT0 > After fluct: eloss(MeV)= 2.85901e-26 fluc= -2.10637e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117646
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3446 fluc= 2.44468 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07171e-26 Escaled=5.37899 R=3.19664e+23 L=7.0005e-05 fFactor=324.45 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07171e-26 length=7.0005e-05 fFactor=324.45
+G4WT0 > After fluct: eloss(MeV)= 2.86086e-26 fluc= -2.10855e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117513
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3899 fluc= 2.49002 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07186e-26 Escaled=5.37803 R=3.19576e+23 L=7.00016e-05 fFactor=324.429 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07186e-26 length=7.00016e-05 fFactor=324.429
+G4WT0 > After fluct: eloss(MeV)= 2.86098e-26 fluc= -2.10877e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117492
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 12.9934 fluc= 2.09351 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06939e-26 Escaled=5.38604 R=3.20312e+23 L=7.00014e-05 fFactor=324.6 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06939e-26 length=7.00014e-05 fFactor=324.6
+G4WT0 > After fluct: eloss(MeV)= 2.85878e-26 fluc= -2.10608e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117667
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3591 fluc= 2.45924 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07163e-26 Escaled=5.37865 R=3.19633e+23 L=7.00006e-05 fFactor=324.442 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07163e-26 length=7.00006e-05 fFactor=324.442
+G4WT0 > After fluct: eloss(MeV)= 2.86077e-26 fluc= -2.10853e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117505
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3661 fluc= 2.46621 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07174e-26 Escaled=5.37852 R=3.19621e+23 L=7.00022e-05 fFactor=324.44 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07174e-26 length=7.00022e-05 fFactor=324.44
+G4WT0 > After fluct: eloss(MeV)= 2.86087e-26 fluc= -2.10862e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117503
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 12.9586 fluc= 2.05867 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06912e-26 Escaled=5.38672 R=3.20375e+23 L=7.00001e-05 fFactor=324.615 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06912e-26 length=7.00001e-05 fFactor=324.615
+G4WT0 > After fluct: eloss(MeV)= 2.85854e-26 fluc= -2.10581e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117682
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.6428 fluc= 2.7429 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07344e-26 Escaled=5.37294 R=3.19108e+23 L=7.00018e-05 fFactor=324.32 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07344e-26 length=7.00018e-05 fFactor=324.32
+G4WT0 > After fluct: eloss(MeV)= 2.86239e-26 fluc= -2.11048e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.011738
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.1847 fluc= 2.2848 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07054e-26 Escaled=5.38215 R=3.19955e+23 L=7.00004e-05 fFactor=324.517 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07054e-26 length=7.00004e-05 fFactor=324.517
+G4WT0 > After fluct: eloss(MeV)= 2.8598e-26 fluc= -2.10735e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117582
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.2785 fluc= 2.37857 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07127e-26 Escaled=5.38027 R=3.19781e+23 L=7.00038e-05 fFactor=324.477 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07127e-26 length=7.00038e-05 fFactor=324.477
+G4WT0 > After fluct: eloss(MeV)= 2.86046e-26 fluc= -2.10808e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117541
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.3072 fluc= 2.40734 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07136e-26 Escaled=5.37972 R=3.19731e+23 L=7.0002e-05 fFactor=324.465 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07136e-26 length=7.0002e-05 fFactor=324.465
+G4WT0 > After fluct: eloss(MeV)= 2.86054e-26 fluc= -2.10821e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117529
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.0001 fluc= 2.1002 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06958e-26 Escaled=5.38593 R=3.20302e+23 L=7.00051e-05 fFactor=324.598 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06958e-26 length=7.00051e-05 fFactor=324.598
+G4WT0 > After fluct: eloss(MeV)= 2.85896e-26 fluc= -2.10623e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117665
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.5726 fluc= 2.67273 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07308e-26 Escaled=5.37435 R=3.19237e+23 L=7.00036e-05 fFactor=324.35 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07308e-26 length=7.00036e-05 fFactor=324.35
+G4WT0 > After fluct: eloss(MeV)= 2.86208e-26 fluc= -2.11006e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117411
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.259 fluc= 2.3591 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07102e-26 Escaled=5.38066 R=3.19817e+23 L=7.00008e-05 fFactor=324.485 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07102e-26 length=7.00008e-05 fFactor=324.485
+G4WT0 > After fluct: eloss(MeV)= 2.86023e-26 fluc= -2.10786e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117549
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 12.7677 fluc= 1.86785 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.06793e-26 Escaled=5.39061 R=3.20733e+23 L=7.00001e-05 fFactor=324.697 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.06793e-26 length=7.00001e-05 fFactor=324.697
+G4WT0 > After fluct: eloss(MeV)= 2.85748e-26 fluc= -2.10451e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117767
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.6025 fluc= 2.70265 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07997e-26 Escaled=5.37377 R=3.19185e+23 L=7.01565e-05 fFactor=324.338 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07997e-26 length=7.01565e-05 fFactor=324.338
+G4WT0 > After fluct: eloss(MeV)= 2.86848e-26 fluc= -2.11487e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117399
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.7221 fluc= 2.82223 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07429e-26 Escaled=5.37134 R=3.18961e+23 L=7.00099e-05 fFactor=324.286 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07429e-26 length=7.00099e-05 fFactor=324.286
+G4WT0 > After fluct: eloss(MeV)= 2.86316e-26 fluc= -2.11126e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117345
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.5032 fluc= 2.60334 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07257e-26 Escaled=5.37575 R=3.19366e+23 L=7.00017e-05 fFactor=324.38 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07257e-26 length=7.00017e-05 fFactor=324.38
+G4WT0 > After fluct: eloss(MeV)= 2.86161e-26 fluc= -2.10954e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117442
+G4WT0 > ##### Short STEP: eloss= 2.98737e-26 Escaled=5.64835 R=3.44832e+23 L=6.9916e-05 fFactor=330.04 minE=1e-05 idxBase=0
+G4WT0 > eloss=2.98737e-26 length=6.9916e-05 fFactor=330.04
+G4WT0 > After fluct: eloss(MeV)= 2.78553e-26 fluc= -2.01846e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 10.8999 Escaled=5.64835 R=0.0116616 L=0.0007 fFactor=330.103 minE=1e-05 idxBase=1
+G4WT0 > eloss=11.0307 length=0.0007 fFactor=330.103
+G4WT0 > After fluct: eloss(MeV)= 13.5322 fluc= 2.63233 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0123415
+G4WT0 > ##### Short STEP: eloss= 3.07276e-26 Escaled=5.37515 R=3.19311e+23 L=7.00018e-05 fFactor=324.368 minE=1e-05 idxBase=0
+G4WT0 > eloss=3.07276e-26 length=7.00018e-05 fFactor=324.368
+G4WT0 > After fluct: eloss(MeV)= 2.86178e-26 fluc= -2.10974e-27 ChargeSqRatio= 1 massRatio= 0.0201727 tmax= 0.0117429
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 100
+G4WT0 > [thread 0]   User=0.010000s Real=0.000406s Sys=0.000000s [Cpu=2464.2%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.010000s Real=0.004420s Sys=0.000000s [Cpu=226.2%]
+
+ ======================== run summary ======================
+
+ The run was 100 Ti50 of 280 MeV through 700 nm  of G4_Pu (density: 19.8 g/cm3 )
+
+ Total energy deposit in absorber per event = 13.31 MeV +- 25.08 keV
+
+ -----> Mean dE/dx = 1.902e+05 MeV/cm	(9585 MeV*cm2/g)
+
+ From formulas :
+   restricted dEdx = 1.869e+05 MeV/cm	(9422 MeV*cm2/g)
+   full dEdx       = 1.871e+05 MeV/cm	(9430 MeV*cm2/g)
+
+ Leakage :  primary = 266.7 MeV +- 25.08 keV   secondaries = 0 eV  +- 0 eV 
+ Energy balance :  edep + eleak = 280 MeV
+
+ Total track length (charged) in absorber per event = 700 nm  +- 2.058 fm 
+ Total track length (neutral) in absorber per event = 0 fm  +- 0 fm 
+
+ Number of steps (charged) in absorber per event = 1 +- 0
+ Number of steps (neutral) in absorber per event = 0 +- 0
+
+ Number of secondaries per event : Gammas = 0;   electrons = 0;   positrons = 0
+
+ Number of events with the primary particle transmitted = 100 %
+ Number of events with at least  1 particle transmitted (same charge as primary) = 100 %
+
+ Number of events with the primary particle reflected = 0 %
+ Number of events with at least  1 particle reflected (same charge as primary) = 0 %
+
+ MultipleScattering:
+  rms proj angle of transmit primary particle = 5.263 mrad (central part only)
+  computed theta0 (Highland formula)          = 5.596 mrad
+  central part defined as +- 16.79 mrad;   Tail ratio = 2.5 %
+
+ Gamma process counts:
+   Photoeffect 0
+   Compton     0
+   Conversion  0
+   Rayleigh    0
+
+------- MixMaxRng engine status -------
+ Current state vector is:
+mixmax state, file version 1.0
+N=17; V[N]={1999874670906669750, 671830131471686152, 1656843654596885400, 471767070226335815, 787555049562077481, 424021836265531938, 1074389596034740721, 359012115193691703, 1373220217404244626, 1903153786646087978, 1549232160534737294, 1576927963423969656, 422181747161956879, 2298192954310108349, 1023717886333520085, 2149371364562089478, 2262715219938089919}; counter= 9sumtot= 1251420341649177665
+---------------------------------------
+#
+#/control/shell mkdir physdata3
+#/run/particle/storePhysicsTable physdata3
+#
+G4WT0 > ================== Deleting memory pools ===================
+G4WT0 > Number of memory pools allocated: 9; of which, static: 0
+G4WT0 > Dynamic pools deleted: 9 / Total memory freed: 0.015 MB
+G4WT0 > ============================================================
+================== Deleting memory pools ===================
+Number of memory pools allocated: 4; of which, static: 0
+Dynamic pools deleted: 4 / Total memory freed: 0.0058 MB
+============================================================

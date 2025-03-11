@@ -1,0 +1,33 @@
+FNAME        = test41
+getenv       = true
+executable   = $ENV(G4BWORK)/test41
+ID           = $(ClusterId).$(ProcId)
+output       = $(nam)_$(phys).out
+error        = $(nam)_$(phys).err
+log          = $(FNAME).$(ID).log
+request_cpus = 1
+requirements = (OpSysAndVer =?= "AlmaLinux9")
++JobFlavour = "workday"
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+arguments = $ENV(G4INSTALL)/tests/ctests_integration/$(FNAME)/$(nam).in
+
+phys   = opt0
+environment   = "PHYSLIST=emstandard HISTFILENAME=$(nam)_$(phys).log"
+queue nam in li_1, li_2, be_1, be_2, ch2, c, al, fe, h2_1, h2_2
+
+phys   = optUB
+environment = "PHYSLIST=emstandardUB HISTFILENAME=$(nam)_$(phys).log"
+queue nam in li_1, li_2, be_1, be_2, ch2, c, al, fe, h2_1, h2_2
+
+phys   = mscWVI
+environment = "PHYSLIST=emstandardIG HISTFILENAME=$(nam)_$(phys).log"
+queue nam in li_1, li_2, be_1, be_2, ch2, c, al, fe, h2_1, h2_2
+
+phys   = optSS
+environment = "PHYSLIST=emstandardSS HISTFILENAME=$(nam)_$(phys).log"
+queue nam in li_1, li_2, be_1, be_2, ch2, c, al, fe, h2_1, h2_2
+
+phys   = optSSM
+environment = "PHYSLIST=emstandardSSM HISTFILENAME=$(nam)_$(phys).log"
+queue nam in li_1, li_2, be_1, be_2, ch2, c, al, fe, h2_1, h2_2

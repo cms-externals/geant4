@@ -1,0 +1,982 @@
+
+        ############################################
+        !!! WARNING - FPE detection is activated !!!
+        ############################################
+
+**************************************************************
+ Geant4 version Name: geant4-11-02-ref-03 [MT]   (28-March-2024)
+  << in Multi-threaded mode >> 
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+/run/verbose 1
+#
+/testem/det/setMat G4_WATER
+/testem/det/setRadius 3 cm
+/testem/det/setNbOfLayers 1
+#
+/testem/phys/addPhysics emstandard_opt0
+PhysicsList::AddPhysicsList: <emstandard_opt0>
+#
+/run/initialize
+
+==========================================================================================
+G4TaskRunManager :: Using G4ThreadPool...
+==========================================================================================
+
+
+---------------------------------------------------------
+---> The Absorber is a sphere of 3 cm  radius of G4_WATER divided in 1 slices of 3 cm 
+ 
+ Material: G4_WATER H_2O   density:  1.000 g/cm3   RadL:  36.083 cm   Nucl.Int.Length:  75.375 cm 
+                       Imean:  78.000 eV   temperature: 293.15 K  pressure:   1.00 atm
+
+   --->  Element: H (H)   Z =  1.0   N =     1   A =  1.008 g/mole
+         --->  Isotope:    H1   Z =  1   N =   1   A =   1.01 g/mole   abundance: 99.989 %
+         --->  Isotope:    H2   Z =  1   N =   2   A =   2.01 g/mole   abundance:  0.011 %
+          ElmMassFraction:  11.19 %  ElmAbundance  66.67 % 
+
+   --->  Element: O (O)   Z =  8.0   N =    16   A = 15.999 g/mole
+         --->  Isotope:   O16   Z =  8   N =  16   A =  15.99 g/mole   abundance: 99.757 %
+         --->  Isotope:   O17   Z =  8   N =  17   A =  17.00 g/mole   abundance:  0.038 %
+         --->  Isotope:   O18   Z =  8   N =  18   A =  18.00 g/mole   abundance:  0.205 %
+          ElmMassFraction:  88.81 %  ElmAbundance  33.33 % 
+
+
+---------------------------------------------------------
+/run/physicsModified
+=======================================================================
+======                 Electromagnetic Physics Parameters      ========
+=======================================================================
+LPM effect enabled                                 1
+Enable creation and use of sampling tables         0
+Apply cuts on all EM processes                     0
+Use combined TransportationWithMsc                 Disabled
+Use general process                                1
+Enable linear polarisation for gamma               0
+Enable photoeffect sampling below K-shell          1
+Enable sampling of quantum entanglement            0
+X-section factor for integral approach             0.8
+Min kinetic energy for tables                      100 eV 
+Max kinetic energy for tables                      100 TeV
+Number of bins per decade of a table               7
+Verbose level                                      1
+Verbose level for worker thread                    0
+Bremsstrahlung energy threshold above which 
+  primary e+- is added to the list of secondary    100 TeV
+Bremsstrahlung energy threshold above which primary
+  muon/hadron is added to the list of secondary    100 TeV
+Lowest triplet kinetic energy                      1 MeV
+Enable sampling of gamma linear polarisation       0
+5D gamma conversion model type                     0
+5D gamma conversion model on isolated ion          0
+Livermore data directory                           epics_2017
+=======================================================================
+======                 Ionisation Parameters                   ========
+=======================================================================
+Step function for e+-                              (0.2, 1 mm)
+Step function for muons/hadrons                    (0.2, 0.1 mm)
+Step function for light ions                       (0.2, 0.1 mm)
+Step function for general ions                     (0.2, 0.1 mm)
+Lowest e+e- kinetic energy                         1 keV
+Lowest muon/hadron kinetic energy                  1 keV
+Use ICRU90 data                                    0
+Fluctuations of dE/dx are enabled                  1
+Type of fluctuation model for leptons and hadrons  Urban
+Use built-in Birks satuaration                     0
+Build CSDA range enabled                           1
+Use cut as a final range enabled                   0
+Enable angular generator interface                 0
+Max kinetic energy for CSDA tables                 1 GeV
+Max kinetic energy for NIEL computation            0 eV 
+Linear loss limit                                  0.01
+Read data from file for e+e- pair production by mu 0
+=======================================================================
+======                 Multiple Scattering Parameters          ========
+=======================================================================
+Type of msc step limit algorithm for e+-           1
+Type of msc step limit algorithm for muons/hadrons 0
+Msc lateral displacement for e+- enabled           1
+Msc lateral displacement for muons and hadrons     0
+Urban msc model lateral displacement alg96         1
+Range factor for msc step limit for e+-            0.04
+Range factor for msc step limit for muons/hadrons  0.2
+Geometry factor for msc step limitation of e+-     2.5
+Safety factor for msc step limit for e+-           0.6
+Skin parameter for msc step limitation of e+-      1
+Lambda limit for msc step limit for e+-            1 mm
+Use Mott correction for e- scattering              0
+Factor used for dynamic computation of angular 
+  limit between single and multiple scattering     1
+Fixed angular limit between single 
+  and multiple scattering                          3.1416 rad
+Upper energy limit for e+- multiple scattering     100 MeV
+Type of electron single scattering model           0
+Type of nuclear form-factor                        1
+Screening factor                                   1
+=======================================================================
+
+phot:  for gamma SubType=12 BuildTable=0
+      LambdaPrime table from 200 keV to 100 TeV in 61 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+ LivermorePhElectric : Emin=    0 eV  Emax=  100 TeV  SauterGavrila Fluo
+
+compt:  for gamma SubType=13 BuildTable=1
+      Lambda table from 100 eV  to 1 MeV, 7 bins/decade, spline: 1
+      LambdaPrime table from 1 MeV to 100 TeV in 56 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+       Klein-Nishina : Emin=    0 eV  Emax=  100 TeV
+
+conv:  for gamma SubType=14 BuildTable=1
+      Lambda table from 1.022 MeV to 100 TeV, 18 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+     BetheHeitlerLPM : Emin=    0 eV  Emax=  100 TeV  ModifiedTsai
+
+Rayl:  for gamma SubType=11 BuildTable=1
+      Lambda table from 100 eV  to 150 keV, 7 bins/decade, spline: 0
+      LambdaPrime table from 150 keV to 100 TeV in 62 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   LivermoreRayleigh : Emin=    0 eV  Emax=  100 TeV  CullenGenerator
+
+msc:  for e-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 MeV Nbins=42 100 eV  - 100 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+        WentzelVIUni : Emin=  100 MeV Emax=  100 TeV Nbins=42 100 MeV - 100 TeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+### G4VEnergyLossProcess::BuildPhysicsTable() for eIoni and particle e-; the input particle e-
+Lambda: 0x3afaca0
+    TablesAreBuilt= 0 isIon= 0 spline=1 ptr: 0x39c9a20 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for e- and process eIoni run=0 start=1 isMaster=1
+0.   eIoni for e- active=1 tableBuilt=0 isIoni=1 ptr: 0x39c9a20
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for eIoni and e- spline=1  0x3afab30
+ size=1
+modMan:0x39c9f00  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+1.   eBrem for e- active=1 tableBuilt=0 isIoni=0 ptr: 0x39ca2d0
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for eBrem and e- spline=1  0x3afb480
+ size=1
+modMan:0x39ca790  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+2.   eIoni for e+ active=1 tableBuilt=0 isIoni=1 ptr: 0x39cc360
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for eIoni and e+ spline=1  0x3abfbd0
+ size=1
+modMan:0x39cc840  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+3.   eBrem for e+ active=1 tableBuilt=0 isIoni=0 ptr: 0x39ccc60
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for eBrem and e+ spline=1  0x3ac0520
+ size=1
+modMan:0x39cd120  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+4.   ionIoni for GenericIon active=1 tableBuilt=0 isIoni=1 ptr: 0x39cdd40
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for ionIoni and GenericIon spline=1  0x39f87d0
+ size=1
+modMan:0x39ce230  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+5.   muIoni for mu+ active=1 tableBuilt=0 isIoni=1 ptr: 0x39d0a80
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for muIoni and mu+ spline=1  0x3cf9c70
+ size=1
+modMan:0x39d0f60  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+6.   muBrems for mu+ active=1 tableBuilt=0 isIoni=0 ptr: 0x39d1380
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for muBrems and mu+ spline=1  0x3cfa3d0
+ size=1
+modMan:0x39d1840  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+7.   muPairProd for mu+ active=1 tableBuilt=0 isIoni=0 ptr: 0x39d1a90
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for muPairProd and mu+ spline=1  0x3cfad90
+ size=1
+modMan:0x39d1f80  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+8.   muIoni for mu- active=1 tableBuilt=0 isIoni=1 ptr: 0x39d2b30
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for muIoni and mu- spline=1  0x3dd5080
+ size=1
+modMan:0x39d3010  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+9.   hIoni for pi+ active=1 tableBuilt=0 isIoni=1 ptr: 0x39d4490
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hIoni and pi+ spline=1  0x3dd6f10
+ size=1
+modMan:0x39d4960  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+10.   hBrems for pi+ active=1 tableBuilt=0 isIoni=0 ptr: 0x39d4d80
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hBrems and pi+ spline=1  0x3dd7670
+ size=1
+modMan:0x39d5240  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+11.   hPairProd for pi+ active=1 tableBuilt=0 isIoni=0 ptr: 0x39d5490
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hPairProd and pi+ spline=1  0x3dd8030
+ size=1
+modMan:0x39d5980  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+12.   hIoni for pi- active=1 tableBuilt=0 isIoni=1 ptr: 0x39d6010
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hIoni and pi- spline=1  0x3ea8610
+ size=1
+modMan:0x39d64e0  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+13.   hIoni for kaon+ active=1 tableBuilt=0 isIoni=1 ptr: 0x39d7960
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hIoni and kaon+ spline=1  0x3c3ae90
+ size=1
+modMan:0x39d7e30  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+14.   hBrems for kaon+ active=1 tableBuilt=0 isIoni=0 ptr: 0x39d8250
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hBrems and kaon+ spline=1  0x3c3b5f0
+ size=1
+modMan:0x39d8710  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+15.   hPairProd for kaon+ active=1 tableBuilt=0 isIoni=0 ptr: 0x39d8960
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hPairProd and kaon+ spline=1  0x3c3bdd0
+ size=1
+modMan:0x39d8e50  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+16.   hIoni for kaon- active=1 tableBuilt=0 isIoni=1 ptr: 0x39d94e0
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hIoni and kaon- spline=1  0x3cf8730
+ size=1
+modMan:0x39d99b0  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+17.   hIoni for proton active=1 tableBuilt=0 isIoni=1 ptr: 0x39dae30
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hIoni and proton spline=1  0x3ea9b90
+ size=1
+modMan:0x39db300  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+18.   hBrems for anti_proton active=1 tableBuilt=0 isIoni=0 ptr: 0x39dc160
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hBrems and anti_proton spline=1  0x3a09280
+ size=1
+modMan:0x39dc620  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+19.   hPairProd for anti_proton active=1 tableBuilt=0 isIoni=0 ptr: 0x39dc870
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hPairProd and anti_proton spline=1  0x3a09a20
+ size=1
+modMan:0x39dcd40  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+20.   hIoni for anti_proton active=1 tableBuilt=0 isIoni=1 ptr: 0x39de2b0
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hIoni and anti_proton spline=1  0x3a023a0
+ size=1
+modMan:0x39de780  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+21.   hIoni for deuteron active=1 tableBuilt=0 isIoni=1 ptr: 0x39dee80 basePart proton
+22.   hIoni for triton active=1 tableBuilt=0 isIoni=1 ptr: 0x39df6f0 basePart proton
+23.   ionIoni for alpha active=1 tableBuilt=0 isIoni=1 ptr: 0x39e04b0
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for ionIoni and alpha spline=1  0x39fb300
+ size=1
+modMan:0x39e0980  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+24.   ionIoni for He3 active=1 tableBuilt=0 isIoni=1 ptr: 0x39e12f0 basePart GenericIon
+25.   hIoni for sigma+ active=1 tableBuilt=0 isIoni=1 ptr: 0x39e1c30 basePart proton
+26.   hIoni for sigma- active=1 tableBuilt=0 isIoni=1 ptr: 0x39e2560 basePart anti_proton
+27.   hIoni for xi- active=1 tableBuilt=0 isIoni=1 ptr: 0x39e2e10 basePart anti_proton
+28.   hIoni for omega- active=1 tableBuilt=0 isIoni=1 ptr: 0x39e36f0 basePart anti_proton
+29.   hIoni for anti_sigma+ active=1 tableBuilt=0 isIoni=1 ptr: 0x39e3fd0 basePart anti_proton
+30.   hIoni for anti_sigma- active=1 tableBuilt=0 isIoni=1 ptr: 0x39e4860 basePart proton
+31.   hIoni for anti_xi- active=1 tableBuilt=0 isIoni=1 ptr: 0x39e5140 basePart proton
+32.   hIoni for anti_omega- active=1 tableBuilt=0 isIoni=1 ptr: 0x39e5a20 basePart proton
+33.   hIoni for anti_deuteron active=1 tableBuilt=0 isIoni=1 ptr: 0x39e6300 basePart anti_proton
+34.   hIoni for anti_triton active=1 tableBuilt=0 isIoni=1 ptr: 0x39e6be0 basePart anti_proton
+35.   hIoni for anti_He3 active=1 tableBuilt=0 isIoni=1 ptr: 0x39e74c0 basePart anti_proton
+36.   hIoni for anti_alpha active=1 tableBuilt=0 isIoni=1 ptr: 0x39e7da0 basePart kaon-
+37.   hIoni for tau- active=1 tableBuilt=0 isIoni=1 ptr: 0x39e8680 basePart anti_proton
+38.   hIoni for tau+ active=1 tableBuilt=0 isIoni=1 ptr: 0x39e8f60 basePart proton
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for eIoni and e- spline=1  0x3afab80
+ size=1
+modMan:0x39c9f00  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for eBrem and e- spline=1  0x3afb4d0
+ size=1
+modMan:0x39ca790  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for eIoni and e+ spline=1  0x3abfc20
+ size=1
+modMan:0x39cc840  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for eBrem and e+ spline=1  0x3ac0570
+ size=1
+modMan:0x39cd120  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for ionIoni and GenericIon spline=1  0x39f8820
+ size=1
+modMan:0x39ce230  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for muIoni and mu+ spline=1  0x3cf9cc0
+ size=1
+modMan:0x39d0f60  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for muBrems and mu+ spline=1  0x3cfa420
+ size=1
+modMan:0x39d1840  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for muPairProd and mu+ spline=1  0x3cfade0
+ size=1
+modMan:0x39d1f80  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for muBrems and mu+ spline=1  0x3cfa420
+ size=1
+modMan:0x39d1840  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=0 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for muPairProd and mu+ spline=1  0x3cfade0
+ size=1
+modMan:0x39d1f80  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=0 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for muIoni and mu- spline=1  0x3dd50d0
+ size=1
+modMan:0x39d3010  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hIoni and pi+ spline=1  0x3dd6f60
+ size=1
+modMan:0x39d4960  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hBrems and pi+ spline=1  0x3dd76c0
+ size=1
+modMan:0x39d5240  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hPairProd and pi+ spline=1  0x3dd8080
+ size=1
+modMan:0x39d5980  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hBrems and pi+ spline=1  0x3dd76c0
+ size=1
+modMan:0x39d5240  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=0 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hPairProd and pi+ spline=1  0x3dd8080
+ size=1
+modMan:0x39d5980  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=0 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hIoni and pi- spline=1  0x3ea8660
+ size=1
+modMan:0x39d64e0  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hIoni and kaon+ spline=1  0x3c3aee0
+ size=1
+modMan:0x39d7e30  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hBrems and kaon+ spline=1  0x3c3b640
+ size=1
+modMan:0x39d8710  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hPairProd and kaon+ spline=1  0x3c3be20
+ size=1
+modMan:0x39d8e50  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hBrems and kaon+ spline=1  0x3c3b640
+ size=1
+modMan:0x39d8710  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=0 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hPairProd and kaon+ spline=1  0x3c3be20
+ size=1
+modMan:0x39d8e50  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=0 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hIoni and kaon- spline=1  0x3cf8780
+ size=1
+modMan:0x39d99b0  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hIoni and proton spline=1  0x3ea9be0
+ size=1
+modMan:0x39db300  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hBrems and anti_proton spline=1  0x3a092f0
+ size=1
+modMan:0x39dc620  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hPairProd and anti_proton spline=1  0x3a09a90
+ size=1
+modMan:0x39dcd40  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hBrems and anti_proton spline=1  0x3a092f0
+ size=1
+modMan:0x39dc620  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=0 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hPairProd and anti_proton spline=1  0x3a09a90
+ size=1
+modMan:0x39dcd40  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=0 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for hIoni and anti_proton spline=1  0x3a08b70
+ size=1
+modMan:0x39de780  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+G4VEnergyLossProcess::BuildDEDXTable() of type 0 for ionIoni and alpha spline=1  0x39fb2b0
+ size=1
+modMan:0x39e0980  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1000 nbins= 49 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+
+eIoni:  for e-  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    0 eV  Emax=  100 TeV
+      CSDA range table up to 1 GeV in 49 bins
+### G4VEnergyLossProcess::BuildPhysicsTable() for eBrem and particle e-; the input particle e-
+Lambda: 0x3afb560
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39ca2d0 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for e- and process eBrem run=0 start=0 isMaster=1
+
+eBrem:  for e-  XStype:4  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      LPM flag: 1 for E > 1 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    0 eV  Emax=    1 GeV  ModifiedTsai
+            eBremLPM : Emin=    1 GeV Emax=  100 TeV  ModifiedTsai
+
+CoulombScat:  for e- XStype:1 SubType=1 BuildTable=1
+      Lambda table from 100 MeV to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=  100 MeV Emax=  100 TeV
+
+msc:  for e+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 MeV Nbins=42 100 eV  - 100 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+        WentzelVIUni : Emin=  100 MeV Emax=  100 TeV Nbins=42 100 MeV - 100 TeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+### G4VEnergyLossProcess::BuildPhysicsTable() for eIoni and particle e+; the input particle e+
+Lambda: 0x3abfd40
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39cc360 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for e+ and process eIoni run=0 start=0 isMaster=1
+
+eIoni:  for e+  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    0 eV  Emax=  100 TeV
+      CSDA range table up to 1 GeV in 49 bins
+### G4VEnergyLossProcess::BuildPhysicsTable() for eBrem and particle e+; the input particle e+
+Lambda: 0x3ac0600
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39ccc60 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for e+ and process eBrem run=0 start=0 isMaster=1
+
+eBrem:  for e+  XStype:4  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      LPM flag: 1 for E > 1 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    0 eV  Emax=    1 GeV  ModifiedTsai
+            eBremLPM : Emin=    1 GeV Emax=  100 TeV  ModifiedTsai
+
+annihil:  for e+ XStype:2 SubType=5 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            eplus2gg : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for e+ XStype:1 SubType=1 BuildTable=1
+      Lambda table from 100 MeV to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=  100 MeV Emax=  100 TeV
+
+msc:  for proton  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle proton; the input particle proton
+Lambda: 0x3ea9d00
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39dae30 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for proton and process hIoni run=0 start=0 isMaster=1
+
+hIoni:  for proton  XStype:3  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=    2 MeV
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV
+      CSDA range table up to 1 GeV in 49 bins
+
+CoulombScat:  for proton XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for GenericIon  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+### G4VEnergyLossProcess::BuildPhysicsTable() for ionIoni and particle GenericIon; the input particle GenericIon
+Lambda: 0x39f88c0
+    TablesAreBuilt= 1 isIon= 1 spline=1 ptr: 0x39cdd40 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for GenericIon and process ionIoni run=0 start=0 isMaster=1
+
+ionIoni:  for GenericIon  XStype:3  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.02
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            BraggIon : Emin=    0 eV  Emax=    2 MeV
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV
+      CSDA range table up to 1 GeV in 49 bins
+### G4VEnergyLossProcess::BuildPhysicsTable() for ionIoni and particle He3; the input particle He3; base: GenericIon
+Lambda: 0x39f88c0
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e12f0 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for He3 and process ionIoni run=0 start=0 isMaster=1
+
+msc:  for alpha  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+### G4VEnergyLossProcess::BuildPhysicsTable() for ionIoni and particle alpha; the input particle alpha
+Lambda: 0x39fef40
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e04b0 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for alpha and process ionIoni run=0 start=0 isMaster=1
+
+ionIoni:  for alpha  XStype:3  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.02
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            BraggIon : Emin=    0 eV  Emax=7.9452 MeV
+          BetheBloch : Emin=7.9452 MeV Emax=  100 TeV
+      CSDA range table up to 1 GeV in 49 bins
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle anti_He3; the input particle anti_He3; base: anti_proton
+Lambda: 0x3a08c90
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e74c0 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for anti_He3 and process hIoni run=0 start=0 isMaster=1
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle anti_alpha; the input particle anti_alpha; base: kaon-
+Lambda: 0x3cf88a0
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e7da0 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for anti_alpha and process hIoni run=0 start=0 isMaster=1
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle anti_deuteron; the input particle anti_deuteron; base: anti_proton
+Lambda: 0x3a08c90
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e6300 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for anti_deuteron and process hIoni run=0 start=0 isMaster=1
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle anti_omega-; the input particle anti_omega-; base: proton
+Lambda: 0x3ea9d00
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e5a20 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for anti_omega- and process hIoni run=0 start=0 isMaster=1
+
+msc:  for anti_proton  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle anti_proton; the input particle anti_proton
+Lambda: 0x3a08c90
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39de2b0 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for anti_proton and process hIoni run=0 start=0 isMaster=1
+
+hIoni:  for anti_proton  XStype:3  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=    2 MeV
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV
+      CSDA range table up to 1 GeV in 49 bins
+### G4VEnergyLossProcess::BuildPhysicsTable() for hBrems and particle anti_proton; the input particle anti_proton
+Lambda: 0x3a09380
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39dc160 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for anti_proton and process hBrems run=0 start=0 isMaster=1
+
+hBrems:  for anti_proton  XStype:1  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+### G4VEnergyLossProcess::BuildPhysicsTable() for hPairProd and particle anti_proton; the input particle anti_proton
+Lambda: 0x3a09b20
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39dc870 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for anti_proton and process hPairProd run=0 start=0 isMaster=1
+
+hPairProd:  for anti_proton  XStype:1  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 17x1001; from 7.50618 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+CoulombScat:  for anti_proton XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle anti_sigma+; the input particle anti_sigma+; base: anti_proton
+Lambda: 0x3a08c90
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e3fd0 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for anti_sigma+ and process hIoni run=0 start=0 isMaster=1
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle anti_sigma-; the input particle anti_sigma-; base: proton
+Lambda: 0x3ea9d00
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e4860 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for anti_sigma- and process hIoni run=0 start=0 isMaster=1
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle anti_triton; the input particle anti_triton; base: anti_proton
+Lambda: 0x3a08c90
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e6be0 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for anti_triton and process hIoni run=0 start=0 isMaster=1
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle anti_xi-; the input particle anti_xi-; base: proton
+Lambda: 0x3ea9d00
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e5140 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for anti_xi- and process hIoni run=0 start=0 isMaster=1
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle deuteron; the input particle deuteron; base: proton
+Lambda: 0x3ea9d00
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39dee80 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for deuteron and process hIoni run=0 start=0 isMaster=1
+
+msc:  for kaon+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle kaon+; the input particle kaon+
+Lambda: 0x3c3b000
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39d7960 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for kaon+ and process hIoni run=0 start=0 isMaster=1
+
+hIoni:  for kaon+  XStype:3  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=1.05231 MeV
+          BetheBloch : Emin=1.05231 MeV Emax=  100 TeV
+      CSDA range table up to 1 GeV in 49 bins
+### G4VEnergyLossProcess::BuildPhysicsTable() for hBrems and particle kaon+; the input particle kaon+
+Lambda: 0x3c3b6d0
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39d8250 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for kaon+ and process hBrems run=0 start=0 isMaster=1
+
+hBrems:  for kaon+  XStype:1  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+### G4VEnergyLossProcess::BuildPhysicsTable() for hPairProd and particle kaon+; the input particle kaon+
+Lambda: 0x3c3beb0
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39d8960 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for kaon+ and process hPairProd run=0 start=0 isMaster=1
+
+hPairProd:  for kaon+  XStype:1  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 18x1001; from 3.94942 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+CoulombScat:  for kaon+ XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for kaon-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle kaon-; the input particle kaon-
+Lambda: 0x3cf88a0
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39d94e0 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for kaon- and process hIoni run=0 start=0 isMaster=1
+
+hIoni:  for kaon-  XStype:3  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=1.05231 MeV
+          BetheBloch : Emin=1.05231 MeV Emax=  100 TeV
+      CSDA range table up to 1 GeV in 49 bins
+
+msc:  for mu+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+### G4VEnergyLossProcess::BuildPhysicsTable() for muIoni and particle mu+; the input particle mu+
+Lambda: 0x3cf9de0
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39d0a80 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for mu+ and process muIoni run=0 start=0 isMaster=1
+
+muIoni:  for mu+  XStype:3  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=  200 keV
+        MuBetheBloch : Emin=  200 keV Emax=  100 TeV
+      CSDA range table up to 1 GeV in 49 bins
+### G4VEnergyLossProcess::BuildPhysicsTable() for muBrems and particle mu+; the input particle mu+
+Lambda: 0x3cfa4b0
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39d1380 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for mu+ and process muBrems run=0 start=0 isMaster=1
+
+muBrems:  for mu+  XStype:1  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+              MuBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+### G4VEnergyLossProcess::BuildPhysicsTable() for muPairProd and particle mu+; the input particle mu+
+Lambda: 0x3cfae70
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39d1a90 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for mu+ and process muPairProd run=0 start=0 isMaster=1
+
+muPairProd:  for mu+  XStype:1  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 21x1001; from 0.85 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          muPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+CoulombScat:  for mu+ XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for mu-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+### G4VEnergyLossProcess::BuildPhysicsTable() for muIoni and particle mu-; the input particle mu-
+Lambda: 0x3dd51f0
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39d2b30 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for mu- and process muIoni run=0 start=0 isMaster=1
+
+muIoni:  for mu-  XStype:3  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=  200 keV
+        MuBetheBloch : Emin=  200 keV Emax=  100 TeV
+      CSDA range table up to 1 GeV in 49 bins
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle omega-; the input particle omega-; base: anti_proton
+Lambda: 0x3a08c90
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e36f0 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for omega- and process hIoni run=0 start=0 isMaster=1
+
+msc:  for pi+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle pi+; the input particle pi+
+Lambda: 0x3dd7080
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39d4490 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for pi+ and process hIoni run=0 start=0 isMaster=1
+
+hIoni:  for pi+  XStype:3  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=297.505 keV
+          BetheBloch : Emin=297.505 keV Emax=  100 TeV
+      CSDA range table up to 1 GeV in 49 bins
+### G4VEnergyLossProcess::BuildPhysicsTable() for hBrems and particle pi+; the input particle pi+
+Lambda: 0x3dd7750
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39d4d80 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for pi+ and process hBrems run=0 start=0 isMaster=1
+
+hBrems:  for pi+  XStype:1  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+### G4VEnergyLossProcess::BuildPhysicsTable() for hPairProd and particle pi+; the input particle pi+
+Lambda: 0x3dd8110
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39d5490 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for pi+ and process hPairProd run=0 start=0 isMaster=1
+
+hPairProd:  for pi+  XStype:1  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 20x1001; from 1.11656 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+CoulombScat:  for pi+ XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for pi-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle pi-; the input particle pi-
+Lambda: 0x3ea8780
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39d6010 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for pi- and process hIoni run=0 start=0 isMaster=1
+
+hIoni:  for pi-  XStype:3  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=297.505 keV
+          BetheBloch : Emin=297.505 keV Emax=  100 TeV
+      CSDA range table up to 1 GeV in 49 bins
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle sigma+; the input particle sigma+; base: proton
+Lambda: 0x3ea9d00
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e1c30 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for sigma+ and process hIoni run=0 start=0 isMaster=1
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle sigma-; the input particle sigma-; base: anti_proton
+Lambda: 0x3a08c90
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e2560 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for sigma- and process hIoni run=0 start=0 isMaster=1
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle tau+; the input particle tau+; base: proton
+Lambda: 0x3ea9d00
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e8f60 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for tau+ and process hIoni run=0 start=0 isMaster=1
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle tau-; the input particle tau-; base: anti_proton
+Lambda: 0x3a08c90
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e8680 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for tau- and process hIoni run=0 start=0 isMaster=1
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle triton; the input particle triton; base: proton
+Lambda: 0x3ea9d00
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39df6f0 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for triton and process hIoni run=0 start=0 isMaster=1
+### G4VEnergyLossProcess::BuildPhysicsTable() for hIoni and particle xi-; the input particle xi-; base: anti_proton
+Lambda: 0x3a08c90
+    TablesAreBuilt= 1 isIon= 0 spline=1 ptr: 0x39e2e10 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for xi- and process hIoni run=0 start=0 isMaster=1
+
+=========================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Initializing workers...
+=========================================================================
+
+G4WT1 > /run/verbose 1
+G4WT1 > /run/initialize 
+G4WT1 > /run/physicsModified 
+G4WT1 > /control/verbose 2
+G4WT1 > /run/verbose 1
+G4WT1 > /run/initialize 
+G4WT1 > /run/physicsModified 
+G4WT0 > /run/verbose 1
+G4WT0 > /run/initialize 
+G4WT0 > /run/physicsModified 
+G4WT0 > /control/verbose 2
+G4WT0 > /run/verbose 1
+G4WT0 > /run/initialize 
+G4WT0 > /run/physicsModified 
+#
+/run/setCut 10 um
+#
+/gun/particle e-
+/gun/energy 4 MeV
+#
+###/analysis/setFileName testem12
+###/analysis/h1/set 1 120  0.   2.4 cm #edep profile
+###/analysis/h1/set 2 180  0.   4.5 MeV #total Edep
+###/analysis/h1/set 3 100  0.    3. cm #true track length
+###/analysis/h1/set 4 100  0.  500. um #true step length
+###/analysis/h1/set 5 200 -3.    3. cm #proj range
+###/analysis/h1/set 8 120  0.   1.2 none #normalized edep profile
+#
+/run/printProgress 1000
+/run/beamOn 10000
+/run/physicsModified
+### G4VEnergyLossProcess::BuildPhysicsTable() for eIoni and particle e-; the input particle e-
+Lambda: 0x3afac10
+    TablesAreBuilt= 0 isIon= 0 spline=1 ptr: 0x39c9a20 isMaster=1
+### G4LossTableManager::BuildPhysicsTable() for e- and process eIoni run=1 start=1 isMaster=1
+0.   eIoni for e- active=1 tableBuilt=0 isIoni=1 ptr: 0x39c9a20
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for eIoni and e- spline=1  0x3afab30
+ size=1
+modMan:0x39c9f00  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+1.   eBrem for e- active=1 tableBuilt=0 isIoni=0 ptr: 0x39ca2d0
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for eBrem and e- spline=1  0x3afb480
+ size=1
+modMan:0x39ca790  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+2.   eIoni for e+ active=1 tableBuilt=0 isIoni=1 ptr: 0x39cc360
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for eIoni and e+ spline=1  0x3abfbd0
+ size=1
+modMan:0x39cc840  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+3.   eBrem for e+ active=1 tableBuilt=0 isIoni=0 ptr: 0x39ccc60
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for eBrem and e+ spline=1  0x3ac0520
+ size=1
+modMan:0x39cd120  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+4.   ionIoni for GenericIon active=1 tableBuilt=0 isIoni=1 ptr: 0x39cdd40
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for ionIoni and GenericIon spline=1  0x39f87d0
+ size=1
+modMan:0x39ce230  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+5.   muIoni for mu+ active=1 tableBuilt=0 isIoni=1 ptr: 0x39d0a80
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for muIoni and mu+ spline=1  0x3cf9c70
+ size=1
+modMan:0x39d0f60  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+6.   muBrems for mu+ active=1 tableBuilt=0 isIoni=0 ptr: 0x39d1380
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for muBrems and mu+ spline=1  0x3cfa3d0
+ size=1
+modMan:0x39d1840  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+7.   muPairProd for mu+ active=1 tableBuilt=0 isIoni=0 ptr: 0x39d1a90
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for muPairProd and mu+ spline=1  0x3cfad90
+ size=1
+modMan:0x39d1f80  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+8.   muIoni for mu- active=1 tableBuilt=0 isIoni=1 ptr: 0x39d2b30
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for muIoni and mu- spline=1  0x3dd5080
+ size=1
+modMan:0x39d3010  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=1
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=1 flagBuilder=1
+9.   hIoni for pi+ active=1 tableBuilt=0 isIoni=1 ptr: 0x39d4490
+G4VEnergyLossProcess::BuildDEDXTable() of type 1 for hIoni and pi+ spline=1  0x3dd6f10
+ size=112274
+modMan:0x39d4960  bld:0x39b1f90 isMaster:1
+1 couples minKinEnergy(MeV)= 0.0001 maxKinEnergy(MeV)= 1e+08 nbins= 84 size=112274
+G4EmTableUtil::BuildDEDXVector idx= 0 flagTable=0 flagBuilder=1

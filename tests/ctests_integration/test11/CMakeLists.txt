@@ -1,0 +1,32 @@
+cmake_minimum_required(VERSION 3.16...3.21)
+project(test11)
+find_package(Geant4 REQUIRED)
+include(${Geant4_USE_FILE})
+
+add_executable(test11
+  test11.cc
+  src/Tst11ActionInitialization.cc
+  src/Tst11DetectorConstruction.cc
+  src/Tst11DetectorMessenger.cc
+  src/Tst11PhysicsList.cc
+  src/Tst11PrimaryGeneratorAction.cc
+  src/Tst11RunAction.cc
+  src/Tst11SteppingAction.cc
+  src/Tst11TargetParameterisation.cc)
+target_include_directories(test11 PRIVATE include)
+target_link_libraries(test11 PRIVATE ${Geant4_LIBRARIES})
+
+add_executable(test11_hadronic_exerciser test11_hadronic_exerciser.cc)
+target_link_libraries(test11_hadronic_exerciser PRIVATE ${Geant4_LIBRARIES})
+
+#---Test definitions----------------------------------------------------------------------------------
+if(GEANT4_ENABLE_TESTING)
+  geant4_add_test(test11_hadronic_exerciser
+    COMMAND test11_hadronic_exerciser
+    OUTPUT  test11.in)
+  geant4_add_test(test11
+    COMMAND test11 test11.in
+    ENVIRONMENT ${GEANT4_TEST_ENVIRONMENT}
+    DEPENDS test11_hadronic_exerciser
+    TIMEOUT 1800)
+endif()

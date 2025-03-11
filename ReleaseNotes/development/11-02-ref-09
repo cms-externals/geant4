@@ -1,0 +1,357 @@
+
+                       geant4-11-02-ref-09
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o New process G4CoherentPairProduction for the simulation of coherent
+   pair production by high energy gamma in an oriented crystal.
+ o New class G4URRNeutrons to enable the special treatment of the Unresolved
+   Resonance Region (URR) via Particle Tables (PT) for low-energy neutrons.
+ o In de-excitation hadronic model, improved algorithm for handling of broken
+   levels in G4LevelReader.
+ o Added sub-event parallel mode as an option in G4RunManagerFactory and
+   adding a UI command for allowing trajectory merging.
+ o Cleanly delete G4Event objects at the end of each run as long as the
+   events are not requested to be kept for redrawing during the following
+   'Idle' state. The kept events are deleted at the beginning of next run
+   or at program termination.
+ o New dataset: G4URRPT-1.1.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-02-27
+-----
+- Added support for use of sanitizers with XCode; ensure sanitizer flags
+  are forwarded to the linker when using Xcode, and all linker flags are
+  forwarded to builds of tests.
+- New dataset: G4URRPT-1.1.
+
+analysis                                         analysis-V11-02-07
+--------
+- G4AccVector, G4Acc[Unordered]Map: replaced inheritance from standard
+  collections with composition; added most frequent functions.
+
+event                                            event-V11-02-09
+-----
+- In G4Event, changed data member 'keepTheEvent' to mutable so that
+  KeepTheEvent() method can be invoked for const G4Event object.
+
+externals
+---------
+- g4tools (g4tools-V11-02-05)
+  o Updated to g4tools-6.3.3. In wroot/file, fixed buffer size in function
+    compress_buffer(). In wroot/basket, suppressed test in write_on_file().
+    Addressing problem report #2625.
+  o Fixed typo in columns class member name; issue picked up by clang19
+    compiler on Linux. Reported by ATLAS.
+
+geometry/solids/specific                         geom-specific-V11-02-08
+------------------------
+- G4GenericTrap: Fixed minor defect reported by Coverity.
+
+global                                           global-V11-02-21
+------
+- Moved flushing of G4cout to G4iosFinalization, resolving a problem of
+  possible static destruction issue reported by ATLAS.
+- Added method Report() to G4AllocatorList, for monitoring G4Allocator objects.
+- Updated date and tag-ID for geant4-11-02-ref-09.
+
+interfaces                                       interfaces-V11-02-10
+----------
+- G4UIQt: fixed case of compilation error in FilterOutput(), with Qt-6.8.0
+  version. Addressing problem report #2633.
+- Allow larger integers in widget response in function
+  G4UIQt::NewSceneTreeItemTreeWidget::ActWithAnInteger()
+- Fixed case of opacity==0 for touchables in G4UIQt.
+
+materials                                        materials-V11-02-06
+---------
+- G4NistManager, G4NistElementBuilder, G4Material, G4Element, G4Isotope:
+  general code clean-up; use std::size_t; simplified expressions; avoid use
+  of static methods in class destructors. Return 'const G4ElementTable*' in
+  GetElementTable() method.
+- G4IonisParamMat, G4Material: fixed reported Coverity defects.
+
+parameterisations/channeling                     fastsimchanneling-V11-02-03
+----------------------------
+- Added new process G4CoherentPairProduction for the simulation of coherent
+  pair production by high energy gamma in an oriented crystal.
+  It works as a G4VDiscreteProcess, not as a parameterisation and uses
+  G4ChannelingFastSimCrystalData.
+
+parameterisations/gflash                         gflash-V11-02-01
+------------------------
+- Added GetEffDensity() function in GFlashSamplingShowerParameterisation. 
+- Applied correction of Es and sampling resolution function.
+- Added Rossi approximation for Ec as comment.
+
+particles                                        particles-V11-02-01
+---------
+- Apply [GitHub PR#74](https://github.com/Geant4/geant4/pull/74), fixing
+  G4ParticleMessenger never updating the currently selected particle.
+  Simplified logic in patch to remove local static.
+
+physics_lists
+-------------
+- constructors/electromagnetic  (phys-ctor-em-V11-02-12)
+  o G4EmStandardPhysics_option4, G4EmLivermorePhysics, G4EmStandardPhysics,
+    G4EmStandardPhysicsWVI: added possibility to enable/disable 3 gamma
+    annihilation on fly; take into account rename of the model
+    G4eplusTo2GammaOKVIModel to G4eplusTo2or3GammaModel.
+    By default it is enabled in G4EmStandardPhysics_option4 only. This option
+    is not added to G4EmPenelopePhysics as here the original Penelope model
+    for annihilation is used instead.
+  o Modified the molecule names of OH, HO2, O in MoleculeDefinition.
+    Each molecule configuration has a molecule definition.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V11-02-01)
+  o Added new G4CoherentPairProductionPhysics class, related to the process
+    G4CoherentPairProduction of coherent pair production by high energy gamma
+    in an oriented crystal.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V11-02-01)
+  o Introduced new class G4URRNeutrons to enable the special treatment of the
+    Unresolved Resonance Region (URR) via Particle Tables (PT) for low-energy
+    neutrons. It can be used on top of any _HP or _HPT physics list.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-02-16)
+  o Modified the molecule names of OH, HO2, O in MoleculeDefinition.
+    Each molecule configuration has a molecule definition.
+- electromagnetic/standard (emstand-V11-02-17)
+  o Renamed G4eplusTo2GammaOKVIModel to G4eplusTo2or3GammaModel.
+- utils (emutils-V11-02-19)
+  o G4EmParameters added flag to enable/disable the new Ricardo-Gerardo model
+    of e+e- pair production.
+  o G4EmProcessSubType: added coherent channeling pair production process type.
+  o G4EmParameters, G4EmParametersMessenger: added flag to enable/disable
+    3 gamma annihilation on fly.
+  o G4EmConfigurator: handle G4TransportationWithMsc process name.
+  o G4TransportationWithMsc: set TRANSPORTATION_WITH_MSC process sub-type.
+  o G4EmCalculator: fixed reported Coverity defect.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-02-15)
+  o G4HadronXSDataTable: used const pointers; fixed data structure; do proper
+    deletion of objects at exit.
+- management (hadr-man-V11-02-02)
+  o G4HadronicProcessStore: fixed minor memory leak at exit by addition of
+    G4ThreadLocalSingleton pattern and removed deletion of extra processes
+    to avoid double deletion at exit.
+- models/de_excitation (hadr-deex-V11-02-18)
+  o G4LevelReader: changed algorithm for handling of broken levels: do not
+    change number of levels and number of transitions, broken levels or
+    transitions are not deleted but protected. For the case of energy of the
+    next level below the previous energy, its energy is set to Eprevious+2 eV.
+    For the case of transition to itself, the probability of such transition
+    is set to zero. Reduced printouts on problems in nuclear level data.
+  o G4PolarizationTransition: use optimized G4LegendrePolynomial.
+- models/particle_hp (hadr-hpp-V11-02-16)
+  o G4ParticleHPElasticData, G4ParticleHPInelasticData, G4ParticleHPCaptureData,
+    G4ParticleHPFissionData, G4ParticleHPThermalScatteringData and
+    G4ParticleHPThermalScattering: use const pointer of G4ElementTable;
+    removed unnecessary thread-local variables, dead code and commented code.
+  o G4ParticleHPElasticURR: added Boolean argument to the constructor to know
+    whether thermal scattering is activated (false by default).
+  o G4ParticleHPManager, G4ParticleHPProbabilityTablesStore,
+    G4ParticleHPInelasticDataPT and G4ParticleHPInelasticURR: updated to use
+    G4HadronicParameters for selecting the type of PT table for the URR 
+    treatment.
+- util (hadr-util-V11-02-05)
+  o G4LegendrePolynomial: optimized implementation as suggested in
+    [GitHub PR#70](https://github.com/Geant4/geant4/pull/70).
+
+processes/scoring                                procscore-V11-02-00
+-----------------
+- Added safeguard for zero energy deposited in G4EnergySplitter.
+  Addressing problem report #2629.
+
+processes/transportation                         transport-V11-02-00
+------------------------
+- Introduced TRANSPORTATION_WITH_MSC process sub-type in
+  G4TransportationProcessType.
+
+run                                              run-V11-02-23
+---
+- Define UI alias representing the run mode [sequential, eventParallel,
+  subEventParallel]. This alias can be used in macro file.
+- G4RunManagerFactory: adding sub-event parallel mode as an option.
+- G4RunMessenger: adding a command for trajectory merging in sub-event parallel
+  mode.
+- G4SubEvtRunManager, G4WorkerRunManager, G4WorkerSubEvtRunManager: adding an
+  option to merge trajectories created by worker threads in sub-event parallel
+  mode.
+- Fix in G4WorkerTaskRunManager and G4TaskRunManager, to process only
+  'NumberOfEventsPerTask'. Before this change, each thread would process all
+  its events in a single task since GetNumberOfEventsToBeProcessed() returns
+  the number of all events in the run. All other tasks would immediately
+  return because no work is left.
+- Fixed static memory leak of process and tracking managers in worker threads.
+- G4RunManagerKernel, G4RunManager, G4SubEvtRunManager: cleanly delete G4Event
+  objects at the end of each run as long as these events are not requested to
+  be kept for redrawing during the following 'Idle' state.
+  The kept events are deleted at the beginning of next run or at program
+  termination.
+- G4Run: added GetNumberOfKeptEvents() method.
+- G4SubEvtRunManager: properly start the timer.
+
+tracking                                         tracking-V11-02-05
+--------
+- Refined CloneForMaster() method by introducing G4ClonedTrajectory and
+  G4ClonedTrajectoryPoint classes for clean and safe use of G4Allocator.
+  Also added G4ClonedSmoothTrajectory and G4ClonedSmoothTrajectoryPoint.
+- G4RichTrajectory and G4RichTrajectoryPoint are modified to directly
+  inherit G4VTrajectory and G4VTrajectoryPoint abstract base-classes to
+  avoid double use of G4Allocator. Added G4ClonedRichTrajectory and
+  G4ClonedRichTrajectoryPoint classes.
+- G4Trajectory and G4TrajectoryPoint: added CloneForMaster() method for
+  merging trajectories created by worker thread in sub-event parallel mode.
+- Moved check of cloned trajectory from G4Trackingmanager to
+  G4TrackingMessenger to avoid unnecessary check.
+
+visualization
+-------------
+- management (visman-V11-02-28)
+  o G4VisExecutive: removed inclusion of QtGlobal header, no longer needed.
+  o G4VSceneHandler: moved some printing outside the loop over models.
+  o Introduced TOOLS_USE_FREETYPE flag in vis management for "/vis/plot"
+    UI command. In G4VisCommandsCompound, if TOOLS_USE_FREETYPE is set,
+    augment "/vis/plot" UI command to take "style" argument.
+  o G4VisManager: protect KeepForPostProcessing() mutex lock;
+    KeepForPostProcessing() is called on a worker thread,
+    PostProcessingFinished() is called on the vis sub-thread, so should be
+    protected.
+  o G4VisManager, G4VisCommandsSceneAdd: optimised timing of
+    G4Event::KeepForPostProcessing() and G4Event::PostProcessingFinished() so
+    that event object that are not requested to be kept are cleanly deleted at
+    the end of each run. Kept events are deleted at the beginning of the next
+    run or when the program terminates. Use G4Run::GetNumberOfKeptEvent() to
+    properly display the number of kept events.
+  o G4VisCommandsSceneAdd: ensure the logo respects the current requested
+    number of sides per circle.
+  o G4VisManager, G4VisCommandsSceneAdd: tidied redundant comments and
+    corrected some.
+  o G4VisCommandsViewer: simplified the use of view parameters of a
+    pre-existing viewer; use the parameters of the most recent viewer whatever
+    its type. Exclude GlobalMarkerScale from parameters copied from
+    pre-existing viewer.
+  o G4ViewParameters: Minor improvements to messages in output operator<<().
+  o Fixed some reported Coverity defects for unnecessary checks.
+- modeling (modeling-V11-02-05)
+  o G4TrajectoryDrawByEncounteredVolume, G4TrajectoryEncounteredVolumeFilter:
+    replaced check on trajectory type using dynamic_cast with a simple check
+    on the existence on the required G4Att.
+  o G4PhysicalVolumeModel.cc: code indentation.
+- gMocren (gMocren-V11-02-02)
+  o Fixed some reported Coverity defects.
+
+data
+----
+- G4URRPT-1.1:
+  o Corrected compression with zlib and added Au-197 in calendf.
+
+examples                                         examples-V11-02-09
+--------
+- Updated documentation and reference outputs.
+- advanced (exadvanced-V11-02-01)
+  o Created a new 'dna' category in advanced examples.
+  o Moved 'moleculardna' example from extended to advanced.
+- advanced/dna/cellularPhantom (cellularPhantom-V11-02-01)
+  o New application showing how to simulate the irradiation of a 3D voxel
+    phantom containing biological cells, created from a confocal microscopy
+    24-bit RGB image. Reference: P. Barberet et al., "Monte-Carlo dosimetry
+    on a realistic cell monolayer geometry exposed to alpha-particle",
+    Phys. Med. Biol. 57 (2012) 2189-2207.
+- advanced/dna/dsbandrepair (dsbandrepair-V11-02-02)
+  o Modified the molecule names of OH, HO2, O in MoleculeDefinition.
+    Each molecule configuration has a molecule definition.
+- advanced/dna/moleculardna (molecularDNA-V11-02-10)
+  o Modified the molecule names of OH, HO2, O in MoleculeDefinition.
+    Each molecule configuration has a molecule definition.
+  o Added plasmid geometry.
+  o Moved from extended examples module.
+- advanced/xray_telescope (xraytel-V11-02-00)
+  o Removed unnecessary use of G4VisManager and some UI commands fixing
+    stability problems.
+- extended/electromagnetic/TestEm1 (testem1-V11-02-01)
+  o Run, EventAction, TrackingAction, HistoManager: compute and plot
+    energy leakage.
+- extended/electromagnetic/TestEm3 (testem3-V11-02-02)
+  o Extended README to document stepMax.mac macro.
+- extended/electromagnetic/TestEm11 (testem11-V11-02-01)
+  o TrackingAction: in energy leakage, added special treatment for positron.
+- extended/exoticphysics/channeling (channelingExamples-V11-02-01)
+  o Created 'ch1' example out of original example and added 'ch2' example.
+- extended/exoticphysics/channeling/ch1 (ch1-V11-02-01)
+  o Use 'nullptr' in PrimaryGeneratorAction and DetectorConstruction.
+  o Removed redundant modules.
+  o Use CLHEP units.
+  o Deleted some comments in DetectorConstruction.
+- extended/exoticphysics/channeling/ch2 (ch2-V11-02-00)
+  o New example providing full functionality of both the G4BaierKatkov
+    and G4ChannelingFastSimModel, with parameters set up via a macro, in order
+    to simulate the physics of channeling and channeling radiation/coherent
+    Bremsstrahlung.
+- extended/field/field01 (fieldex01-V11-02-02)
+- extended/field/field02 (fieldex02-V11-02-02)
+- extended/field/field03 (fieldex03-V11-02-03)
+- extended/field/field04 (fieldex04-V11-02-01)
+  o Use GeometryHasBeenModified() in place of ReinitializeGeometry() in
+    DetectorCostruction UI commands implementation, for thread safety.
+- extended/medical/dna (exdna-V11-02-02)
+  o Moved 'moleculardna' example from extended to advanced examples module.
+- extended/medical/dna/chem4 (chem4-V11-02-01)
+  o Corrected molecule name in macro file.
+- extended/medical/dna/chem6 (chem6-V11-02-02)
+  o Added "/process/chem/TimeStepModel IRT" command in macro file beam_HCP.in.
+  o Corrected molecule name in macro file.
+- extended/medical/dna/dnadamage2 (dnadamage2-V11-02-00)
+  o Modified molecule names of OH, HO2, O in MoleculeDefinition.
+    Each molecule configuration has a molecule definition.
+  o Use G4ChemDissociationChannels_option1 builder to avoid duplication.
+- extended/medical/dna/dnaphysics (dnaphysics-V11-02-04)
+  o Updated DetectorConstructor and DetectorMessenger files with given
+    values of material density and World size.
+  o Added messenger for World size change.
+  o Added messenger for material density change.
+- extended/medical/dna/mfp (mfp-V11-02-02)
+- extended/medical/dna/range (range-V11-02-01)
+  o Added auto to plot.C.
+- extended/medical/dna/scavenger (scavenger-V11-02-00)
+  o Modified the molecule names of OH, HO2, O in MoleculeDefinition.
+    Each molecule configuration has a molecule definition.
+- extended/medical/dna/slowing (slowing-V11-02-01)
+- extended/medical/dna/svalue (svalue-V11-02-01)
+- extended/medical/dna/wvalue (wvalue-V11-02-01)
+  o Added auto to plot.C.
+- extended/medical/dna/UHDR (UHDR-V11-02-04)
+  o Modified the molecule names of OH, HO2, O in MoleculeDefinition.
+    Each molecule configuration has a molecule definition.
+  o Updated visualization mode for physical stage.
+- extended/parameterisations/gflash/gflasha (exgflasha-V11-02-02)
+  o ExGflashHistoManager: fixed initialisation of 'fVerbose'.
+  o Bigger calo length, radial histos in fraction of radius Moliere;
+    fixed index range.
+  o Restore setMat() functionality; added geometry commands.
+  o Moved event generator defaults from vis.mac to PrimaryGenerator class.
+  o Updated macro files and code cleanup.
+- extended/parameterisations/Par04 (expar04-V11-02-03)
+  o Bump tensorflow version from
+    [GitHub Dependabot PR#75](https://github.com/Geant4/geant4/pull/75)
+- extended/runAndEvent/RE05 (exampleRE05-V11-02-01)
+  o Modified exampleRE05.in macro to temporarily disable use of the HEPEvt
+    interface, pending event data update.
+- extended/visualization/standalone (exam-ext-vis-standalone-V11-02-01)
+  o In vis.mac, added some commands from B1 vis.mac macro, to get a nice view.
+
+tests                                            tests-V11-02-09
+-----
+- Updated reference outputs and tools.
+- ctests_examples (ctests_examples-V11-02-10)
+  o Created a new dna category in advanced examples; moved moleculardna
+    example from extended to advanced; added new cellularPhantom advanced
+    example in dna category.

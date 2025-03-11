@@ -1,0 +1,17 @@
+#----------------------------------------------------------------------------
+# Setup the project
+#
+cmake_minimum_required(VERSION 3.16...3.21)
+project(test15)
+
+find_package(Geant4 REQUIRED)
+include(${Geant4_USE_FILE})
+
+GEANT4_EXECUTABLE(test15 test15.cc src/*.cc)
+
+#--Test definitions -------
+#GEANT4_ADD_TEST(test15-build BUILD test15)
+GEANT4_ADD_TEST(test15 COMMAND test15 -m ${CMAKE_CURRENT_SOURCE_DIR}/test15.in
+		       BUILD test15
+		       ENVIRONMENT ${GEANT4_TEST_ENVIRONMENT})
+#DEPENDS test15-build if split building and running

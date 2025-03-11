@@ -1,0 +1,42 @@
+
+                 Test for importance sampling and scoring
+                 ========================================
+
+Remarks for system testing:
+==========================
+
+There are two macro files:
+- MassGeo_TimedApp.mac, and 
+- ParallelGeo_TimedApp.mac
+as input for testing the executable: test33.
+Please run the executable once for each macro file.
+
+Very short note on what test33 does:
+=====================================
+Importance sampling and scoring (and weight roulette) is tested
+using neutrons of 10 MeV bombarding a 180*cm high concrete cylinder.
+
+Several modes of running are possible:
+- fixed adjustments that may not be changed once they are set:
+  - "geometry"
+    - use the mass geometry
+    - use the parallel geometry
+  - "application"
+    - timed: run for a certain amount of time and produce a FOM*time
+    - visualise: use run for a certain number of events and display tracks
+- adjustments changeable on-line
+  - importance sampling
+  - scoring
+  - weight roulette
+
+The executable may be invoked with or without a macro file:
+- without macro file:
+  - runs in interactive mode with visualisation, executing vis.mac macro file.
+    By default 'MassGeometry' is selected; 'ParallelGeometry' can be selected
+    by editing the UI command in the script.
+- with macro file:
+  - MassGeo_TimedApp.mac: uses the mass geometry and a timed application
+  - ParallelGeo_TimedApp.mac: uses the parallel geometry and a timed application
+  - SamplingChange.mac: used in both scripts above to create several sampling
+    configurations to test importance sampling, scoring, (weight roulette) and
+    changing between those configurations.

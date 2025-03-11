@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+THIS=$(dirname $0)
+BO=`echo $BuildOptions | tr -d " " | tr "," " "`
+
+touch controlfile
+
+j_log=jenkins.log
+j_err=jenkins.err
+exec 3>&1 4>&2  1> >(/usr/bin/tee -a ${j_log} >&3) \
+                2> >(/usr/bin/tee -a ${j_log} > >(/usr/bin/tee ${j_err} >&4) )
+
+echo "host: `hostname`"
+date
+
+#-- link to Jenkins job
+echo ""
+echo "Jenkins Console Output ${BUILD_URL}/console"
+echo "" 
+
+
+cmd="source $THIS/jk-setup.sh \
+  -version \"$VERSION\" \
+  -mode \"$MODE\" \
+  -type \"$BUILDTYPE\" \
+  -options \"$BuildOptions\" \
+  -xoptions \"$ExtraCMakeOptions\" \
+  -label \"$LABEL\"  \
+  -compiler \"$COMPILER\"     \
+  -externals \"$EXTERNALS\" \
+  -thread \"$THREAD\" "
+echo $cmd > setup.sh
+echo $cmd
+$cmd
+
+echo "Dumping the full environment ---------------------------------------------------------"
+# use special char 036 (<rs>) to avoid wrong replacements
+env | sort | sed 's/:/:     /g' | tr '' '\n'
+echo "--------------------------------------------------------------------------------------"
+
+#---Run the CTest script-------------------------------------------
+echo "Starting CTest script for configuration ${CONFIG} at `date`" 
+ctest -V -S ${THIS}/g4${MODE}.cmake 
+status=$?
+
+echo "About to move ${j_log}"
+ls -larth
+mv ${j_log} ${BINARY}/Testing/${j_log}-$$
+mv ${j_err} ${BINARY}/Testing/${j_err}-$$
+
+exit $status

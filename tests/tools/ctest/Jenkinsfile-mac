@@ -1,0 +1,120 @@
+//
+// This pipeline is running the nightly build and testing for MAC platform
+// - It defines the matrix of combinations to run: OS, MT mode
+// - No optional build, yet.
+//
+// The builds are run in another pipeline, defined in Jenkinsfile/ Jenklins jobs g4np-bu
+//
+// Gunter Folger, May 2021
+//
+
+pipeline {
+  parameters {
+    choice(name: 'OS_FILTER',
+           choices: ['all', 'mac12', 'mac12arm', 'mac13', 'mac14', 'mac14arm', 'mac15arm' ],
+           description: 'Run on specific version of MacOS')
+    choice(name: 'MODE',
+           choices: ['nightly', 'experimental', 'release', 'physicschecks'] ,
+           description: 'set the build mode for CMake')
+    choice(name: 'BUILDTYPE',
+           choices: ['RelWithDebInfo', 'Release', 'Debug'] ,
+           description: 'Value for CMAKE_BUILD_TYPE, allowed values are those allowed in CMake')
+    string(name: 'EXTERNALS',
+           defaultValue: '',
+           description: 'CVMFS directory keeping the external libraries, leave blank to use default')
+    string(name: 'BuildOptions',
+           defaultValue: '',
+           description: 'extra build options, like: staticlibs, UseUsolids, BoundsCheck, EpCheck, UseInternalCLHEP, UseGranularCLHEP, MemCheck (valgrind), ....  Combinations allowed, separate options by comma: ,')
+    string(name: 'ExtraCMakeOptions',
+           defaultValue: '',
+           description: 'Additional CMake configuration options of the form "-Doption1=value1 -Doption2=value2"')
+    string(name: 'SourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: 'branch to checkout')
+    string(name: 'VerificationSourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: '')
+    string(name: 'BenchmarksSourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: '')
+  }
+
+  options {
+    buildDiscarder(logRotator( daysToKeepStr: '14' ))
+    timestamps()
+  }
+
+  agent {label 'startup-jobs'}
+  stages {
+    stage('load functions') {
+      steps {
+        script{
+          g4 = load 'scripts/tests/tools/ctest/JenkinsFunctions.groovy'
+        }
+      }
+    }
+
+    stage('BuildAndTest') {
+      matrix {
+        when {
+          anyOf {
+            expression { params.OS_FILTER == 'all' }
+            expression { params.OS_FILTER == env.OS }
+          }
+        }
+        axes {
+          axis {
+            name 'OS'
+            values 'mac12', 'mac12arm', 'mac13', 'mac13arm', 'mac14', 'mac14arm', 'mac15arm'
+          }
+          axis {
+            name 'COMPILER'
+            values  'native'
+          }
+          axis {
+            name 'THREAD'
+            values 'Seq', 'MT','MTmax'
+          }
+        }
+        excludes {
+          exclude {
+            axis {
+              name 'THREAD'
+              values 'MT'
+            }
+          }
+          exclude {
+            axis {
+              name 'OS'
+              values 'mac12', 'mac12arm', 'mac13', 'mac13arm'
+            }
+            axis {
+              name 'THREAD'
+              values 'Seq'
+            }
+          }
+        }
+        stages {
+          stage('Build and Test') {
+            steps {
+              echo "Do Build for ${OS} - ${COMPILER} - ${THREAD}"
+              script {
+                 g4.doBuild()
+              }
+            }
+          }
+
+        }
+      }
+    }
+
+    stage('extraBuildAndTest') {
+      steps {
+        script {
+           g4.doOptionalBuilds('mac15arm', 'native','MTmax', ['UseInternalCLHEP', 'CXX23'])
+           g4.doOptionalBuilds('mac14', 'native','MTmax', ['CXX23'])
+        }
+      }
+    }
+  }
+}

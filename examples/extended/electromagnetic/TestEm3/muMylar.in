@@ -1,0 +1,33 @@
+#
+# Macro file for "testEm3.cc"
+#
+# show how to store and retrieve Physics Tables
+#
+/control/verbose 2
+#
+/testem/det/setNbOfLayers 1
+/testem/det/setNbOfAbsor  1
+/testem/det/setAbsor 1 G4_MYLAR 1 mm
+/testem/det/setSizeYZ 10 cm
+#
+#/testem/phys/addPhysics  emstandard_opt0
+/testem/phys/addPhysics  emstandard_opt4
+#
+/run/setCut 0.01 mm
+#
+/run/initialize
+#
+/process/eLoss/verbose 0
+#/process/eLoss/CSDARange true
+/run/initialize
+#/random/setSavingFlag 1
+#
+/gun/particle mu+
+/gun/energy 1 MeV
+#
+/run/beamOn 100
+#
+/control/shell mkdir physdata
+/run/particle/storePhysicsTable physdata
+#
+

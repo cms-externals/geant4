@@ -1,0 +1,172 @@
+//
+// This pipeline is running the CI merge request build and testing triggered by gitlab.
+//
+// Gunter Folger, June 2021
+//
+
+def doCheckout() {
+  checkout changelog: false,
+    poll: false,
+    scm: [$class: 'GitSCM',
+          branches: [[name: "merge-requests/${MergeRequestId}"]],
+          extensions: [[$class: 'CheckoutOption', timeout: 15],
+                       [$class: 'RelativeTargetDirectory', relativeTargetDir: 'geant4'],
+                       [$class: 'PreBuildMerge', options: [mergeRemote: 'origin', mergeTarget: "${TargetBranch}"]]],
+          userRemoteConfigs: [[credentialsId: 'ade6d0b4-c04e-401f-b04b-1e6ef81c5ed7', name: 'origin',
+                               refspec: '+refs/heads/*:refs/remotes/origin/*  +refs/merge-requests/*/head:refs/remotes/origin/merge-requests/*',
+                               url: "${TargetRepoUrl}"]]]
+}
+
+def defaultEXTERNALS() {
+   script {
+      default_EXTERNALS = sh (
+        script: 'source scripts/tests/tools/ctest/versions.sh&&get_EXTERNALS',
+        returnStdout: true
+      ).trim()
+      echo "default EXTERNAL version : ${default_EXTERNALS}"
+      
+   }
+   return default_EXTERNALS
+}
+
+def g4
+
+pipeline {
+  parameters {
+    string(name: 'OS',
+           defaultValue: 'centos8',
+           description: 'OS required to run the job, currently centos7, centos8, alma9, mac12, mac12arm, mac13, mac13arm, mac14, mac14arm, ubuntu20, windows10, windows11, g4-alma9, g4-rhel9')
+    choice(name: 'THREAD',
+           choices: ['Seq', 'MT', 'MTmax'],
+           description: 'choice of threading mode')
+    choice(name: 'BUILDTYPE',
+           choices: ['RelWithDebInfo', 'Release', 'Debug', 'FullRelWithDebInfo'] ,
+           description: 'Value for CMAKE_BUILD_TYPE, allowed values are those allowed in CMake')
+    string(name: 'EXTERNALS',
+           defaultValue: '',
+           description: 'CVMFS directory keeping the external libraries, leave blank to use default')
+    string(name: 'BuildOptions',
+           defaultValue: 'none',
+           description: 'extra build options, like: staticlibs, UseVecGeom, BoundsCheck, EpCheck, UseInternalCLHEP, UseGranularCLHEP, MemCheck (valgrind), ....  Combinations allowed, separate options by comma: ,')
+    string(name: 'ExtraCMakeOptions',
+           defaultValue: '',
+           description: 'Additional CMake configuration options of the form "-Doption1=value1 -Doption2=value2"')
+  }
+
+  options {
+    buildDiscarder(logRotator( daysToKeepStr: '5' ))
+    timestamps()
+  }
+
+  environment {
+    MODE           = 'continuous'
+    TargetRepoUrl  = "${TargetRepoUrl}"
+    TargetBranch   = "${TargetBranch}"
+    MergeRequestId = "${MergeRequestId}"
+    MergeRequestLastCommit = "${MergeRequestLastCommit}"
+    scriptToRun    = 'jk-all'
+    EXTERNALS      = "${ params.EXTERNALS ?: defaultEXTERNALS()}"             // default for EXTERNALS
+  }
+
+  agent {label 'startup-jobs' }
+
+  stages {
+    stage('load functions') {
+      steps {
+        script{
+          g4 = load 'scripts/tests/tools/ctest/JenkinsFunctions.groovy'
+        }
+      }
+    }
+
+    stage('docker run') {
+      when {
+        beforeAgent true
+        expression { g4.getLABEL() =~ 'docker' }
+      }
+      agent {
+        node {
+          label g4.getLABEL()
+          customWorkspace "workspace/g4p-CI-build/${OS}/${COMPILER}/${THREAD}/" + g4.GetBuildOptionDir() + "${BUILDTYPE}"
+        }
+      }
+      steps {
+        buildName "#${BUILD_NUMBER}" + ' ' + MergeRequestId + ' ' + params.OS + '-' + params.COMPILER + '-' + params.THREAD + '-' + params.BUILDTYPE + g4.GetBuildOptionText()
+        buildDescription "Executed @ ${NODE_NAME}"
+        dir('geant4') {
+          deleteDir()
+        }
+        dir('build') {
+          deleteDir()
+        }
+        script {
+          sh 'env | sort'
+          doCheckout()
+          g4.doDockerBuildTest()
+        }
+      }
+    }
+
+    stage('run on hardware'){
+      when {
+        beforeAgent true
+        anyOf {
+          expression { params.OS =~ 'mac'  }
+          expression { g4.getLABEL() =~ '^g4-alma' }
+          expression { g4.getLABEL() =~ '^g4-rhel' }
+        }
+      }
+
+      agent {
+        node {
+          label g4.getLABEL()
+          customWorkspace "workspace/g4p-CI-build/${OS}/${COMPILER}/${THREAD}/" + g4.GetBuildOptionDir() + "${BUILDTYPE}"
+        }
+      }
+
+      steps {
+        buildName "#${BUILD_NUMBER}" + ' '  + MergeRequestId + ' ' + params.OS + '-' + params.COMPILER + '-' + params.THREAD + '-' + params.BUILDTYPE + g4.GetBuildOptionText()
+        buildDescription "Executed @ ${NODE_NAME}"
+        dir('geant4') {
+          deleteDir()
+        }
+        dir('build') {
+          deleteDir()
+        }
+        script {
+          doCheckout()
+          g4.doHWBuildTest()
+        }
+      }
+    }
+
+    stage('run for Windows'){
+      when {
+        beforeAgent true
+        expression { params.OS =~ 'win' }
+      }
+
+      agent {
+        node {
+          label g4.getLABEL()
+          customWorkspace "workspace/g4p-CI-build/${MODE}/${Platform}/${COMPILER}/${THREAD}/" + g4.GetBuildOptionDir() + "${BUILDTYPE}"
+        }
+      }
+
+      steps {
+        buildName "#${BUILD_NUMBER}" + ' '  + MergeRequestId + ' win-' + params.Platform + '-' + params.COMPILER + '-' + params.THREAD + '-' + params.MODE + '-' + params.BUILDTYPE + g4.GetBuildOptionText()
+        buildDescription "Executed @ ${NODE_NAME}"
+        dir('geant4') {
+          deleteDir()
+        }
+        dir('build') {
+          deleteDir()
+        }
+        script {
+          doCheckout()
+          g4.doWinBuildTest()
+        }
+      }
+    }
+  }
+}
