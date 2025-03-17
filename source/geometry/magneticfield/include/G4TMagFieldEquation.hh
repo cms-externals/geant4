@@ -36,7 +36,9 @@
 // Created: Josh Xie  (Google Summer of Code 2014 )
 // Adapted from G4Mag_UsualEqRhs
 // 
-// #include "G4ChargeState.hh"
+#ifndef G4TMAGFIELD_EQUATION_HH
+#define G4TMAGFIELD_EQUATION_HH
+
 #include "G4Mag_UsualEqRhs.hh"
 
 template 

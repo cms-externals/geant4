@@ -203,7 +203,8 @@ G4double G4VSolid::GetCubicVolume()
 G4double G4VSolid::EstimateCubicVolume(G4int nStat, G4double epsilon) const
 {
   G4int iInside=0;
-  G4double px,py,pz,minX,maxX,minY,maxY,minZ,maxZ,volume,halfepsilon;
+  G4double px, py, pz, volume, halfepsilon;
+  G4double minX=0., maxX=0., minY=0., maxY=0., minZ=0., maxZ=0.;
   G4ThreeVector p;
   EInside in;
 

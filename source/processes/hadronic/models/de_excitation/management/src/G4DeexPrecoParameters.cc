@@ -67,7 +67,7 @@ void G4DeexPrecoParameters::Initialise()
   fPrecoHighEnergy = 30*CLHEP::MeV;
   fMinExcitation = 10*CLHEP::eV;
   fMaxLifeTime = 1*CLHEP::nanosecond;
-  fMinExPerNucleounForMF = 200*CLHEP::GeV;
+  fMinExPerNucleounForMF = 500*CLHEP::GeV;
 }
 
 void G4DeexPrecoParameters::SetLevelDensity(G4double val)

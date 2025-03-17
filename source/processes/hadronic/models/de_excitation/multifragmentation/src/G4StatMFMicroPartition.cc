@@ -191,14 +191,20 @@ G4double G4StatMFMicroPartition::CalcPartitionTemperature(G4double U,
   
   G4int maxit = 0;
   // Loop checking, 05-Aug-2015, Vladimir Ivanchenko
-  while (Da*Db > 0.0 && maxit < 1000) 
-    {
-      ++maxit;
+  if (Da*Db < 0.0) {
+    G4bool yes = false;
+    for (G4int i=0; i < 1000; ++i) {
       Tb += 0.5*Tb; 	
       Db = (U + FreeInternalE0 - GetPartitionEnergy(Tb))/U;
+      if (Da*Db >= 0.0) {
+	yes = true;
+	break;
+      }
     }
+    if (!yes) { returmn -1.0; }
+  }
   
-  G4double eps = 1.0e-14*std::abs(Ta-Tb);
+  G4double eps = 1.0e-8*std::abs(Ta-Tb);
   
   for (G4int i = 0; i < 1000; i++) 
     {
@@ -217,10 +223,6 @@ G4double G4StatMFMicroPartition::CalcPartitionTemperature(G4double U,
           Da = Dmid;
         } 
     }
-  // if we arrive here the temperature could not be calculated
-  G4cout << "G4StatMFMicroPartition::CalcPartitionTemperature: I can't calculate the temperature"  
-         << G4endl;
-  // and set probability to 0 returning T < 0
   return -1.0;
   
 }
