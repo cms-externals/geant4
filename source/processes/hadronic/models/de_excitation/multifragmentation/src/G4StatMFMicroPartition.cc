@@ -201,7 +201,7 @@ G4double G4StatMFMicroPartition::CalcPartitionTemperature(G4double U,
 	break;
       }
     }
-    if (!yes) { returmn -1.0; }
+    if (!yes) { return -1.0; }
   }
   
   G4double eps = 1.0e-8*std::abs(Ta-Tb);
