@@ -1,0 +1,219 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+//
+/// \file RunAction.icc
+/// \brief Implementation of the inline functions of RunAction class
+
+
+#include "G4AccumulableManager.hh"
+
+//_____________________________________________________________________________
+inline
+G4bool RunAction::Check(G4VAccumulable* accumulable, const G4String& message) const
+{
+  if (accumulable == nullptr ) {
+      G4cout << message  << " failed." << G4endl;
+      return false;
+  }
+
+  return true;
+}
+
+//_____________________________________________________________________________
+inline G4int RunAction::GetId(G4VAccumulable* accumulable,
+                       G4String& message) const
+{
+  const auto& id = accumulable->GetId();
+  message += "accumulable by id " + std::to_string(id);
+
+  return id;
+}
+
+//_____________________________________________________________________________
+inline void RunAction::TestGetById()
+{
+  // test acces functions
+  //
+
+  G4bool result = true;
+
+  // Error message
+  G4String message0 = "Get ";
+
+  auto accumulableManager = G4AccumulableManager::Instance();
+
+  // Accumulables of value G4double type
+  for (auto acc : fDValues) {
+    G4String message = message0 + "value";
+    auto tid = GetId(acc, message);
+    auto retrievedAcc = accumulableManager->GetAccValue<G4double>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Accumulables of value G4int type
+  {
+    G4String message = message0 + "value";
+    auto tid = GetId(&fNsec, message);;
+    auto retrievedAcc = accumulableManager->GetAccValue<G4int>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Accumulables of value G4bool type
+  {
+    G4String message = message0 + "value";
+    auto tid = GetId(&fPassed, message);;
+    auto retrievedAcc = accumulableManager->GetAccValue<G4bool>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Accumulables of array type
+  for (auto acc : fArrays) {
+    G4String message = message0 + "value";
+    auto tid =GetId(acc, message);;
+    auto retrievedAcc = accumulableManager->GetAccArray<G4double, 2>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Accumulables of vector type
+  for (auto acc : fVectors) {
+    G4String message = message0 + "value";
+    auto tid =GetId(acc, message);;
+    auto retrievedAcc = accumulableManager->GetAccVector<G4double>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Accumulables of map type
+  for (auto acc : fMaps) {
+    G4String message = message0 + "value";
+    auto tid =GetId(acc, message);;
+    auto retrievedAcc = accumulableManager->GetAccMap<G4String, G4int>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Accumulables of map type
+  for (auto acc : fUnorderedMaps) {
+    G4String message = message0  + "unordered maps";;
+    auto tid =GetId(acc, message);;
+    auto retrievedAcc = accumulableManager->GetAccUnorderedMap<G4String, G4int>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Print test result
+  if (result) {
+    G4cout << "Test get by Id finished successfully." << G4endl;
+  }
+  else {
+    G4cout << "Test get by Id failed." << G4endl;
+  }
+}
+
+//_____________________________________________________________________________
+inline G4String RunAction::GetName(G4VAccumulable* accumulable,
+                            G4String& message) const
+{
+  const auto& name = accumulable->GetName();
+  message += "accumulable by name " + name;
+
+  return name;
+}
+
+//_____________________________________________________________________________
+inline void RunAction::TestGetByName()
+{
+  // test acces functions
+  //
+
+  G4bool result = true;
+
+  // Error message
+  G4String message0 = "Get ";
+
+  auto accumulableManager = G4AccumulableManager::Instance();
+
+  // Accumulables of value G4double type
+  for (auto acc : fDValues) {
+    G4String message = message0 + "value";
+    auto tid = GetName(acc, message);
+    auto retrievedAcc = accumulableManager->GetAccValue<G4double>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Accumulables of value G4int type
+  {
+    G4String message = message0 + "value";
+    auto tid = GetName(&fNsec, message);;
+    auto retrievedAcc = accumulableManager->GetAccValue<G4int>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Accumulables of value G4bool type
+  {
+    G4String message = message0 + "value";
+    auto tid = GetName(&fPassed, message);;
+    auto retrievedAcc = accumulableManager->GetAccValue<G4bool>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Accumulables of array type
+  for (auto acc : fArrays) {
+    G4String message = message0 + "value";
+    auto tid = GetName(acc, message);
+    auto retrievedAcc = accumulableManager->GetAccArray<G4double, 2>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Accumulables of vector type
+  for (auto acc : fVectors) {
+    G4String message = message0 + "value";
+    auto tid = GetName(acc, message);
+    auto retrievedAcc = accumulableManager->GetAccVector<G4double>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Accumulables of map type
+  for (auto acc : fMaps) {
+    G4String message = message0 + "value";
+    auto tid = GetName(acc, message);
+    auto retrievedAcc = accumulableManager->GetAccMap<G4String, G4int>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Accumulables of map type
+  for (auto acc : fUnorderedMaps) {
+    G4String message = message0  + "unordered maps";;
+    auto tid = GetName(acc, message);
+    auto retrievedAcc = accumulableManager->GetAccUnorderedMap<G4String, G4int>(tid);
+    result &= Check(retrievedAcc, message);
+  }
+
+  // Print test result
+  if (result) {
+    G4cout << "Test get by Name finished successfully." << G4endl;
+  }
+  else {
+    G4cout << "Test get by Name failed." << G4endl;
+  }
+}

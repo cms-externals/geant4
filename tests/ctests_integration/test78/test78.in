@@ -1,0 +1,36 @@
+# Macro file for "test78.cc"
+/control/verbose 0
+/run/verbose 1
+/testem/det/setMat Gold
+#/testem/det/setMat Lead
+/testem/phys/addPhysics standard
+#/testem/phys/addPhysics livermore
+/run/initialize
+/run/setCut 1 nm
+
+/process/inactivate phot
+/process/inactivate conv
+/process/inactivate GammaToMuPair
+/process/inactivate compt
+#/process/inactivate JAEA_ES
+
+
+/gun/particle gamma
+/gun/energy 175 keV
+/gun/polarization 0.9801 0 0
+
+/analysis/setFileName Gold175-9801
+/analysis/h1/set 1  180 0. 180. none	#Theta Distribution Horizontal
+/analysis/h1/set 2  180 0. 180. none	#Theta Distribution Vertical
+/analysis/h2/setX 1  180 0. 180. none 	#Theta Distribution
+/analysis/h2/setY 1  2000 -1. +1. none	# Polarization
+
+/analysis/h1/setXaxis 1 "#theta (degree)"
+/analysis/h1/setXaxis 2 "#theta (degree)"
+/analysis/h1/setYaxis 1 "Count"
+/analysis/h1/setYaxis 2 "Count"
+/analysis/h2/setXaxis 1 "#theta (degree)"
+/analysis/h2/setYaxis 1 "#xi_{1}^{'} "
+#
+/run/printProgress 100000
+/run/beamOn 10000000

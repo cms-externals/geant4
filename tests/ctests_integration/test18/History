@@ -1,0 +1,263 @@
+# Category test18 History
+
+See `CONTRIBUTING.rst` for details of **required** info/format for each entry,
+which **must** added in reverse chronological order (newest at the top).
+It must **not** be used as a substitute for writing good git commit messages!
+
+-------------------------------------------------------------------------------
+
+## 2024-09-18 Gabriele Cosmo (test18-V11-02-01)
+- Migrated to use G4RunManagerFactory with default Tasking run-manager.
+
+## 2024-07-12 Vladimir Ivantchenko (test18-V11-02-00)
+- Tst18EventAction - change G4Exception severity from FatalException
+  to JustWarning, because it is a rare but allowed situation when
+  radioactive decay happens out of the time window 
+
+## 2023-11-10 Alberto Ribon (test18-V11-01-00)
+- test18.in, test18.large_N.in : introduced the UI command
+  '/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year'
+  to allow all radioactive decays (including the very long ones).
+  This is necessary since G4 11.2, being 1 year the default time
+  threshold above which the decays are ignored.
+
+## 2021-12-10 Ben Morgan (test18-V11-00-00)
+- Change to new Markdown History format
+
+---
+
+# History entries prior to 11.0
+
+4 August 2021 Ben Morgan (test18-V10-07-05)
+---------------------------------------------------
+- Modernize CMake script allowing test to be built in system testing
+  or as a standalone project
+
+23 May 2021 Dennis Wright (test18-V10-07-04)
+--------------------------------------------
+- Tst18PhysicsList.cc: remove #include of deprecated
+   G4RadioactiveDecay.hh
+
+5 May 2021 Ben Morgan (test18-V10-07-03)
+----------------------------------------
+- Do not install tests
+
+11 March 2021 Alberto Ribon (test18-V10-07-02)
+----------------------------------------------
+- Tst18PhysicsList : replaced stopping processes that have been deleted.
+
+04 March 2021 Alberto Ribon (test18-V10-07-01)
+----------------------------------------------
+- Tst18PhysicsList : replaced particle-specific inelastic hadronic
+  processes (that have been deleted) with G4HadronInelasticProcess.
+
+18 February 2021 Ben Morgan (test18-V10-07-00)
+----------------------------------------------
+- Support same CMake version range as core Geant4
+
+05 August 2020  Alberto Ribon      (test18-V10-06-00)
+-----------------------------------------------------
+- test18.in , test18.large_N.in : migrated UI commands from "/grdm/..."
+  to "/process/had/rdm/..."
+- RadioactiveDecayGunmessenger : for consistency (although not necessary),
+  migrated the (local) UI command "/grdm/ion" to "/process/had/rdm/ion".
+
+08 May 2019  Vladimir Ivanchenko   (test18-V10-05-00)
+----------------------------------------------------
+- use QGSP_BIC and G4RadioactiveDecayPhysics
+
+08 May 2018 Ben Morgan             (test18-V10-04-01)
+----------------------------------------------------
+- Include G4Types before use of G4MULTITHREADED. For forward
+  compatibility with move to #defines over -D for G4 preprocessor
+  symbols.
+
+24 January 2018 Gunter Folger      (test18-V10-04-00)
+-----------------------------------------------------
+- test18.in, test18.large_N.in: replace use of command /gun/ionL using level numbers with
+     command /gun/ion using level energy
+
+03 April 2017  Vladimir Ivanchenko (test18-V10-03-00)
+----------------------------------------------
+- Tst18PhysicsList - make Physics List classical - builders created
+    in PhysList constructor
+
+13-October-2016 G.Folger  (test18-V10-02-02)
+- remove direct use of theParticleIterator, use GetParticleTableIterator().
+    fix required by clang39 on Windows and MAC
+
+16 June 2016  Vladimir Ivanchenko (test18-V10-02-01)
+----------------------------------------------
+- test18.large_N.in - added /run/initialize
+
+16 June 2016  Vladimir Ivanchenko (test18-V10-02-00)
+----------------------------------------------
+- Tst18RunAction.cc: uncommented summary printout but limit it
+    by only 20 secondaries
+- Tst18PhysicsList.cc: use G4EmStandardPhysics, G4DecayPhysics
+    and G4RadioactiveDecayPhysics builders instead of obsolete
+    custom code, enable Auger electron production for radioactive
+    decay
+- test18.cc - removed run initialisation
+- test18.in - add /run/initialize
+
+10 October 2015  Tatsumi Koi (test18-V10-01-01)
+----------------------------------------------
+- Tst18RunAction.cc: Fix format disorder in gcc 5.2
+
+19 January 2015 Gunter Folger  (test18-V10-01-00)
+-------------------------------------------------
+- CmakeLists.txt: bring in line with normal setupto avoid building
+    test18 as part of Geant4 libraries.
+
+10 June 2014  Dennis Wright (test18-V10-00-00)
+----------------------------------------------
+- Tst18RunAction.cc: limit output at end of run
+
+26 October 2013  Makoto Asai  (test18-V09-06-11)
+------------------------------------------------
+- remove obsolete UI commands.
+
+22 October 2013  Dennis Wright  (test18-V09-06-10)
+--------------------------------------------------
+- replace G4LElastic with G4HadronElastic
+
+2 October 2013  Andrea Dotti  (test18-V09-06-09)
+------------------------------------------------
+- Enabling test18 in system testing ctest/cdash
+
+
+15 August 2013  Dennis Wright (test18-V09-06-08)
+------------------------------------------------
+- move decay product exception from run action to event action to
+    avoid end-of-run FP exception in MT mode.  Increment number of secondaries
+    in stepping action.
+
+- Tst18PrimaryGeneratorAction : for thread safety, use
+    G4ParticleGun::SetParticleMomentumDirection instead of UI commands to set
+    ion direction
+
+14 August 2013  Makoto Asai
+---------------------------
+- Remove while-loop from Tst18PhysicsList::ConstructGeneral() and
+  directly access G4ParticleTable::GetParticleTable()->GetGenericIon()
+  method to get the pointer.
+
+12 August 2013  Dennis Wright (test18-V09-06-07)
+------------------------------------------------
+- test18.in, test18.large_N.in :
+  add /particle/createAllIsomer to make metastable states available
+  replace  /gun/ion Z A Z E with  /gun/ionL Z A Z Lvl
+
+29 July 2013  Alex Howard (test18-V09-06-06)
+----------------------------------------------
+- Removed unused data member from Tst18EventAction
+
+29 July 2013  Alex Howard (test18-V09-06-05)
+----------------------------------------------
+- Throw an exception if the number of particles is equal to the number of
+  projectiles (i.e. no decay products/stable projectile).
+
+15 July 2013  Dennis Wright (test18-V09-06-04)
+----------------------------------------------
+- set numberOfThreads to 1 in test18.large_N.in and test18.in.  This is a
+  temporary measure until multi-threaded issues with G4RadioactiveDecay can
+  be fixed.
+
+21 June 2013  Dennis Wright (test18-V09-06-03)
+----------------------------------------------
+- Tst18GeometryConstruction : do proper nesting of material spheres
+- Tst18SteppingAction, Tst18RunAction : remove globals for communication between
+  these two classes.   Use pointer instead.
+
+19 June 2013  Dennis Wright (test18-V09-06-02)
+----------------------------------------------
+- remove deprecated LHEP models, replace with Bertini and BinaryLightIon
+- update README
+
+10 June 2013  Dennis Wright (test18-V09-06-01)
+----------------------------------------------
+- Migrate to multi-threaded:
+    added option to use G4MTRunManager in test18.cc
+    created class Tst18ActionInitialization and moved some user init methods
+      there
+    added empty method Tst18GeometryConstruction::ConstructSDandField()
+
+- added CMakeLists_Standalone.txt to be used for stand-alone running
+  (developed by Makoto Asai)
+
+- updated README for cmake build
+
+Dec 13, 2012  Michael Kelsey (test18-V09-06-00)
+-----------------------------------------------
+- Replace LHEP-style pi/K stopping processes with Bertini-based.  This also
+  eliminates the "TRIUMPH_STOP_KMINUS" and "TRIUMPH_STOP_PIMINUS"
+  preprocessor macros.
+
+Oct 9, 2012  Gabriele Cosmo (test18-V09-05-00)
+----------------------------------------------
+- Explicit inclusion of units and constants headers.
+
+Sep 10, 2011  Pere Mato (test18-V09-04-02)
+- Fixed missing dependency between tests in CMakeLists.txt.
+
+Jul 20, 2011  Gabriele Cosmo (test18-V09-04-01)
+- Removed vis setup.
+
+Jun 1, 2010   Gunter Folger  (test18-V09-03-00)
+- Migrate to G4{e,Mu,h}MutplieScattering
+
+Nov 20, 2006  Gabriele Cosmo (test18-V08-01-00)
+- Migrate to use G4VisExecutive. Removed obsolete vis-manager class.
+
+Nov 19, 2005  Gabriele Cosmo (test18-V07-01-00)
+- Migration to <sstream> from deprecated <strstream>.
+
+Nov 17, 2004  Vladimir Ivanchenko (test18-V06-02-00)
+- Fixed problem in EM PhysicsList.
+
+Mar 16, 2004  Gabriele Cosmo
+- Fixed compilation warnings.
+- Replaced usage of NULL with 0.
+
+Nov 13, 2003  John Allison
+- Removed OPACS from Vis Manager.
+
+Apr 25, 2003  Vladimir Ivanchenko (test18-V05-00-02)
+- Use /gun/ion command for macro
+
+Mar 12, 2003  John Allison (test18-V05-00-01)
+- Added HepRep to vis manager.
+
+Feb 19, 2003  Gabriele Cosmo (test18-V05-00-00)
+- Removed redundant inclusion of PhysicalConstants.h.
+  Now using CLHEP headers.
+
+Oct 18, 2001  Steve O'Neale (tests-V03-02-03)
+- Update reference output
+
+18th August 2000  Michel Maire
+- standard G4ionIonisation removed from the PhysicsList
+
+28th June 2000  John Allison  (test18-V01-01-09)
+- Updated test18.out.
+
+27th June 2000  Fan Lei  (test18-V01-01-08)
+- limits the output of the decay particles to the first
+  100 entries only
+- changed default process/verbose to 0 for radiative_decay
+
+27th June 2000  John Allison  (test18-V01-01-07)
+- Added /control/verbose 2 to *.in.
+
+27th June 2000  John Allison  (test18-V01-01-06)
+- Added test18.large_N.in.
+
+19th June 2000  John Allison  (test18-V01-01-05)
+- Updated test18.out for SUN debug non-ISO.
+
+15th June 2000  John Allison  (test18-V01-01-03)
+- ISO compliance.
+
+23rd May 2000  John Allison  (test18-V01-01-00)
+- First version from hadronic/models/radiative_decay/test/exrdm02.

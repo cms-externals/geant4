@@ -1,0 +1,57 @@
+#!/bin/bash
+
+case ${COMPILER} in 
+  gcc51)
+    cxx_vers=5.1
+    ;;
+  gcc53)
+    cxx_vers=5.3
+    ;;
+  gcc62)
+    cxx_vers=6.2
+    ;;
+  gcc63)
+    cxx_vers=6.2
+    ;;
+  gcc9)
+    cxx_vers=9
+    ;;
+  gcc10)
+    cxx_vers=10
+    ;;
+  gcc11)
+    cxx_vers=11
+    ;;
+  gcc12)
+    cxx_vers=12
+    ;;
+  gcc13)
+    cxx_vers=13
+    ;;
+  *)
+    echo "Error: compiler ${COMPILER} not configured"
+    exit 1
+    ;;
+esac
+
+vg_lcgplatform=x86_64-$(echo ${LABEL} | sed -e 's/alma/el/')
+
+source /cvmfs/sft.cern.ch/lcg/contrib/gcc/${cxx_vers}/${vg_lcgplatform}/setup.sh
+export CXX=`which g++`
+export  CC=`which gcc`
+
+echo "Using g++ : ${CXX}"
+
+vg_src="/geant4/VecGeom"
+VecGeomBuild="${WORKSPACE}/build/VecGeom"
+mkdir -p ${VecGeomBuild}/{build,install}
+cd ${VecGeomBuild}/build
+
+cmake \
+  -DVECGEOM_BACKEND=Scalar \
+  -DVECGEOM_BUILTIN_VECCORE=ON \
+  -DVECGEOM_GDML=OFF \
+  -DBUILD_TESTING=OFF \
+  -DCMAKE_INSTALL_PREFIX=${VecGeomBuild}/install \
+  ${vg_src}
+make install

@@ -1,0 +1,11 @@
+#!/bin/bash
+# - Settings for hooks
+# 1. Limit on file size (2MB)
+git config geant4.filesizehardlimit 2000000 &&
+
+# Install local hooks (NB: wipes out any hooks already set by user)
+git_dir=$(git rev-parse --git-dir) &&
+mkdir -p "$git_dir/hooks" &&
+cp GitUtilities/pre-commit "$git_dir/hooks" && chmod u+x "$git_dir/hooks/pre-commit" &&
+cp GitUtilities/commit-msg "$git_dir/hooks" && chmod u+x "$git_dir/hooks/commit-msg"
+
