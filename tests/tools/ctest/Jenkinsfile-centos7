@@ -1,0 +1,93 @@
+//
+// This pipeline is running the nightly build and testing for centos7 platform
+// - It defines the matrix of combinations to run: compiler, MT mode
+// - Some optional builds are included.
+//
+// Gunter Folger, May 2021
+//
+
+def g4
+
+pipeline {
+  parameters {
+    choice(name: 'MODE',
+           choices: ['nightly', 'experimental', 'release', 'physicschecks', 'patch'] ,
+           description: 'set the build mode for CMake')
+    choice(name: 'BUILDTYPE',
+           choices: ['RelWithDebInfo', 'Release', 'Debug'] ,
+           description: 'Value for CMAKE_BUILD_TYPE, allowed values are those allowed in CMake')
+    string(name: 'EXTERNALS',
+           defaultValue: '',
+           description: 'CVMFS directory keeping the external libraries, leave blank to use default')
+    string(name: 'BuildOptions',
+           defaultValue: '',
+           description: 'extra build options, like: staticlibs, UseVecGeom, BoundsCheck, EpCheck, UseInternalCLHEP, UseGranularCLHEP, MemCheck (valgrind), ....  Combinations allowed, separate options by comma: ,')
+    string(name: 'ExtraCMakeOptions',
+           defaultValue: '',
+           description: 'Additional CMake configuration options of the form "-Doption1=value1 -Doption2=value2"')
+    string(name: 'SourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: 'branch to checkout')
+    string(name: 'VerificationSourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: '')
+    string(name: 'BenchmarksSourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: '')
+  }
+
+  options {
+    buildDiscarder(logRotator( daysToKeepStr: '14' ))
+    timestamps()
+  }
+
+  environment {
+    OS= 'centos7'
+  }
+
+  agent {label 'startup-jobs'}
+  stages {
+    stage('load functions') {
+      steps {
+        script {
+          g4 = load 'scripts/tests/tools/ctest/JenkinsFunctions.groovy'
+        }
+      }
+    }
+
+    stage('DefautBuildAndTest') {
+      matrix {
+        axes {
+          axis {
+            name 'COMPILER'
+            values 'gcc8'
+          }
+          axis {
+            name 'THREAD'
+            values 'Seq', 'MT','MTmax'
+          }
+        }
+
+        excludes {
+          exclude {
+            axis {
+              name 'THREAD'
+              values 'MT'
+            }
+          }
+        }
+
+        stages {
+          stage('Run build jobs') {
+            steps {
+              script{
+                println "${OS}" + " : " + "${COMPILER}" + " : " + "${THREAD}"
+		   g4.doBuild()
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

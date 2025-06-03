@@ -1,0 +1,53 @@
+                                Test320
+                                -------
+
+  Test for the analysis category:
+  - for testing object cycles and objects deleting
+  Responsible: Ivana Hrivnacova, IPN Orsay
+
+  This test uses the scenario as defined in test32 based on the basic/B4 example
+  with added use-cases for testing analysis
+
+  Run command:
+  ./test320  -m run-xyz.mac [-merge on|off] [-vl value]
+
+  Macros:
+  run.mac
+    - test macro with parameterised output type
+  run-xyz.mac, xyz = csv, hdf5, root, xml
+    - set the default output type 'xyz' and call run.mac
+  run-root-merge.mac
+    - as run-root.mac with added appendName alias
+      to produce files with different names than
+      test without merging activated
+
+  Deleting of objects
+  - The objects are deleted after the Run #0 and some of objects
+    are re-created after the Run #1
+
+  Output files:
+  e-.xyz:
+  - contains data collected during 3 e- runs:
+    - objects that were not deleted (all with id #0) have three cycles in the file
+      (Eg. Edep-0, PX-PY-0, etc.)
+    - objects that were deleted and recreated with new name have 1 cycle each
+      (eg. Edep-1, Edep-1-new, etc.)
+    - ntuple #3 for run #2 (TrackL-3-new)
+
+  e-extra.xyz
+  - this file is set before e- run starts to h1 #3 and ntuples #3 and #5
+  - contains data collected during 3 runs:
+    - h1 #3 for runs #0 and #2 (Edep-3, Edep-3-new)
+    - ntuple #3 for run #0 (TrackL-3)
+        after deleting without keepSetting, the new ntuple (TrackL-3-new) is in run #2
+        written in the default file
+    - ntuple #5 for run #0 and #2 (TrackL-5, TrackL-5-new)
+
+  proton.xyz:
+  - contains data collected during 2 proton runs (except object written
+    in proton-extra.xyz);
+    all objects have 2 cycles in the file
+
+  proton-extra.xyz:
+  - this file is set before proton run starts to h1 #3 and ntuples #3 and #5;
+    all these object have 2 cycles in the file

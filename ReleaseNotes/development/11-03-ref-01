@@ -1,0 +1,215 @@
+
+                       geant4-11-03-ref-01
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Revised surface area calculation and random point sampling for G4Hype shape.
+ o Added G4HadronPhysicsLEND in physics-lists to define neutron and photon
+   induced processes from LEND.
+ o New classes with alternative precompound model.
+ o Re-instated transparency slider in visualization GUI.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.3.1
+
+Summarised, the list of changes is the following:
+
+analysis                                         analysis-V11-03-00
+--------
+- Fix to qualify use of G4Accumulables namespace to avoid clashes and order  (o)
+  dependence of inclusion of headers.
+
+geometry/management                              geommng-V11-03-01
+-------------------
+- G4GeomTools: added functions HyperboloidSurfaceArea(), HypeStereo()
+  and TwistedTubeBoundingTrap().
+
+geometry/solids/specific                         geom-specific-V11-03-00
+------------------------
+- G4Hype: revised surface area calculation and random point sampling.
+
+global                                           global-V11-03-01
+------
+- Factored common ieee754 union and helper functions out of G4Log and
+  G4Exp to remove code duplication.
+- Updated date and tag-ID for geant4-11-03-ref-01.
+
+graphics_reps                                    greps-V11-03-00
+-------------
+- Re-instated transparency slider in GUI.
+- G4VGraphicsScene: added 'fMaxGeometryDepth' data member and corresponding
+  access functions.
+
+interfaces                                       interfaces-V11-03-00
+----------
+- G4UIQt: re-instated transparency slider
+- Code tidy.
+
+physics_lists
+-------------
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V11-03-00)
+  o G4EmExtraPhysics: removed LEND photo-nuclear; it is now done treated
+    in G4HadronPhysicsLEND.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V11-03-00)
+  o Added G4HadronPhysicsLEND to define neutron and photon induced processes
+    from LEND.
+  o G4HadronPhysicsShielding: removed LEND neutron process, now treated
+    in G4HadronPhysicsLEND.
+- constructors/limiters (phys-ctor-limiters-V11-03-00)
+  o Fixed exception in re-adding AddBiasingProcessLimiter() when parallel    (o)
+    world is not defined.
+  o Ignore calls to *AddPDGRange() functions in G4GenericBiasingPhysics      (o)
+    if 'PDGlow' greater than 'PDGhigh'.
+- lists (phys-list-V11-03-00)
+  o Shielding: simplified logic tree for inelastic models and moved all
+    LEND hadronic inelastic processes to G4HadronPhysicsLEND.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-03-00)
+  o Removed obsolete/commented references to G4AllocatorList.                (o)
+- lowenergy (emlowen-V11-03-00)
+  o Fixed reported Coverity defects in Penenelope models, G4ShellData,       (o)
+    G4FluoData and G4AugerTransition.
+- standard (emstand-V11-03-00)
+  o Reverted changes introduced in release 11.3 for static data initialization
+    in G4eBremsstrahlungRelModel.
+
+processes/hadronic
+------------------
+- models/de_excitation (hadr-deex-V11-03-02)
+  o G4DeexPrecoParameters: added extra enumerator to choose variants of the
+    pre-compound model.
+  o G4NucLevel, G4PhotonEvaporation: use explicit type conversion from double
+    to float; use const arguments where possible.
+  o G4ExcitationHandler, G4GammaTransition, G4PhotonEvaporation: removed     (o)
+    production of unphysical states. Addressing problem report #2584.
+- models/lend (hadr-lend-V11-03-00)
+  o Collect all inelastic models (neutron and gamma induced) into
+    G4HadronPhysicsLEND. Updated and simplified Shielding and G4EmExtraPhysics
+    accordingly.
+  o Fix in G4EmExtraPhysics for failing in loading photonuclear from LEND
+    if G4GammaGeneralProcess existed.
+  o Fix in G4LENDCombinedModel photofission; check energy function was not
+    connected to the base class, resulting in a crash.
+- models/particle_hp (hadr-hpp-V11-03-00)
+  o G4ParticleHPThermalScatteringData: attempt to fix reported Coverity defect
+    on wrong handling of map iterator. Substituted several calls to
+    G4HadronicExceptions by one G4Exception inside BuildPhysicsTable(..) method,
+    which provides a fatal exception if a particle is not a neutron.
+    Simplified IsApplicable(..) methods called at each step; the directory
+    path is taken from G4ParticleHPManager to reduce number of calls to
+    getenv() function; initialisation is performed only once in one instance
+    of the class; initilised data structures are saved to G4ParticleHPManager
+    and are accessed from all threads and instances; end of job destruction is
+    also performed only once; removed commented lines and extended comments
+    to code.
+- models/pre_equilibrium (hadr-pre-V11-03-00)
+  o New classes G4PreCompoundInterface, G4PreCompoundTransitionInt and
+    G4PreCompoundEmissionInt with alternative precompound model.
+  o G4PreCompoundModel, G4PreCompoundTransition, G4PreCompoundEmission:
+    introduced verbose flag and extended printout needed to debug; removed
+    old commented prinout lines; added an option to use alternative precompound
+    models, which may be done via configuration without change of interface to
+    consumer code.
+- models/radioactive_decay (radioactive_decay-V11-03-00)
+  o Fix in G4RadioactiveDecay to enable biasing in radioactive decay.        (o)
+    Addressing problem report #2592.
+- util (hadr-util-V11-03-00)
+  o G4Fragment: added protection against precision loss in computation of    (o)
+    a boost vector at rest.
+
+tracking                                         tracking-V11-03-00
+--------
+- G4VTrajectory and G4VTrajectoryPoint: added G4AttValues caching.
+  GetAttValues() returns a shared_ptr that points to the object created by
+  CreateAttValues() if not already created. Thus acts as a cache.
+  Protected copy and move constructors and copy and move assignment operators.
+
+visualization
+-------------
+- management (visman-V11-03-01)
+  o Re-instated the transparency slider. The transparency slider, whereby the
+    user could see into the geometry progressively, was a powerful feature of
+    the OpenGL Qt viewer, but it suffered a demise when we moved to a generic
+    (new) scene tree. Re-implemented it in a generic way, i.e., for all drivers.
+    It is moved from the OpenGL Qt viewer to the Qt GUI (G4UIQt) and uses a
+    new command, "/vis/viewer/set/transparencyByDepth <d> [option]".
+    G4UIQt issues this command on signals from the slider. The user may, of
+    course, use this command directly.
+  o G4VSceneHandler: calculate and maintain 'fMaxGeometryDepth', new base class
+    data member. Improved some diagnostic printing.
+  o G4VViewer: follow changes in G4PhysicalVolumeModel; code tidy.
+  o G4ViewParameters: added 'TransparencyByDepth' and
+    'TransparencyByDepthOption'.
+  o G4VisCommandsViewerSet: added UI command
+    "/vis/viewer/set/transparencyByDepth".
+  o G4VisManager: code tidy.
+- modeling (modeling-V11-03-00)
+  o G4ModelingParameters: added 'TransparencyByDepth' and
+    'TransparencyByDepthOption'.
+  o G4PhysicalVolumeModel: renamed some data members and access functions for
+    clarity; added 'fMaxFullDepth' (includes base path, i.e., from world
+    volume); added code for processing transparency by depth; code tidy.
+- OpenGL (opengl-V11-03-00)
+  o G4OpenGLImmediateSceneHandler: minor improvement to comment.
+  o G4OpenGLStoredViewer, G4OpenGLStoredQtViewer: initiate kernel visit if
+    'TransparencyByDepth' or its options change.
+- OpenInventor (openinventor-V11-03-00)
+  o G4OpenInventorViewer: initiate kernel visit if 'TransparencyByDepth' or
+    its options change.
+- Qt3D (visQt3D-V11-03-00)
+- ToolsSG (vis_toolssg-V11-03-00)
+  o G4Qt3DViewer: initiate kernel visit if 'TransparencyByDepth' or its
+    options change.
+
+examples                                         examples-V11-03-01
+--------
+- Updated documentation and reference outputs.
+- advanced/dna/cellularPhantom (cellularPhantom-V11-03-01)
+  o Code reorganisation; introduced Run class.
+  o Simplified analysis of results.
+  o Updated affiliation.
+- advanced/dna/moleculardna (molecularDNA-V11-03-02)
+  o Corrected segmentation error with Root macrofiles, caused when low
+    damage had been produced.
+  o Define the definition of one missing variable in some macros.
+  o Increased default statistics in ecoli.mac.
+- advanced/microbeam (microbeam-V11-03-00)
+  o Added n-tuple merging.
+- extended/medical/dna/dnaphysics (dnaphysics-V11-03-01)
+  o Added possibility to simulate radioactive nuclei; added radioactive.in
+    macro and plotRadioactive.C.
+  o Updated PhysicsList and SteppingAction.
+- extended/medical/dna/mfp (mfp-V11-03-00)
+- extended/medical/dna/slowing (slowing-V11-03-00)
+  o Added n-tuple merging.
+- extended/medical/dna/svalue (svalue-V11-03-01)
+  o Added n-tuple merging.
+  o Added optional time threshold to iodine macros.
+- extended/medical/dna/wvalue (wvalue-V11-03-00)
+  o Added n-tuple merging.
+- extended/medical/radiobiology (radiobiology-V11-03-00)
+  o Primary beam origin can be located outside the detector water tank.
+
+tests                                            tests-V11-03-01
+-----
+- Updated reference outputs and tools.
+- ctests_integration/test19 (test19-V11-03-01)
+  o Implemented provisions for optional use of FLUKA.CERN interface
+    for hadronic interactions.
+  o Replaced use of Boost string algorithms with G4StrUtil.
+  o Updates and cleanups in plotting scripts; fix in plotting HARP data
+    as theta-spectra in momentum bins.
+  o Removed unused data members.
+  o Cleanup of README.
+- ctests_integration/test23 (test23-V11-03-01)
+  o Implemented provisions for optional use of FLUKA.CERN interface
+    for hadronic interactions.
+  o Replaced use of Boost string algorithms with G4StrUtil.
+  o Updates and cleanups in plotting scripts.
+  o Replaced calls to deprecated sprintf() with snprintf().
+- ctests_integration/test47 (test47-V11-03-00)
+  o Replaced calls to deprecated sprintf() with snprintf().

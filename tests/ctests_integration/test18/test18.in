@@ -1,0 +1,74 @@
+################################################################################
+#                                                                              #
+#  ESA-CERN GEANT4 RADIOACTIVE DECAY MODULE                                    #
+#  VALIDATION TEST NUMBER 01                                                   #
+#                                                                              #
+#  This test generates the nuclei NA-24 (GND-STATE), NE-24, F-24, AL-24        #
+#  NA-24 (metastable), CR-46 and PO-215, and decays them.  The nuclear limits  #
+#  are RESTRICTED SO THAT DAUGHTERS ARE NOT DECAYED.  The geometry comprises   #
+#  a sphere of radius 125,000 km, within a box of side 500,000 km, within a    #
+#  box of side 10,000,000 km.  All volumes are centered on the coordinate      #
+#  origin and contain a vacuum.  Particles start off from the origin with an   #
+#  energy of 1 MeV.                                                            #
+#                                                                              #
+#  F LEI, DERA FARNBOROUGH, 8 MARCH 2000                                       #
+#                                                                              #
+################################################################################
+#
+/control/verbose 2
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+/process/verbose 1
+#
+/run/initialize
+#
+# Set a very high time threshold to allow all decays to happen
+/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year
+#
+/process/had/rdm/verbose 0
+/gun/energy 1 MeV
+/gun/particle ion
+#
+# First reaction is beta- decay of 24Na ground state.  The range of nuclei does
+# not have to be restricted since 24Mg is the only product and is stable.
+#
+/gun/ion 11 24 11 0
+/run/beamOn 1
+#
+# 24Ne beta- decay
+#
+#/process/had/rdm/nucleusLimits 24 24 10 10
+/gun/ion 10 24 10 0
+/run/beamOn 1
+#
+# 9F beta- decay
+#
+#/process/had/rdm/nucleusLimits 24 24 9 9
+/gun/ion 9 24 9 0
+/run/beamOn 1
+#
+# 24Al (ground state) beta+ decay
+#
+#/process/had/rdm/nucleusLimits 24 24 13 13
+/gun/ion 13 24 13 0
+/run/beamOn 1
+#
+# 24Na (472 keV metastable state) beta- decay and IT
+#
+#/process/had/rdm/nucleusLimits 24 24 11 11
+/gun/ion 11 24 11 472.207
+/run/beamOn 1
+#
+# 46Cr beta+ decay
+#
+#/process/had/rdm/nucleusLimits 46 46 24 24
+/gun/ion 24 46 24 0
+/run/beamOn 1
+#
+# 215Po alpha decay
+#
+/process/had/rdm/nucleusLimits 215 215 84 84
+/gun/ion 84 215 84 0
+/run/beamOn 1
+

@@ -1,0 +1,18 @@
+set(__g4build_is_shared @BUILD_SHARED_LIBS@)
+set(__g4build_is_static @BUILD_STATIC_LIBS@)
+
+# 1. Use of Physicslist factories in Windows static libs is known to not work
+if(WIN32 AND __g4build_is_static AND NOT __g4build_is_shared)
+  list(APPEND CTEST_CUSTOM_TESTS_IGNORE 
+    example-ext-persistency-p03-build 
+    example-ext-persistency-p03 
+    example-ext-physicslists-genericPL-build
+    example-ext-physicslists-genericPL
+    )
+endif()
+
+# 2. test28 uses a physics model that is known to fail strict EpChecks
+# EpCheck build identified by negative value of `G4Hadronic_epReportLevel` env var
+if("$ENV{G4Hadronic_epReportLevel}" LESS 0)
+  list(APPEND CTEST_CUSTOM_TESTS_IGNORE test28)
+endif()
