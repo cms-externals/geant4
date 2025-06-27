@@ -1,0 +1,128 @@
+# Category test38 History
+
+See `CONTRIBUTING.rst` for details of **required** info/format for each entry,
+which **must** added in reverse chronological order (newest at the top). It must **not**
+be used as a substitute for writing good git commit messages!
+
+
+## 2021-12-10 Ben Morgan (test38-V11-00-00)
+- Change to new Markdown History format
+
+---
+
+# History entries prior to 11.0
+
+25 October 2021 B.Morgan (test38-V10-07-03)
+---------------------------------------------------
+- Use G4StrUtil functions replacing deprecated G4String member functions
+
+4 August 2021 Ben Morgan (test38-V10-07-02)
+---------------------------------------------------
+- Modernize CMake script allowing test to be built in system testing
+  or as a standalone project
+
+5 May 2021 Ben Morgan (test38-V10-07-01)
+----------------------------------------
+- Do not install tests
+
+18 Feb 2021 Ben Morgan (test38-V10-07-00)
+----------------------------------------------
+- Support same CMake version range as core Geant4
+
+2 Aug 2019   Gunter Folger              (test38-V10-05-00)
+----------------------------------------------------------
+- remove use of G4DataQuestionaire, following cleanup in
+   physicslists, see phys-lists-V10-05-02 and phys-util-V10-04-02
+
+14 Jul 2017  Robert Hatcher             (test38-V10-03-00)
+----------------------------------------------------------
+- Fix some bit rot due to change in ParticleIterator
+- Fix CMakeLists_Standalone.txt to more parallel standard CMakeLists.txt
+
+31 Oct 2016  Robert Hatcher             (test38-V10-02-08)
+----------------------------------------------------------
+- trying again w/ 4.10.2ref09
+
+27 Oct 2016  Robert Hatcher             (test38-V10-02-07)
+----------------------------------------------------------
+- Retested against 4.10.2ref09
+
+07 Jun 2016  Robert Hatcher             (test38-V10-02-06)
+----------------------------------------------------------
+- CMake/CTest now playing nice with each other, so we can turn back on
+  the creation & use of external additional libraries.  Only special case
+  is Windows SHARED where we skip pre-linking to g4plftest38_lib1 because
+  MYGEANT4_LINK_LIBRARY isn't yet refined sufficiently to build the
+  necessary .lib to go with the .dll; so just explicitly load the .dll
+  at run time. (needs to be able to find 'genwindef.exe')
+- Coworks with phys-lists-V10-02-08 and phys-ctor-fact-V10-02-02
+  and cmake-V10-02-15
+
+
+06 Jun 2016  Robert Hatcher             (test38-V10-02-05)
+----------------------------------------------------------
+- For now don't attempt to build auxillary libraries and use the additional
+  lists or physics constructors in them; what's there works, but there are
+  difficulties in getting CMake and CTests to play nice and build things in
+  the right places.  For now just test the factory functionality that is
+  equivalent to the old factory (+ extension by direct inclusion in the
+  main program source)
+- Coworks with phys-lists-V10-02-08 and phys-ctor-fact-V10-02-02
+  and cmake-V10-02-15
+
+
+04 Jun 2016  Robert Hatcher             (test38-V10-02-04)
+----------------------------------------------------------
+- further refinement of CMakeLists.txt
+- Coworks with phys-lists-V10-02-08 and phys-ctor-fact-V10-02-02
+  and cmake-V10-02-15
+
+
+02 Jun 2016  Robert Hatcher             (test38-V10-02-03)
+----------------------------------------------------------
+- ensure that use of all macros ends with a semicolon
+  (now required to cowork w/ phys-lists-V10-02-08
+  and phys-ctor-fact-V10-02-02)
+- 2nd namespaces physics list to test that semicolon
+  handling doesn't break things.
+- fix typo on Window shared library build run location
+
+
+02 Jun 2016  Robert Hatcher             (test38-V10-02-02)
+----------------------------------------------------------
+- split out building exe as part of the test.
+- use GEANT4_EXECUTABLE to define the path to the exe; and
+  then _run_ from where the 'g4plft[1|2]' libraries are
+  located (if built shared) so it can find them.
+
+26 May 2016  Robert Hatcher             (test38-V10-02-01)
+----------------------------------------------------------
+- Major cleanup of CMakeLists.txt
+- Fix OS X Clang issue w/ shared library suffix - try all possible prefix &
+  suffixes and only fail if none of them work
+- Test pulling physics lists and ctors from static libraries
+
+10 May 2016  Robert Hatcher             (test38-V10-02-00)
+----------------------------------------------------------
+- Major reworking of CMakeLists.txt to support MS Visual Studio and
+  static library builds.
+- Copied CommandLineParser from test70 to use instead of 'getopt'
+  (not available on MSVS).
+
+09 Nov 2015  Robert Hatcher             (test38-V10-01-03)
+----------------------------------------------------------
+. Bypass build/run if on WIN32; was relying on getopt(), doesn't exist there
+
+04 Nov 2015  Robert Hatcher             (test38-V10-01-02)
+----------------------------------------------------------
+. Integration into ctest structure w/ CMakeLists.txt
+
+01 Oct 2015  Robert Hatcher             (test38-V10-01-01)
+----------------------------------------------------------
+- Add test for QGSP_BIC_AllHP__GS (yes, double underscore) as a standard default
+
+11 May 2015  Robert Hatcher             (test38-V10-01-00)
+----------------------------------------------------------
+- Initial implementation to exercise the new G4PhysListFactory
+- test registering physlists in main, linked external lib, and dynamic lib
+- Compare / contrast with the old factory

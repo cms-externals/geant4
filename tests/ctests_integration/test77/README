@@ -1,0 +1,40 @@
+-------------------------------------------------------------------
+
+     =========================================================
+     Geant4 - an Object-Oriented Toolkit for Simulation in HEP
+     =========================================================
+
+                            Test77
+                            ------
+
+  This test is validating the different types of scoring containers to guard
+  against unexpected issues that arise from template resolution
+
+  Author: Jonathan Madsen
+
+  - This test emulates standard event-scoring into standard G4THitsMap<G4double>
+    where G4Run::RecordEvent() takes the G4THitsMap<G4double> and adds it
+    to the container in the derived G4Run
+  - It also emulates G4Run::Merge() where the container used above is merge into
+    a copy of itself (i.e. when a worker merges it's copy into master)
+  - Variants tested:
+      - all variants with G4double* (traditional pointer storage)
+          - G4VTHitsMap     <G4double, std::map               <G4int, G4double*>>
+          - G4VTHitsMap     <G4double, std::multimap          <G4int, G4double*>>
+          - G4VTHitsMap     <G4double, std::unordered_map     <G4int, G4double*>>
+          - G4VTHitsMap     <G4double, std::unordered_multimap<G4int, G4double*>>
+          - G4VTHitsVector  <G4double, std::vector            <G4double*>>
+          - G4VTHitsVector  <G4double, std::deque             <G4double*>>
+      - all variants with G4double (non-pointer storage)
+          - G4VTHitsVector  <G4double, std::vector            <G4double>>
+          - G4VTHitsVector  <G4double, std::deque             <G4double>>
+      - all variants with G4StatAnalysis* (traditional pointer storage)
+          - G4VTHitsMap     <G4StatAnalysis, std::map               <G4int, G4StatAnalysis*>>
+          - G4VTHitsMap     <G4StatAnalysis, std::multimap          <G4int, G4StatAnalysis*>>
+          - G4VTHitsMap     <G4StatAnalysis, std::unordered_map     <G4int, G4StatAnalysis*>>
+          - G4VTHitsMap     <G4StatAnalysis, std::unordered_multimap<G4int, G4StatAnalysis*>>
+          - G4VTHitsVector  <G4StatAnalysis, std::vector            <G4StatAnalysis*>>
+          - G4VTHitsVector  <G4StatAnalysis, std::deque             <G4StatAnalysis*>>
+      - all variants with G4StatAnalysis (non-pointer storage)
+          - G4VTHitsVector  <G4StatAnalysis, std::vector            <G4StatAnalysis>>
+          - G4VTHitsVector  <G4StatAnalysis, std::deque             <G4StatAnalysis>>

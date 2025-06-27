@@ -1,0 +1,250 @@
+# Category test03 History
+
+See `CONTRIBUTING.rst` for details of **required** info/format for each entry,
+which **must** added in reverse chronological order (newest at the top). It must **not**
+be used as a substitute for writing good git commit messages!
+
+
+## 2023-07-21 I. Hrivnacova (test03-V11-01-01)
+- Added test for setting histogram parameters via
+  'set' commands per axis
+
+## 2023-06-09 I. Hrivnacova (test03-V11-01-00)
+- Added test for histograms with user defined bins
+
+## 2021-12-10 Ben Morgan (test03-V11-00-00)
+- Change to new Markdown History format
+
+---
+
+# History entries prior to 11.0
+
+04th November 2021 I. Hrivnacova (test03-V10-07-12)
+- Updated for changes in the analysis category
+  (G4VAnalysisReader::ReadNtuple(const G4String&) renamed
+   back in GetNtuple)
+
+29th October 2021 I. Hrivnacova (test03-V10-07-11)
+- Added option for testing ascii output: -ascii on|off (default: off)
+  and updated code to take it into account
+- Activated ascii output for test03-Generic-write
+- Added test for new /analysis/hn|pn/get commands
+  (always activated)
+
+22nd October 2021 I. Hrivnacova (test03-V10-07-10)
+- Removed NtupleStringVector parameter - not needed
+  as ntuple columns of string vector type are now
+  supported in tools for all output types
+
+19th October 2021 I. Hrivnacova (test03-V10-07-09)
+- Added option for testing directories: -dir on|off (default: on)
+  and updated code to take it into account
+
+6th October 2021 I. Hrivnacova (test03-V10-07-08)
+- Added test03-Generic-* test with the Root default output
+  (compile flag TEST_ANALYSIS_GENERIC)
+- Updated test for removal of g4xyz.hh analysis headers
+- use auto for histograms/profiles get via GetH1() etc.
+
+3rd September 2021 I. Hrivnacova (test03-V10-07-07)
+- Activated test for ntuple columns of string type and
+  added test for ntuple columns of string vector type
+- Added application parameters:
+  NtupleStringVector - for switching off new test for Hdf5, Xml
+    outputs where ntuple columns of string vector type are not yet
+    supported in tools
+  FileName - to better handle file names in Root test with many
+    ntuple merging options
+- Set only parameters with non-default values in CMake tests
+
+3rd September 2021 I. Hrivnacova (test03-V10-07-06)
+- Restore back dependencies of read tests on write tests and
+  the test03-Root-write-mt-merge-max test
+
+27th August 2021 Ben Morgan (test03-V10-07-05)
+- Modernize CMake script allowing test to be built in system testing
+  or as a standalone project
+- Reorganise code as single project
+
+26th August 2021 I. Hrivnacova (test03-V10-07-04)
+- Updated for changes in the analysis category
+  (G4VAnalysisReader::GetNtuple(const G4String&) renamed in ReadNtuple)
+- Added test for the reader GetNtuple(G4int) function
+
+18th August 2021 I. Hrivnacova (test03-V10-07-03)
+- Migrated to G4RunManagerFactory
+- Replaced test03-Root-write-mt-merge-env with test03-Root-write-mt-merge-max:
+  replaced use of G4FORCENUMBEROFTHREADS env variable in CMakeLists.txt
+  (now failing) with retrieving the number of set workers in main()
+- Removed obsolete G4VIS_USE, G4UI_USE
+- Added VerboseLevel parameter
+- Removed trailing whitespaces
+
+6th August 2021 I. Hrivnacova (test03-V10-07-02)
+- Added G4VAnalysisReader::CloseFiles() call,
+  required after removal of deleting of the analysis
+  reader.
+
+- Updated for changes in the analysis category:
+  removed deleting of the analysis manager and reader,
+  as this is now done by the Geant4 kernel.
+
+18th February 2021 Ben Morgan (test03-V10-07-00)
+- Support same CMake version range as core Geant4
+
+30th October 2020 I. Hrivnacova (test03-V10-06-00)
+- Updated cmake files to make test buildable outside ctest
+
+16th November 2019 G. Cosmo (test03-V10-05-02)
+- Fixed cases of implicit type conversions from size_t to G4int.
+
+15th November 2019 I. Hrivnacova (test03-V10-05-01)
+- Append file name with Rw/CRw/Cw extension only with Root and MT mode;
+  this fixes a failure in Hdf5 read test.
+
+14th October 2019 I. Hrivnacova (test03-V10-05-00)
+- Updated for changes in G4VAnalysisManager:
+  - Added NtupleRowMode application parameter
+  - Added test03-Root-writeRwextra to test row-wise mode with an extra branch
+    which became optional now
+  - Added 2 histograms to test plotting with log axis scale
+
+28th November 2017 I. Hrivnacova (test03-V10-04-00)
+- Disabled test for invalid input to avoid confusing warning
+  messages in the output.
+
+3rd November 2017 B.Morgan (test03-V10-03-06)
+- COWORKS with cmake-V10-03-43
+- Check availablility of HDF5 support after location of
+  Geant4 in test03-hdf5, making use of new Geant4_hdf5_FOUND
+  variable to determine whether to proceed with tests.
+
+25th October 2017 I. Hrivnacova (test03-V10-03-05)
+- Extended test to cover new rowWise merging option (with Root only):
+  -  added -rowWise option to main (default: on) and test03-Root-writeCw
+     (to test -rowWise off)
+
+4th August 2017 Ben Morgan (test03-V10-03-04)
+- Do not create test03-Hdf5 tests unless Geant4 built
+  with HDF5 support.
+
+3rd August 2017 Ben Morgan (test03-V10-03-03)
+- Use cmake-V10-03-31 to allow removal of find_package(HDF5)
+
+1 August 2017 I. Hrivnacova (test03-V10-03-02)
+- Fixed file names in reading test
+
+27 July 2017 I. Hrivnacova (test03-V10-03-01)
+- Added testHdf5
+
+15 March 2017 I. Hrivnacova (test03-V10-03-00)
+- Added test of GetHnId(), GetHnName() functions
+
+19 November 2016 A.Dotti (test03-V10-02-09)
+- Set SD to manager explicitly
+
+02 November 2016 L.Garnier (test03-V10-02-08)
+- Remove icons.mac. Automatically include since interfaces-V10-02-07
+
+29 October 2016, I. Hrivnacova (test03-V10-02-07)
+- Reduced output to thread 0
+
+28 October 2016, I. Hrivnacova (test03-V10-02-06)
+- Added option for selecting number of ntuple output files
+  and tests for merging ntuples using this option:
+  test03-Root-write-mt-merge1: one output file (different from the
+                               histograms output file)
+  test03-Root-write-mt-merge2: two output files
+  test03-Root-write-mt-merge-env: run only if G4FORCENUMBEROFTHREADS is set;
+                               output files = G4FORCENUMBEROFTHREADS
+- Added handling the option for plotting in main
+  and disabled plotting in read and new merging ntuples tests
+- Initialize run from run macros and not in main
+
+10 October 2016, I. Hrivnacova (test03-V10-02-05)
+- Activate merging ntuples for Root output.
+
+08 October 2016, I. Hrivnacova (test03-V10-02-04)
+- Updated for removal of G4RootAnalysisManager::SetNofThreads
+
+08 October 2016, I. Hrivnacova (test03-V10-02-03)
+- Updated test for merging ntuples:
+  - Event action is instantiated also on master
+    (as their deta define the vectors refernced from ntuple)
+  - Changed the file name for reading (no _tn extension)
+  - Temporarily added setting of nofThreads to G4RootAnalysisManager,
+    to be removed when this info is available in G4Threading
+
+28 September 2016, Ivana Hrivnacova (test03-V10-02-02)
+- Removed testHbook
+
+18 March 2016, Ivana Hrivnacova (test03-V10-02-01)
+- Reduced the number of bins in 3D histograms from 100 to 10
+  to reduce memory consumption in MT tests
+
+17 March 2016, Ivana Hrivnacova (test03-V10-02-00)
+- Changed  QGSP_BERT_HP to FTFP_BERT
+  (in order to see if irregular crashes observed in read test in MT
+  mode can be realted to this)
+
+19 October 2015, Ivana Hrivnacova (test03-V10-01-11)
+- Updated hbook for developments in analysis category
+
+18 September 2015, Ivana Hrivnacova (test03-V10-01-10)
+- Keep disabled ntuple string columns
+
+15 September 2015, Ivana Hrivnacova (test03-V10-01-09)
+- Switch back ntuple vector columns, keep disabled string columns
+
+15 September 2015, Ivana Hrivnacova (test03-V10-01-08)
+- Switch back ntuples, but disable string and vector columns
+
+15 September 2015, Ivana Hrivnacova (test03-V10-01-07)
+- Temporarily switched off ntuples; verbose level back to 2
+
+15 September 2015, Ivana Hrivnacova (test03-V10-01-06)
+- Temporarily increased verbose level to 4
+
+15 September 2015, Ivana Hrivnacova (test03-V10-01-05)
+- Temporarily disabled filling ntuple with vectors
+
+27 August 2015, Ivana Hrivnacova (test03-V10-01-04)
+- Updated hbook
+
+27 August 2015, Ivana Hrivnacova (test03-V10-01-03)
+- Added testHbook
+
+03 June 2015, Ivana Hrivnacova (test03-V10-01-02)
+- Added plotting P1
+
+03 June 2015, Ivana Hrivnacova (test03-V10-01-01)
+- Added test for batch plotting
+
+13 March 2015, Ivana Hrivnacova (test03-V10-01-00)
+-  Added test for ntuple columns of a vector type
+
+26 Nov 2014, Ivana Hrivnacova (test03-V10-00-06)
+ - Added deleting of G4AnalysisReader in RunAction destructor
+
+22 Oct 2014, Ivana Hrivnacova (test03-V10-00-05)
+  - Activated reading Csv ntuple
+
+20 Oct 2014, Ivana Hrivnacova (test03-V10-00-04)
+  - Added an ntuple column of std::string type
+  - Added reading of Edep ntuple to demonstrate
+    - reading a column of std::string type
+    - reading an ntuple when more than one ntuple are read
+
+07 Oct 2014, Ivana Hrivnacova (test03-V10-00-03)
+   Updated test for reading Csv histograms and profiles.
+
+12 Sep 2014, Ivana Hrivnacova (test03-V10-00-02)
+   No changes since previous tag, which was rejected due to compiler
+   error & warning in analysis tag
+
+11 Sep 2014, Ivana Hrivnacova (test03-V10-00-01)
+   - Finalized test code.
+   - Added read test for Root and Xml.
+
+10 Sep 2014, Gunter Folger  (test03-V10-00-00)
+   Add test for analysis provided by Ivana.

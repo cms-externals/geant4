@@ -1,0 +1,188 @@
+def doCheckout() {
+  checkout changelog: false, poll: false,
+       scm: scmGit( branches: [[name: "refs/${SourceBranch}"]],
+                    extensions: 
+		         [[$class: 'CheckoutOption', timeout: 15], 
+			  [$class: 'RelativeTargetDirectory', relativeTargetDir: 'geant4'],
+                          [$class: 'CloneOption', honorRefspec: true, noTags: false,
+                           reference: 'ssh://git@gitlab.cern.ch:7999/geant4/geant4-dev.git', shallow: false, timeout: 20]],
+                    userRemoteConfigs: 
+		         [[credentialsId: 'ade6d0b4-c04e-401f-b04b-1e6ef81c5ed7',
+                           refspec: "+refs/heads/master:refs/remotes/origin/master +refs/${SourceBranch}:refs/${SourceBranch}",
+                           url: "ssh://git@gitlab.cern.ch:7999/geant4/geant4-dev.git"]]
+                   )
+
+  checkout changelog: false, poll: false,
+        scm: scmGit( branches: [[name: "${VerificationSourceBranch}"]],
+                     extensions: 
+		         [[$class: 'CheckoutOption', timeout: 15], 
+			  [$class: 'RelativeTargetDirectory', relativeTargetDir: 'geant4/verification'],
+                          [$class: 'CloneOption', honorRefspec: true, noTags: false, reference: '', shallow: false, timeout: 14]],
+                     userRemoteConfigs: 
+		         [[credentialsId: 'ade6d0b4-c04e-401f-b04b-1e6ef81c5ed7',
+                           refspec: "+refs/heads/master:refs/remotes/origin/master +refs/heads/${VerificationSourceBranch}:refs/remotes/origin/${VerificationSourceBranch}",
+                           url: "ssh://git@gitlab.cern.ch:7999/geant4/g4tests-verification.git"]]
+                  )
+ 
+}
+
+def GetTag() {
+  def tag
+  if ("".equals(params.SourceBranch) ) {
+    def parts=params.Version.split('\\.');
+    def major=parts[0];
+    def minor=parts[1];
+
+    if (minor.length() < 2 ) {
+     minor="0"+minor;
+    }
+
+    def ref=parts[2];
+    ref=ref.replaceFirst(/ref/,"ref-");
+    ref=ref.replaceFirst(/p/,"patch-");
+    ref=ref.replaceFirst(/beta(_cand)/, 'beta$1-')
+
+    tag="tags/geant4-"+major+"-"+minor+"-"+ref;
+
+    if ( tag =~ "-patch-" )  tag=tag+"-ref";        // for patch, use corresponding -ref tag with tests
+
+  } else {
+    println "Using tag given " + params.SourceBranch
+    tag=params.SourceBranch;
+  }
+
+  return tag
+}
+
+def defaultEXTERNALS() {
+   def default_EXTERNALS = sh (
+     script: 'source scripts/tests/tools/ctest/versions.sh&&get_EXTERNALS',
+     returnStdout: true
+   ).trim()
+   echo "default EXTERNAL version : ${default_EXTERNALS}"
+      
+   return default_EXTERNALS
+}
+
+def g4
+
+pipeline {
+  parameters {
+    string(name: 'Version',
+           defaultValue: '',
+           description: 'Version to build, use version as on cvmfs')
+    string(name: 'SourceBranch',
+           defaultValue: '',
+           description: 'Optional, will override default taken from version to build. hint: value is the one shown by git ls-remote upstream, without refs/')
+    string(name: 'SourceDirectory', 
+           defaultValue: '', 
+           description: 'Optional, will override default for directory of source code tree, must contain share/. Likely SourceBranch has to be given as well as Version will not resolve to a branch/tag')
+    string(name: 'VerificationSourceBranch',
+           defaultValue: '*/master',
+           description: 'optional, specify Verification branch for build. hint: value is the one shown by git ls-remote upstream, without refs/')
+    string(name: 'EXTERNALS',
+           defaultValue: '',
+           description: 'CVMFS directory keeping the external libraries, leave empty to use default version. For patch builds value MUST be given, script (wrongly) is from master')
+    choice(name: 'CMAKE_BUILD_TYPE',
+           choices: ['RelWithDebInfo', 'Release', 'Debug'] ,
+           description: 'Value for CMAKE_BUILD_TYPE, allowed values are those allowed in CMake')
+    string(name: 'extraCMakeOptions',
+           defaultValue: '',
+           description: 'optional, give additional Options for CMAKE')
+  }
+
+  options {
+    buildDiscarder(logRotator( daysToKeepStr: '60' ))
+    timestamps()
+  }
+
+  environment {
+    LCGAPP_LABEL= 'docker-host-noafs'
+   EXTERNALS    = "${ params.EXTERNALS ?: defaultEXTERNALS()}"             // default for EXTERNALS
+   }
+
+  agent {label 'startup-jobs'}
+  stages {
+    stage('load functions') {
+      steps {
+        script{
+          g4 = load 'scripts/tests/tools/ctest/JenkinsFunctions.groovy'
+        }
+      }
+    }
+
+    stage('Build') {
+      matrix {
+        axes {
+         axis {
+            name 'OS'
+            values 'alma9'
+          }
+          axis {
+            name 'COMPILER'
+            values 'gcc11', 'gcc12', 'gcc13', 'gcc14'
+          }
+          axis {
+            name 'THREAD'
+            values 'Seq', 'MT'
+          }
+        }
+
+        stages {
+          stage('Docker') {
+            agent {
+              node {
+                label "${LCGAPP_LABEL}"
+              }
+            }
+
+            steps {
+              script {
+                stage("${OS}-${COMPILER}-${THREAD}") {
+                  print "${OS}-${COMPILER}-${THREAD}"
+                  sh "docker pull " + g4.GetDockerImage()
+                  sh "test -n \"$SourceDirectory\" && ls -l $SourceDirectory || true"
+                  sh "test -n \"$SourceDirectory\" && (cd $SourceDirectory; tar cf - share ) | tar xf -  || true"  
+                }
+
+                withDockerContainer(image: g4.GetDockerImage(),
+                args:  """-v /cvmfs:/cvmfs
+                -v /ec:/ec
+                -v /eos:/eos
+                -v /var/run/nscd:/var/run/nscd
+                -e SHELL
+                -e USER
+                -e COMPILER
+                -e THREAD
+                -e CMAKE_BUILD_TYPE
+		-e SourceDirectory
+                -e Version
+                -e EXTERNALS
+                -e extraCMakeOptions
+                -e container=docker
+                -e KRB5CCNAME="FILE:/tmp/krb5cc_14806"
+                --network=host
+                --hostname ${OS}-docker
+                """ ) {
+                  stage('Build') {
+                    SourceBranch=GetTag()
+                    sh '/bin/pwd'
+                    println "${OS}" + " : " + "${COMPILER}" + " : " + "${THREAD}" + ", using branch ${SourceBranch}"
+                    doCheckout()
+                    sh 'touch controlfile'
+                    sh 'env| sort;scripts/tests/tools/ctest/build-cvmfs-release.sh'
+                  }
+                }
+
+                stage('Copy to EOS') {
+                  sh 'ls -l'
+                  sh './install.sh'
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,4052 @@
+
+**************************************************************
+ Geant4 version Name: geant4-11-03-ref-04 [MT]   (30-April-2025)
+  << in Multi-threaded mode >> 
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+Warning: forcing number of threads to be 4
+SimpleBox is now made of U
+<<< Geant4 Physics List simulation engine: FTFP_BERT
+
+
+==========================================================================================
+G4TaskRunManager :: Using G4ThreadPool...
+==========================================================================================
+
+userDetector->Construct() start.
+SLog is registered to the default region.
+physicsList->Construct() start.
+
+ hInelastic FTFP_BERT : threshold between BERT and FTFP is over the interval 
+ for pions :   3 to 6 GeV
+ for kaons :   3 to 6 GeV
+ for proton :  3 to 6 GeV
+ for neutron : 3 to 6 GeV
+
+### Adding tracking cuts for neutron  TimeCut(ns)= 10000  KinEnergyCut(MeV)= 0
+physicsList->CheckParticleList() start.
+physicsList->setCut() start.
+=======================================================================
+======                 Electromagnetic Physics Parameters      ========
+=======================================================================
+LPM effect enabled                                 1
+Enable creation and use of sampling tables         0
+Apply cuts on all EM processes                     0
+Use combined TransportationWithMsc                 Disabled
+Use general process                                1
+Enable linear polarisation for gamma               0
+Enable photoeffect sampling below K-shell          1
+Enable sampling of quantum entanglement            0
+X-section factor for integral approach             0.8
+Min kinetic energy for tables                      100 eV 
+Max kinetic energy for tables                      100 TeV
+Number of bins per decade of a table               7
+Verbose level                                      1
+Verbose level for worker thread                    0
+Bremsstrahlung energy threshold above which 
+  primary e+- is added to the list of secondary    100 TeV
+Bremsstrahlung energy threshold above which primary
+  muon/hadron is added to the list of secondary    100 TeV
+Positron annihilation at rest model                SimplePositronium
+Enable 3 gamma annihilation on fly                 0
+Lowest triplet kinetic energy                      1 MeV
+Enable sampling of gamma linear polarisation       0
+5D gamma conversion model type                     0
+5D gamma conversion model on isolated ion          0
+Use RiGe 5D e+e- pair production model by muons    0
+Livermore data directory                           epics_2017
+=======================================================================
+======                 Ionisation Parameters                   ========
+=======================================================================
+Step function for e+-                              (0.2, 1 mm)
+Step function for muons/hadrons                    (0.2, 0.1 mm)
+Step function for light ions                       (0.2, 0.1 mm)
+Step function for general ions                     (0.2, 0.1 mm)
+Lowest e+e- kinetic energy                         1 keV
+Lowest muon/hadron kinetic energy                  1 keV
+Use ICRU90 data                                    0
+Fluctuations of dE/dx are enabled                  1
+Type of fluctuation model for leptons and hadrons  Urban
+Use built-in Birks satuaration                     0
+Build CSDA range enabled                           0
+Use cut as a final range enabled                   0
+Enable angular generator interface                 0
+Max kinetic energy for CSDA tables                 1 GeV
+Max kinetic energy for NIEL computation            0 eV 
+Linear loss limit                                  0.01
+Read data from file for e+e- pair production by mu 0
+=======================================================================
+======                 Multiple Scattering Parameters          ========
+=======================================================================
+Type of msc step limit algorithm for e+-           1
+Type of msc step limit algorithm for muons/hadrons 0
+Msc lateral displacement for e+- enabled           1
+Msc lateral displacement for muons and hadrons     0
+Urban msc model lateral displacement alg96         1
+Range factor for msc step limit for e+-            0.04
+Range factor for msc step limit for muons/hadrons  0.2
+Geometry factor for msc step limitation of e+-     2.5
+Safety factor for msc step limit for e+-           0.6
+Skin parameter for msc step limitation of e+-      1
+Lambda limit for msc step limit for e+-            1 mm
+Use Mott correction for e- scattering              0
+Factor used for dynamic computation of angular 
+  limit between single and multiple scattering     1
+Fixed angular limit between single 
+  and multiple scattering                          3.1416 rad
+Upper energy limit for e+- multiple scattering     100 MeV
+Type of electron single scattering model           0
+Type of nuclear form-factor                        1
+Screening factor                                   1
+=======================================================================
+
+phot:  for gamma SubType=12 BuildTable=0
+      LambdaPrime table from 200 keV to 100 TeV in 61 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+ LivermorePhElectric : Emin=    0 eV  Emax=  100 TeV  SauterGavrila Fluo
+
+compt:  for gamma SubType=13 BuildTable=1
+      Lambda table from 100 eV  to 1 MeV, 7 bins/decade, spline: 1
+      LambdaPrime table from 1 MeV to 100 TeV in 56 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+       Klein-Nishina : Emin=    0 eV  Emax=  100 TeV
+
+conv:  for gamma SubType=14 BuildTable=1
+      Lambda table from 1.022 MeV to 100 TeV, 18 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+     BetheHeitlerLPM : Emin=    0 eV  Emax=  100 TeV  ModifiedTsai
+
+Rayl:  for gamma SubType=11 BuildTable=1
+      Lambda table from 100 eV  to 150 keV, 7 bins/decade, spline: 0
+      LambdaPrime table from 150 keV to 100 TeV in 62 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   LivermoreRayleigh : Emin=    0 eV  Emax=  100 TeV  CullenGenerator
+
+msc:  for e-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 MeV Nbins=42 100 eV  - 100 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+        WentzelVIUni : Emin=  100 MeV Emax=  100 TeV Nbins=42 100 MeV - 100 TeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+eIoni:  for e-  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    0 eV  Emax=  100 TeV
+
+eBrem:  for e-  XStype:3  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      LPM flag: 1 for E > 1 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    0 eV  Emax=    1 GeV  ModifiedTsai
+            eBremLPM : Emin=    1 GeV Emax=  100 TeV  ModifiedTsai
+
+CoulombScat:  for e- XStype:1 SubType=1 BuildTable=1
+      Lambda table from 100 MeV to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=  100 MeV Emax=  100 TeV
+
+msc:  for e+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 MeV Nbins=42 100 eV  - 100 MeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+        WentzelVIUni : Emin=  100 MeV Emax=  100 TeV Nbins=42 100 MeV - 100 TeV
+          StepLim=UseSafety Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+
+eIoni:  for e+  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=    0 eV  Emax=  100 TeV
+
+eBrem:  for e+  XStype:3  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      LPM flag: 1 for E > 1 GeV,  VertexHighEnergyTh(GeV)= 100000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=    0 eV  Emax=    1 GeV  ModifiedTsai
+            eBremLPM : Emin=    1 GeV Emax=  100 TeV  ModifiedTsai
+
+annihil:  for e+ XStype:2 SubType=5 AtRestModel:Simple BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            eplus2gg : Emin=    0 eV  Emax=  100 TeV
+
+CoulombScat:  for e+ XStype:1 SubType=1 BuildTable=1
+      Lambda table from 100 MeV to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=  100 MeV Emax=  100 TeV
+
+msc:  for proton  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+
+hIoni:  for proton  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=    2 MeV
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV
+
+hBrems:  for proton  XStype:1  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+hPairProd:  for proton  XStype:1  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 17x1001; from 7.50618 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+CoulombScat:  for proton XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for GenericIon  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+
+ionIoni:  for GenericIon  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.02
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=    2 MeV
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV
+
+msc:  for alpha  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=    0 eV  Emax=  100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+
+ionIoni:  for alpha  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.02
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            BraggIon : Emin=    0 eV  Emax=7.9452 MeV
+          BetheBloch : Emin=7.9452 MeV Emax=  100 TeV
+
+msc:  for anti_proton  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+
+hIoni:  for anti_proton  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=    2 MeV
+          BetheBloch : Emin=    2 MeV Emax=  100 TeV
+
+hBrems:  for anti_proton  XStype:1  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+hPairProd:  for anti_proton  XStype:1  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 17x1001; from 7.50618 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+CoulombScat:  for anti_proton XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for kaon+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+
+hIoni:  for kaon+  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=1.05231 MeV
+          BetheBloch : Emin=1.05231 MeV Emax=  100 TeV
+
+hBrems:  for kaon+  XStype:1  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+hPairProd:  for kaon+  XStype:1  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 18x1001; from 3.94942 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+CoulombScat:  for kaon+ XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for kaon-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+
+hIoni:  for kaon-  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=1.05231 MeV
+          BetheBloch : Emin=1.05231 MeV Emax=  100 TeV
+
+hBrems:  for kaon-  XStype:1  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+hPairProd:  for kaon-  XStype:1  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 18x1001; from 3.94942 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+CoulombScat:  for kaon- XStype:1 SubType=1 BuildTable=1
+      Used Lambda table of kaon+
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for mu+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+
+muIoni:  for mu+  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=  200 keV
+        MuBetheBloch : Emin=  200 keV Emax=  100 TeV
+
+muBrems:  for mu+  XStype:1  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+              MuBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+muPairProd:  for mu+  XStype:1  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 21x1001; from 0.85 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          muPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+CoulombScat:  for mu+ XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for mu-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+
+muIoni:  for mu-  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=  200 keV
+        MuBetheBloch : Emin=  200 keV Emax=  100 TeV
+
+muBrems:  for mu-  XStype:1  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+              MuBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+muPairProd:  for mu-  XStype:1  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 21x1001; from 0.85 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          muPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+CoulombScat:  for mu- XStype:1 SubType=1 BuildTable=1
+      Used Lambda table of mu+
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for pi+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+
+hIoni:  for pi+  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=    0 eV  Emax=297.505 keV
+          BetheBloch : Emin=297.505 keV Emax=  100 TeV
+
+hBrems:  for pi+  XStype:1  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+hPairProd:  for pi+  XStype:1  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 20x1001; from 1.11656 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+CoulombScat:  for pi+ XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+msc:  for pi-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=    0 eV  Emax=  100 TeV Nbins=84 100 eV  - 100 TeV
+          StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:0 Skin=1 Llim=1 mm
+
+hIoni:  for pi-  XStype:1  SubType=2
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=    0 eV  Emax=297.505 keV
+          BetheBloch : Emin=297.505 keV Emax=  100 TeV
+
+hBrems:  for pi-  XStype:1  SubType=3
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+hPairProd:  for pi-  XStype:1  SubType=4
+      dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
+      Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 1
+      Sampling table 20x1001; from 1.11656 GeV to 100 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
+
+CoulombScat:  for pi- XStype:1 SubType=1 BuildTable=1
+      Used Lambda table of pi+
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=    0 eV  Emax=  100 TeV
+
+====================================================================
+                  HADRONIC PROCESSES SUMMARY (verbose level 1)
+-----------------------------------------------------------------------
+                           Hadronic Processes for neutron
+  Process: hadElastic
+        Model:             hElasticCHIPS: 0 eV  ---> 100 TeV
+     Cr_sctns:        G4NeutronElasticXS: 0 eV  ---> 100 TeV
+  Process: neutronInelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:      G4NeutronInelasticXS: 0 eV  ---> 100 TeV
+  Process: nCapture
+        Model:               nRadCapture: 0 eV  ---> 100 TeV
+     Cr_sctns:        G4NeutronCaptureXS: 0 eV  ---> 100 TeV
+  Process: nKiller
+-----------------------------------------------------------------------
+                           Hadronic Processes for B-
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+  Process: B-Inelastic
+        Model:                      FTFP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for D-
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+  Process: D-Inelastic
+        Model:                      FTFP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for GenericIon
+  Process: ionInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for He3
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+  Process: He3Inelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for alpha
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+  Process: alphaInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_He3
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+  Process: anti_He3Inelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_alpha
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+  Process: anti_alphaInelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_deuteron
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+  Process: anti_deuteronInelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+  Process: hFritiofCaptureAtRest
+-------------------------------------------------------------------------
+                           Hadronic Processes for anti_hypertriton
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_lambda
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+  Process: anti_lambdaInelastic
+        Model:                      FTFP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_neutron
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100.1 MeV
+        Model:              AntiAElastic: 100 MeV ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+  Process: anti_neutronInelastic
+        Model:                      FTFP: 0 eV  ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_proton
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100.1 MeV
+        Model:              AntiAElastic: 100 MeV ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+  Process: anti_protonInelastic
+        Model:                      FTFP: 0 eV  ---> 100 TeV
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_triton
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100.1 MeV/n
+        Model:              AntiAElastic: 100 MeV/n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+  Process: anti_tritonInelastic
+        Model:                      FTFP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:              AntiAGlauber: 0 eV  ---> 25.6 PeV
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for deuteron
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+  Process: dInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for e+
+  Process: positronNuclear
+        Model:   G4ElectroVDNuclearModel: 0 eV  ---> 1 PeV
+     Cr_sctns:          ElectroNuclearXS: 0 eV  ---> 100 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for e-
+  Process: electronNuclear
+        Model:   G4ElectroVDNuclearModel: 0 eV  ---> 1 PeV
+     Cr_sctns:          ElectroNuclearXS: 0 eV  ---> 100 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for gamma
+  Process: photonNuclear
+        Model:               GammaNPreco: 0 eV  ---> 200 MeV
+        Model:            BertiniCascade: 199 MeV ---> 6 GeV
+        Model:           TheoFSGenerator: 3 GeV ---> 100 TeV
+     Cr_sctns:            GammaNuclearXS: 0 eV  ---> 100 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for kaon+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+  Process: kaon+Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for kaon-
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+  Process: kaon-Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+  Process: hBertiniCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for lambda
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+  Process: lambdaInelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for mu+
+  Process: muonNuclear
+        Model:      G4MuonVDNuclearModel: 0 eV  ---> 1 PeV
+     Cr_sctns:     KokoulinMuonNuclearXS: 0 eV  ---> 100 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for mu-
+  Process: muonNuclear
+        Model:      G4MuonVDNuclearModel: 0 eV  ---> 1 PeV
+     Cr_sctns:     KokoulinMuonNuclearXS: 0 eV  ---> 100 TeV
+  Process: muMinusCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for pi+
+  Process: hadElastic
+        Model:           hElasticGlauber: 0 eV  ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+  Process: pi+Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for pi-
+  Process: hadElastic
+        Model:           hElasticGlauber: 0 eV  ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+  Process: pi-Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+  Process: hBertiniCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for proton
+  Process: hadElastic
+        Model:             hElasticCHIPS: 0 eV  ---> 100 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+  Process: protonInelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0 eV  ---> 100 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for sigma-
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV  ---> 100 TeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+  Process: sigma-Inelastic
+        Model:                      FTFP: 3 GeV ---> 100 TeV
+        Model:            BertiniCascade: 0 eV  ---> 6 GeV
+     Cr_sctns:            Glauber-Gribov: 0 eV  ---> 100 TeV
+  Process: hBertiniCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for triton
+  Process: hadElastic
+        Model:              hElasticLHEP: 0 eV /n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+  Process: tInelastic
+        Model:  Binary Light Ion Cascade: 0 eV /n ---> 6 GeV/n
+        Model:                      FTFP: 3 GeV/n ---> 100 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0 eV  ---> 25.6 PeV
+=======================================================================
+======       Geant4 Native Pre-compound Model Parameters       ========
+=======================================================================
+Type of pre-compound model                          0
+Type of pre-compound inverse x-section              3
+Pre-compound model active                           1
+Pre-compound excitation low energy                  100 keV
+Pre-compound excitation high energy                 30 MeV
+Angular generator for pre-compound model            1
+Use NeverGoBack option for pre-compound model       0
+Use SoftCutOff option for pre-compound model        0
+Use CEM transitions for pre-compound model          1
+Use GNASH transitions for pre-compound model        0
+Use HETC submodel for pre-compound model            0
+=======================================================================
+======       Nuclear De-excitation Module Parameters           ========
+=======================================================================
+Type of de-excitation inverse x-section             3
+Type of de-excitation factory                       Evaporation+GEM
+Number of de-excitation channels                    68
+Type of Fermi BreakUp model                         ModelVI
+Min excitation energy                               10 eV 
+Min energy per nucleon for multifragmentation       200 GeV
+Limit excitation energy for Fermi BreakUp           20 MeV
+Level density (1/MeV)                               0.075
+Use simple level density model                      1
+Use discrete excitation energy of the residual      0
+Time limit for long lived isomeres                  1 ns 
+Isomer production flag                              1
+Internal e- conversion flag                         1
+Store e- internal conversion data                   1
+Correlated gamma emission flag                      0
+Max 2J for sampling of angular correlations         10
+=======================================================================
+
+=========================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Initializing workers...
+=========================================================================
+
+SimpleBox is now made of Cu
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Copper 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : Yes
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+Start closing geometry.
+** G4GeometryManager::PrepareParallelOptimisation() called.
+** G4GeometryManager::CreateListOfVolumesToOptimise:   Number of volumes for voxelisation = 0
+** G4GeometryManager::ConfigureParallelOptimisation() called  for the 1 time.  LEAVING all the work (of voxel optimisation) to the threads/tasks !
+### Run 0 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4GeometryManager: the 1 worker has finished.    Total volumes voxelised = 0 out of 0
+** G4GeometryManager: All voxel optimisation work is completed!
+   Total number of volumes optimised = 0 of 0 expected
+   Number of workers reporting       = 1 of 4 expected
+G4GeometryManager: the 2 worker has finished.    Total volumes voxelised = 0 out of 0
+G4WT0 > ### Run 0 starts on worker thread 0.
+** G4GeometryManager: All voxel optimisation work is completed!
+   Total number of volumes optimised = 0 of 0 expected
+   Number of workers reporting       = 2 of 4 expected
+G4GeometryManager: the 3 worker has finished.    Total volumes voxelised = 0 out of 0
+** G4GeometryManager: All voxel optimisation work is completed!
+   Total number of volumes optimised = 0 of 0 expected
+   Number of workers reporting       = 3 of 4 expected
+G4WT2 > ### Run 0 starts on worker thread 2.
+G4GeometryManager: the 4 worker has finished.    Total volumes voxelised = 0 out of 0
+** G4GeometryManager: All voxel optimisation work is completed!
+   Total number of volumes optimised = 0 of 0 expected
+   Number of workers reporting       = 4 of 4 expected
+
+G4GeometryManager::UndertakeOptimisation -- Timing for Voxel Optimisation
+  - Elapsed time (real) = 8.015e-05s (wall clock), user 0s, system 0s.
+G4WT1 > ### Run 0 starts on worker thread 1.
+  - Sum voxel time (real) = 0s.
+
+--------------------------------------------------------------------------------
+G4GeometryManager::ReportVoxelStats -- Voxel Statistics
+
+    Total memory consumed for geometry optimisation:   0 kByte
+    Total CPU time elapsed for geometry optimisation: 0 seconds
+--------------------------------------------------------------------------------
+
+G4WT3 > ### Run 0 starts on worker thread 3.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 10
+G4WT3 > [thread 3]   User=0.010000s Real=0.000366s Sys=0.000000s [Cpu=2730.6%]
+G4WT2 > [thread 2]   User=0.010000s Real=0.000826s Sys=0.000000s [Cpu=1210.0%]
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 40
+G4WT1 > [thread 1]   User=0.010000s Real=0.000318s Sys=0.000000s [Cpu=3146.0%]
+G4WT0 > [thread 0]   User=0.010000s Real=0.000201s Sys=0.000000s [Cpu=4986.4%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.010000s Real=0.002063s Sys=0.000000s [Cpu=484.6%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Copper 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : Yes
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 1 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 1 starts on worker thread 2.
+G4WT1 > ### Run 1 starts on worker thread 1.
+G4WT0 > ### Run 1 starts on worker thread 0.
+G4WT3 > ### Run 1 starts on worker thread 3.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT2 > [thread 2]   User=0.000000s Real=0.000791s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT3 > [thread 3]   User=0.000000s Real=0.000938s Sys=0.000000s [Cpu=0.0%]
+G4WT0 > [thread 0]   User=0.000000s Real=0.000855s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > [thread 1]   User=0.000000s Real=0.000938s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.000000s Real=0.001554s Sys=0.000000s [Cpu=0.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Copper 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : Yes
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 2 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT1 > ### Run 2 starts on worker thread 1.
+G4WT2 > ### Run 2 starts on worker thread 2.
+G4WT0 > ### Run 2 starts on worker thread 0.
+G4WT3 > ### Run 2 starts on worker thread 3.
+G4WT2 > ### G4VSIntegration::SampleValue() for  in area=2 n=1 gg/gmax=1.03026 prob=0.00192193 gmax=0.00186547
+G4WT2 >     E=16.1296 Emin=5.68434e-13 Emax=40.9857 E1=10.0945 E2=15.206 Fmax=0.0713567 F1=0.0150314
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT1 > [thread 1]   User=0.040000s Real=0.011513s Sys=0.000000s [Cpu=347.4%]
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT0 > [thread 0]   User=0.040000s Real=0.011685s Sys=0.000000s [Cpu=342.3%]
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT2 > [thread 2]   User=0.010000s Real=0.005545s Sys=0.000000s [Cpu=180.3%]
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.020000s Real=0.006515s Sys=0.000000s [Cpu=307.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.070000s Real=0.019747s Sys=0.000000s [Cpu=354.5%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Copper 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : Yes
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 3 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 3 starts on worker thread 3.
+G4WT2 > ### Run 3 starts on worker thread 2.
+G4WT1 > ### Run 3 starts on worker thread 1.
+G4WT0 > ### Run 3 starts on worker thread 0.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT0 > [thread 0]   User=0.040000s Real=0.016361s Sys=0.000000s [Cpu=244.5%]
+G4WT3 > [thread 3]   User=0.080000s Real=0.027744s Sys=0.000000s [Cpu=288.3%]
+G4WT1 > [thread 1]   User=0.050000s Real=0.017869s Sys=0.000000s [Cpu=279.8%]
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.080000s Real=0.026191s Sys=0.000000s [Cpu=305.4%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.130000s Real=0.040120s Sys=0.000000s [Cpu=324.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Copper 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : Yes
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 4 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT1 > ### Run 4 starts on worker thread 1.
+G4WT3 > ### Run 4 starts on worker thread 3.
+G4WT0 > ### Run 4 starts on worker thread 0.
+G4WT2 > ### Run 4 starts on worker thread 2.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT2 > [thread 2]   User=0.110000s Real=0.053157s Sys=0.000000s [Cpu=206.9%]
+G4WT3 > [thread 3]   User=0.120000s Real=0.054961s Sys=0.000000s [Cpu=218.3%]
+G4WT0 > [thread 0] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT1 > [thread 1]   User=0.200000s Real=0.076220s Sys=0.000000s [Cpu=262.4%]
+G4WT0 > [thread 0]   User=0.250000s Real=0.088080s Sys=0.000000s [Cpu=283.8%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.340000s Real=0.111612s Sys=0.000000s [Cpu=304.6%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Copper 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : Yes
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 5 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT1 > ### Run 5 starts on worker thread 1.
+G4WT3 > ### Run 5 starts on worker thread 3.
+G4WT0 > ### Run 5 starts on worker thread 0.
+G4WT2 > ### Run 5 starts on worker thread 2.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT0 > [thread 0] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT1 > [thread 1]   User=0.170000s Real=0.069322s Sys=0.000000s [Cpu=245.2%]
+G4WT3 > [thread 3]   User=0.440000s Real=0.137812s Sys=0.000000s [Cpu=319.3%]
+G4WT0 > [thread 0]   User=0.430000s Real=0.133300s Sys=0.000000s [Cpu=322.6%]
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT2 > [thread 2]   User=0.210000s Real=0.079147s Sys=0.000000s [Cpu=265.3%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.660000s Real=0.191486s Sys=0.000000s [Cpu=344.7%]
+SimpleBox is now made of Cu
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Copper 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : Yes
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 6 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 6 starts on worker thread 2.
+G4WT0 > ### Run 6 starts on worker thread 0.
+G4WT1 > ### Run 6 starts on worker thread 1.
+G4WT3 > ### Run 6 starts on worker thread 3.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.020000s Real=0.006295s Sys=0.000000s [Cpu=317.7%]
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT1 > [thread 1]   User=0.010000s Real=0.003731s Sys=0.000000s [Cpu=268.0%]
+G4WT0 > [thread 0]   User=0.020000s Real=0.006806s Sys=0.000000s [Cpu=293.9%]
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT2 > [thread 2]   User=0.010000s Real=0.004169s Sys=0.000000s [Cpu=239.9%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.040000s Real=0.010824s Sys=0.000000s [Cpu=369.6%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Copper 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : Yes
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 7 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 7 starts on worker thread 2.
+G4WT3 > ### Run 7 starts on worker thread 3.
+G4WT0 > ### Run 7 starts on worker thread 0.
+G4WT1 > ### Run 7 starts on worker thread 1.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.020000s Real=0.005697s Sys=0.000000s [Cpu=351.1%]
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.030000s Real=0.009078s Sys=0.000000s [Cpu=330.5%]
+G4WT1 > [thread 1]   User=0.020000s Real=0.005613s Sys=0.000000s [Cpu=356.3%]
+G4WT0 > [thread 0]   User=0.030000s Real=0.009197s Sys=0.000000s [Cpu=326.2%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.060000s Real=0.016540s Sys=0.000000s [Cpu=362.8%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Copper 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : Yes
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 8 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT1 > ### Run 8 starts on worker thread 1.
+G4WT0 > ### Run 8 starts on worker thread 0.
+G4WT3 > ### Run 8 starts on worker thread 3.
+G4WT2 > ### Run 8 starts on worker thread 2.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT2 > [thread 2]   User=0.120000s Real=0.037716s Sys=0.000000s [Cpu=318.2%]
+G4WT1 > [thread 1]   User=0.060000s Real=0.021943s Sys=0.000000s [Cpu=273.4%]
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT0 > [thread 0]   User=0.110000s Real=0.034721s Sys=0.000000s [Cpu=316.8%]
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.070000s Real=0.024207s Sys=0.000000s [Cpu=289.2%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.180000s Real=0.052894s Sys=0.000000s [Cpu=340.3%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Copper 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : Yes
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 9 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 9 starts on worker thread 2.
+G4WT3 > ### Run 9 starts on worker thread 3.
+G4WT1 > ### Run 9 starts on worker thread 1.
+G4WT0 > ### Run 9 starts on worker thread 0.
+G4WT0 > ### G4VSIntegration::SampleValue() for  in area=2 n=2 gg/gmax=1.07599 prob=0.00638881 gmax=0.00593763
+G4WT0 >     E=23.8895 Emin=3.41061e-13 Emax=95.0622 E1=15.3611 E2=22.182 Fmax=0.177358 F1=0.0381023
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT1 > [thread 1]   User=0.130000s Real=0.045509s Sys=0.000000s [Cpu=285.7%]
+G4WT2 > [thread 2]   User=0.140000s Real=0.048124s Sys=0.000000s [Cpu=290.9%]
+G4WT0 > [thread 0]   User=0.060000s Real=0.027736s Sys=0.000000s [Cpu=216.3%]
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.050000s Real=0.024605s Sys=0.000000s [Cpu=203.2%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.230000s Real=0.072420s Sys=0.000000s [Cpu=317.6%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Copper 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : Yes
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 10 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 10 starts on worker thread 0.
+G4WT2 > ### Run 10 starts on worker thread 2.
+G4WT3 > ### Run 10 starts on worker thread 3.
+G4WT1 > ### Run 10 starts on worker thread 1.
+G4WT3 > ### G4VSIntegration::SampleValue() for  in area=2 n=1 gg/gmax=1.05785 prob=0.000333096 gmax=0.000314881
+G4WT3 >     E=17.2465 Emin=4.54747e-13 Emax=33.2938 E1=9.57151 E2=14.6734 Fmax=0.0467368 F1=0.0084505
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT3 > [thread 3]   User=0.220000s Real=0.073921s Sys=0.010000s [Cpu=311.1%]
+G4WT0 > [thread 0]   User=0.230000s Real=0.076174s Sys=0.010000s [Cpu=315.1%]
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT1 > [thread 1]   User=0.100000s Real=0.043336s Sys=0.010000s [Cpu=253.8%]
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT2 > [thread 2]   User=0.090000s Real=0.040139s Sys=0.010000s [Cpu=249.1%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.400000s Real=0.118354s Sys=0.010000s [Cpu=346.4%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Copper 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : Yes
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 11 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT1 > ### Run 11 starts on worker thread 1.
+G4WT3 > ### Run 11 starts on worker thread 3.
+G4WT0 > ### Run 11 starts on worker thread 0.
+G4WT2 > ### Run 11 starts on worker thread 2.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT3 > [thread 3]   User=0.200000s Real=0.079739s Sys=0.000000s [Cpu=250.8%]
+G4WT1 > [thread 1]   User=0.400000s Real=0.130345s Sys=0.000000s [Cpu=306.9%]
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT0 > [thread 0]   User=0.420000s Real=0.135681s Sys=0.000000s [Cpu=309.5%]
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT2 > [thread 2]   User=0.170000s Real=0.072656s Sys=0.000000s [Cpu=234.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.710000s Real=0.208742s Sys=0.000000s [Cpu=340.1%]
+SimpleBox is now made of U
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Uranium 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+==================================================================
+
+### Run 12 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 12 starts on worker thread 3.
+G4WT1 > ### Run 12 starts on worker thread 1.
+G4WT0 > ### Run 12 starts on worker thread 0.
+G4WT2 > ### Run 12 starts on worker thread 2.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 10
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT2 > [thread 2]   User=0.010000s Real=0.005185s Sys=0.000000s [Cpu=192.9%]
+G4WT1 > [thread 1]   User=0.010000s Real=0.005167s Sys=0.000000s [Cpu=193.5%]
+G4WT3 > [thread 3]   User=0.010000s Real=0.005570s Sys=0.000000s [Cpu=179.5%]
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT0 > [thread 0]   User=0.010000s Real=0.005218s Sys=0.000000s [Cpu=191.6%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.010000s Real=0.005867s Sys=0.000000s [Cpu=170.4%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Uranium 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+==================================================================
+
+### Run 13 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 13 starts on worker thread 3.
+G4WT2 > ### Run 13 starts on worker thread 2.
+G4WT1 > ### Run 13 starts on worker thread 1.
+G4WT0 > ### Run 13 starts on worker thread 0.
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 10
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 50
+G4WT0 > [thread 0]   User=0.090000s Real=0.039884s Sys=0.000000s [Cpu=225.7%]
+G4WT2 > [thread 2]   User=0.050000s Real=0.027941s Sys=0.000000s [Cpu=179.0%]
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT3 > [thread 3]   Number of events processed : 10
+G4WT1 > [thread 1]   User=0.060000s Real=0.031072s Sys=0.000000s [Cpu=193.1%]
+G4WT3 > [thread 3]   User=0.090000s Real=0.039977s Sys=0.000000s [Cpu=225.1%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.090000s Real=0.040172s Sys=0.000000s [Cpu=224.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Uranium 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+==================================================================
+
+### Run 14 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 14 starts on worker thread 0.
+G4WT3 > ### Run 14 starts on worker thread 3.
+G4WT1 > ### Run 14 starts on worker thread 1.
+G4WT2 > ### Run 14 starts on worker thread 2.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT2 > [thread 2]   User=1.410000s Real=0.512226s Sys=0.000000s [Cpu=275.3%]
+G4WT0 > [thread 0]   User=1.030000s Real=0.417656s Sys=0.000000s [Cpu=246.6%]
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT1 > [thread 1]   User=0.400000s Real=0.258965s Sys=0.000000s [Cpu=154.5%]
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT3 > [thread 3]   User=0.530000s Real=0.290816s Sys=0.000000s [Cpu=182.2%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=2.440000s Real=0.771829s Sys=0.000000s [Cpu=316.1%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Uranium 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+==================================================================
+
+### Run 15 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT1 > ### Run 15 starts on worker thread 1.
+G4WT2 > ### Run 15 starts on worker thread 2.
+G4WT3 > ### Run 15 starts on worker thread 3.
+G4WT0 > ### Run 15 starts on worker thread 0.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT1 > [thread 1] Run Summary
+G4WT2 > [thread 2]   User=3.200000s Real=1.072370s Sys=0.000000s [Cpu=298.4%]
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT0 > [thread 0]   User=4.770000s Real=1.463049s Sys=0.000000s [Cpu=326.0%]
+G4WT1 > [thread 1]   User=1.570000s Real=0.661656s Sys=0.000000s [Cpu=237.3%]
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT3 > [thread 3]   User=1.840000s Real=0.728753s Sys=0.000000s [Cpu=252.5%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=6.160000s Real=1.812269s Sys=0.000000s [Cpu=339.9%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Uranium 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+==================================================================
+
+### Run 16 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 16 starts on worker thread 3.
+G4WT2 > ### Run 16 starts on worker thread 2.
+G4WT1 > ### Run 16 starts on worker thread 1.
+G4WT0 > ### Run 16 starts on worker thread 0.
+G4WT0 > ### G4VSIntegration::SampleValue() for  in area=2 n=1 gg/gmax=1.15715 prob=0.000376247 gmax=0.000325149
+G4WT0 >     E=12.7346 Emin=-6.82121e-12 Emax=39.1556 E1=7.09415 E2=10.4988 Fmax=0.028189 F1=0.00559589
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT2 > [thread 2]   User=3.620000s Real=1.459563s Sys=0.000000s [Cpu=248.0%]
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT1 > [thread 1]   User=2.870000s Real=1.271027s Sys=0.000000s [Cpu=225.8%]
+G4WT3 > [thread 3]   User=6.510000s Real=2.182205s Sys=0.000000s [Cpu=298.3%]
+G4WT0 > [thread 0]   User=7.090000s Real=2.329868s Sys=0.000000s [Cpu=304.3%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=12.540000s Real=3.694312s Sys=0.000000s [Cpu=339.4%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Uranium 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+==================================================================
+
+### Run 17 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 17 starts on worker thread 2.
+G4WT0 > ### Run 17 starts on worker thread 0.
+G4WT3 > ### Run 17 starts on worker thread 3.
+G4WT1 > ### Run 17 starts on worker thread 1.
+G4WT2 > ### G4VSIntegration::SampleValue() for  in area=2 n=1 gg/gmax=1.16171 prob=0.000158624 gmax=0.000136544
+G4WT2 >     E=10.6573 Emin=7.61702e-12 Emax=41.1704 E1=5.97438 E2=9.38497 Fmax=0.018799 F1=0.00284355
+G4WT2 > ### G4VSIntegration::SampleValue() for  in area=2 n=2 gg/gmax=1.0253 prob=3.12422e-05 gmax=3.04714e-05
+G4WT2 >     E=7.15649 Emin=-6.82121e-12 Emax=16.2416 E1=4.16284 E2=6.99161 Fmax=0.00270092 F1=0.000472896
+G4WT0 > ### G4VSIntegration::SampleValue() for  in area=2 n=2 gg/gmax=1.03452 prob=0.00162181 gmax=0.00156769
+G4WT0 >     E=9.88869 Emin=7.61702e-12 Emax=54.6687 E1=6.20171 E2=9.61383 Fmax=0.0470085 F1=0.0100431
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT2 > [thread 2]   User=7.150000s Real=3.343752s Sys=0.000000s [Cpu=213.8%]
+G4WT0 > [thread 0]   User=5.970000s Real=3.048696s Sys=0.000000s [Cpu=195.8%]
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT3 > [thread 3]   User=17.390000s Real=5.910411s Sys=0.000000s [Cpu=294.2%]
+G4WT1 > [thread 1]   User=17.960000s Real=6.054001s Sys=0.000000s [Cpu=296.7%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=27.460000s Real=8.432505s Sys=0.000000s [Cpu=325.6%]
+SimpleBox is now made of U
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Uranium 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+==================================================================
+
+### Run 18 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 18 starts on worker thread 2.
+G4WT3 > ### Run 18 starts on worker thread 3.
+G4WT0 > ### Run 18 starts on worker thread 0.
+G4WT1 > ### Run 18 starts on worker thread 1.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.850000s Real=0.311664s Sys=0.000000s [Cpu=272.7%]
+G4WT1 > [thread 1]   User=0.250000s Real=0.162198s Sys=0.000000s [Cpu=154.1%]
+G4WT0 > [thread 0]   User=0.780000s Real=0.293967s Sys=0.000000s [Cpu=265.3%]
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.570000s Real=0.243361s Sys=0.000000s [Cpu=234.2%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=1.390000s Real=0.449083s Sys=0.000000s [Cpu=309.5%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Uranium 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+==================================================================
+
+### Run 19 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 19 starts on worker thread 2.
+G4WT3 > ### Run 19 starts on worker thread 3.
+G4WT1 > ### Run 19 starts on worker thread 1.
+G4WT0 > ### Run 19 starts on worker thread 0.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT2 > [thread 2]   User=1.640000s Real=0.532812s Sys=0.000000s [Cpu=307.8%]
+G4WT1 > [thread 1]   User=0.460000s Real=0.238272s Sys=0.000000s [Cpu=193.1%]
+G4WT0 > [thread 0]   User=1.310000s Real=0.450249s Sys=0.000000s [Cpu=290.9%]
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.620000s Real=0.277428s Sys=0.000000s [Cpu=223.5%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=2.410000s Real=0.725906s Sys=0.000000s [Cpu=332.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Uranium 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+==================================================================
+
+### Run 20 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 20 starts on worker thread 3.
+G4WT0 > ### Run 20 starts on worker thread 0.
+G4WT1 > ### Run 20 starts on worker thread 1.
+G4WT2 > ### Run 20 starts on worker thread 2.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT2 > [thread 2]   User=4.030000s Real=1.315635s Sys=0.000000s [Cpu=306.3%]
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT3 > [thread 3]   User=1.640000s Real=0.717160s Sys=0.000000s [Cpu=228.7%]
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT0 > [thread 0]   User=3.760000s Real=1.249507s Sys=0.000000s [Cpu=300.9%]
+G4WT1 > [thread 1]   User=1.500000s Real=0.682592s Sys=0.000000s [Cpu=219.8%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=6.770000s Real=2.004032s Sys=0.000000s [Cpu=337.8%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Uranium 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+==================================================================
+
+### Run 21 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 21 starts on worker thread 2.
+G4WT3 > ### Run 21 starts on worker thread 3.
+G4WT1 > ### Run 21 starts on worker thread 1.
+G4WT0 > ### Run 21 starts on worker thread 0.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT2 > [thread 2]   User=2.320000s Real=1.057179s Sys=0.000000s [Cpu=219.5%]
+G4WT0 > [thread 0]   User=5.120000s Real=1.759394s Sys=0.000000s [Cpu=291.0%]
+G4WT1 > [thread 1]   User=1.910000s Real=0.955253s Sys=0.000000s [Cpu=199.9%]
+G4WT3 > [thread 3]   User=5.670000s Real=1.898016s Sys=0.000000s [Cpu=298.7%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=9.840000s Real=2.943602s Sys=0.000000s [Cpu=334.3%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Uranium 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+==================================================================
+
+### Run 22 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 22 starts on worker thread 2.
+G4WT3 > ### Run 22 starts on worker thread 3.
+G4WT1 > ### Run 22 starts on worker thread 1.
+G4WT0 > ### Run 22 starts on worker thread 0.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT2 > [thread 2]   User=4.310000s Real=1.937689s Sys=0.000000s [Cpu=222.4%]
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT1 > [thread 1]   User=9.690000s Real=3.283809s Sys=0.000000s [Cpu=295.1%]
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT3 > [thread 3]   User=9.980000s Real=3.356526s Sys=0.000000s [Cpu=297.3%]
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT0 > [thread 0]   User=3.580000s Real=1.753254s Sys=0.000000s [Cpu=204.2%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=16.360000s Real=4.956092s Sys=0.000000s [Cpu=330.1%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Uranium 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : Yes
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+==================================================================
+
+### Run 23 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 23 starts on worker thread 3.
+G4WT2 > ### Run 23 starts on worker thread 2.
+G4WT0 > ### Run 23 starts on worker thread 0.
+G4WT1 > ### Run 23 starts on worker thread 1.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT3 > [thread 3] Run Summary
+G4WT1 > [thread 1]   User=17.920000s Real=5.939420s Sys=0.010000s [Cpu=301.9%]
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT2 > [thread 2]   User=6.960000s Real=3.193537s Sys=0.000000s [Cpu=217.9%]
+G4WT3 > [thread 3]   User=15.910000s Real=5.437535s Sys=0.010000s [Cpu=292.8%]
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT0 > [thread 0]   User=7.330000s Real=3.286271s Sys=0.000000s [Cpu=223.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=29.020000s Real=8.722985s Sys=0.010000s [Cpu=332.8%]
+SimpleBox is now made of Si
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Silicon 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : Yes
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 24 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 24 starts on worker thread 0.
+G4WT1 > ### Run 24 starts on worker thread 1.
+G4WT3 > ### Run 24 starts on worker thread 3.
+G4WT2 > ### Run 24 starts on worker thread 2.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.000000s Real=0.000415s Sys=0.000000s [Cpu=0.0%]
+G4WT0 > [thread 0]   User=0.000000s Real=0.000554s Sys=0.000000s [Cpu=0.0%]
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.000000s Real=0.000673s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > [thread 1]   User=0.000000s Real=0.000723s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.000000s Real=0.001696s Sys=0.000000s [Cpu=0.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Silicon 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : Yes
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 25 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 25 starts on worker thread 3.
+G4WT0 > ### Run 25 starts on worker thread 0.
+G4WT1 > ### Run 25 starts on worker thread 1.
+G4WT2 > ### Run 25 starts on worker thread 2.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT3 > [thread 3]   User=0.000000s Real=0.000509s Sys=0.000000s [Cpu=0.0%]
+G4WT0 > [thread 0]   User=0.000000s Real=0.000429s Sys=0.000000s [Cpu=0.0%]
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT1 > [thread 1]   User=0.000000s Real=0.000510s Sys=0.000000s [Cpu=0.0%]
+G4WT2 > [thread 2]   User=0.000000s Real=0.000815s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.000000s Real=0.001327s Sys=0.000000s [Cpu=0.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Silicon 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : Yes
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 26 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 26 starts on worker thread 2.
+G4WT0 > ### Run 26 starts on worker thread 0.
+G4WT3 > ### Run 26 starts on worker thread 3.
+G4WT1 > ### Run 26 starts on worker thread 1.
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT3 > [thread 3]   User=0.020000s Real=0.006951s Sys=0.000000s [Cpu=287.7%]
+G4WT0 > [thread 0]   User=0.010000s Real=0.004750s Sys=0.000000s [Cpu=210.5%]
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT2 > [thread 2]   User=0.020000s Real=0.006918s Sys=0.000000s [Cpu=289.1%]
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT1 > [thread 1]   User=0.010000s Real=0.004476s Sys=0.000000s [Cpu=223.4%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.030000s Real=0.010821s Sys=0.000000s [Cpu=277.2%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Silicon 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : Yes
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 27 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 27 starts on worker thread 0.
+G4WT1 > ### Run 27 starts on worker thread 1.
+G4WT2 > ### Run 27 starts on worker thread 2.
+G4WT3 > ### Run 27 starts on worker thread 3.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT0 > [thread 0]   User=0.020000s Real=0.008713s Sys=0.000000s [Cpu=229.5%]
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT3 > [thread 3]   User=0.040000s Real=0.014918s Sys=0.000000s [Cpu=268.1%]
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.020000s Real=0.007930s Sys=0.000000s [Cpu=252.2%]
+G4WT1 > [thread 1]   User=0.040000s Real=0.013251s Sys=0.000000s [Cpu=301.9%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.070000s Real=0.022256s Sys=0.000000s [Cpu=314.5%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Silicon 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : Yes
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 28 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 28 starts on worker thread 2.
+G4WT3 > ### Run 28 starts on worker thread 3.
+G4WT1 > ### Run 28 starts on worker thread 1.
+G4WT0 > ### Run 28 starts on worker thread 0.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT0 > [thread 0] Run Summary
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 40
+G4WT3 > [thread 3]   User=0.050000s Real=0.017070s Sys=0.000000s [Cpu=292.9%]
+G4WT2 > [thread 2]   User=0.040000s Real=0.014152s Sys=0.000000s [Cpu=282.7%]
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT1 > [thread 1]   User=0.080000s Real=0.023659s Sys=0.000000s [Cpu=338.1%]
+G4WT0 > [thread 0]   User=0.060000s Real=0.019780s Sys=0.000000s [Cpu=303.3%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.170000s Real=0.055942s Sys=0.000000s [Cpu=303.9%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Silicon 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : Yes
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 29 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 29 starts on worker thread 0.
+G4WT3 > ### Run 29 starts on worker thread 3.
+G4WT2 > ### Run 29 starts on worker thread 2.
+G4WT1 > ### Run 29 starts on worker thread 1.
+G4WT1 > ### G4VSIntegration::SampleValue() for  in area=2 n=2 gg/gmax=1.00235 prob=0.00538956 gmax=0.00537694
+G4WT1 >     E=23.0474 Emin=3.41061e-13 Emax=44.8381 E1=15.7844 E2=22.5942 Fmax=0.166455 F1=0.0306656
+G4WT3 > ### G4VSIntegration::SampleValue() for  in area=2 n=1 gg/gmax=1.001 prob=0.00435135 gmax=0.00434698
+G4WT3 >     E=22.7355 Emin=4.54747e-13 Emax=52.0557 E1=15.7976 E2=22.6131 Fmax=0.0807151 F1=0.0182613
+G4WT1 > ### G4VSIntegration::SampleValue() for  in area=0 n=1 gg/gmax=1.13343 prob=0.0224545 gmax=0.019811
+G4WT1 >     E=2.26039 Emin=1.78943 Emax=2.26103 E1=2.26103 E2=2.26103 Fmax=0.019811 F1=0
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT0 > [thread 0] Run Summary
+G4WT1 > [thread 1]   User=0.080000s Real=0.030810s Sys=0.000000s [Cpu=259.7%]
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT0 > [thread 0]   User=0.210000s Real=0.062758s Sys=0.000000s [Cpu=334.6%]
+G4WT2 > [thread 2]   User=0.190000s Real=0.059615s Sys=0.000000s [Cpu=318.7%]
+G4WT3 > [thread 3]   User=0.070000s Real=0.029340s Sys=0.000000s [Cpu=238.6%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.330000s Real=0.093552s Sys=0.000000s [Cpu=352.7%]
+SimpleBox is now made of Si
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Silicon 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : Yes
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 30 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 30 starts on worker thread 3.
+G4WT0 > ### Run 30 starts on worker thread 0.
+G4WT2 > ### Run 30 starts on worker thread 2.
+G4WT1 > ### Run 30 starts on worker thread 1.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT3 > [thread 3]   User=0.010000s Real=0.002701s Sys=0.000000s [Cpu=370.3%]
+G4WT0 > [thread 0] Run Summary
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0]   User=0.020000s Real=0.004892s Sys=0.000000s [Cpu=408.8%]
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT1 > [thread 1]   User=0.020000s Real=0.004504s Sys=0.000000s [Cpu=444.1%]
+G4WT2 > [thread 2]   User=0.010000s Real=0.002863s Sys=0.000000s [Cpu=349.3%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.030000s Real=0.007312s Sys=0.000000s [Cpu=410.3%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Silicon 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : Yes
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 31 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 31 starts on worker thread 3.
+G4WT2 > ### Run 31 starts on worker thread 2.
+G4WT0 > ### Run 31 starts on worker thread 0.
+G4WT1 > ### Run 31 starts on worker thread 1.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT2 > [thread 2]   User=0.010000s Real=0.003121s Sys=0.000000s [Cpu=320.4%]
+G4WT3 > [thread 3] Run Summary
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT1 > [thread 1]   User=0.020000s Real=0.006087s Sys=0.000000s [Cpu=328.6%]
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.020000s Real=0.006226s Sys=0.000000s [Cpu=321.2%]
+G4WT0 > [thread 0]   User=0.010000s Real=0.003159s Sys=0.000000s [Cpu=316.5%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.030000s Real=0.009524s Sys=0.000000s [Cpu=315.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Silicon 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : Yes
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 32 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 32 starts on worker thread 3.
+G4WT0 > ### Run 32 starts on worker thread 0.
+G4WT2 > ### Run 32 starts on worker thread 2.
+G4WT1 > ### Run 32 starts on worker thread 1.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.020000s Real=0.011496s Sys=0.000000s [Cpu=174.0%]
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT3 > [thread 3]   User=0.050000s Real=0.018224s Sys=0.000000s [Cpu=274.4%]
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT0 > [thread 0]   User=0.050000s Real=0.018503s Sys=0.000000s [Cpu=270.2%]
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT1 > [thread 1]   User=0.020000s Real=0.009917s Sys=0.000000s [Cpu=201.7%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.090000s Real=0.028524s Sys=0.000000s [Cpu=315.5%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Silicon 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : Yes
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 33 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 33 starts on worker thread 3.
+G4WT1 > ### Run 33 starts on worker thread 1.
+G4WT0 > ### Run 33 starts on worker thread 0.
+G4WT2 > ### Run 33 starts on worker thread 2.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT1 > [thread 1] Run Summary
+G4WT0 > [thread 0]   User=0.070000s Real=0.022638s Sys=0.000000s [Cpu=309.2%]
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT1 > [thread 1]   User=0.030000s Real=0.013932s Sys=0.000000s [Cpu=215.3%]
+G4WT2 > [thread 2]   User=0.060000s Real=0.020603s Sys=0.000000s [Cpu=291.2%]
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.030000s Real=0.012845s Sys=0.000000s [Cpu=233.6%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.120000s Real=0.036518s Sys=0.000000s [Cpu=328.6%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Silicon 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : Yes
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 34 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 34 starts on worker thread 2.
+G4WT1 > ### Run 34 starts on worker thread 1.
+G4WT3 > ### Run 34 starts on worker thread 3.
+G4WT0 > ### Run 34 starts on worker thread 0.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.120000s Real=0.037990s Sys=0.000000s [Cpu=315.9%]
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.110000s Real=0.034159s Sys=0.000000s [Cpu=322.0%]
+G4WT0 > [thread 0]   User=0.030000s Real=0.015218s Sys=0.000000s [Cpu=197.1%]
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT1 > [thread 1]   User=0.050000s Real=0.019954s Sys=0.000000s [Cpu=250.6%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.180000s Real=0.052791s Sys=0.000000s [Cpu=341.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : Silicon 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : Yes
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 35 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 35 starts on worker thread 2.
+G4WT0 > ### Run 35 starts on worker thread 0.
+G4WT3 > ### Run 35 starts on worker thread 3.
+G4WT1 > ### Run 35 starts on worker thread 1.
+G4WT3 > ### G4VSIntegration::SampleValue() for  in area=0 n=1 gg/gmax=1.04833 prob=0.00601403 gmax=0.0057368
+G4WT3 >     E=0.963371 Emin=4.54747e-13 Emax=1.00122 E1=1.00122 E2=1.00122 Fmax=0.0057368 F1=0
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.070000s Real=0.032219s Sys=0.000000s [Cpu=217.3%]
+G4WT3 > [thread 3]   User=0.200000s Real=0.064442s Sys=0.000000s [Cpu=310.4%]
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT0 > [thread 0]   User=0.100000s Real=0.042128s Sys=0.000000s [Cpu=237.4%]
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT1 > [thread 1]   User=0.180000s Real=0.062105s Sys=0.000000s [Cpu=289.8%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.320000s Real=0.096967s Sys=0.000000s [Cpu=330.0%]
+SimpleBox is now made of H
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : H 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : No 
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+
+Index : 3     used in the geometry : Yes
+ Material : H
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  990 eV     e-  711.864 keV    e+  688.926 keV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 36 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 36 starts on worker thread 2.
+G4WT3 > ### Run 36 starts on worker thread 3.
+G4WT0 > ### Run 36 starts on worker thread 0.
+G4WT1 > ### Run 36 starts on worker thread 1.
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT0 > [thread 0] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT0 > [thread 0]   User=0.000000s Real=0.000306s Sys=0.000000s [Cpu=0.0%]
+G4WT2 > [thread 2] Run Summary
+G4WT3 > [thread 3]   User=0.000000s Real=0.000273s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT1 > [thread 1]   User=0.000000s Real=0.000173s Sys=0.000000s [Cpu=0.0%]
+G4WT2 > [thread 2]   User=0.000000s Real=0.000244s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.000000s Real=0.000917s Sys=0.000000s [Cpu=0.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : H 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : No 
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+
+Index : 3     used in the geometry : Yes
+ Material : H
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  990 eV     e-  711.864 keV    e+  688.926 keV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 37 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT2 > ### Run 37 starts on worker thread 2.
+G4WT0 > ### Run 37 starts on worker thread 0.
+G4WT1 > ### Run 37 starts on worker thread 1.
+G4WT3 > ### Run 37 starts on worker thread 3.
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT2 > [thread 2]   User=0.000000s Real=0.000183s Sys=0.000000s [Cpu=0.0%]
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 30
+G4WT0 > [thread 0]   User=0.000000s Real=0.000312s Sys=0.000000s [Cpu=0.0%]
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT1 > [thread 1]   User=0.000000s Real=0.000171s Sys=0.000000s [Cpu=0.0%]
+G4WT3 > [thread 3]   User=0.000000s Real=0.000287s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.000000s Real=0.000650s Sys=0.000000s [Cpu=0.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : H 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : No 
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+
+Index : 3     used in the geometry : Yes
+ Material : H
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  990 eV     e-  711.864 keV    e+  688.926 keV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 38 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 38 starts on worker thread 0.
+G4WT2 > ### Run 38 starts on worker thread 2.
+G4WT1 > ### Run 38 starts on worker thread 1.
+G4WT3 > ### Run 38 starts on worker thread 3.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT3 > [thread 3]   User=0.000000s Real=0.000316s Sys=0.000000s [Cpu=0.0%]
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT0 > [thread 0]   User=0.000000s Real=0.000176s Sys=0.000000s [Cpu=0.0%]
+G4WT2 > [thread 2] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT1 > [thread 1]   User=0.000000s Real=0.000307s Sys=0.000000s [Cpu=0.0%]
+G4WT2 > [thread 2]   User=0.000000s Real=0.000162s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.010000s Real=0.000650s Sys=0.000000s [Cpu=1538.6%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : H 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : No 
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+
+Index : 3     used in the geometry : Yes
+ Material : H
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  990 eV     e-  711.864 keV    e+  688.926 keV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 39 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 39 starts on worker thread 0.
+G4WT3 > ### Run 39 starts on worker thread 3.
+G4WT2 > ### Run 39 starts on worker thread 2.
+G4WT1 > ### Run 39 starts on worker thread 1.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT3 > [thread 3]   User=0.000000s Real=0.000191s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT1 > [thread 1]   User=0.000000s Real=0.000327s Sys=0.000000s [Cpu=0.0%]
+G4WT0 > [thread 0]   User=0.000000s Real=0.000190s Sys=0.000000s [Cpu=0.0%]
+G4WT2 > [thread 2]   User=0.000000s Real=0.000309s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.000000s Real=0.000633s Sys=0.000000s [Cpu=0.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : H 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : No 
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+
+Index : 3     used in the geometry : Yes
+ Material : H
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  990 eV     e-  711.864 keV    e+  688.926 keV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 40 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 40 starts on worker thread 0.
+G4WT3 > ### Run 40 starts on worker thread 3.
+G4WT2 > ### Run 40 starts on worker thread 2.
+G4WT1 > ### Run 40 starts on worker thread 1.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT2 > [thread 2]   User=0.000000s Real=0.000164s Sys=0.000000s [Cpu=0.0%]
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT3 > [thread 3]   User=0.000000s Real=0.000298s Sys=0.000000s [Cpu=0.0%]
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT1 > [thread 1]   User=0.000000s Real=0.000300s Sys=0.000000s [Cpu=0.0%]
+G4WT0 > [thread 0]   User=0.000000s Real=0.000165s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.000000s Real=0.000603s Sys=0.000000s [Cpu=0.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : H 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : No 
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+
+Index : 3     used in the geometry : Yes
+ Material : H
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  990 eV     e-  711.864 keV    e+  688.926 keV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 41 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 41 starts on worker thread 0.
+G4WT2 > ### Run 41 starts on worker thread 2.
+G4WT1 > ### Run 41 starts on worker thread 1.
+G4WT3 > ### Run 41 starts on worker thread 3.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT0 > [thread 0] Run Summary
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT2 > [thread 2] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT0 > [thread 0]   User=0.000000s Real=0.000170s Sys=0.000000s [Cpu=0.0%]
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.000000s Real=0.000299s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.000000s Real=0.000175s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > [thread 1]   User=0.000000s Real=0.000328s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.000000s Real=0.000639s Sys=0.000000s [Cpu=0.0%]
+SimpleBox is now made of H
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : H 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : No 
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+
+Index : 3     used in the geometry : Yes
+ Material : H
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  990 eV     e-  711.864 keV    e+  688.926 keV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 42 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 42 starts on worker thread 3.
+G4WT2 > ### Run 42 starts on worker thread 2.
+G4WT0 > ### Run 42 starts on worker thread 0.
+G4WT1 > ### Run 42 starts on worker thread 1.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.010000s Real=0.000290s Sys=0.000000s [Cpu=3444.6%]
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0]   User=0.010000s Real=0.000170s Sys=0.000000s [Cpu=5893.6%]
+G4WT1 > [thread 1]   User=0.010000s Real=0.000288s Sys=0.000000s [Cpu=3468.3%]
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.010000s Real=0.000160s Sys=0.000000s [Cpu=6254.7%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.010000s Real=0.000621s Sys=0.000000s [Cpu=1609.5%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : H 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : No 
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+
+Index : 3     used in the geometry : Yes
+ Material : H
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  990 eV     e-  711.864 keV    e+  688.926 keV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 43 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 43 starts on worker thread 0.
+G4WT3 > ### Run 43 starts on worker thread 3.
+G4WT2 > ### Run 43 starts on worker thread 2.
+G4WT1 > ### Run 43 starts on worker thread 1.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.000000s Real=0.000297s Sys=0.000000s [Cpu=0.0%]
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0]   User=0.000000s Real=0.000174s Sys=0.000000s [Cpu=0.0%]
+G4WT3 > [thread 3]   User=0.000000s Real=0.000160s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > [thread 1]   User=0.000000s Real=0.000295s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.000000s Real=0.000609s Sys=0.000000s [Cpu=0.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : H 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : No 
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+
+Index : 3     used in the geometry : Yes
+ Material : H
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  990 eV     e-  711.864 keV    e+  688.926 keV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 44 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 44 starts on worker thread 0.
+G4WT3 > ### Run 44 starts on worker thread 3.
+G4WT2 > ### Run 44 starts on worker thread 2.
+G4WT1 > ### Run 44 starts on worker thread 1.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT0 > [thread 0] Run Summary
+G4WT2 > [thread 2] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT0 > [thread 0]   User=0.000000s Real=0.000180s Sys=0.000000s [Cpu=0.0%]
+G4WT3 > [thread 3]   User=0.000000s Real=0.000303s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.000000s Real=0.000163s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > [thread 1]   User=0.000000s Real=0.000291s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.000000s Real=0.000579s Sys=0.000000s [Cpu=0.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : H 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : No 
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+
+Index : 3     used in the geometry : Yes
+ Material : H
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  990 eV     e-  711.864 keV    e+  688.926 keV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 45 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT0 > ### Run 45 starts on worker thread 0.
+G4WT3 > ### Run 45 starts on worker thread 3.
+G4WT2 > ### Run 45 starts on worker thread 2.
+G4WT1 > ### Run 45 starts on worker thread 1.
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.000000s Real=0.000149s Sys=0.000000s [Cpu=0.0%]
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 20
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT1 > [thread 1]   User=0.000000s Real=0.000256s Sys=0.000000s [Cpu=0.0%]
+G4WT2 > [thread 2]   User=0.000000s Real=0.000259s Sys=0.000000s [Cpu=0.0%]
+G4WT0 > [thread 0]   User=0.000000s Real=0.000151s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.000000s Real=0.000566s Sys=0.000000s [Cpu=0.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : H 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : No 
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+
+Index : 3     used in the geometry : Yes
+ Material : H
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  990 eV     e-  711.864 keV    e+  688.926 keV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 46 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 46 starts on worker thread 3.
+G4WT0 > ### Run 46 starts on worker thread 0.
+G4WT2 > ### Run 46 starts on worker thread 2.
+G4WT1 > ### Run 46 starts on worker thread 1.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 30
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT0 > [thread 0]   User=0.000000s Real=0.000170s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > [thread 1] Run Summary
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT2 > [thread 2]   User=0.000000s Real=0.000170s Sys=0.000000s [Cpu=0.0%]
+G4WT1 > [thread 1]   User=0.000000s Real=0.000291s Sys=0.000000s [Cpu=0.0%]
+G4WT3 > [thread 3]   Number of events processed : 20
+G4WT3 > [thread 3]   User=0.000000s Real=0.000307s Sys=0.000000s [Cpu=0.0%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.000000s Real=0.000597s Sys=0.000000s [Cpu=0.0%]
+
+Region <DefaultRegionForTheWorld> --  -- appears in <SPhys> world volume
+ This region is in the mass world.
+ Root logical volume(s) : SLog 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : H 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
+ Root logical volume(s) : 
+ Pointers : G4VUserRegionInformation[0], G4UserLimits[0], G4FastSimulationManager[0], G4UserSteppingAction[0]
+ Materials : 
+ Production cuts :   gamma 1 m       e- 1 m       e+ 1 m   proton 1 m  
+
+========= Table of registered couples ============================
+
+Index : 0     used in the geometry : No 
+ Material : Uranium
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 1     used in the geometry : No 
+ Material : Copper
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 MeV
+
+Index : 2     used in the geometry : No 
+ Material : Silicon
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  9.54965 GeV    e-  1.01354 GeV    e+  962.889 MeV proton 100 MeV
+
+Index : 3     used in the geometry : Yes
+ Material : H
+ Range cuts        :  gamma  1 m      e-  1 m      e+  1 m   proton 1 m  
+ Energy thresholds :  gamma  990 eV     e-  711.864 keV    e+  688.926 keV proton 100 MeV
+ Region(s) which use this couple : 
+    DefaultRegionForTheWorld
+
+==================================================================
+
+### Run 47 starts.
+
+==========================================================================================
+--> G4TaskRunManager::CreateAndStartWorkers() --> Creating 10 tasks with 10 events/task...
+==========================================================================================
+
+G4WT3 > ### Run 47 starts on worker thread 3.
+G4WT0 > ### Run 47 starts on worker thread 0.
+G4WT2 > ### Run 47 starts on worker thread 2.
+G4WT1 > ### Run 47 starts on worker thread 1.
+G4WT3 > [thread 3] Thread-local run terminated.
+G4WT3 > [thread 3] Run Summary
+G4WT2 > [thread 2] Thread-local run terminated.
+G4WT2 > [thread 2] Run Summary
+G4WT2 > [thread 2]   Number of events processed : 30
+G4WT2 > [thread 2]   User=0.010000s Real=0.000147s Sys=0.000000s [Cpu=6819.7%]
+G4WT3 > [thread 3]   Number of events processed : 30
+G4WT3 > [thread 3]   User=0.010000s Real=0.000158s Sys=0.000000s [Cpu=6340.6%]
+G4WT1 > [thread 1] Thread-local run terminated.
+G4WT1 > [thread 1] Run Summary
+G4WT0 > [thread 0] Thread-local run terminated.
+G4WT0 > [thread 0] Run Summary
+G4WT0 > [thread 0]   Number of events processed : 20
+G4WT1 > [thread 1]   Number of events processed : 20
+G4WT0 > [thread 0]   User=0.010000s Real=0.000289s Sys=0.000000s [Cpu=3454.6%]
+G4WT1 > [thread 1]   User=0.010000s Real=0.000282s Sys=0.000000s [Cpu=3552.2%]
+ Run terminated.
+Run Summary
+  Number of events processed : 100
+  User=0.010000s Real=0.000592s Sys=0.000000s [Cpu=1690.6%]
+G4WT0 > Destroying WorkerRunManager (0x7f059803fcd0)
+G4WT0 > G4 kernel has come to Quit state.
+G4WT0 > Deleting G4Run (id:47) 
+G4WT0 > UserDetectorConstruction deleted 0
+G4WT0 > UserPhysicsList deleted 0
+G4WT0 > UserActionInitialization deleted 0
+G4WT0 > UserWorkerInitialization deleted 0
+G4WT0 > UserWorkerThreadInitialization deleted 0
+G4WT0 > UserRunAction deleted.
+G4WT0 > UserPrimaryGenerator deleted.
+G4WT0 > RunManager is deleting RunManagerKernel.
+G4WT0 > G4SDManager deleted.
+G4WT3 > Destroying WorkerRunManager (0x7f058c03fcf0)
+G4WT3 > G4 kernel has come to Quit state.
+G4WT3 > Deleting G4Run (id:47) 
+G4WT3 > UserDetectorConstruction deleted 0
+G4WT3 > UserPhysicsList deleted 0
+G4WT3 > UserActionInitialization deleted 0
+G4WT3 > UserWorkerInitialization deleted 0
+G4WT3 > UserWorkerThreadInitialization deleted 0
+G4WT3 > UserRunAction deleted.
+G4WT3 > UserPrimaryGenerator deleted.
+G4WT3 > RunManager is deleting RunManagerKernel.
+G4WT0 > EventManager deleted.
+G4WT0 > Units table cleared.
+G4WT3 > G4SDManager deleted.
+G4WT0 > TransportationManager deleted.
+G4WT0 > Total navigation history collections cleaned: 6
+G4WT0 > ================== Deleting memory pools ===================
+G4WT0 > Pool ID '20G4NavigationLevelRep', size : 0.00673 MB
+G4WT0 > Pool ID '24G4ReferenceCountedHandleIvE', size : 0.000961 MB
+G4WT0 > Pool ID '7G4Event', size : 0.000961 MB
+G4WT0 > Pool ID '15G4PrimaryVertex', size : 0.000961 MB
+G4WT0 > Pool ID '17G4PrimaryParticle', size : 0.000961 MB
+G4WT0 > Pool ID '17G4DynamicParticle', size : 0.0173 MB
+G4WT0 > Pool ID '7G4Track', size : 0.0346 MB
+G4WT0 > Pool ID '18G4TouchableHistory', size : 0.000961 MB
+G4WT0 > Pool ID '15G4CountedObjectIvE', size : 0.000961 MB
+G4WT0 > Pool ID '10G4Fragment', size : 0.00385 MB
+G4WT0 > Pool ID '17G4ReactionProduct', size : 0.00385 MB
+G4WT0 > Number of memory pools allocated: 11; of which, static: 0
+G4WT0 > Dynamic pools deleted: 11 / Total memory freed: 0.072 MB
+G4WT0 > ============================================================
+G4WT0 > G4Allocator objects are deleted.
+G4WT0 > Thread-local UImanager is to be deleted.
+G4WT0 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT2 > Destroying WorkerRunManager (0x7f058803fcd0)
+G4WT2 > G4 kernel has come to Quit state.
+G4WT2 > Deleting G4Run (id:47) 
+G4WT2 > UserDetectorConstruction deleted 0
+G4WT2 > UserPhysicsList deleted 0
+G4WT2 > UserActionInitialization deleted 0
+G4WT2 > UserWorkerInitialization deleted 0
+G4WT2 > UserWorkerThreadInitialization deleted 0
+G4WT2 > UserRunAction deleted.
+UImanager deleted.
+StateManager deleted.
+G4WT2 > UserPrimaryGenerator deleted.
+G4WT2 > RunManager is deleting RunManagerKernel.
+RunManagerKernel is deleted. Good bye :)
+RunManager is deleted.
+G4WT3 > EventManager deleted.
+G4WT3 > Units table cleared.
+G4WT3 > TransportationManager deleted.
+G4WT3 > Total navigation history collections cleaned: 6
+G4WT3 > ================== Deleting memory pools ===================
+G4WT3 > Pool ID '20G4NavigationLevelRep', size : 0.00673 MB
+G4WT3 > Pool ID '24G4ReferenceCountedHandleIvE', size : 0.000961 MB
+G4WT3 > Pool ID '7G4Event', size : 0.000961 MB
+G4WT3 > Pool ID '15G4PrimaryVertex', size : 0.000961 MB
+G4WT3 > Pool ID '17G4PrimaryParticle', size : 0.000961 MB
+G4WT2 > G4SDManager deleted.
+G4WT3 > Pool ID '17G4DynamicParticle', size : 0.0202 MB
+G4WT3 > Pool ID '7G4Track', size : 0.0404 MB
+G4WT3 > Pool ID '18G4TouchableHistory', size : 0.000961 MB
+G4WT3 > Pool ID '15G4CountedObjectIvE', size : 0.000961 MB
+G4WT3 > Pool ID '10G4Fragment', size : 0.00481 MB
+G4WT3 > Pool ID '17G4ReactionProduct', size : 0.00481 MB
+G4WT3 > Number of memory pools allocated: 11; of which, static: 0
+G4WT3 > Dynamic pools deleted: 11 / Total memory freed: 0.083 MB
+G4WT3 > ============================================================
+G4WT3 > G4Allocator objects are deleted.
+G4WT3 > Thread-local UImanager is to be deleted.
+G4WT3 > There should not be any thread-local G4cout/G4cerr hereafter.
+G4WT1 > Destroying WorkerRunManager (0x7f059003fce0)
+G4WT1 > G4 kernel has come to Quit state.
+UImanager deleted.
+StateManager deleted.
+RunManagerKernel is deleted. Good bye :)
+RunManager is deleted.
+G4WT1 > Deleting G4Run (id:47) 
+G4WT1 > UserDetectorConstruction deleted 0
+G4WT1 > UserPhysicsList deleted 0
+G4WT1 > UserActionInitialization deleted 0
+G4WT1 > UserWorkerInitialization deleted 0
+G4WT1 > UserWorkerThreadInitialization deleted 0
+G4WT1 > UserRunAction deleted.
+G4WT1 > UserPrimaryGenerator deleted.
+G4WT1 > RunManager is deleting RunManagerKernel.
+G4WT2 > EventManager deleted.
+G4WT2 > Units table cleared.
+G4WT2 > TransportationManager deleted.
+G4WT2 > Total navigation history collections cleaned: 6
+G4WT2 > ================== Deleting memory pools ===================
+G4WT2 > Pool ID '20G4NavigationLevelRep', size : 0.00673 MB
+G4WT2 > Pool ID '24G4ReferenceCountedHandleIvE', size : 0.000961 MB
+G4WT2 > Pool ID '7G4Event', size : 0.000961 MB
+G4WT2 > Pool ID '15G4PrimaryVertex', size : 0.000961 MB
+G4WT2 > Pool ID '17G4PrimaryParticle', size : 0.000961 MB
+G4WT2 > Pool ID '17G4DynamicParticle', size : 0.025 MB
+G4WT2 > Pool ID '7G4Track', size : 0.049 MB
+G4WT1 > G4SDManager deleted.
+G4WT2 > Pool ID '18G4TouchableHistory', size : 0.000961 MB
+G4WT2 > Pool ID '15G4CountedObjectIvE', size : 0.000961 MB
+G4WT2 > Pool ID '10G4Fragment', size : 0.00481 MB
+G4WT2 > Pool ID '17G4ReactionProduct', size : 0.00481 MB
+G4WT2 > Number of memory pools allocated: 11; of which, static: 0
+G4WT2 > Dynamic pools deleted: 11 / Total memory freed: 0.096 MB
+G4WT2 > ============================================================
+G4WT2 > G4Allocator objects are deleted.
+G4WT2 > Thread-local UImanager is to be deleted.
+G4WT2 > There should not be any thread-local G4cout/G4cerr hereafter.
+UImanager deleted.
+StateManager deleted.
+RunManagerKernel is deleted. Good bye :)
+RunManager is deleted.
+G4WT1 > EventManager deleted.
+G4WT1 > Units table cleared.
+G4WT1 > TransportationManager deleted.
+G4WT1 > Total navigation history collections cleaned: 6
+G4WT1 > ================== Deleting memory pools ===================
+G4WT1 > Pool ID '20G4NavigationLevelRep', size : 0.00673 MB
+G4WT1 > Pool ID '24G4ReferenceCountedHandleIvE', size : 0.000961 MB
+G4WT1 > Pool ID '7G4Event', size : 0.000961 MB
+G4WT1 > Pool ID '15G4PrimaryVertex', size : 0.000961 MB
+G4WT1 > Pool ID '17G4PrimaryParticle', size : 0.000961 MB
+G4WT1 > Pool ID '17G4DynamicParticle', size : 0.0163 MB
+G4WT1 > Pool ID '7G4Track', size : 0.0327 MB
+G4WT1 > Pool ID '18G4TouchableHistory', size : 0.000961 MB
+G4WT1 > Pool ID '15G4CountedObjectIvE', size : 0.000961 MB
+G4WT1 > Pool ID '10G4Fragment', size : 0.00481 MB
+G4WT1 > Pool ID '17G4ReactionProduct', size : 0.00481 MB
+G4WT1 > Number of memory pools allocated: 11; of which, static: 0
+G4WT1 > Dynamic pools deleted: 11 / Total memory freed: 0.071 MB
+G4WT1 > ============================================================
+G4WT1 > G4Allocator objects are deleted.
+G4WT1 > Thread-local UImanager is to be deleted.
+G4WT1 > There should not be any thread-local G4cout/G4cerr hereafter.
+UImanager deleted.
+StateManager deleted.
+RunManagerKernel is deleted. Good bye :)
+RunManager is deleted.
+G4 kernel has come to Quit state.
+Deleting G4Run (id:47) 
+UserDetectorConstruction deleted 0x2d511d0
+UserPhysicsList deleted 0x2d8a900
+UserActionInitialization deleted 0x2f1abf0
+UserWorkerInitialization deleted 0
+UserWorkerThreadInitialization deleted 0x82add20
+UserRunAction deleted.
+UserPrimaryGenerator deleted.
+RunManager is deleting RunManagerKernel.
+G4SDManager deleted.
+EventManager deleted.
+Units table cleared.
+TransportationManager deleted.
+Total navigation history collections cleaned: 3
+G4RNGHelper object is deleted.
+================== Deleting memory pools ===================
+Pool ID '20G4NavigationLevelRep', size : 0.00288 MB
+Pool ID '24G4ReferenceCountedHandleIvE', size : 0.000961 MB
+Pool ID '17G4DynamicParticle', size : 0.000961 MB
+Pool ID '15G4CountedObjectIvE', size : 0.000961 MB
+Number of memory pools allocated: 4; of which, static: 0
+Dynamic pools deleted: 4 / Total memory freed: 0.0058 MB
+============================================================
+G4Allocator objects are deleted.
+UImanager deleted.
+StateManager deleted.
+RunManagerKernel is deleted. Good bye :)
+RunManager is deleted.
