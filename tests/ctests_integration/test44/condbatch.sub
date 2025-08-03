@@ -1,0 +1,25 @@
+FNAME        = test44
+getenv       = true
+executable   = $ENV(G4BWORK)/test44
+output       = $(part)_$(phys).out
+error        = $(part)_$(phys).err
+log          = $(FNAME)_$(part)_$(phys).log
+request_cpus = 1
+requirements = (OpSysAndVer =?= "AlmaLinux9")
++JobFlavour  = "workday"
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+environment     = "PHYSLIST=QBBC"
+arguments       = $ENV(G4INSTALL)/tests/ctests_integration/$(FNAME)/$(part)_water_$(phys).in
+transfer_output_remaps = "test44.root=$(part)_$(phys).root"
+queue part,phys from (
+      p, opt0
+      p, opt3
+      p, opt4
+      he4, opt0
+      he4, opt3
+      he4, opt4
+      c12, opt0
+      c12, opt3
+      c12, opt4
+)

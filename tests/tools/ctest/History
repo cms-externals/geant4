@@ -1,0 +1,980 @@
+# Category testtools-ctest History
+
+See `CONTRIBUTING.rst` for details of **required** info/format for each entry,
+which **must** added in reverse chronological order (newest at the top).
+It must **not** be used as a substitute for writing good git commit messages!
+
+-------------------------------------------------------------------------------
+
+## 2025-07-16 Ben Morgan (testtools-ctest-V11-03-19)
+- Set GEANT4_INSTALL_DATADIR to a local disk on Windows to allow reuse of datasets
+  over Jenkins runs.
+  - Minimizes downloads and allows easy deployment of new datasets as these arrive
+    without requiring EOS.
+
+## 2025-06-29 Gunter Folger (testtools-ctest-V11-03-18)
+- disable use of eos for win11; testing hypothesis that eos causes failures on Win11.
+
+## 2025-06-13 Ben Morgan (teststools-ctest-V11-03-17)
+- Ensure beta candidates/releases have their CVMFS name transformed into correct
+  Git tag name.
+
+## 2025-05-29 Gunter Folger (testtools-ctest-V11-03-16)
+- remove Continuous build for Win11 while Win11 fails most tests with timeout
+
+## 2025-05-22 Gunter Folger (testtools-ctest-V11-03-15)
+- improve abort of previous, but still active, CI job for the same MR,
+     i.e. setting the Jenkins Buildname as early as possible. 
+- revise platforms for alma9: special builds us gcc15
+
+## 2025-05-16 Ben Morgan (testtools-ctest-V11-03-14)
+- Ensure UseQt5/UseQt6 get added to build options through either LCG view
+  or package build environment setup paths to show it in CDash.
+
+## 2025-05-01 Ben Morgan (testtools-ctest-V11-03-13)
+- Update CI and release build scripts for switch from Qt5 to
+  Qt6 as default version searched for by Geant4.
+
+## 2025-04-24 Gunter Folger (testtools-ctest-V11-03-12)
+- move gcc13/cxx23 builds to gcc15/cxx23
+- move special builds using gcc12/gcc13 to gcc14 or gcc15; as views for gcc15 
+   do not yet exist, builds dependant on a view move to gcc14.
+- drop builds for clang16 and clang17.
+- mac13arm: use non virtual build node using label mac13arm-cvmfs
+
+## 2025-04-24 Gunter Folger (testtools-ctest-V11-03-11)
+- Add builds for clang20 and gcc15
+
+## 2025-04-24 Gunter Folger (testtools-ctest-V11-03-10)
+- Fix to GetTag() in Jenkinsfile-cvmfs-build.
+
+## 2025-04-24 Gunter Folger (testtools-ctest-V11-03-09)
+- Fix to defaultEXTERNALS() in Jenkinsfile-cvmfs-build.
+
+## 2025-04-21 Gunter Folger (testtools-ctest-V11-03-08)
+- remove obsolete choice of Platform for Windows, 32 vs 64 bit
+- changes for testing patch MR in nightly
+- - port from changes done on geant4-11-03_patches in 
+    testtools-ctest-V11-02-25
+
+## 2025-04-03 Gunter Folger (testtools-ctest-V11-03-07)
+- fixes for Jenkins warnings for not def(ined) variables
+
+## 2025-03-26 Gunter Folger (testtools-ctest-V11-03-06)
+Fixes for Mac arm:
+- correct name of arch to be arm64, as used by lcg in views
+- On mac, possibly need to mount needed cvmfs volumes sft (for views) and geant4 (for data files)
+- In Jenkins labels for mac{14,15}arm now use VM, currently without access to cvmfs. 
+   Old nodes with cvmfs are available using labels mac{14,15}arm-cvmfs, so we use these.
+- Drop testing for mac12/mac12arm, support for mac12 ended in 9/2024.
+- For Continuous (CI) move from mac14arm to mac15arm
+
+## 2025-03-25 Gunter Folger (testtools-ctest-V11-03-05)
+- Add optional datasets to CMake config, to set up variables
+   for these optional datasets. Changes build-cvmfs-release.sh
+
+## 2025-03-19 Ben Morgan (testtools-ctest-V11-03-04)
+- Address failures in Nightly builds of VecGeom
+  - Use local variable in bash script
+  - Explicitly build VecGeom without GDML support
+
+## 2025-02-21 Gunter Folger (testtools-ctest-V11-03-03)
+- Fixes to build-cvmfs-release.sh to make libtbb.so found from rpath.
+-  Also, look for libraries using the view and by following links.  
+
+## 2025-01-31 Ben Morgan (testtools-ctest-V11-03-02)
+- Refactor common CTest settings/macros for clarity and to use modern CMake
+  system query commands.
+- Submit CTest results incrementally after each stage to speed up reporting
+  of results and spread load on CDash server better.
+- Use `ctest_update` to report commit as checked out by the CI system
+  so there is a record in CDash of this.
+
+## 2025-01-24 Gunter Folger (testtools-ctest-V11-03-01)
+- Move debug build from gcc13 to gcc14
+
+## 2024-12-04 Gunter Folger (testtools-ctest-V11-03-00)
+- Use single access token, replacing several access tokens used.
+- re-order OSes for build: move current OS firs and old to be last.
+
+## 2024-12-04 Gunter Folger (testtools-ctest-V11-02-24)
+-  Adapt detection of C++ standard used by ROOT in build-cvmfs-release.sh
+-  Add gcc14 as compiler
+
+## 2024-11-28 Gunter Folger (testtools-ctest-V11-02-23)
+- switch to use view 106a_geant4ext20241128(-qt6):
+  For G4, relevant package versions are:
+   ROOT 6.32.08 CUDA=OFF author=6.32.08)
+   veccore	   0.8.2
+   VecGeom	   2.0.0-rc3
+   clhep  	   2.4.7.1
+   pybind	   2.11.1
+   hdf5	 	   1.12.2
+   VTK		   9.3.1
+   XercesC	   3.3.0
+- when view for qt5 (default) does not exist, check for qt6 bsed view, and use this.   
+- When no view available, use XercesC 3.3.0, if available
+- Adapt detection of C++ standard used by ROOT
+
+## 2024-10-01 Gunter Folger (testtools-ctest-V11-02-22)
+- Add a build for alma9/clang19
+
+## 2024-10-01 Gunter Folger (testtools-ctest-V11-02-21)
+- For Windows 11 use Geant4 data from EOS.
+
+## 2024-09-27 Gunter Folger (testtools-ctest-V11-02-20)
+- Update mac platforms:
+- - Add mac15arm with Seq and MTmax builds, plus a build using CXX23
+- - Drop Seq builds for mac13/mac13arm
+- - move build using internal CLHEP from mac13 to mac15arm
+
+## 2024-06-28 Gunter Folger (testtools-ctest-V11-02-19)
+- fix to build-cvmfs-release.sh: allow to build patches with old tests structure
+- following G4 VM upgrade to alma9, move g4-centos7 static builds to g4-alma9, 
+   and eliminate mentions to g4-centos
+- for alma9 remove duplicate builds for options 'CXX23,noView' and 'UseLTO'
+- delete Jenkinsfile-centos9, missed to delete in previous MR
+
+## 2024-06-12 Gunter Folger (testtools-ctest-V11-02-18)
+- Add builds for ubuntu24, drop ubuntu20
+- Add pipeline for rhel9 and delete centos9
+- use docker-host-noafs in TagnBuild and Nightly
+- Add CXX23 as build option for Windows
+- fix to copy_to_eos.sh for directory of setup.sh
+- fixes to pre-nightly.py for python3
+- fix checkout for cvmfs builds
+
+## 2024-06-03 Gunter Folger (testtools-ctest-V11-02-17)
+- Add FullRelWithDebInfo build on alma9 for gcc14
+
+## 2024-05-24 Gunter Folger (testtools-ctest-V11-02-16)
+- Add pipeline for Jenkins to build externals, clhep and XercesC
+
+## 2024-05-24 Gunter Folger (testtools-ctest-V11-02-15)
+- Updates for CI builds:
+  - Move FullRelWithDebInfo to alma9/gcc13
+  - drop centos8 build(s)
+  - fix for windows11: send to windows 11 and not to 10
+- g4macros.cmake: update to allow for MSVC 19.40 when seeting cvers.
+
+## 2024-05-19 Ben Morgan (teststools-ctest-V11-02-14)
+- Update testXY paths for their move under tests/ctests_integration
+
+## 2024-05-17 Gunter Folger (testtools-ctest-V11-02-13)
+- Add builds for gcc14 and mac14arm
+  - for gcc14 only XercesC version 3.2.5 is availabe in cvmfs/geant4....,
+      so add 3.2.5 to search in g4-setup.sh
+- Revise Ci builds, i.e. replace centos7 gcc9 by alma9 & gcc13/14, 
+   ubuntu20 by ubuntu22, mac13arm by mac14arm, 
+   and correct several stage labels.  
+
+## 2024-04-28 Gunter Folger (testtools-ctest-V11-02-12)
+- Add Windows 11 builds
+  - modified several Jenkinsfiles to allow building on both windows 10 and 11.
+  - split .bat scripts for windows10 and 11, and change phyton script to invoke correct bat script.
+  - CI builds: add Windows 11 and update compiler for windows 10 to vs22. 
+
+## 2024-05-03 Ben Morgan (testtools-ctest-V11-02-11)
+- Add builds with `FullRelWithDebInfo` to Continuous and Nightly tracks
+
+## 2024-05-02 Ben Morgan (testtools-ctest-V11-02-10)
+- Add Nightlies on latest Win/Mac platforms for C++23
+
+## 2024-04-19 Ben Morgan (testtools-ctest-V11-02-09)
+- Reduce CentOS8 build matrix to single build of gcc11 with MTmax
+
+## 2024-04-28 Gunter Folger (testtools-ctest-V11-02-08)
+- migrate most builds on centos7 to alma9:
+  - vecGeom build: add new complers for alma9
+  - icpx/icc: switch to newer compiler versions, icc uses 2023, icpx 2024.
+  - on centos9 leave only gcc8 Seq/MTmax builds, plus static builds
+  - on alma9 add icpx build and all special builds; also add a CXX23 build.
+
+## 2024-04-19 Ben Morgan (testtools-ctest-V11-02-07)
+- Fix missed argument in Windows optinal build calls
+
+## 2024-04-18 Ben Morgan (testtools-ctest-V11-02-06)
+- Add CXX20 build for Windows nightlies
+
+## 2024-03-11 Ben Morgan (testtools-ctest-V11-02-05)
+- Update paths for new ctests structure
+
+## 2024-03-06 Ben Morgan (testtools-ctest-V11-02-04)
+- Add Experimental build in Nightly for Example Coding Guideline tests
+
+## 2024-03-05 Ben Morgan (testtools-ctest-V11-02-03)
+- Move LTO build from Experimental to main Nightly build
+- Replace missed tabs with spaces in shell scripts
+
+## 2024-03-01 Ben Morgan (testtools-ctest-V11-02-02)
+- Format and tidy shell/Python scripts
+  - Replace tabs with spaces
+  - Shell scripts use 2 spaces per indent level
+  - Python scripts formatted using [Black](https://github.com/psf/black)
+
+## 2024-02-26 Ben Morgan (testtools-ctest-V11-02-01)
+- Tidy and improve pre-nightly Python script.
+
+## 2024-01-19 Ben Morgan (testtools-ctest-V11-02-00)
+- Add Nightly build on alma9+gcc13 to test use of LTO.
+
+## 2023-11-08 Gunter Folger (testtools-ctest-V11-01-18)
+- Update script for build on cvmfs t allow c++20 and c++23.
+
+## 2023-11-08 Gunter Folger (testtools-ctest-V11-01-17)
+- Update to use new version for
+   - view  LCG_104b_geant4ext20231106,
+   - CLHEP 2.4.7.1
+
+## 2023-10-25 Gunter Folger (testtools-ctest-V11-01-16)
+- Fix for release to cvmfs: correct setup scripts for gnumake 
+
+## 2023-10-24 Ben Morgan (testtools-ctest-V11-01-15)
+- Add build without G4VERBOSE in Continuous track
+
+## 2023-10-22 Gunter Folger (testtools-ctest-V11-01-14)
+- Add option to build using VTK
+- Add a build for VTK and for VTK+Qt6 on alma9/gcc12
+- For alma9 add clang17
+
+## 2023-10-19 Gunter Folger (testtools-ctest-V11-01-13)
+- Add actual Qt6 build for alma 9 / gcc12
+
+## 2023-10-18 Gunter Folger (testtools-ctest-V11-01-12)
+- Add option to build using Qt6, passing UseQt6 in BuildOptions
+
+## 2023-10-16 Gunter Folger (testtools-ctest-V11-01-11)
+- Update Jenkinsfile-{CI,CI-build,mac} to replace mac11 by mac14; 
+   Jenkinsfile-CI-build: update current platforms.
+
+## 2023-08-29 Gunter Folger (testtools-ctest-V11-01-10)
+- Updates to Jenkinsfile-cvmfs-build:
+  - change checkout to avoid hang in Jenkins (skip GitSCMStatusChecksExtension)
+  - update platform to include alma9, drop centos9
+
+## 2023-07-14 Gunter Folger (testtools-ctest-V11-01-09)
+- Switch to new view 230707, with updated Vecgeom and VTK included. clhep is 2.4.6.4.
+
+## 2023-07-12 Ben Morgan (testtools-ctest-V11-01-08)
+- Set G4GDML_SCHEMA_FILE env var to path to builtin GDML schema on macOS
+  - Works around frequent seeming SFT macOS/network issue accessing main 
+    SPI server for GDML schema
+ 
+## 2023-04-03 Gunter Folger (testtools-ctest-V11-01-07)
+- Memcheck build: Revert to use all cpus, increase timeout by 2.
+- centos7
+  - add gcc13 and clang16
+- centos8
+  - drop all builds except native gcc/MTmax
+- centos9
+  - NOT yet drop all builds in favour of alma9
+- alma9
+  - NOT yet done
+- mac
+  - add mac13arm
+  - drop Seq builds except for mac13 mac13arm  
+- ubuntu
+  - drop ubuntu18 builds and ubuntu20 static build
+- windows
+  - move to vc143; leave only vc142/MTmax    
+
+
+## 2023-04-03 Gunter Folger (testtools-ctest-V11-01-06)
+- Reduce number of parallel running tests for static builds 
+     and for Memcheck builds.
+     
+## 2023-04-03 Gunter Folger (testtools-ctest-V11-01-05)
+- Drop attempt to set StartUpLabel, all definitions deleted. 
+   had been introduced in a failed attempt in previous MR to 
+   start builds on final node. 
+
+## 2023-04-03 Gunter Folger (testtools-ctest-V11-01-04)
+- cvmfs-build: when building using tag/branch, do not add tag/
+    and add refspec for this; i.e. allow to build against refs/stage/
+- Fix reducing number of parallelism to apply on statis builds only
+- Improve on which node Jenkins starts jobs
+
+## 2023-02-16 Gunter Folger (testtools-ctest-V11-01-03)
+- On MacOS >=11, show only major version in cdash.
+- externals: store compressed tar in eos, instead of install tree 
+
+## 2023-02-16 Gunter Folger (testtools-ctest-V11-01-02)
+- Add build using clang15 for centos7
+
+## 2023-02-14 Ben Morgan (testtools-V11-01-01)
+- Repoint CDash links to temporary LCGApp service.
+
+## 2023-01-31 Gunter Folger (testtools-ctest-V11-01-00)
+- Update CLHEP version: LCG_geant4ext20230127 and CLHEP 2.4.6.3
+
+## 2022-12-06 Guilherme Amadio (testtools-ctest-V11-00-38)
+- Use latest LCG_geant4ext20221205, CLHEP 2.4.6.2, and CMake 3.23.2
+
+## 2022-11-29 Gunter Folger (testtools-ctest-V11-00-37)
+- reduce parallelism when building static builds
+
+## 2022-11-22 Gunter Folger (testtools-ctest-V11-00-36)
+- CorrectJenkinsfile-TagnBuild to use https, not ssh
+- g4nightly-stage.sh: add some verbosity
+
+## 2022-11-09 Gunter Folger (testtools-ctest-V11-00-35)
+- update platforms built for cvmfs, add gcc11, gcc12 and centos9
+
+## 2022-11-15 Ben Morgan (testtools-ctest-V11-00-34)
+- Remove UsePython options from builds following removal of Geant4Py from
+  toolkit build.
+
+## 2022-11-09 Gunter Folger (testtools-ctest-V11-00-33)
+- add builds for mac13, remove mac1015 builds.
+
+## 2022-11-09 Gunter Folger (testtools-ctest-V11-00-32)
+- adapt to lcg using compiler major version in name of view. 
+   Only relevant when we run with native compiler
+
+## 2022-11-07 Gunter Folger (testtools-ctest-V11-00-31)
+- disable test65 for Continuous 
+
+## 2022-11-04 Gunter Folger (testtools-ctest-V11-00-30)
+- re-enable use of hdf5 for mac11
+
+## 2022-11-01 Gunter Folger (testtools-ctest-V11-00-29)
+- use latest LCG_geant4ext20221028, and CLHEP 2.4.6.0
+- obtain version numbers from versions.sh, both in shell and Jenkinsfile...
+
+## 2022-11-01 Gunter Folger (testtools-ctest-V11-00-28)
+- Fixes for building release for cvmfs
+
+## 2022-10-14 Gunter Folger (testtools-ctest-V11-00-27)
+- add newer clang compiler versions for centos8/9:
+    g4setup.sh: Update path to clang: Do not use _utils version of compiler.
+    Centos8/centos9: Add clang versions 
+
+## 2022-10-11 Gunter Folger  (testtools-ctest-V11-00-26)
+- Allow to build special versions for cvmfs using source code given source code directory
+
+## 2022-09-22 Gunter Folger (testtools-ctest-V11-00-25)
+- Check that CLHEP and XercesC exist in view, if not use local config
+
+## 2022-09-01 Ben Morgan (testtools-ctest-V11-00-24)
+- Reformat Jenkinsfiles for clarity
+
+## 2022-08-23 Gunter Folger (testtools-ctest-V11-00-23)
+- Fix git repository URL for CI builds, don't use value given by gitlab.
+
+## 2022-08-20 Gunter Folger (testtools-ctest-V11-00-22)
+- Add builds for gcc12 for centos8 and centos9. Move builds using CXX20 to gcc12.
+
+## 2022-06-24 Ben Morgan (testtools-ctest-V11-00-21)
+- Ignore ROOT in BoundsCheck builds as it is not compatible with this mode.
+
+## 2022-06-20 Ben Morgan (testtools-ctest-V11-00-20)
+- Load cmake-generated CTestCustom scripts after invocation
+  of ctest_configure.
+
+## 2022-06-16  Gunter Folger (testtools-ctest-V11-00-19)
+- include a fix for typo in cvmfs build script.
+- move most function definition to JenkinsFunctions.groovy, reduce duplication.
+- Add pipelines for top level nightly jobs.
+-  Part 2: Add label and notie in gitlab.
+-  Run on schedule.
+
+## 2022-06-17 Ben Morgan (testtools-ctest-V11-00-18)
+- Load CTestCustom scripts in dashboard scripts
+
+## 2022-06-16  Gunter Folger (testtools-ctest-V11-00-17)
+- Add pipelines for top level nightly jobs.
+-  Part 1: due to checkout for pipeline from master, first job will not be seen yet.
+
+## 2022-06-07  Gunter Folger (testtools-ctest-V11-00-16)
+- Work around lsb_release missing on centos9
+
+## 2022-06-09 Guilherme Amadio (testtools-ctest-V11-00-15)
+- Switch to latest externals, LCG_geant4ext20220607
+- Drop mac1015 from continuous builds
+- Switch to latest version of CLHEP 2.4.5.3
+- Switch to latest version of CMake 3.23.2
+
+## 2022-06-07  Gunter Folger (testtools-ctest-V11-00-14)
+- Add centos9 and ubuntu22
+
+## 2022-04-29 Ben Morgan (testtools-ctest-V11-00-13)
+- Update VecGeom CMake options for 1.2.0 release
+
+## 2022-04-26 Ben Morgan (testtools-ctest-V11-00-12)
+- Add GranularCheck build option to Continuous
+
+## 2022-04-25  Gunter Folger (testtools-ctest-V11-00-11)
+- Fix for bug introduced by testtools-ctest-V11-00-10
+   in Windows CI build.
+
+## 2022-04-05  Gunter Folger (testtools-ctest-V11-00-10)
+- Add Windows 10 latest compiler vs22
+
+## 2022-03-18 Ben Morgan (testtools-ctest-V11-00-09)
+- Always set GEANT4_BUILD_BUILTIN_BACKTRACE to ON for all CTest builds
+
+## 2022-03-16  Guilherme Amadio (testtools-ctest-V11-00-08)
+- Switch to latest externals, LCG_geant4ext20220314
+
+## 2022-03-02  Gunter Folger (testtools-ctest-V11-00-07)
+- Address missing extra builds for Windows
+
+## 2022-02-01  Gunter Folger (testtools-ctest-V11-00-06)
+- Change job labels for CDash: drop default CXX17 from label
+- remove standards 11 and 14 as valid settings, add 23 
+
+## 2022-02-01  Gunter Folger (testtools-ctest-V11-00-05)
+- CI build: replace macc11arm by mac12arm
+- centos7: remove builds for CXX14 and CXX17, add build for CXX20
+- centos8: remove builds for CXX17
+- MAC    : remove builds for mac11arm, add mac12 and mac12arm builds
+- Windows: by default only do builds for x64, x86 still possible.
+
+## 2022-01-30  Gunter Folger (testtools-ctest-V11-00-04)
+-  Corrections to script used in release building: build-createScripts.sh  
+
+## 2022-01-21  Gunter Folger (testtools-ctest-V11-00-03)
+-  prepare for revised set of platforms, 
+- - the OS choice parameter replaced by string param, for easier future updates.
+-  prepare for Intel icpx compiler
+ 
+## 2022-01-20  Gunter Folger (testtools-ctest-V11-00-02)
+-  use ssh in git checkout with sftnight/ssh key
+
+## 2021-12-10  Gunter Folger (testtools-ctest-V11-00-01)
+-  build-cvmfs-release.sh: Correct MT setting for type 
+
+## 2021-12-10 Ben Morgan (testtools-ctest-V11-00-00)
+- Change to new Markdown History format
+
+---
+
+# History entries prior to 11.0
+
+7 December 2021  Gunter Folger             testtools-ctest-V10-07-11
+-  New Jenkins pipeline, Jenkinsfile-cvmfs-build, and build-cvmfs-release.sh
+   to build releases for cvmfs. Replaces older setup. 
+    
+12 November 2021 Gunter Folger             testtools-ctest-V10-07-10
+- switch to latest externals LCG_geant4ext20211109, with updated vecgeom
+
+28 October 2021 Guilherme Amadio           testtools-ctest-V10-07-09
+- Fix detection of clang version on Mac
+
+25 October 2021 Gunter Folger              testtools-ctest-V10-07-08
+- Add a Debug build; using gcc9 and MTmax
+
+19 October 2021   Ben Morgan               testtools-ctest-V10-07-07
+- Retire GNUmake build from CI system
+
+10 October 2021   Gunter Folger            testtools-ctest-V10-07-06
+-  clean geant4 and build subdir  docker build for CI & nightly build
+     addressing failure reported from renaming docker dir
+ 
+30 September 2021 Ben Morgan               testtools-ctest-V10-07-05
+- Support MemCheck step for CMake builds with Valgrind
+
+27 September 2021 Ben Morgan               testtools-ctest-V10-07-04
+- Adapt scripts to change in GEANT4_BUILD_MULTITHREADED default to ON
+
+9 September 2021 Gunter Folger             testtools-ctest-V10-07-03
+- Switch to latest version of CLHEP 2.4.5.1
+   - using view LCG_geant4ext20210906
+- Run Continuous in MT mode.
+- in comment added in gitlab, fix link to CDash by using different function to      get date
+    
+
+9 September 2021 Gunter Folger             testtools-ctest-V10-07-02
+- Complete setup of jobs for Contiuous testing, Jenkins jobs are
+    g4p-CI-gitlab and g4p-CI-build pipeline jobs.  
+
+23 August 2021   Gunter Folger             testtools-ctest-V10-07-01
+- Migration of test setup files from external repo (geant4-git-migration)
+   to geant4-dev. Jenkins jobs need to be updated to use this new location.  
+  - Jenkins* files used by pipeline jobs
+  - updated scripts 
+  - various other scripts used by jenkins jobs to build a release
+      or an external (CLHEP, XercesC)
+
+18 February 2021 Ben Morgan testtools-ctest-V10-07-00
+- Support same CMake version range as core Geant4
+
+1December 2020            Gunter Folger testtools-ctest-V10-06-03
+- Update to scripts as used for testing prior to 10.7
+
+29 October 2020           Ben Morgan       testtools-ctest-V10-06-02
+- No longer set GEANT4_USE_NEW_CMAKE option
+
+28 July 2020              Gunter Folger    testtools-ctest-V10-06-01
+- add missing jenkins scripts to build externals
+
+25-June-2020              Gunter Folger    testtools-ctest-V10-06-00
+-  Update to scripts as used for testing prior to 10.7.beta
+
+4-Dec-2019                Gunter Folger    testtools-ctest-V10-05-03
+-  Update to scripts as used for testing prior to 10.6
+
+26-Jun-2019               Gunter Folger    testtools-ctest-V10-05-02
+- Update scripts not using view to:
+    - CLHEP to 2.4.1.2
+    - XercesC to 3.2.2, with backup of 3.1.3, while 3.2.2 is still being installed.
+  reference for 10.6.beta
+
+12-Jun-2019               Gunter Folger    testtools-ctest-V10-05-01
+- Update to scripts in use for nightly testing, taken from master of
+   geant4-git-migration.
+
+24-May-2019               Gunter Folger    testtools-ctest-V10-05-00
+- Switch to PG4PARTICLEXS 2.0
+
+20-November 2018          Gunter Folger    testtools-ctest-V10-04-12
+-  g4-setup-gnumake: Switch to G4PARTICLEXS 1.1
+
+2-November 2018          Gunter Folger    testtools-ctest-V10-04-11
+-  g4-setup-gnumake: Add new  G4PARTICLEXS data set; this replaces G4NEUTRONXS
+
+29-October 2018          Gunter Folger    testtools-ctest-V10-04-10
+-  g4-setup-gnumake: switch to PhotonEvaporation5.3 and RadioactiveDecay5.3
+
+17-September 2018        Gunter Folger    testtools-ctest-V10-04-09
+-  g4-setup-gnumake: switch to G4EMLOW7.7
+
+9-August 2018        Gunter Folger        testtools-ctest-V10-04-08
+-  g4-setup-gnumake: switch to G4EMLOW7.6
+
+3-August 2018        Gunter Folger        testtools-ctest-V10-04-07
+- Add new Datset for INCL, G4INCL1.0
+
+4  July 2018         Gunter Folger        testtools-ctest-V10-04-06
+-  g4-setup-gnumake: switch to G4EMLOW7.5
+
+21 June 2018         Gunter Folger        testtools-ctest-V10-04-05
+-  g4common.cmake: silence warning on different zlib version in test06
+
+19 June 2018         Gunter Folger        testtools-ctest-V10-04-04
+-  g4-setup-gnumake: switch to G4EMLOW7.4
+
+14 June 2018         Gunter Folger        testtools-ctest-V10-04-03
+- switch to CLHEP 2.4.1.0
+
+23rd May 2018 -      Gunter Folger        testtools-ctest-V10-04-02
+- Update g4-setup-gnumake to use G4RealSurface 2.1.1
+   patched version bringing back data lost in 2.1
+
+15 May 2018         Gunter Folger        testtools-ctest-V10-04-01
+- g4-setup-gnumake: switch to use G4NEUTRONXS 2.0
+
+20 Mar 2018         Gunter Folger
+- g4-win-common.bat: disable forcing of static builds for MT
+
+19 Mar 2018         Gunter Folger        testtools-ctest-V10-04-00
+- switch to CLHEP 2.4.0.4
+
+8 Mar 2018          Gunter Folger
+- g4-win-common.bat: add GEANT4_BUILD_MSVC_MP=ON to CMake options,
+    speed up by parallel compilation
+
+7 Mar 2018          Gunter Folger
+- add support for clang5, on slc6 and CC7, ie. add g4ec-{slc6,cc7}-clang
+
+6 Mar 2018          Gunter Folger
+- g4ec-slc-setup: Use CMake 3.8.1, needed for C++17 support
+
+2 Mar 2018          Gunter Folger
+- g4-unix-common: add option to build using C++17 standard
+
+20 Feb 2018          Gunter Folger
+- g4common.cmake: remove biasing/b02 from exclusion list
+
+14 Feb 2018         Gunter Folger
+-  g4-win-common.bat: force MT builds to be static builds
+
+3 Dec 2017           Gunter Folger        testtools-ctest-V10-03-20
+- Add option for VecGeom_DIR in g4-unix-common
+
+30 Nov 2017          Gunter Folger        testtools-ctest-V10-03-19
+- Fixing several bugs
+
+29 Nov 2017          Gunter Folger        testtools-ctest-V10-03-18
+- Use external software, XercesC, root,qt, hdf5,valgrind, from ...lcg/release/LCG_88.
+
+23 Nov 2017          Gunter Folger        testtools-ctest-V10-03-17
+- Switch to CLHEP 2.4.0.0
+
+14 Nov 2017          Gabriele Cosmo       testtools-ctest-V10-03-16
+- Remove eRosita from exclusion list CTEST_CUSTOM_TESTS_IGNORE in
+  g4common.cmake and g4Proposed.cmake.
+
+10 Nov 2017          Gunter Folger        testtools-ctest-V10-03-15
+- use G4EMLOW7.2 and PhotonEvaporation5.2 for gnumake builds
+
+6 Nov 2017           Gunter Folger        testtools-ctest-V10-03-14
+- disable use of HDF5 in MT builds - until HDF5 is built with
+   multithreading enabled
+
+31-OCT-2017          Gunter Folger        testtools-ctest-V10-03-13
+- fixed setup of HDF5
+
+26-Oct 2017          Gunter Folger        testtools-ctest-V10-03-12
+- G4TENDL version reversed to 1.3.1
+- add checking for HDF5, either locally or in lcg
+
+22-Oct 2017          Gunter Folger        testtools-ctest-V10-03-11
+- update version of datasets for gnmumake
+
+12-Sep 2017          Gunter Folger
+- add option to compile against c++14 (set CXX14 as option in jenkins)
+
+11-Sep 2017          Gunter Folger         testtools-ctest-V10-03-10
+- remove seeting CMAke option  -DGEANT4_BUILD_EXAMPLES in
+   {g4common,G4Proposed}.cmake
+
+5-Sep 2017           Gunter Folger         testtools-ctest-V10-03-09
+- use G4EMLOW7.1
+
+23-Aug 2017          Gunter Folger
+- g4common.cmake: add Visual Studio 2017
+
+23-Aug 2017          Gunter Folger         testtools-ctest-V10-03-08
+- use G4EMLOW7.0
+
+22-Aug 2017          Gunter Folger
+- add setup for Visual Studio 2017, VC14.1
+
+8-Jun 2017           Gunter Folger         testtools-ctest-V10-03-07
+- update g4-setup-gnumake for G4EMLOW6.54
+
+8-Jun 2017           Gunter Folger         testtools-ctest-V10-03-06
+- update g4-setup-gnumake for RealSurface2.1
+
+16-May 2017          Gunter Folger         testtools-ctest-V10-03-05
+- fix for native compiler for a small problem introduced with change for gcc7
+- switch to G4EMLOW6.53 for gnumake builds
+- g4gnumake.cmake: even simpler regular expression
+
+9/10-May 2017        Gunter Folger         testtools-ctest-V10-03-04
+- prepare for gcc7, ie adapt to single digit compiler version
+
+4-May 2017        Gunter Folger
+- g4gnumake.cmake: simplify regular expression
+
+19-April 2017     Gunter Folger
+- g4gnumake.cmake: correct(?) regular expression
+
+18-April 2017     Gunter Folger
+- g4gnumake.cmake: correct(?) regular expression
+- g4common.gnumake: correct regular expression offor warning on ubuntu16
+
+11-April 2017     Gunter Folger
+- g4gnumake.cmake: try to add supression for wrong warning in HepPolyhedron.cc
+       issued by gcc49
+
+6-April 2017      Gunter Folger            testtools-ctest-V10-03-03
+- g4-setup-gnumake: update dataset to PhotonEvaporation5.0
+
+23-March 2017     Gunter Folger            testtools-ctest-V10-03-02
+- g4-setup-gnumake: update datasets:
+     G4EMLOW 6.50 -> 6.52
+     PhotonEvaporation 4.2 -> 4.3.2
+     RadioactiveDecay  5.1 -> 5.1.1
+     RealSurface 1.0 -> 2.0
+
+16-March 2017     Gunter Folger
+- g4common.cmake: add exception to new warning on ubuntu-16
+
+14-March 2017     Gunter Folger            testtools-ctest-V10-03-01
+- revert back to using clang from cvmfs
+- g4ec-cc7 : disable root for natiove compiler: root requires libatomic.so,
+    not available on all build nodes.
+
+9-March 2017      Gunter Folger
+- temporily revert back to clang from afs, due to problem in clang on cvmfs
+
+6-March 2017      Gunter Folger
+-  add G4PARTICLEHPDATA environment variable for test04 to use
+    G4TENDL data from cvmfs.
+-  Use clang from cvmfs
+
+2-March 2017      Gunter Folger
+-  make download of data optional, use data from cvmfs
+
+21-February 2017  Gunter Folger            testtools-ctest-V10-03-00
+-  tag prior to move using externals on afs to externals on cvmfs
+
+20-December 2016  Gunter Folger   Rev 102075
+-  g4ec-slc-setup: check if CLHEP_Version is set, if set use this version
+-  g4ec-ubuntu16 : new for ubuntu 16
+
+1 December 2016   Gunter Folger            testtools-ctest-V10-02-08
+-  switch to clhep 2.3.4.3
+
+23 November 2016  Gunter Folger            testtools-ctest-V10-02-07
+-  switch to clhep 2.3.4.2
+-  Correct logic for finding CLHEP on MAC
+-  Switch to root 6.06 on MAC
+
+23 November 2016  Gunter Folger
+-  switch to clhep 2.3.4.1
+
+15 November 2016  Gunter Folger
+-  gnumake build now builds global libs (g4gnumake.cmake)
+  update dataset versions in  g4-setup-gnumake
+
+1 November 2016   Gunter Folger
+- try to limit MT Boundcheck to use 2 cpus or jobs
+
+26 September 2016 Gunter Folger
+- add clang 3.9 for slc6
+
+20/21 June 2016 Gunter Folger               testtools-ctest-V10-02-06
+- fix typo in g4ec-slc6-clang
+
+15 June 2016 Gunter Folger
+- remove obsolete files:  g4ec-slc6-gcc48-{Epchecks,boundscheck}
+   and g4ec-slc6-gcc44
+
+13 June 2016 Gunter Folger
+- use root version 6.06.x
+
+9 June 2016 Gunter Folger
+- add root's supression file to valgrind setup
+
+3 June 2016 Gunter Folger                testtools-ctest-V10-02-05
+ - g4ec-ubuntu14-gcc48: correct name of clhep directory
+ - update g4ec-slc6-gcc48-gmake-vg,  g4-setup-gnumake for new datasets
+
+2 June 2016  Gunter Folger                testtools-ctest-V10-02-04
+   (changes done in part in May)
+- make clang setup for slc6 generic, delete compiler specific clang on slc6
+- add gcc6.1 for centos7
+- add Xerces 3.1.3 in g4ec-{slc,mac}-setup, and simplify logic finding XercesC
+- switch to CLHEP 2.3.3.0, and use installed version also for ubuntu
+- g4ec-x86-win7-vc14.bat: allow to use 32 or 64 bit compiler using platform
+- g4jk_win_helpers.py: use caal to OS rmdir to delete dir tree,
+    python rmtree fails on WIN10 to delete read-only svn files.
+
+1st May 2016 Makoto Asai                  testtools-ctest-V10-02-03
+- Retagged.
+
+27th April 2016 Gunter Folger              testtools-ctest-V10-02-02
+-  Add Xerces 3.1.3 for Windows vc14 in g4ec-x86-win7-vc14.bat
+
+3rd April 2016, Gunter Folger
+-  g4-unix-common: imporve labeling of USolids/vecgeom build as such
+
+16-March 2016, Gunter Folger
+-  add windows pythons scripts used by jenkins to steer build.
+
+23rd February 2016, Gunter Folger           testtools-ctest-V10-02-01
+-  use centos7 as of gcc53 in place of cc7
+-  add missing quotes in g4ec-mac-setup
+-  Correct CONFIG to be 37 in  g4ec-slc6-clang37
+
+15th February 2016, Gunter Folger           testtools-ctest-V10-02-00
+-  extend to compile using "native" compiler
+-  provide generic g4ec-slc6
+
+2nd February 2016 - Gunter Folger
+-  g4ec-slc-setup: in extending to gcc52:
+    change default for XercesC to 3.1.2 looked for in g4lcgapp first,
+	 and only if not found look for 3.1.1.p2 as previous - to be deleted when
+	    3.1.2 available everywhere
+
+19th January 2016 - Gunter Folger
+-  g4ec-mac-setup:  look for clhep also on local node /{ec,build}/externals
+
+23rd November 2015- Gunter Folger           testtools-ctest-V10-01-16
+-  mark continuous and experimental in CDash build name starting with c_/e_
+
+11th November 2015- Gunter Folger           testtools-ctest-V10-01-15
+-  g4ec-slc-setup: use CMake 3.3.2
+
+     invalid tag testtools-ctest-V10-01-14
+
+9th November 2015- Gunter Folger            testtools-ctest-V10-01-13
+-  Use new datasets PhotonEvaporation3.2 and  RadioactiveDecay4.3
+-  Use CLHEP 2.3.1
+
+28th October 2015 - Gunter Folger            testtools-ctest-V10-01-12
+-  Use new data set G4EMLOW6.48
+
+23 October 2015 Gunter Folger                testtools-ctest-V10-01-11
+-  Use new data set G4ENSDFSTATE1.2
+
+20-23 October 2015 Gunter Folger
+-  Correctly identify CentOS in CMake
+
+12 October 2015 Gunter Folger           testtools-ctest-V10-01-10
+-  Use EMLOW6.47 for gmake
+
+2 October 2015 Gunter Folger
+- g4{common,macros}.cmake: add/correct setting sfor VC14
+
+1 October 2015 Gunter Folger           testtools-ctest-V10-01-09
+-  Use EMLOW6.46 for gmake
+-  remove all slc5: g4ec-slc5-gcc41 g4ec-slc5-gcc43 g4ec-slc5-gcc43-gmake
+                    g4ec-slc5-gcc46 g4ec-slc5-gcc47 g4ec-slc5-icc12
+-  remove old mac: g4ec-mac107-gcc42  g4ec-mac107-gcc42-gmake
+-  remove old Win: g4ec-win7-vc10.bat  g4ec-winxp-vc10.bat g4ec-winxp-vc9.bat
+                   g4ec-x64-win7-vc10.bat  g4ec-x64-win7-vc9.bat
+						 g4ec-x86-win7-vc10.bat  g4ec-x86-win7-vc11.bat
+
+29 September 2015 Gunter Folger
+-  fix g4-win-common.bat: add MT and MTmax option
+
+16 September 2015, Gunter Folger
+-  fix g4ec-cc7; it only get one argument, ie. compiler like gcc48
+-  enable gnumake build for jenkins, including the memcheck option.
+
+1 September 2015, Gunter Folger
+- switch *gmake* to EMLOW 6.45
+- extend g4-unix-common for Vecgeom
+
+12 August 2015, Gunter Folger
+- g4ec-{slc6,cc7}-gcc51: remove setting of CXX11 option
+- g4ec-unix-common: ignore CXX11 option
+
+11 August 2015, Gunter Folger           testtools-ctest-V10-01-08
+- g4ec-slc-setup: switch to use root 6.0.4
+
+6 August 2015, Gunter Folger
+-  g4ec-slc-icc: for icc with std11 we first must set up gcc4{8,9..}, then icc.
+    somewhat similar to clang.
+
+22 July 2015, Gunter Folger
+-  after turning on c++11 for capable compilers, clang35/36 on slc6 show
+   problems. clang uses includes files from gcc44, but should use gcc49.
+	Attempt to fix this using the option
+	--gcc-toolchain=path-to-gcc49-installdir in CXXFLAGS
+
+21 July 2015, Gunter Folger
+- g4common.cmake, g4Proposed.cmake: adapt Windows PATH to use BuildProducts instead of
+   outputs
+
+20 July 2015, Gunter Folger
+- in g4ec-slc6-gcc44 and g4ec-slc6-gcc48-gmake-vg use cmake 3.1.0
+
+
+13 July 2015, Gunter Folger
+- switch to root6, AND revert back
+
+10 July 2015, Gunter Folger
+- remove setup of gccxml
+
+8 June 2015, Gunter Folger        testtools-ctest-V10-01-07
+- g4-unix-common:
+  -  Add option to build using C++11.
+  -  fix bug in setting number of threads for MAC for MTmax.
+  -  export CXX and CC from g4-slc-setup also when correct compiler is already
+     in PATH, improve info on g++ used using $CXX, as cmake does.
+
+26 May 2015, Gunter Folger        testtools-ctest-V10-01-06
+- Switch gmake build to  G4EMLOW6.44
+
+19 May 2015, Gunter Folger        testtools-ctest-V10-01-05
+- Switch gmake build to  G4EMLOW6.43
+
+24 Apr 2015, Gunter Folger
+- add g4-win-common setting build env. similar to g4-unix-common,
+    including buildoptions from jenkins
+- rename PLATFORM to BUILDDIR in g4-{unix,win}-common*,
+      Platform is used in g4common.cmake to signal x64 compiler on Windows.
+
+22 Apr 2015, Gunter Folger
+- g4ec-mac-setup: adapt to new convention for clang version number
+- add g4ec-slc6-clang36
+
+20/21 Apr 2015, Gunter Folger
+- add jenkins log files to notes
+
+25 Mar 2015, Gunter Folger
+- correct CTEST_BUILD_NAME for new THREAD variable
+- new g4-unix-common, for common setup of environment for G4 build
+
+25 Feb 2015, Gunter Folger       testtools-ctest-V10-01-05
+- g4tagsvn.ps: Give Success a default value.
+- g4ec-slc-common: enable saving core dump files via ulimit.
+
+11 Feb 2015, Gunter Folger       testtools-ctest-V10-01-04
+-  g4ec-slc-setup:  switch to use CMake 3.1.0 and set CC/CXX env. variable for
+    CMmake.
+
+27 Jan 2015, Gunter Folger       testtools-ctest-V10-01-03
+-  g4tagsdev.py: fix return code. One problem was hiding another problem.
+26 Jan 2015, Gunter Folger       -no tag-
+-  add g4ec-slc6-clang35 for use bu jenkins
+23 Jan 2015, Gunter Folger       -no tag-
+-  g4ec-slc-setup: for jenkins set WORKDIR to $WORKSPACE
+
+22 Jan 2015, Gunter Folger       -no tag-
+-  g4ec-slc-setup: fix typo on use of new BUILDOPTIONS
+-  g4common.cmake: add BUILDOPTIONS to (CTEST-)BUILD-NAME
+-  g4ec-slc-setup: look for qt also in .../lcg/releases/qt/...
+
+21 Jan 2015, Gunter Folger       -no tag-
+-  g4tagsvn.py: protect against random svn failures, i.e. retry command
+     up to five times after increasing waiting period
+-  g4ec-slc-setup: with jenkins, use BUILDOPTIONS to pass options
+      like MT, static, etc. instead of using BUILDTYPE.
+-  g4ec-slc-icc: variable THIS is overwritten by root, use variable CtestDir
+
+16-12-2014, Gunter Folger           testtools-ctest-V10-01-02
+-  G4ec-slc-setup: protect setting qt from system scripts setting
+    QTDIR to /usr/lib64/qt-3.3 on slc3.
+
+15-12-2014, Gunter Folger           testtools-ctest-V10-01-01
+-  update *-gmake* to use new datafile G4EMLOW6.42
+
+15-12-2014, Gunter Folger           testtools-ctest-V10-01-00
+- g4ec-slc-setup: allow to disable external CLHEP and use of QT
+- g4ec-slc6-clang34: disable external CLHEP
+
+3-12-2014, Gunter Folger            testtools-ctest-V10-00-08
+- use CLHEP 2.2.0.4 in g4ec-slc-setup.
+
+2-12-2014,  Gunter Folger           testtools-ctest-V10-00-07
+- revert back to internal CLHEP for release.
+
+28-11-2014, Gunter Folger        --no tag--
+- use installed CLHEP for in g4ec-x86-win7-vc12.bat (r87314)
+
+27-11-2014, Gunter Folger           testtools-ctest-V10-00-06
+- use CLHEP 2.2.0.4 for Mac
+- use latest available for given compiler for QT4 on slc
+
+19-11-2014, Gunter Folger           testtools-ctest-V10-00-05
+- do not use root for slc6-clang34; linking fails with missing symbols
+    e.g.: .../root/lib/libCore.so: undefined reference to `std::__detail::_List_node_base::_M_unhook()@GLIBCXX_3.4.15'
+
+10-11-2014, Gunter Folger           testtools-ctest-V10-00-04
+- for GNUmake builds, update to use dataset RadioactiveDecay4.2
+   g4ec-{slc5-gcc43-gmake,slc6-gcc48-gmake-vg,g4ec-mac107-gcc42-gmake}
+
+7-11-2014, Gunter Folger           testtools-ctest-V10-00-03
+- update dataset for GNUmake builds
+   g4ec-{slc5-gcc43-gmake,slc6-gcc48-gmake-vg,g4ec-mac107-gcc42-gmake}
+
+6-11-2014, Gunter Folger           testtools-ctest-V10-00-02
+- g4tagsvn.py: setting of --ignore-ancestry made to depend on svn version;
+   the option must be used for version >=1.7, but not for <=1.6
+- switch slc6/gcc49 to use 4.9 ( curently linked to 4.9.1) instead
+   of explicit 4.9.0
+
+30-10-2014, Andrea Dotti
+-  g4tagsvn.py: add option to checkout only accepted tags
+
+15-08-2014, Gunter Folger
+-  reveert back to cmake 2.8.9
+
+14-08-2014, Gunter Folger
+- g4ec-slc-setup: switch to use CMake 3.0.0
+
+30-06-2014, Gunter Folger          testtools-ctest-V10-00-01
+- ctest setup as used for 10.1.beta01, and 10.0.ref06
+
+09-12-2013, Gunter Folger          testtools-ctest-V10-00-00
+- ctest setup as used for 10.0
+    (History file itsself in tag is old)
+
+25-6-2013, Gunter Folger              testtools-ctest-V09-06-00
+- ctest setup as used for 10.0.beta
