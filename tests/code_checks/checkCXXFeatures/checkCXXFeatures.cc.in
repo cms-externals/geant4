@@ -1,0 +1,214 @@
+#include <iostream>
+#include <string>
+
+// Simplify reported of a cmakedefine01 symbol as a Yes/No answer
+#define AS_YES_OR_NO(X) (X == 1 ? "Yes" : "No")
+
+//----------------------------------------------------------------------------
+// CMake values
+#define CMAKE_SYSTEM "@CMAKE_SYSTEM@"
+#define CMAKE_CXX_COMPILER_ID "@CMAKE_CXX_COMPILER_ID@"
+#define CMAKE_CXX_COMPILER_VERSION "@CMAKE_CXX_COMPILER_VERSION@"
+#define CMAKE_CXX_STANDARD "@CMAKE_CXX_STANDARD@"
+
+//----------------------------------------------------------------------------
+// - C++ Language Features
+#cmakedefine01 CXX_HAS_AUTO_RETURN_TYPE
+bool reportAutoReturnType(std::ostream& os) {
+  os << "- auto Return Type Deduction : " << AS_YES_OR_NO(CXX_HAS_AUTO_RETURN_TYPE) << std::endl;
+  return CXX_HAS_AUTO_RETURN_TYPE == 1;
+}
+
+#cmakedefine01 CXX_HAS_ATTRIBUTE
+bool reportAttribute(std::ostream& os) {
+  os << "- [[ attribute-list ]] : " << AS_YES_OR_NO(CXX_HAS_ATTRIBUTE) << std::endl;
+  return CXX_HAS_ATTRIBUTE == 1;
+}
+
+#cmakedefine01 CXX_HAS_CONSTEXPR_IF
+bool reportConstexprIf(std::ostream& os) {
+  os << "- constexpr if : " << AS_YES_OR_NO(CXX_HAS_CONSTEXPR_IF) << std::endl;
+  return CXX_HAS_CONSTEXPR_IF == 1;
+}
+
+#cmakedefine01 CXX_HAS_CTAD
+bool reportCTAD(std::ostream& os) {
+  os << "- Class Template Argument Deduction : " << AS_YES_OR_NO(CXX_HAS_CTAD) << std::endl;
+  return CXX_HAS_CTAD == 1;
+}
+
+#cmakedefine01 CXX_HAS_HAS_INCLUDE
+bool reportHasInclude(std::ostream& os) {
+  os << "- __has_include : " << AS_YES_OR_NO(CXX_HAS_HAS_INCLUDE) << std::endl;
+  return CXX_HAS_HAS_INCLUDE == 1;
+}
+
+#cmakedefine01 CXX_HAS_INIT_IF
+bool reportHasInitIf(std::ostream& os) {
+  os << "- Initializer in if/switch : " << AS_YES_OR_NO(CXX_HAS_INIT_IF) << std::endl;
+  return CXX_HAS_INIT_IF == 1;
+}
+
+#cmakedefine01 CXX_HAS_INLINE_VARIABLES
+bool reportHasInlineVariables(std::ostream& os) {
+  os << "- Inline variables : " << AS_YES_OR_NO(CXX_HAS_INLINE_VARIABLES) << std::endl;
+  return CXX_HAS_INIT_IF == 1;
+}
+
+#cmakedefine01 CXX_HAS_RELAXED_CONSTEXPR
+bool reportRelaxedConstexpr(std::ostream& os) {
+    os << "- Relaxed constexpr : " << AS_YES_OR_NO(CXX_HAS_RELAXED_CONSTEXPR) << std::endl;
+    return CXX_HAS_RELAXED_CONSTEXPR == 1;
+}
+
+#cmakedefine01 CXX_HAS_GENERIC_LAMBDA
+bool reportGenericLambda(std::ostream& os) {
+    os << "- Generic lambda : " << AS_YES_OR_NO(CXX_HAS_GENERIC_LAMBDA) << std::endl;
+    return CXX_HAS_GENERIC_LAMBDA == 1;
+}
+
+#cmakedefine01 CXX_HAS_STRUCTURED_BINDINGS
+bool reportStructuredBindings(std::ostream& os) {
+    os << "- Structured Bindings : " << AS_YES_OR_NO(CXX_HAS_STRUCTURED_BINDINGS) << std::endl;
+    return CXX_HAS_STRUCTURED_BINDINGS == 1;
+}
+
+//----------------------------------------------------------------------------
+// - Standard Library Features
+// -- Any support
+#cmakedefine01 CXXSTDLIB_HAS_ANY
+#cmakedefine01 CXXSTDLIB_HAS_EXPERIMENTAL_ANY
+
+bool reportAny(std::ostream& os) {
+  bool isSupported = (CXXSTDLIB_HAS_ANY == 1 || CXXSTDLIB_HAS_EXPERIMENTAL_ANY == 1);
+  bool isExperimental = (CXXSTDLIB_HAS_ANY == 0 && CXXSTDLIB_HAS_EXPERIMENTAL_ANY == 1);
+
+  os << "- any : " << AS_YES_OR_NO(isSupported) << std::endl;
+
+  if (isSupported) {
+    os << "  - Header : `<" << (isExperimental ? "experimental/any" : "any") << ">`\n";
+  }
+
+  return isSupported;
+}
+
+// -- std::make_unique support
+#cmakedefine01 CXX_HAS_MAKE_UNIQUE
+
+bool reportMake_Unique(std::ostream& os) {
+    os << "- make_unique : " << AS_YES_OR_NO(CXX_HAS_MAKE_UNIQUE) << std::endl;
+    return CXX_HAS_MAKE_UNIQUE == 1;
+}
+
+// -- Optional support
+#cmakedefine01 CXXSTDLIB_HAS_OPTIONAL
+#cmakedefine01 CXXSTDLIB_HAS_EXPERIMENTAL_OPTIONAL
+
+bool reportOptional(std::ostream& os) {
+  bool isSupported = (CXXSTDLIB_HAS_OPTIONAL == 1 || CXXSTDLIB_HAS_EXPERIMENTAL_OPTIONAL == 1);
+  bool isExperimental = (CXXSTDLIB_HAS_OPTIONAL == 0 && CXXSTDLIB_HAS_EXPERIMENTAL_OPTIONAL == 1);
+
+  os << "- optional : " << AS_YES_OR_NO(isSupported) << std::endl;
+
+  if (isSupported) {
+    os << "  - Header : `<" << (isExperimental ? "experimental/optional" : "optional") << ">`\n";
+  }
+
+  return isSupported;
+}
+
+// -- Optional support
+#cmakedefine01 CXXSTDLIB_HAS_STRING_VIEW
+#cmakedefine01 CXXSTDLIB_HAS_EXPERIMENTAL_STRING_VIEW
+
+bool reportString_View(std::ostream& os) {
+  bool isSupported = (CXXSTDLIB_HAS_STRING_VIEW == 1 || CXXSTDLIB_HAS_EXPERIMENTAL_STRING_VIEW == 1);
+  bool isExperimental = (CXXSTDLIB_HAS_STRING_VIEW == 0 && CXXSTDLIB_HAS_EXPERIMENTAL_STRING_VIEW == 1);
+
+  os << "- string_view : " << AS_YES_OR_NO(isSupported) << std::endl;
+
+  if (isSupported) {
+    os << "  - Header : `<" << (isExperimental ? "experimental/string_view" : "string_view") << ">`\n";
+  }
+
+  return isSupported;
+}
+
+
+// -- Variant support
+#cmakedefine01 CXXSTDLIB_HAS_VARIANT
+#cmakedefine01 CXXSTDLIB_HAS_EXPERIMENTAL_VARIANT
+
+bool reportVariant(std::ostream& os) {
+  bool isSupported = (CXXSTDLIB_HAS_VARIANT == 1 || CXXSTDLIB_HAS_EXPERIMENTAL_VARIANT == 1);
+  bool isExperimental = (CXXSTDLIB_HAS_VARIANT == 0 && CXXSTDLIB_HAS_EXPERIMENTAL_VARIANT == 1);
+
+  os << "- variant : " << AS_YES_OR_NO(isSupported) << std::endl;
+
+  if (isSupported) {
+    os << "  - Header : `<" << (isExperimental ? "experimental/variant" : "variant") << ">`\n";
+  }
+
+  return isSupported;
+}
+
+// -- Filesystem support
+#cmakedefine01 CXXSTDLIB_HAS_FILESYSTEM
+#cmakedefine01 CXXSTDLIB_HAS_EXPERIMENTAL_FILESYSTEM
+#cmakedefine CXXSTDLIB_FILESYSTEM_LIBRARY "@CXXSTDLIB_FILESYSTEM_LIBRARY@"
+
+bool reportFilesystem(std::ostream& os) {
+  bool isSupported = (CXXSTDLIB_HAS_FILESYSTEM == 1 || CXXSTDLIB_HAS_EXPERIMENTAL_FILESYSTEM == 1);
+  bool isExperimental = (CXXSTDLIB_HAS_FILESYSTEM == 0 && CXXSTDLIB_HAS_EXPERIMENTAL_FILESYSTEM == 1);
+
+  os << "- filesystem : " << AS_YES_OR_NO(isSupported) << "\n";
+
+  if (isSupported) {
+    os << "  - Header is  : `<" << (isExperimental ? "experimental/filesystem" : "filesystem") << ">`\n"
+          "  - Library is : `" << CXXSTDLIB_FILESYSTEM_LIBRARY << "`\n";
+  }
+
+  return isSupported;
+}
+
+int main() {
+  std::cout << "# checkCXXFeatures C++ Feature Availability Report" << std::endl;
+
+  std::cout << "## System, Compiler, and Standard\n"
+            << "- CMAKE_SYSTEM               : " << CMAKE_SYSTEM << "\n"
+            << "- CMAKE_CXX_COMPILER_ID      : " << CMAKE_CXX_COMPILER_ID << "\n"
+            << "- CMAKE_CXX_COMPILER_VERSION : " << CMAKE_CXX_COMPILER_VERSION << "\n"
+            << "- CMAKE_CXX_STANDARD         : " << CMAKE_CXX_STANDARD << "\n"
+            << "- __cplusplus                : " << __cplusplus << "\n"
+            << std::endl;
+
+  bool cxxStdIsSupported = true;
+
+  std::cout << "## C++ Language Features" << std::endl;
+  cxxStdIsSupported = reportAutoReturnType(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportAttribute(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportConstexprIf(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportCTAD(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportHasInclude(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportHasInitIf(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportHasInlineVariables(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportGenericLambda(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportRelaxedConstexpr(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportStructuredBindings(std::cout) && cxxStdIsSupported;
+  std::cout << std::endl;
+
+  std::cout << "## C++ Standard Library Features" << std::endl;
+  cxxStdIsSupported = reportAny(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportFilesystem(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportMake_Unique(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportOptional(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportString_View(std::cout) && cxxStdIsSupported;
+  cxxStdIsSupported = reportVariant(std::cout) && cxxStdIsSupported;
+  std::cout << std::endl;
+
+  std::cout << "## Summary\n"
+            << "- C++" << CMAKE_CXX_STANDARD << " : " << (cxxStdIsSupported ? "Supported" : "Unsupported")
+            << std::endl;
+
+  return cxxStdIsSupported ? 0 : 1;
+}

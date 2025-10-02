@@ -1,0 +1,196 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+
+#include "tools/get_lines"
+#include <gtest/gtest.h>
+
+#include <string>
+#include <vector>
+
+class GetLinesTest : public ::testing::Test
+{
+  protected:
+    std::vector<std::string> lines;
+
+    void SetUp() override { lines.clear(); }
+};
+
+TEST_F(GetLinesTest, EmptyString)
+{
+  tools::get_lines("", lines);
+  EXPECT_TRUE(lines.empty());
+}
+
+TEST_F(GetLinesTest, SingleLineNoNewline)
+{
+  tools::get_lines("hello", lines);
+  ASSERT_EQ(lines.size(), 1);
+  EXPECT_EQ(lines[0], "hello");
+}
+
+TEST_F(GetLinesTest, SingleLineWithNewline)
+{
+  tools::get_lines("hello\n", lines);
+  ASSERT_EQ(lines.size(), 2);  // Not 1!
+  EXPECT_EQ(lines[0], "hello");
+  EXPECT_EQ(lines[1], "");  // Empty line due to null terminator
+}
+
+TEST_F(GetLinesTest, MultipleLineWithNewlines)
+{
+  tools::get_lines("line1\nline2\nline3", lines);
+  ASSERT_EQ(lines.size(), 3);
+  EXPECT_EQ(lines[0], "line1");
+  EXPECT_EQ(lines[1], "line2");
+  EXPECT_EQ(lines[2], "line3");
+}
+
+TEST_F(GetLinesTest, MultipleLineWithEscapedNewlines)
+{
+  tools::get_lines("line1\\nline2\\nline3", lines);
+  ASSERT_EQ(lines.size(), 3);
+  EXPECT_EQ(lines[0], "line1");
+  EXPECT_EQ(lines[1], "line2");
+  EXPECT_EQ(lines[2], "line3");
+}
+
+TEST_F(GetLinesTest, MixedNewlineTypes)
+{
+  tools::get_lines("line1\nline2\\nline3", lines);
+  ASSERT_EQ(lines.size(), 3);
+  EXPECT_EQ(lines[0], "line1");
+  EXPECT_EQ(lines[1], "line2");
+  EXPECT_EQ(lines[2], "line3");
+}
+
+TEST_F(GetLinesTest, EmptyLinesWithNewlines)
+{
+  tools::get_lines("xxx\n\nxxx", lines);
+  ASSERT_EQ(lines.size(), 3);
+  EXPECT_EQ(lines[0], "xxx");
+  EXPECT_EQ(lines[1], "");
+  EXPECT_EQ(lines[2], "xxx");
+}
+
+TEST_F(GetLinesTest, EmptyLinesWithEscapedNewlines)
+{
+  tools::get_lines("xxx\\n\\nxxx", lines);
+  ASSERT_EQ(lines.size(), 3);
+  EXPECT_EQ(lines[0], "xxx");
+  EXPECT_EQ(lines[1], "");
+  EXPECT_EQ(lines[2], "xxx");
+}
+
+TEST_F(GetLinesTest, TrailingNewlines)
+{
+  tools::get_lines("line1\nline2\n\n", lines);
+  ASSERT_EQ(lines.size(), 4);
+  EXPECT_EQ(lines[0], "line1");
+  EXPECT_EQ(lines[1], "line2");
+  EXPECT_EQ(lines[2], "");
+  EXPECT_EQ(lines[3], "");
+}
+
+TEST_F(GetLinesTest, LeadingNewlines)
+{
+  tools::get_lines("\n\nline1\nline2", lines);
+  ASSERT_EQ(lines.size(), 4);
+  EXPECT_EQ(lines[0], "");
+  EXPECT_EQ(lines[1], "");
+  EXPECT_EQ(lines[2], "line1");
+  EXPECT_EQ(lines[3], "line2");
+}
+
+TEST_F(GetLinesTest, OnlyNewlines)
+{
+  tools::get_lines("\n\n\n", lines);
+  // Odd extra line in this case...
+  // c.f. TrailingNewLines case
+  ASSERT_EQ(lines.size(), 4);
+  EXPECT_EQ(lines[0], "");
+  EXPECT_EQ(lines[1], "");
+  EXPECT_EQ(lines[2], "");
+  EXPECT_EQ(lines[3], "");
+}
+
+TEST_F(GetLinesTest, OnlyEscapedNewlines)
+{
+  tools::get_lines("\\n\\n\\n", lines);
+  // Odd extra line in this case...
+  // c.f. OnlyNewLines case
+  ASSERT_EQ(lines.size(), 4);
+  EXPECT_EQ(lines[0], "");
+  EXPECT_EQ(lines[1], "");
+  EXPECT_EQ(lines[2], "");
+  EXPECT_EQ(lines[3], "");
+}
+
+TEST_F(GetLinesTest, SingleCharacter)
+{
+  tools::get_lines("a", lines);
+  ASSERT_EQ(lines.size(), 1);
+  EXPECT_EQ(lines[0], "a");
+}
+
+TEST_F(GetLinesTest, BackslashWithoutN)
+{
+  tools::get_lines("line1\\tline2", lines);
+  ASSERT_EQ(lines.size(), 1);
+  EXPECT_EQ(lines[0], "line1\\tline2");
+}
+
+TEST_F(GetLinesTest, WindowsFilePathWarning)
+{
+  // Test the Windows file path case mentioned in comments
+  tools::get_lines("..\\data\\ntuples.hbook", lines);
+  ASSERT_EQ(lines.size(), 2);
+  EXPECT_EQ(lines[0], "..\\data");
+  EXPECT_EQ(lines[1], "tuples.hbook");
+}
+
+TEST_F(GetLinesTest, ComplexMixedContent)
+{
+  tools::get_lines("start\nmiddle\\nend\n\n\\nfinal", lines);
+  ASSERT_EQ(lines.size(), 6);
+  EXPECT_EQ(lines[0], "start");
+  EXPECT_EQ(lines[1], "middle");
+  EXPECT_EQ(lines[2], "end");
+  EXPECT_EQ(lines[3], "");
+  EXPECT_EQ(lines[4], "");
+  EXPECT_EQ(lines[5], "final");
+}
+
+TEST_F(GetLinesTest, ClearsPreviousContent)
+{
+  // First call
+  tools::get_lines("line1\nline2", lines);
+  ASSERT_EQ(lines.size(), 2);
+
+  // Second call should clear previous content
+  tools::get_lines("newline", lines);
+  ASSERT_EQ(lines.size(), 1);
+  EXPECT_EQ(lines[0], "newline");
+}

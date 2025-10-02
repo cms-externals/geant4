@@ -1,0 +1,155 @@
+# Category test68 History
+
+See `CONTRIBUTING.rst` for details of **required** info/format for each entry,
+which **must** added in reverse chronological order (newest at the top).
+It must **not** be used as a substitute for writing good git commit messages!
+
+-------------------------------------------------------------------------------
+
+## 2024-11-18 Gunter Folger (test68-V11-02-02)
+- Changes for Windows: increase timelimit and for Continuous reduce 
+   tests to run test only. 
+
+## 2024-09-18 Gabriele Cosmo (test68-V11-02-01)
+- Use default settings for random number generator.
+
+## 2024-05-13 Ben Morgan (test68-V11-02-00)
+- Escape backslash in paths on Windows to make them literal and avoid Python
+  syntax warnings.
+
+## 2023-10-25 Alberto Ribon (test68-V11-01-00)
+- test68 : migrated the random number generator engine, from Ranlux64Engine
+  to MixMaxRng.
+
+## 2022-02-11 Gabriele Cosmo (test68-V11-00-01)
+- Tst68DetectorConstruction: fixed compilation warning on Intel compiler
+  for unused variable.
+
+## 2021-12-10 Ben Morgan (test68-V11-00-00)
+- Change to new Markdown History format.
+
+---
+
+# History entries prior to 11.0
+
+4 August 2021 Ben Morgan (test68-V10-07-02)
+---------------------------------------------------
+- Modernize CMake script allowing test to be built in system testing
+  or as a standalone project
+
+5 May 2021 Ben Morgan (test68-V10-07-01)
+----------------------------------------
+- Do not install tests
+
+18 February 2021 Ben Morgan (test68-V10-07-00)
+----------------------------------------------
+- Support same CMake version range as core Geant4
+
+1 April 2020 Gunter Folger                test68-V10-06-00
+----------------------------------------------------------
+- Adapt to use with pyhton 3, keep compatible with python 2
+   I.e. correct print to new syntax.
+
+4 May 2017 Alberto Ribon                  test68-V10-03-00
+----------------------------------------------------------
+- Improved python scripts (reproducibility_*.py) : distinction
+  between an error due to a real reproducibility problem and an
+  error due to a missing/wrong expected log-file (which can be
+  caused, for instance, by a crash when running).
+
+9 Dec 2015 Gunter Folger                  test68-V10-02-00
+----------------------------------------------------------
+-  Fix a problem introduced by me when adding reference outputs
+    for geant4-10-02-ref-00, added files like test68-*-...
+
+21-11-13 A. Dotti                         test68-V09-06-09
+----------------------------------------------------------
+- Use G4RunManager::ReinitializeGeometry() to change
+  geometry between runs
+
+17 Jun 2013 Alberto Ribon                 test68-V09-06-08
+----------------------------------------------------------
+- Disabled temporarily G4MTRunManager until a good solution
+  is found to deal with G4MT.
+
+14 Jun 2013 Alberto Ribon                 test68-V09-06-07
+----------------------------------------------------------
+- Set the number of threads to 1 (instead of 4) otherwise the
+  different threads try to access the same file.
+
+14 Jun 2013 Alberto Ribon                 test68-V09-06-06
+----------------------------------------------------------
+- Fixed problem of renaming currentEvent.rndm in Windows.
+
+13 June 2013  Dennis Wright
+---------------------------------------------------------
+- Migrate to multi-threaded:
+    added option to use G4MTRunManager and changed from CLHEP::HepRandom
+      to G4Random in test68.cc
+    created class Tst68ActionInitialization and moved user init method
+      there
+    added empty method Tst68GeometryConstruction::ConstructSDandField()
+
+- added CMakeLists_Standalone.txt to be used for stand-alone running
+  (developed by Makoto Asai)
+
+- updated README for cmake build
+
+12 Jun 2013 Alberto Ribon                 test68-V09-06-05
+----------------------------------------------------------
+- Fixed problem of conflicting currentEvent.rndm between the 5 tests.
+
+12 Jun 2013 Alberto Ribon                 test68-V09-06-04
+- Split the 5 configurations that are tested for reproducibility
+  in 5 independent tests, each with 100 events.
+
+07 Jun 2013 Alberto Ribon                 test68-V09-06-03
+- Increased the timeout for the reproducibility test (now 1 hour).
+
+09 Apr 2013 Pere Mato                     test68-V09-06-02
+- Increased the timeout for the reproducibility test.
+
+26 Feb 2013 Alberto Ribon                test68-V09-06-01
+- Reduced the number of events from 100 to 80 to avoid timeout errors.
+
+10 Jan 2013 Alberto Ribon                test68-V09-06-00
+- Increased the time limit to avoid timeout errors.
+
+13 Nov 2012 Alberto Ribon                test68-V09-05-09
+- Fixed the massive non-reproducibility in Windows due to use of
+  a Unix command (mv) in the script reproducibility.py .
+
+11 Oct 2012 Gabriele Cosmo               test68-V09-05-08
+- Explicit inclusion of units and constants headers.
+
+11 Oct 2012 Alberto Ribon                test68-V09-05-07
+- Fixed compilation warning in Windows (<ctime>, std::time).
+
+10 Oct 2012 Alberto Ribon                test68-V09-05-06
+- Use $<CONFIGURATION> (instead of hardwired "RelWithDebInfo")
+  to get the subdirectory where the executable is placed in Windows.
+
+10 Oct 2012 Alberto Ribon                test68-V09-05-05
+- Fix bad output format: it could fix the non-reproducibility
+  seen in both Mac and Windows.
+
+10 Oct 2012 Alberto Ribon                test68-V09-05-04
+- Try to fix the problem on Windows by specifying explicitly the
+  path and name of the executable invoked by the Python script.
+
+05 Oct 2012 Alberto Ribon                test68-V09-05-03
+- Moved from "Experimental" group to "Nightly" and "Continuous".
+  Increased the number of events from 10 to 100.
+
+08 Aug 2012 Alberto Ribon                test68-V09-05-02
+- Fixed small mistake.
+
+08 Aug 2012 Alberto Ribon                test68-V09-05-01
+- Can be built with CMake and ready for CTest.
+
+08 Aug 2012 Alberto Ribon                test68-V09-05-00
+- Created new test for the reproducibility of FTFP_BERT.
+  In this first version, only GNUmakefile (no CMake), and the
+  tests are steered by a shell script (not working on Windows),
+  which calls a Python script (also not working on Windows).
+

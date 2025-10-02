@@ -1,0 +1,107 @@
+//
+// This pipeline builds externals (clhep or XercesC) for one specific platform
+// in general started by another upstream job defining all platforms
+//   It can be run directly, though, if all needed options are set.
+//
+// Gunter Folger, June 2023
+//
+
+def g4
+
+pipeline {
+  parameters {
+    string(name: 'OS',
+           defaultValue: 'alma9',
+           description: 'OS required to run the job, current values centos7, centos8,  mac11, mac12, mac12{arm}, mac13{arm}, ubuntu{20,22}')
+    string(name: 'COMPILER' ,
+           defaultValue: 'native',
+           description: 'Choice of compiler to use' )
+    choice(name: 'package',
+           choices: ['XercesC', 'clhep'],
+           description: 'Package to build')
+    string(name: 'clhep_version',
+           defaultValue: '2.4.7.1',
+           description: 'clhep version to build')
+    string(name: 'XercesC_version',
+           defaultValue: '3.2.5',
+           description: 'XercesC version to build')
+  }
+
+  options {
+    buildDiscarder(logRotator( daysToKeepStr: '14' ))
+    timestamps()
+  }
+
+  environment {
+    clhep_URL        = 'https://proj-clhep.web.cern.ch/proj-clhep/dist1/clhep-#VERSION#.tgz'
+    XercesC_URL      = 'http://archive.apache.org/dist/xerces/c/3/sources/xerces-c-#VERSION#.tar.gz'
+  }
+
+  agent {label 'startup-jobs'}
+
+  stages {
+    stage('load functions') {
+      steps {
+        script{
+          g4 = load 'scripts/tests/tools/ctest/JenkinsFunctions.groovy'
+        }
+      }
+    }
+
+    stage('docker run') {
+      when {
+        beforeAgent true
+        expression { g4.getLABEL() =~ 'docker' }
+      }
+
+      agent {
+        node {
+          label g4.getLABEL()
+	  customWorkspace "workspace/g4p-externals-build/" + params.package +"/${OS}/${COMPILER}/"
+        }
+      }
+
+      steps {
+        buildName "#${BUILD_NUMBER}" + ' ' + params.package + '-' + params.OS + '-' + params.COMPILER
+        buildDescription "Executed @ ${NODE_NAME}"
+        script{
+            sh 'touch controlfile; date; hostname; env | sort'
+            withEnv(["LABEL=g4.getLABEL()", 
+	             "build_script=external.sh", 
+		     "eos_install_tmp=/eos/project/g/geant4/cvmfs_install_tmp/", 
+		     "docker_env=package clhep_version clhep_URL XercesC_version XercesC_URL OS eos_install_tmp"]) {
+                sh 'scripts/tests/tools/ctest/docker-runbuild.sh'
+             }
+           //g4.doCheckout(needVecGeom())
+          //g4.doDockerBuildTest()
+        }
+      }
+    }
+
+    stage('run on hardware'){
+      when {
+        beforeAgent true
+        anyOf {
+          expression { params.OS =~ 'mac'  }
+          expression { g4.getLABEL() =~ 'g4-centos' }
+        }
+      }
+
+      agent {
+        node {
+          label g4.getLABEL()
+          customWorkspace "workspace/g4p-externals-build/" + params.package +"/${OS}/${COMPILER}/"
+        }
+      }
+
+      steps {
+        buildName "#${BUILD_NUMBER}" + ' ' + params.package + '-' + params.OS + '-' + params.COMPILER
+        buildDescription "Executed @ ${NODE_NAME}"
+        script{
+            sh 'touch controlfile; date; hostname; env | sort'
+	    sh 'scripts/tests/tools/ctest/external.sh'
+        }
+      }
+    }
+  }
+}

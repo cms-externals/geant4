@@ -1,0 +1,319 @@
+#!/usr/bin/env python3
+"""
+Script to generate a Geant4 topic branch ID and insert an entry into a History file.
+Following Geant4 contributing guidelines.
+"""
+
+import re
+import sys
+import datetime
+import subprocess
+import platform
+from typing import Optional
+
+# Check Python version
+if sys.version_info < (3, 7):
+    print("Error: This script requires Python 3.7 or newer")
+    print("Current Python version: ", platform.python_version())
+    print("Please upgrade your Python installation or use a different environment")
+    sys.exit(1)
+
+from pathlib import Path
+
+
+def git(*args):
+    result = subprocess.run(
+        ["git"] + list(args),
+        stdout=subprocess.PIPE,
+        text=True,
+        check=True,
+    )
+
+    return result.stdout
+
+
+def find_history_file(directory):
+    """Find the closest History file by walking up from the current directory"""
+
+    # If directory starts with ":/" then replace with git repository root
+    if str(directory).startswith(":/"):
+        directory = str(directory)[2:]
+        try:
+            # Get git repository root
+            result = git("rev-parse", "--show-toplevel")
+        except subprocess.SubprocessError:
+            print("Warning: Could not determine git repository root!")
+        else:
+            directory = Path(result.strip()) / directory
+    else:
+        directory = Path(directory)
+
+    if not directory.exists():
+        print(f"Error: Directory {directory} does not exist!")
+        sys.exit(1)
+
+    while True:
+        history_path = directory / "History"
+        if history_path.exists():
+            return history_path
+
+        parent_dir = directory.parent
+        if parent_dir == directory:
+            # Reached root directory
+            return None
+        directory = parent_dir
+
+    return None
+
+
+def get_username():
+    """Get the Git username"""
+    try:
+        result = git("config", "user.name")
+        username = result.strip()
+        if username:
+            return username
+    except subprocess.SubprocessError:
+        pass
+
+    # If git config not available, try system username
+    import getpass
+
+    return getpass.getuser()
+
+
+def get_target_version():
+    """Get the target version from git describe --tags"""
+    try:
+        result = subprocess.run(
+            ["git", "describe", "--tags"], stdout=subprocess.PIPE, text=True, check=True
+        )
+        git_version = result.stdout.strip()
+    except subprocess.SubprocessError as e:
+        print(f"Warning: Could not get version from git: {e}")
+        return 0, 0
+
+    # Parse geant4-MAJOR-MINOR-(ref|patch)-NNNN to extract MAJOR/MINOR
+    match = re.search(r"geant4-(\d+)-(\d+)", git_version)
+    if match:
+        major = int(match.group(1))
+        minor = int(match.group(2))
+        return major, minor
+
+    print(f"Warning: Could not parse Geant4 git description: {git_version}")
+    return 0, 0  # Default if parsing fails
+
+
+def extract_version_from_history(history_path):
+    """Extract latest version numbers from the History file"""
+    try:
+        content = history_path.read_text()
+
+        # Look for the latest version entry
+        # Format: ## YYYY-MM-DD Author (category-VXX-YY-PP)
+        matches = re.findall(r"\((\w+)-V\d+-\d+-(\d+)\)", content)
+        if matches:
+            category, counter = matches[0]
+            return category, int(counter) + 1
+    except Exception as e:
+        print(f"Error reading History file: {e}")
+
+    return None, 0
+
+
+def get_category_name(history_path):
+    """Extract category name from the History file path"""
+    dir_path = history_path.parent
+    dir_name = dir_path.name
+
+    # If it's in a 'source/category' pattern, extract just the category
+    if dir_path.parent.name == "source":
+        return dir_name
+
+    # Otherwise, try to infer from the directory name
+    return dir_name
+
+
+def prompt_for_description():
+    """Ask user for a description of the changes"""
+    print(
+        "\nEnter an itemized description of your changes (Ctrl+D or empty line to finish):"
+    )
+    lines = []
+    try:
+        while True:
+            line = input("- ")
+            if not line:
+                break
+            lines.append("- " + line)
+    except EOFError:
+        pass
+
+    return "\n".join(lines)
+
+
+def update_history_file(history_path, branch_name, description):
+    """Insert a new entry into the History file"""
+    today = datetime.date.today().strftime("%Y-%m-%d")
+    username = get_username()
+
+    # Read the existing file
+    content = history_path.read_text()
+
+    # Find where to insert the new entry (after the dashed line)
+    pattern = r"-+\s*\n\s*\n"
+    match = re.search(pattern, content)
+
+    if match:
+        insertion_point = match.end()
+        text = "".join(
+            [
+                content[:insertion_point],
+                f"## {today} {username} ({branch_name})\n",
+                description,
+                "\n\n",
+                content[insertion_point:],
+            ]
+        )
+
+        # Write back to the file
+        history_path.write_text(text)
+
+        print(f"\nSuccessfully added entry to {history_path}")
+        return True
+    else:
+        print("Could not find the proper insertion point in the History file.")
+        return False
+
+
+def prompt_for_value(name, value, fmt_str="{}", convert=str):
+    """Prompt for a short value with default, and convert to the specified type."""
+    try:
+        formatted_value = fmt_str.format(value)
+        user_input = input(f"Enter {name} [{formatted_value}]: ").strip()
+        if not user_input:
+            return value
+        return convert(user_input)
+    except ValueError:
+        print(f"Invalid {name}. Using default: {formatted_value}")
+        return value
+
+
+def run(directory, description_file, dry_run=False):
+    # Find the History file
+    history_path = find_history_file(directory)
+    if not history_path:
+        print(f"No History file found in {directory} or its parents.")
+        sys.exit(1)
+
+    print(f"Found History file: {history_path}")
+
+    # Get category and version
+    category, patch = extract_version_from_history(history_path)
+
+    if category is None:
+        # Fall back to using the directory name as category
+        category = get_category_name(history_path)
+
+    # Get target version from git
+    target_major, target_minor = get_target_version()
+
+    # Use target version as default, but keep patch from history
+    major, minor = target_major, target_minor
+
+    # Allow user to override values
+    print("\nCurrent values:")
+    print(f"  Category: {category}")
+    print(f"  Target version: V{major:02d}-{minor:02d} (from git describe)")
+    print(f"  Change counter: {patch:02d} (from History file)")
+    print(f"  Final version: V{major:02d}-{minor:02d}-{patch:02d}")
+
+    if not dry_run:
+        change = input("\nDo you want to modify these values? (y/N): ").strip().lower()
+        if change.startswith("y"):
+            category = prompt_for_value("category", category)
+            major = prompt_for_value("major version", major, "{:02d}", int)
+            minor = prompt_for_value("minor version", minor, "{:02d}", int)
+            patch = prompt_for_value("change counter", patch, "{:02d}", int)
+
+    # Get description
+    if description_file is None:
+        if dry_run:
+            print("\nDry run mode: No description will be prompted.")
+            description = "- Dry run mode"
+        else:
+            description = prompt_for_description()
+    elif description_file == "-":
+        print("\nReading description from standard input (Ctrl+D to finish):")
+        try:
+            description = sys.stdin.read().strip()
+        except KeyboardInterrupt:
+            print("\nInput cancelled")
+            description = ""
+    else:
+        try:
+            description = Path(description_file).read_text().strip()
+        except Exception as e:
+            print(f"Error reading description file: {e}")
+            description = ""
+
+    if not description:
+        print("No description provided... leaving blank")
+
+    branch_name = f"{category}-V{major:02d}-{minor:02d}-{patch:02d}"
+
+    if dry_run:
+        print("\nDry run mode: No changes will be made.")
+        print(f"Would create branch: {branch_name}")
+        print(f"Would update History file: {history_path}")
+        print(f"With description:\n{description}")
+        return
+
+    # Update the History file
+    update_history_file(history_path, branch_name, description)
+
+    # Suggest git command for creating a topic branch
+    subprocess.run(["git", "checkout", "-b", branch_name], check=True)
+
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="G4 Topic Branch Creator",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""\
+This script helps create a Geant4 topic branch and update the History file according to Geant4 contributing guidelines.
+
+The script will:
+1. Find the nearest History file
+2. Extract the category and version information
+3. Create a new History entry with your description
+4. Create a new git branch with the proper naming convention
+""",
+    )
+    parser.add_argument(
+        "directory",
+        nargs="?",
+        default=Path.cwd(),
+        help="Directory to start searching for History file: start with :/ for repository root (default: current directory)",
+    )
+    parser.add_argument(
+        "--description-file",
+        "-d",
+        nargs="?",
+        help="Read description from a file instead of prompting (- for stdin)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        "-y",
+        action="store_true",
+        help="Query information without making any changes",
+    )
+    args = parser.parse_args()
+
+    run(args.directory, args.description_file, args.dry_run)
+
+
+if __name__ == "__main__":
+    main()
