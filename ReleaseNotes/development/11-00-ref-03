@@ -1,0 +1,312 @@
+
+                       geant4-11-00-ref-03
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Retired "tasking" module and merged contents in "global" and "run"
+   categories.
+ o Fixed compilation warnings on Apple clang version 13.1.6.
+ o Added a new utility method to access a process via sub-type.
+ o In EM processes, updated methods to access cross-sections at run time.
+ o Added parameters in DNA including the chemical molecules and reaction
+   list involved in the radiolysis.
+ o New meshing features in visualization.
+ o New data set: G4EMLOW-8.1.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(+)  Fixes included in patch release 10.7.4
+(*)  Fixes included in patch release 11.0.1
+(o)  Fixes included in patch release 11.0.2
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-00-18
+-----
+- Set default value of GEANT4_BUILD_BUILTIN_BACKTRACE to OFF.
+- Do not use CMAKE_VERBOSE_MAKEFILE when building tests.
+- Rationalized declaration and use of internal builds of required externals
+  CLHEP, zlib, expat, PTL and tools libraries.
+- Support declaration and composition of header-only modules and libraries.
+- Adding geant4_module_sources command to enable appending of headers/sources
+  to a module after creation.
+- Providing GEANT4_BUILD_ENABLE_ASSERTIONS option to enable assert() in all
+  release build modes (Release, RelWithDebInfo, MinSizeRel).
+- Forward `CMAKE_<LANG>_FLAGS[_<MODE>]` flags to `geant4_add_test` so that
+  a consistent set is used through the project.
+- Fix for CPack on Windows to avoid PATH with only '/', without '\'.         (o)
+- Removed retired "tasking" module and library from configuration files.
+- Removed deprecated functions in G4DeveloperAPI and fixed typo that
+  prevented installation of headers.
+- New data set G4EMLOW-8.1.
+
+config                                           config-V11-00-03
+------
+- Retired "tasking" category and library from build.
+
+analysis                                         analysis-V11-00-03
+--------
+- Fix notifying about closing file in G4GenericAnalysisManager; this fixes   (*)
+  saving scorers in analysis file in B3 example for the second and further runs.
+
+externals                                        externals-V11-00-02
+---------
+- Rationalizing externals builds to decouple them from the core
+  module/category definitions.
+- clhep (clhep-V11-00-03)
+  o Synchronised with CLHEP-2.4.5.2:
+    + Fixed compilation warnings on macOS in LorentzRotation header          (o)
+      when c++20 is enabled
+  o Removed obsolete CMake functionality.
+- g4tools (g4tools-V11-00-03)
+  o Updated to version 5.6.3.
+  o Fixed compilation warnings for shadowing from Intel/icc compiler.
+
+geometry/management                              geommng-V11-00-03
+-------------------
+- G4SolidStore, G4LogicalVolumeStore, G4PhysicalVolumeStore:                 (o)
+  extend getter methods to optionally return the last-found object.
+
+geometry/navigation                              geomnav-V11-00-04
+-------------------
+- G4RegularNavigation: reset the zero step counter when a non-zero step is   (o)
+  performed, to avoid aborted events. Removed tabs in source code.
+  Based on GitHub PR#38 (https://github.com/Geant4/geant4/pull/38).
+
+global                                           global-V11-00-12
+------
+- Replaced use of deprecated "std::result_of" with "std::invoke_result_t",   (o)
+  fixes compilation warnings on Apple clang version 13.1.6.
+- Imported from "Tasking" module all core interfaces that only depend on PTL.
+- Removed obsolete CMakeLists.txt script in "management" module.
+  Declare "HEPGeometry" dependencies as INTERFACE as the module is header-only.
+- Reverted clang-tidy pass-by-value as providing no benefit for short strings,
+  which are the case in the global use case.
+- Updated date and tag-ID for geant4-11-00-ref-03.
+
+intercoms                                        intercoms-V11-00-03
+---------
+- Applied set of clang-tidy modernize, readability and performance fixes.
+
+interfaces                                       interfaces-V11-00-04
+----------
+- Use geant4_module_sources to add optional sources in CMake script.
+  Added required G4VIS_USE_VTK_QT flag here instead of "Vtk" visualization
+  module.
+
+materials                                        materials-V11-00-06
+---------
+- Applied set of clang-tidy modernize, readability and performance fixes.
+
+persistency/gdml                                 gdml-V11-00-03
+----------------
+- G4GDMLReadSolids, G4GDMLReadStructure: use original find() methods in      (o)
+  G4SolidStore, G4LogicalVolumeStore and G4PhysicalVolumeStore to simplify
+  the code.
+- G4GDMLReadSolids: removed a forgotten (used for debugging) cout in         (o)
+  PropertyRead() function.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-00-09)
+  o G4EmStandardPhysics_option4: use G4UrbanFluctuation model for e+-.       (o)
+    Addressing problem report #2466.
+  o G4EmDNABuilder: added option2,3,6,8 configurations.
+    Added extra utility methods to find or to build electron processes.
+  o G4EmDNAPhysicsActivator: fix for light ions.
+  o G4EmDNABuilder, G4EmDNAPhysicsActivator: make consistent the
+    configuration of DNA physics on top of standard physics.
+  o G4EmDNAPhysics_option6, G4EmDNAPhysics_option6, G4EmDNAPhysics_option8:
+    use G4EmDNABuilder.
+  o G4EmDNAPhysics_option6, G4EmDNAPhysics_option8: use "fast" option.
+  o G4EmDNAPhysics_option7, G4EmDNAPhysics_stationary_option6,
+    G4EmDNAPhysics_option3, G4EmDNAPhysics_stationary_option2: simplified code.
+  o Added G4DNABrownianTransportation, SBS and IRT_syn models in
+    G4EmDNAChemistry_option3.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V11-00-01)
+  o G4EmExtraPhysics, G4EmMessenger: use C++11 keywords; suppressed 
+    broadcasting of UI commands.
+- util (phys-util-V11-00-02)
+  o G4PhysListUtil: added new utility method to access a process via sub-type,
+    simplified methods to access hadron processes.
+    Use dynamic_cast instead of static_cast.
+
+processes/cuts                                   proccuts-V11-00-02
+--------------
+- G4VRangeToEnergyConverter: fixed clearing of static data in destructor.    (o)
+
+processes/electromagnetic/adjoint                emadjoint-V11-00-02
+---------------------------------
+- G4AdjointComptonModel, G4AdjointCSManager: use updated interface
+  to cross-section from G4VEmProcess.
+- G4AdjointBremsstrahlungModel: use updated interface to G4EmModelManager.
+
+processes/electromagnetic/dna                    emdna-V11-00-10
+-----------------------------
+- Added protection in G4DNACPA100IonisationModel for cumulative
+  cross-section interpolation.
+- Added flag 'OctreeFinder' in IRT_syn's Initialize() method.
+- Added parameters including the chemical molecules and reaction list
+  involved in the radiolysis.
+
+processes/electromagnetic/standard               emstand-V11-00-07
+----------------------------------
+- G4eBremsstrahlung: improved initialisation.
+- G4UrbanMscModel: added two extra class members.
+- G4UniversalFluctuation: removed unnecessary "if" block.                    (*)
+
+processes/electromagnetic/utils                  emutils-V11-00-09
+-------------------------------
+- G4EmModelManager: updated interface to Initialise() method;
+  removed obsolete method Update().
+- G4VEmProcess, G4VEnergyLossProcess, G4VMultipleScattering: use updated
+  method of G4EmModelManager.
+- G4VEnergyLossProcess: fixed fluctuation model pointer for the case an      (o)
+  extra model is added on top of the default list of models.
+- G4EmParametersMessenger: restored UI command "/process/em/integral".
+- G4VEmProcess: updated methods to access cross-section at run time;
+  implemented new virtual method GetCrossSection(); removed unused methods.
+- G4EmCalculator: use updated method from G4VEmProcess.
+  Fixed variable shadowing.
+- G4EmUtility: a new utility class.
+
+processes/hadronic
+------------------
+- models/de_excitation (hadr-deex-V11-00-04)
+  o G4PhotonEvaporation: for floating levels check if levels with the same
+    energy can be used for sampling transitions; code clean-up.
+  o G4VEmissionProbability: fixed sampling of tail of distribution; added 
+    numerical protections.
+  o G4CoulombBarrier: tuned parameters.
+  o G4LevelManger, G4NuclLevel: removed verbose printouts; code clean-up.
+- models/inclxx (hadr-inclxx-V11-00-02)
+  o G4INCLXXInterface: fixed treatment of kaon0, anti_kaon0, kaon0L, and  (+)(*)
+    kaon0S. In current reference physics lists, INCLXX is never used for
+    handling kaons, although it is capable of doing so, but at process-
+    level or in custom physics lists one could observe crashes when trying
+    to use INCLXX for neutral kaon projectiles. The change fixes this
+    misbehavior.
+
+processes/management                             procman-V11-00-01
+--------------------
+- G4VDiscreteProcess: added virtual method GetCrossSection()
+  needed for integral approach both in hadronics and EM modules.
+
+run                                              run-V11-00-05
+---
+- Imported implementations of task-based interfaces/implementations from
+  the "Tasking" module. See History.tasking file for History of tasking
+  code.
+
+tasking                                          tasking-V11-00-04
+-------
+- Retired module. Contents merged in "global" and "Run" categories.
+
+visualization                                    vis-V11-00-01
+-------------
+- Removed retired "tasking" library as link dependency.
+- management (visman-V11-00-10):
+  o G4VisCommandsViewerSet: improved messaging for "/vis/viewer/set/lineWidth";
+    this simply prints a message saying how *actually* to change line width.
+  o G4VisManager: only print list of available histograms if more than one per
+    category.
+  o Introducing "/vis/viewer/set/specialMeshRenderingOption <dots|surfaces>"
+    UI command; "dots" draw one dot per mesh point; "surfaces" group mesh points
+    by colour and material and compute the outer surface or envelope, removing
+    internal shared faces. So far, only the "dots" option is implemented for
+    some drivers.
+  o Introducing drawing of parameterised tetrahedral mesh.
+    G4VSceneHandler::DrawTetMeshAsDots(): default tet mesh drawing.
+  o Introducing "/vis/viewer/set/lineWidth" UI command, a do-nothing command
+    that tells how to change line width.
+  o Implemented "/vis/reviewPlots" UI command.
+- modeling (modeling-V11-00-04)
+  o G4Mesh: programmed for parameterised tetrahedron mesh.
+  o Replace 'geant4_global_library_target' with direct file inclusion and
+    call to 'geant4_add_category' in CMake script, to define library build
+    from source modules.
+- OpenGL (opengl-V11-00-06)
+  o Retired display list re-use and display list limit.
+  o G4OpenGLSceneHandler::AddCompound(): for parameterised tetrahedron mesh,
+    call default G4VSceneHandler::DrawTetMeshAsDots().
+  o Use 'geant4_module_sources' in CMake script to add optional sources.
+- OpenInventor (openinventor-V11-00-04)
+  o Use 'geant4_module_sources' in CMake script to add optional sources.
+- Qt3D (visQt3D-V11-00-04)
+  o G4Qt3DSceneHandler::AddCompound(): for parameterised tetrahedron mesh,
+    call default G4VSceneHandler::DrawTetMeshAsDots().
+  o Replace 'geant4_global_library_target' with direct file inclusion and
+    call to 'geant4_add_category' in CMake script, to define library build
+    from source modules.
+- RayTracer (raytracer-V11-00-02)
+  o Replace 'geant4_global_library_target' with direct file inclusion and
+    call to 'geant4_add_category' in CMake script, to define library build
+    from source modules. Use 'geant4_module_sources' to add optional sources.
+- ToolsGS (vis_toolsg-V11-00-07):
+  o G4ToolsSGSceneHandler: in AddPrimitive(), define dots as a single pixel;
+    Use GetMarkerSize() for circles and squares.
+    In AddCompound(): for parameterised tetrahedron mesh, call default
+    G4VSceneHandler::DrawTetMeshAsDots().
+  o In G4ToolsSGSceneHandler::SetPlotterHistograms(), suppressed
+    "/control/verbose" messages for "/analysis/*/get*" commands.
+  o Use 'geant4_module_sources' in CMake script to add optional sources.
+- Vtk (visVtk-V11-00-02)
+  o Moved setting of G4VIS_USE_VTK_QT flag to "interfaces" module.
+  o Use 'geant4_module_sources' in CMake script to add optional sources.
+
+data
+----
+- G4EMLOW-8.1:
+  o Added DNA files for the RPWBA models.
+
+examples                                         examples-V11-00-03
+--------
+- Updated documentation and reference outputs.
+- advanced/CaTS (CaTS-V11-00-01)
+  o Fixed compilation warnings for unused arguments.                         (o)
+- advanced/microbeam (microbeam-V11-00-01)
+  o Moved back to original switching field value.
+- basic/B3 (exampleB3-V11-00-01)
+  o Set new analysis file name for the second run in run2.mac to avoid
+    overwriting the output from the first run.
+- extended/geometry/vecGeomNavigation (VecGeomNavigation-V11-00-01)
+  o Removed unused setting of threads causing compilation warning.           (o)
+- extended/medical/dna/dnaphysics (dnaphysics-V11-00-01)
+  o In main(), enable visualisation only in interactive mode;
+    use G4RunManagerFactory.
+  o PhysicsList: added RadioactiveDecayPhysics.
+- extended/medical/dna/chem4 (chem4-V11-00-03)
+  o Added macro commands to control chemical molecules and reactions.
+  o Minor correction for reaction type in macro file beam.in.
+  o Added infomation in README.
+- extended/medical/dna/chem6 (chem6-V11-00-04)
+  o Added PhysicsListMessenger.
+  o Added short chemical reaction list.
+  o Added infomation in README.
+- extended/medical/dna/moleculardna (molecularDNA-V11-00-02)
+  o PhysicsList: added DecayPhysics and RadioactiveDecayPhysics.
+  o ParallelWorldPhysics: minor code clean-up.
+  o In main(), updated according to the recent recommendations:
+    removed ifdef; use default MixMaxEngine; use visualisation in 
+    the interactive session only; use G4RunManagerFactory.
+- extended/medical/dna/spower (spower-V11-00-01)
+  o In main(), enable visualisation only in interactive mode;
+    use G4RunManagerFactory.
+- extended/parallel/MPI (MPI-V11-00-01)
+  o Removed use of obsolete G4DeveloperAPI functions from CMake script.
+- extended/parameterisations/Par04 (expar04-V11-00-02)
+  o Added python training scripts.
+  o Added model conversion to ONNX and LWTNN to the training script
+    and updated README.
+  o Changed visualization scripts for fast simulation.
+  o Added new control histograms.
+  o Changed extension of macros from .in to .mac.
+
+tests                                            tests-V11-00-03
+-----
+- Updated reference outputs and tools.
+- tests/test00 (test00-V11-00-01)
+  o Don't report CMAKE_VERBOSE_MAKEFILE setting as it is irrelevant here.    (o)
+- tests/test46 (test46-V11-00-01)
+  o Added UI command to define histogram scale for CMS HCAL.
