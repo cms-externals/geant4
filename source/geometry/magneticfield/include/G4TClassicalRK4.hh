@@ -54,7 +54,7 @@ class G4TClassicalRK4 : public G4TMagErrorStepper<G4TClassicalRK4<T_Equation, N>
 
     G4TClassicalRK4(T_Equation* EqRhs, G4int numberOfVariables = 8);
 
-    virtual ~G4TClassicalRK4() = default
+    virtual ~G4TClassicalRK4() = default;
 
     G4TClassicalRK4(const G4TClassicalRK4&) = delete;
     G4TClassicalRK4& operator=(const G4TClassicalRK4&) = delete;
