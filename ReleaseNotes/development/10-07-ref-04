@@ -1,0 +1,323 @@
+
+                       geant4-10-07-ref-04
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added preliminary support for sanitizers in CMake configuration, as
+   new advanced option GEANT4_BUILD_SANITIZER to allow selection of one
+   of address, thread, or undefined sanitizer. The default is no sanitization.
+ o Added unit definitions for Velocity and Momentum in G4UnitsTable.
+ o Fixed model per region definition for all base processes G4VEmProcess,
+   G4VMultipleScattering, G4VEnergyLossProcess; removed sub-cut facility for
+   energy loss processes.
+ o Introduced a new threshold parameter in radioactive-decay for analogue mode
+   to kill very long radioactive decays at rest of nuclides happening later
+   than such threshold.
+ o G4RunManagerFactory: set default run manager type to be Tasking.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.7.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-07-13
+-----
+- Added preliminary support for sanitizers. Introduces new advanced option
+  GEANT4_BUILD_SANITIZER to allow selection of one of address, thread, or
+  undefined sanitizer. The default is no sanitization. Adds appropriate flags
+  to CMAKE_CXX_FLAGS.
+
+config                                           config-V10-07-04
+------
+- binmake.gmk: removed include paths to "hadronic/models/management"
+  and "hadronic/models/util" modules, now retired.
+
+analysis                                         analysis-V10-07-04
+--------
+- Migrated CMake scripts to modular CMake API.
+
+digits_hits                                      digits_hits-V10-07-01
+-----------
+- Make sure probe commands are not unnecessarily broadcasted to the worker
+  threads.
+- Migrated CMake scripts to modular CMake API.
+- Code formatting.
+
+error_propagation                                error-propagation-V10-07-01
+-----------------
+- Migrated CMake scripts to modular CMake API.
+- Code formatting.
+
+event                                            event-V10-07-01
+-----
+- Use existing facility to find physical volume in store, rather than looping
+  through in G4SPSPosDistribution::ConfineSourceToVolume().
+- Migrated CMake scripts to modular CMake API.
+
+externals/g4tools                                g4tools-V10-07-02
+-----------------
+- Updated to g4tools 5.4.0:
+  o Windowing code update needed for the new ToolsSG vis drivers.
+  o See History_tools for the complete list of modifications.
+
+g3tog4                                           g3tog4-V10-07-00
+------
+- Migrated CMake scripts to modular CMake API.
+
+geometry                                         geometry-V10-07-00
+--------
+- Migrated CMake scripts to modular CMake API.
+- geometry/management (geommng-V10-07-03)
+  o Fixed potential thread contention in stores when clearing/updating maps
+    at initialisation.
+  o Added missing implementation of inline method GetMap() in stores.
+- solids/specific (geom-specific-V10-07-03)                                  (o)
+  o G4Polyhedra, G4Polycone: fixed setting of 'endPhi' for the case
+    of negative 'phiStart'. It addresses also problem report #2362.
+
+global                                           global-V10-07-09
+------
+- G4UnitsTable: added unit definitions for Velocity and Momentum.
+- Updated date and tag-ID for geant4-10-07-ref-04.
+
+intercoms                                        intercoms-V10-07-04
+---------
+- Fixed leak in G4ProfilerMessenger.
+
+interfaces                                       interfaces-V10-07-10
+----------
+- G4UIQt: deal properly with creation and deletion of viewer properties.
+- Removed obsolete Wt code from source and use in G4UIexecutive.
+- Migrated CMake scripts to modular CMake API.
+
+materials                                        materials-V10-07-04
+---------
+- In G4AtomicShells and G4AtomicShells_XDB_EADL, fixed method                (o)
+  GetNumberOfFreeElectrons(). Addressing problem report #2356.
+- G4MaterialPropertiesTable: recalculate GROUPVEL if RINDEX is modified.
+  Addressing problem report #2313.
+
+parameterisations                                gpara-V10-07-00
+-----------------
+- Migrated CMake scripts to modular CMake API.
+
+particles                                        particles-V10-07-00
+---------
+- Migrated CMake scripts to modular CMake API.
+
+persistency                                      persistency-V10-07-00
+-----------
+- Migrated CMake scripts to modular CMake API.
+
+physics_lists                                    physics-lists-V10-07-01
+-------------
+- Migrated CMake scripts to modular CMake API.
+- Removed dependencies on hadronic/model/util and hadronic/model/management
+  modules now retired.
+- constructors/electromagnetic (phys-ctor-em-V10-07-10)
+  o G4EmStandardPhysics, G4EmStandardPhysicsGS: set default verbosity to 1.  (o)
+- lists (phys-lists-V10-07-08)
+  o In all physics-lists, protected banners by verbosity level.
+  o G4PhysListFactory: added verbosity level to constructor and propagated
+    to constructed lists.
+  o Mirror changes to G4PhysListFactory constructor signature (taking a
+    default verbosity argument) in the G4PhysListFactoryAlt constructor.
+
+processes/electromagnetic/adjoint                emadjoint-V10-07-04
+---------------------------------
+- G4ContinuousGainOfEnergy: use updated signature for ion ionisation.
+
+processes/electromagnetic/dna                    emdna-V10-07-04
+-----------------------------
+- Updated PrintGeneratorInformation() method signature in G4DNABornAngle
+  and G4DNARuddAngle.
+
+processes/electromagnetic/lowenergy              emlowen-V10-07-12
+-----------------------------------
+- G4IonParametrisedLossModel: use updated signature for ion ionisation.
+- Updated PrintGeneratorInformation() method signature for few angular
+  generators.
+
+processes/electromagnetic/muons                  emmuons-V10-07-07
+-------------------------------
+- G4EnergyLossForExtrapolator, G4TablesForExtrapolator: allow several runs   (o)
+  with extrapolator; fixed extrapolation for hadrons.
+  More thread safe initialisation and destruction.
+- Updated PrintGeneratorInformation() method signature in G4ModifiedMephi.
+
+processes/electromagnetic/polarisation           empolar-V10-07-03
+--------------------------------------
+- G4PolarizedIonisationBhabhaXS: removed incorrect G4Exception.
+- G4PolarizedBremsstrahlung: fixed variable shadowing.
+- G4PolarizedAnnihilation, G4ePolarizedIonisation: improved initialisation
+  of assymetry tables.
+
+processes/electromagnetic/standard               emstand-V10-07-08
+----------------------------------
+- G4BetheBlochModel, G4BraggIonModel, G4LindhardSorensenIonModel,
+  G4ICRU73QOModel, G4AtimaIonIonisationModel: changed interface to ion
+  ionisation corrections.
+- Code clean-up of ionisation, energy loss processes and models.
+
+processes/electromagnetic/utils                  emutils-V10-07-14
+-------------------------------
+- G4VEmAngularDistribution: added virtual method PrintGeneratorInformation().
+- G4EmParameters: fixed line breaking in printouts.                          (o)
+  Addressing problem report #2350.
+- Fixed model per region definition for all base processes G4VEmProcess,
+  G4VMultipleScattering, G4VEnergyLossProcess; removed sub-cut facility for
+  energy loss processes; clean-up of parameters classes.
+- G4VEmModel, G4VEnergyLossProcess, G4EmCalculator: optimised signature
+  of the CorrectionsAlongStep() method; use more constant variables; minor
+  code optimisation.
+- G4VMscModel: improved printout.
+- Further code clean-up, including G4VEnergyLossProcess, G4LossTableManager
+  and messengers for EM parameters.
+
+processes/hadronic
+------------------
+- Merged 'models/management' module in 'management'.
+- Merged 'models/util' module in 'util'.
+- models/de_excitation (hadr-deex-V10-07-03)
+  o G4DeexPrecoParameters fixed line breaking in printouts.                  (o)
+    Addressing problem report #2350.
+  o Updated CMake and GNUmake scripts.
+- models/particle_hp (hadr-hpp-V10-07-04)
+  o Updated CMake and GNUmake scripts.
+- models/radioactive_decay (radioactive_decay-V10-07-05)
+  o G4RadioactiveDecayBase, G4RadioactiveDecayBaseMessenger: introduced
+    a new parameter for analogue mode to kill very long radioactive decays
+    at rest of nuclides happening later than this threshold parameter.
+    Its default value (10^27 ns) corresponds to more than twice the age of
+    the universe. The value of the threshold can be changed via a new UI
+    command, e.g. to set it to 1000 years:
+    "/process/had/rdm/thresholdForVeryLongDecayTime 3.1536e+10 second" .
+    This kind of cut has been introduced in order to avoid to account
+    energy depositions happening after many billions of years in ordinary
+    materials used in calorimetry, in particular Tungsten and Lead - via
+    their their natural unstable, but very long lived, isotopes, such as
+    W183, W180 and Pb204. Note that the cut is not on the average, mean
+    lifetime, but on the actual sampled global decay time).
+  o Use existing facility to find logical volume in store, rather than looping
+    through in G4RadioactiveDecayBase/G4RadioactiveDecay
+    Select/DeselectAVolume().
+  o G4RadioactiveDecayBase fixed line breaking in printouts.                 (o)
+    Addressing problem report #2350.
+  o Updated CMake and GNUmake scripts.
+
+processes/management                             procman-V10-07-01
+--------------------
+- G4ProcessTable: added missing checks, protecting against null elements.    (o)
+- Migrated CMake scripts to modular CMake API.
+
+processes/parameterisation                       param-V10-07-00
+--------------------------
+- Migrated CMake scripts to modular CMake API.
+
+readout                                          readout-V10-07-00
+-------
+- Migrated CMake scripts to modular CMake API.
+
+run                                              run-V10-07-04
+---
+- Optimised access to volumes and regions stores.
+- Minor c++11 review in use of iterators, initialisers, etc...
+- Removed obsolete ResetCuts() method in G4VUserPhysicsList.
+- Added new G4DNAStaticMoleculeReactionProcess in PhysicsListHelper
+  for DNA processes.
+- General code cleanup and formatting.
+- Migrated CMake scripts to modular CMake API.
+
+tasking                                          tasking-V10-07-01
+-------
+- G4RunManagerFactory: set default run manager type to be Tasking.
+
+track                                            track-V10-07-02
+-----
+- Adjusted printout format in DumpInfo() for G4VParticleChange
+  and G4ParticleChange.
+- Migrated CMake scripts to modular CMake API.
+
+tracking                                         tracking-V10-07-08
+--------
+- Use existing facility to find logical volume in store, rather than
+  looping through in G4AdjointCrossSurfChecker.
+- Migrated CMake scripts to modular CMake API.
+
+visualization
+-------------
+- management (visman-V10-07-05):
+  o Use existing facility to find logical volume in store, rather than looping
+    through in G4VisCommandSceneAddLogicalVolume::SetNewValue().
+- modeling (modeling-V10-07-04)
+  o Added G4Exception in default implementation of
+    G4PseudoScene::ProcessVolume().
+- OpenGL (opengl-V10-07-07)
+  o G4OpenGLWin32Viewer: fixed occasional crash with G4UIWin32 when creating
+    viewer from UI command: avoid indirect call to DrawView() while still
+    within CreateMainWindow().
+  o Comment out makeCurrent() in G4OpenGLImmediate/StoredQtViewer
+    to prevent red-button crash.
+- Qt3D (visQt3D-V10-07-02)
+  o Improve overall protection of debug output with #ifdef G4QT3DDEBUG.
+    Moved debug code to G4Qt3DUtils header.
+  o Include some trial code (commented out) for text output.
+
+examples                                         examples-V10-07-04
+--------
+- Updated documentation and reference outputs.
+- advanced/ICRP110_HumanPhantoms (ICRP110Phantoms-V10-07-00)
+  o Introduced ICRP110PhantomVisAction. Updated vis.mac which shows
+    how to activate it.
+- advanced/gammaknife (gammaknife-V10-07-01)                                 (o)
+  o Use default MixMax random number engine.
+  o Fixed interactive run to just execute defaultMacro.mac.
+  o Added forgotten header in GammaKnifePhysicsList.
+- advanced/purging_magnet (purmag-V10-07-00)                                 (o)
+  o Removed call to obsolete ResetCuts() in PurgMagPhysicsList.
+- advanced/STCyclotron (STCyclotron-V10-07-01)                               (o)
+  o Fixed gui.mac macro to invoke init_parameters.mac.
+    Addressing GitHub PR#25.
+- advanced/xray_telescope (xraytel-V10-07-00)                                (o)
+  o Removed calls to obsolete ResetCuts() in XrayTelPhysicsList.
+- extended/eventgenerator/particleGun (particleGunExample-V10-07-00)
+  o Migrated to use G4RunManagerFactory and G4SteppingVerboseWithUnits.
+    Removed SteppingVerbose class.
+- extended/eventgenerator/userPrimaryGenerator (userPrimaryGenerator-V10-07-00)
+- extended/geometry/transforms (exTransforms-V10-07-00)
+  o Migrated to use G4SteppingVerboseWithUnits.
+- extended/hadronic/Hadr03 (exhadr03-V10-07-020
+- extended/hadronic/Hadr04 (exhadr04-V10-07-02)
+  o Migrated to use G4RunManagerFactory and G4SteppingVerboseWithUnits.
+    Removed SteppingVerbose class.
+- extended/hadronic/Hadr06 (exhadr06-V10-07-08)
+  o Enable ParticleHP settings in main().
+  o Stepping verbose initialisation.
+- extended/hadronic/Hadr07 (exhadr07-V10-07-06)
+  o Enable ParticleHP settings in main().
+- extended/hadronic/NeutronSource (NeutronSource-V10-07-05)
+  o Migrated to use G4RunManagerFactory and G4SteppingVerboseWithUnits.
+    Removed SteppingVerbose class.
+- extended/medical/GammaTherapy (gtherapy-V10-07-00)                         (o)
+  o Use default MixMax generator instead of obsolete RanecuEngine.
+- extended/optical/OpNovice (OpNovice-V10-07-01)
+  o Excercise creating material property table element by element.
+- extended/radioactivedecay/Activation (activation-V10-07-04)
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-07-00)
+- extended/radioactivedecay/rdecay02 (rdecay02-V10-07-00)
+  o Migrated to use G4RunManagerFactory and G4SteppingVerboseWithUnits.
+    Removed SteppingVerbose class.
+
+tests                                            tests-V10-07-04
+-----
+- Updated reference outputs and tools.
+- tests/test31 (test31-V10-07-02)
+  o Use the same extrapolator for several tests; define list of materials
+    before the first run.
+- tests/test44 (test44-V10-07-02)
+  o Removed sub-cut option.
+- tests/test47 (test47-V10-07-01)
+- tests/test48 (test48-V10-07-04)
+  o Updated build scripts.
