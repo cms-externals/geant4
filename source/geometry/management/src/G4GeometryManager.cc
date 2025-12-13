@@ -71,7 +71,7 @@ G4VoxelisationHelper* G4GeometryManager::fParallelVoxeliser = nullptr;
  // Expected Future: data member (when only one instance)
 
 // Static *global* class data
-G4bool G4GeometryManager::fParallelVoxelOptimisationRequested = true;
+G4bool G4GeometryManager::fParallelVoxelOptimisationRequested = false;
   // Records User choice to use parallel voxel optimisation (or not)
 
 G4bool G4GeometryManager::fOptimiseInParallelConfigured = false;
