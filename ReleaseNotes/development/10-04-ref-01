@@ -1,0 +1,275 @@
+
+                       geant4-10-04-ref-01
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o UI commands return an error message if a command is refused due to
+   incorrect parameter(s).
+ o Enabled VecGeom wrappers for G4ExtrudedSolid, G4TessellatedSolid and G4Hype.
+ o Brought back development version of FTF, as before ref-10.
+ o New class for diffuse-elastic process, where the underlying physics model
+   code has been revised and significantly improved in performance.
+ o First implementation of alpha cluster structure of carbon nuclei
+   according to P.Bozek et al., Phys.Rev.C90, 064902 (2014).
+ o Added possibility to interpolate time window parameters in visualization
+   and make a clip of particles moving through time.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in release 10.4.p01
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-04-01
+-----
+- When running test driver directly, make it run in WORKING_DIRECTORY if     (*)
+  this is supplied.
+- Added TESSELLATEDSOLID flag to enable optional wrapping of G4TessellatedSolid
+  with VecGeom implementation.
+
+config                                           config-V10-04-00
+------
+- In geomconf.gmk, added G4GEOM_USE_UTESSELLATEDSOLID flag to enable VecGeom
+  wrapper for G4TessellatedSolid.
+
+analysis                                         analysis-V10-04-00          (*)
+--------
+- Fixed self-consistency in headers (missing #include) in G4BaseAnalysisManager
+  and G4PlotManager.
+
+digits_hits                                      digits_hits-V10-04-00       (*)
+-----------
+- G4ScoringMessenger, G4ScoreQuantityMessenger: UI command returns an error
+  message if a command is refused due to incorrect parameter(s).
+
+error_propagation                                error-propagation-V10-04-00 (*)
+-----------------
+- Fixed self-consistency in headers (missing #include) in G4ErrorMatrix,
+  G4ErrorRunManagerHelper and G4ErrorSymMatrix.
+
+event                                            event-V10-04-02             (*)
+-----
+- G4GeneralParticleSourceMessenger, G4ParticleGunMessenger: UI command
+  returns an error message if a command is refused due to incorrect
+  parameter(s).
+- Fixed self-consistency in G4SPSRandomGenerator header (missing #include).
+
+externals                                        externals-V10-04-00         (*)
+---------
+- CLHEP: in MixMaxRng::modadd(), fixed guard for assembly code to protect
+  builds on 32-bit systems.
+
+geometry
+--------
+- management (geommng-V10-04-00):                                            (*)
+  o Fixed self-consistency in G4VVolumeMaterialScanner header (missing
+    #include).
+- solids/CSG (geom-csg-V10-04-00)                                            (*)
+  o Fixed typo in G4Trd::GetPointOnSurface() for the area settings.
+- solids/specific (geom-specific-V10-04-04):
+  o Added missing initialisation of two data-members in copy-ctor and        (*)
+    assignment operator of G4ExtrudedSolid. Addressing problem report #2016.
+    Removed redundant data initialistion in G4ExtrudedSolid constructors.
+  o Enabled VecGeom wrappers for G4ExtrudedSolid, G4TessellatedSolid and G4Hype.
+
+global                                           global-V10-04-00            (*)
+------
+- Fixed self-consistency in G4ReferenceCountedHandle header (missing #include).
+  Added missing #ifdef guard in G4CacheDetails header; code formatting.
+
+graphics_reps                                    greps-V10-04-01
+-------------
+- Added G4GREPS_ALLOC_EXPORT flag for DLL symbols export and apply it to
+  data in G4VisAttributes.
+
+intercoms                                        intercoms-V10-04-01         (*)
+---------
+- G4UIcommand, G4UImanager: additional implementation for adding a
+  mechanism of carrying back error message from the messenger if a command
+  is rejected due to the target class or the messenger.
+
+materials                                        materials-V10-04-00         (*)
+---------
+- Fixed self-consistency in headers (missing #include) in G4ElementTable and
+  G4MaterialTable.
+
+parameterisations/gflash                         gflash-V10-04-00            (*)
+------------------------
+- Fixed self-consistency in GVFlashHomoShowerTuning header (missing #include).
+
+persistency/gdml                                 gdml-V10-04-00              (*)
+----------------
+- Fixed self-consistency in G4GDMLAuxStructType header (missing #include).
+
+processes/electromagnetic/dna                    emdna-V10-04-00             (*)
+-----------------------------
+- Fixed self-consistency in headers (missing #include) in G4IosFlagsSaver,
+  G4KDNode, G4MoleculeIterator and G4LEPTSDiffXS.
+  Fixed spurious definition of G4IT namespace in G4ITMultiNavigator header.
+
+processes/electromagnetic/lowenergy              emlowen-V10-04-00           (*)
+-----------------------------------
+- Fixed self-consistency in G4ecpssrFormFactorMixsModel header
+  (missing #include).
+
+processes/electromagnetic/standard               emstand-V10-04-01           (*)
+----------------------------------
+- G4PairProductionRelModel: fixed misuse of G4Pow (A13(..) should be used
+  instead of Z13(..)); added initialisation of an element cache before sampling
+  of final state. Partially addressing problem report #2017.
+
+processes/electromagnetic/utils                  emutils-V10-04-01           (*)
+-------------------------------
+- G4EmParametersMessenger: use G4Exception for warnings instead of G4cout,
+  review G4State for UI commands and signal the RunManager about modification
+  of physics if a command is issued in Idle state.
+- G4EmParameters, G4VEmProcess, G4VEnergyLossProcess: define the same default
+  values for few internal members.
+- G4EmParameters, G4EmParametersMessenger: fixed printout format and added
+  lock and protection in commands defining physics per region.
+
+processes/electromagnetic/xrays                  xrays-V10-04-01             (*)
+-------------------------------
+- G4VXTRenergyLoss: extended XTR angle limit up to 250/gamma, on ATLAS request.
+- Fixed self-consistency in G4VTRModel header (missing #include).
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-04-03)
+  o G4NeutrinoElectronTotXsc: new class for total (i.e. neutral current
+    plus charged current) cross-section for neutrino-electron interactions.
+  o G4NeutrinoElectronCcXsc, G4NeutrinoElectronNcXsc: added method.
+  o Commented out debug printouts in G4ProjectileFragmentCrossSection header.
+- models/coherent_elastic (hadr-cohe-V10-04-00)
+  o Update to G4hhElastic to take into account recent TOTEM data for
+    proton-proton at 13 TeV.
+  o Added new class G4DiffuseElasticV2. The underlying physics model is
+    the same as in G4DiffuseElastic, however, the code has been revised,
+    cleanup and significantly improved in a number of places.
+    The performance has been improved by the factor of ~2 with respect to the
+    original implementation. The approximation of small angles has been dropped
+    (replaced by exact calculation) as it was not bringing any visible benefits.
+- models/de_excitation (hadr-deex-V10-04-00)                                 (*)
+  o Fixed self-consistency in G4ChatterjeeCrossSection header (missing
+    #include). Fixed #ifdef guard in G4StatMFMacroBiNucleon header.
+- models/fission (hadr-fission-V10-04-00)                                    (*)
+  o Fixed self-consistency in G4LLNLFission header (missing #include).
+    Added missing #ifdef guards in G4fissionEvent header.
+- models/im_r_matrix (hadr-im_r-V10-04-00)                                   (*)
+  o Fixed self-consistency in headers (missing #include) in
+    G4CrossSectionBuffer, G4DeltaNstarBuilder and G4NNstarBuilder.
+- models/particle_hp (hadr-hpp-V10-04-00)                                    (*)
+  o Fixed self-consistency in headers (missing #include) in G4FFGEnumerations,
+    G4FPYNubarValues, G4ParticleHPAngularP and G4ParticleHPHash.
+- models/parton_string/diffraction (hadr-string-diff-V10-04-02)
+  o Brought back development version of FTF, as before ref-10.
+  o Corrected calculation of nuclear residual excitation energy.
+    Fine tuning of the model parameters..
+- models/parton_string/hadronization (had-hadronization-V10-04-03)
+  o Brought back development version of FTF, as before ref-10.
+  o Improved versions and tuning of LUND and QGS fragmentations.
+  o G4VLongitudinalStringDecay: removed useless caching in the method
+    FragmentationMass() which was causing rare irreproducibilities in
+    gamma-nuclear reactions (i.e. involving QGS).
+- models/parton_string/management (hadr-partonstring-mgt-V10-04-01)
+  o Brought back development version of FTF, as before ref-10.
+  o Fixed self-consistency in G4VertexCode header (missing #include).        (*)
+- models/parton_string/qgsm (hadr-qgsm-V10-04-03)
+  o Brought back development version of FTF, as before ref-10.
+  o Improved QGSM and fixed issue of event reproducibility in gammma-nuclear.
+  o Fixed self-consistency in G4SPPartonInfo header (missing #include).      (*)
+- models/radioactive_decay (radioactive_decay-V10-04-00)                     (*)
+  o G4RadioactiveDecay, G4RadioactiveDecayBase: added check that environment
+    variable G4RADIOACTIVEDATA is pointing to correct directory. Moved check
+    from G4RadioactiveDecay::LoadDecayTable() to constructor.
+    Addresses problem report #1942.
+- models/util (hadr-mod-util-V10-04-02)
+  o First implementation of alpha cluster structure of carbon nuclei in
+    G4Fancy3DNucleus, according to P.Bozek et al., Phys.Rev.C90, 064902 (2014).
+    Fixed issue of event reproducibility; added loop checks and general cleanup.
+    In case of difficulties in the method ChooseFermiMomenta(), emit a
+    "JustWarning" exception instead of writing to cerr.
+  o Minor improvement to code in G4Nucleon and cleanup.
+- util (hadr-util-V10-04-00)                                                 (*)
+  o Fixed self-consistency in headers (missing #include) in DumpFrame,
+    G4GHEKinematicsVector and G4ping.
+
+processes/management                             procman-V10-04-02           (*)
+--------------------
+- G4ProcessManager: added method GetProcess(name) to return a pointer to
+  a process from its name.
+- The following UI commands are now forbidden for 'G4State_GeomClosed' or
+  'G4State_EventProc' application states:
+   o /process/activate
+   o /process/inactivate
+   o /particle/process/activate
+   o /particle/process/inactivate
+ - G4ProcessManagerMessenger, G4ProcessTableMessenger: UI command returns
+   an error message if a command is refused due to incorrect parameter(s).
+
+processes/parameterisation                       param-V10-04-00             (*)
+--------------------------
+- Fixed self-consistency in G4FastSimulationVector header (missing #include).
+
+run                                              run-V10-04-00               (*)
+---
+- G4UserPhysicsListMessenger: UI command returns an error message if a
+  command is refused due to incorrect parameter(s).
+
+visualization                                    vis-V10-04-00
+-------------
+- management:
+  o Moved time window parameters from G4OpenGLStoredViewer to
+    G4ViewParameters. Now one can interpolate time window parameters (using
+    /vis/viewer/interpolate) and make a movie of particles moving through time.
+    To do this, see guidance on /vis/viewer/set/timeWindow/ commands.
+  o G4ViewParameters: fix for /vis/viewer/save. Completed PrintDifferences(),
+    operator<<() and operator!=() for time window parameters.
+    Provide proper Get and Set functions for time parameters.
+  o Moved time window commands to /vis/viewer/set/timeWindow/.
+    Deprecated the equivalent /vis/ogl/set/ commands.
+    Copied /vis/ogl/set time window commands to /vis/viewer/set.
+- modeling (modeling-V10-04-01):                                             (*)
+  o Fixed self-consistency in G4AttValueFilterT header (missing #include).
+- OpenGL (opengl-V10-04-01):
+  o Implemented G4OpenGLStoredViewer::AddPrimitiveForASingleFrame().
+  o G4OpenGLStoredSceneHandler::AddPrimitivePreambleInternal: removed call   (*)
+    to glDrawBuffer(GL_FRONT), which seems to cause problems for the case of
+    display list memory being exceeded.
+
+examples                                         examples-V10-04-01
+--------
+- Updated documentation and reference outputs.
+- extended/electromagnetic/TestEm2 (testem2-V10-04-00)
+- extended/electromagnetic/TestEm3 (testem3-V10-04-00)
+- extended/electromagnetic/TestEm5 (testem5-V10-04-00)
+- extended/electromagnetic/TestEm8 (testem8-V10-04-00)
+  o Corrected input macros to optimise output.
+- extended/electromagnetic/TestEm13 (testem13-V10-04-00)
+- extended/electromagnetic/TestEm14 (testem14-V10-04-00)
+- extended/electromagnetic/TestEm18 (testem18-V10-04-00)
+  o Updated PhysListEmStandard, livermore, penelope.
+- extended/hadronic/Hadr04 (exhadr04-V10-04-00)                              (*)
+  o NeutronHPphysics: use pManager->GetProcess(processName).
+- extended/physicslists/extensibleFactory (extFactory-V10-04-02)             (*)
+- extended/physicslists/factory (factory-V10-04-01)                          (*)
+- extended/physicslists/genericPL (genericPL-V10-04-01)                      (*)
+  o Corrected GNUmake script.
+- extended/physicslists/shared (physicslistsShared-V10-04-00)                (*)
+  o Corrected copy script.
+
+tests                                            tests-V10-04-01
+-----
+- Updated reference outputs and tools.
+- tests/test15 (test15-V10-04-10)
+  o New test comparing with TARC experimental data. In its basic form the
+    test validates cascade, precompound and de-exictation models along with
+    neutron production, interaction and transportation, including the
+    neutron_hp models.
+- tests/test18 (test18-V10-04-00)                                            (*)
+  o Replace use of command '/gun/ionL' using level numbers with command
+    '/gun/ion' using level energy in input scripts.
+- tests/test22 (test22-V10-04-00)
+  o Added subdirectory NA61 for the validation of string models
+    with NA61/SHINE data.

@@ -1,0 +1,294 @@
+
+                       geant4-11-03-ref-10
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Enabled worker threads to receive next sub-event before completing the
+   current sub-event in G4WorkerSubEvtRunManager and G4EventManager.
+ o Reorganised and enriched comments in headers to follow Doxygen style in
+   geometry modules.
+ o Updated Goudsmit-Saunderson multiple-scattering model to use by default the
+   most accurate algorithm; updated G4EmStandardPhysicsGS according to the
+   changes in the GS multiple scattering model, the standard GS EM constructor
+   is expected to provide accurate e-/e+ simulations now (similar accuracy as
+   in Livermove, Penelope and option 4).
+ o Added new classes G4GeneralCerenkov and G4StandardCerenkovModel with the
+   first implementation of the model approach for X-Ray processes G4Cerenkov,
+   G4Scintillation and G4GeneralCerenkov.
+ o Extended G4DNAELSEPAElasticModel in G4DNA up to 10 MeV for water.
+ o Extension of the INCLXX model to handle anti-neutron (at rest and in-flight).
+ o In G4ChargeExchange, implemented angular distribution of pion charge
+   exchange according to the V.Lubovitsky parameterisation for different
+   reaction channels.
+ o Updated g4tools and ToolsGS visualisation driver to use OpenGL-3.2, enabled
+   by setting macro TOOLS_USE_GL_VERSION_3_2. Now co-working with Vtk.
+ o New dataset versions: G4EMLOW-8.8, G4PARTICLEXS-4.2, G4INCL-1.3, and
+   G4CHANNELING-2.0.
+ 
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-03-13
+-----
+- Updated clang-format settings and removed obsolete G4ClangFormat module.
+  Use of clang-format will be through IDEs or pre-commit rather than build
+  system going forward.
+- Updated datasets: G4INCL-1.3, G4EMLOW-8.8, G4CHANNELING-2.0
+  and G4PARTICLEXS-4.2
+
+analysis                                        analysis-V11-03-06
+--------
+- Fix in G4THnMessenger; improved top directory description:
+  this fixes "...Title not available..." description in the command tree.
+
+event                                            event-V11-03-01
+-----
+- G4EventManager: enabling to receive next sub-event before completing the
+  current sub-event when used in the worker thread of sub-event parallel mode.
+- G4Event, G4SubEvent: added some flags and pointers to enable the above.
+
+externals/g4tools                                g4tools-V11-03-13
+-----------------
+- Updated tools to version 8.0.0.
+  Updated tools from OpenGL-1.1 to OpenGL-3.2, enabled by setting macro
+  TOOLS_USE_GL_VERSION_3_2. Fixed rendering for G4Polymarker dots on macOS.
+  In Qt,X11,Xt,Windows, enforce immediate rendering in event loop processing.
+
+geometry/biasing                                 geombias-V11-03-01
+----------------
+- Reorganised and enriched comments in headers to follow Doxygen style.
+- Removed empty source files for G4VGCellFinder, G4VImportanceSplitExaminer,
+  G4VIStore, G4VImportanceAlgorithm, G4VWeightWindowStore and
+  G4VWeightWindowAlgorithm.
+
+geometry/magneticfield                           field-V11-03-08
+----------------------
+- Reorganised and enriched comments in headers to follow Doxygen style.
+- Moved inline implementations to .icc file for G4ChargeState and for
+  G4FieldParameters.
+- Removed not implemented methods in G4ChordFinder, G4DoLoMcPriRK34 and
+  G4FieldSetup.
+
+geometry/management                              geommng-V11-03-12
+-------------------
+- Reorganised and enriched comments in headers to follow Doxygen style.
+- Removed empty source files for G4ErrorSurfaceTarget and G4ErrorTanPlaneTarget.
+- Moved inline implementations to .icc file for G4UAdapter.
+- Fix to prevent data races in parallel voxelisation.
+
+geometry/solids/specific                         geom-specific-V11-03-10
+------------------------
+- Reorganised and enriched comments in headers to follow Doxygen style.
+- Removed virtual specifications from utility class G4ClippablePolygon.
+- Removed static protected functions in G4Hype and made them private.
+- Removed unneeded static data/specifications in G4Voxelizer.
+- Moved inline methods definitions of G4TriangularFacet, G4QuadrangularFacet,
+  G4SurfBits, G4TwistBoxSide, G4TwistTrapParallelSide and G4TwistTrapAlphaSide
+  to .icc files.
+
+geometry/volumes                                 geomvol-V11-03-04
+----------------
+- Moved default destructor definitions to headers.
+- Minor code formatting in headers.
+
+global                                           global-V11-03-28
+------
+- Fixed data race on std::cout in G4iosFinalization.
+- Added new class G4FunctionSolver, a new utility to solve equation F(x)=0.
+- Fixed destructor in G4ExtendedPhysicsVector, addressing Coverity report.
+- Updated date and tag-ID for geant4-11-03-ref-10.
+
+graphics_reps                                    greps-V11-03-02
+-------------
+- In G4Visible, fixed reported Coverity defects in copy constructor and
+  assignment operator.
+
+interfaces                                       interfaces-V11-03-10
+----------
+- In CMake script, handle -DTOOLS_USE_GL_VERSION_3_2 in case of GEANT4_USE_VTK.
+
+materials                                        materials-V11-03-05
+---------
+- In G4AtomicFormFactor, corrected k conversion and 4*pi factor.
+- Fixed s computation in Cromer-Mann form to:
+  s = (k * 1e-7) / (4*pi) (k in mm^-1).
+
+physics_lists
+-------------
+- builders (phys-builders-V11-03-01)
+  o G4HadronicBuilder: added the possibility to use anti-neutron by INCLXX.
+- constructors/electromagnetic (phys-ctor-em-V11-03-15)
+  o Updated G4EmStandardPhysicsGS according to the changes in the GS multiple
+    scattering model, the standard GS EM constructor is expected to provide
+    accurate e-/e+ simulations now (similar accuracy as in Livermove, Penelope
+    and option 4).
+  o In G4OpticalPhysics, instantiate a process only if it is activated; added
+    option to instantiate the new G4GeneralCerenkov process.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-03-20)
+  o Extended G4DNAELSEPAElasticModel up to 10 MeV for water.
+    Requires new data-set G4EMLOW-8.8.
+  o Changed the condition in calculateDistanceFromTimeStep() in     
+    G4ChemReboundTransportation, to allow for calculating even with zero
+    DiffusionCoefficient.
+  o In G4DNARuddIonisationDynamicModel, use G4ExtendedPhysicsVector for data;
+    results are unchanged, performance should be improved.
+- standard (emstand-V11-03-14)
+  o G4GoudsmitSaundersonMscModel, G4GoudsmitSaundersonTable, G4GSMottCorrection,
+    and G4GSPWACorrections: removed all other electron stepping and boundary
+    crossing algorithms from the Goudsmit-Saunderson multiple-scattering model,
+    except its accurate one; updated the class descriptions, no physics change
+    is expected in the Livermore, Penelope and standard option4 EM constructors
+    while the standard GS constructor now will be more accurate.
+  o G4UrbanMscModel: changed 'geommin' parameter value from 10^-3 mm to
+    10^-6 mm; this change is effective to EM option3 physics configuration.
+  o G4eBremsstrahlungRelModel, G4PairProductionRelModel: simplifed handling of
+    LPM functions by precomputing and factoring the related data to a new
+    G4LPMFunction (header only) utility.
+- utils (emutils-V11-03-14)
+  o G4VXRayModel, G4OpticalParameters: added extra methods needed for new
+    Cerenkov processes and models.
+- xrays (xrays-V11-03-04)
+  o Added new classes G4GeneralCerenkov and G4StandardCerenkovModel with the
+    first implementation of the model approach for X-Ray processes G4Cerenkov,
+    G4Scintillation and G4GeneralCerenkov; fixed IsApplicable(..) method for
+    UnknownParticle type; use dynamic charge and kinematics for these processes.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-03-07)
+  o G4ChargeExchangeXS: added extra method SampleTforPion(..), which is based
+    on the V.Lyubovitsky parameterisation for different reaction channels.
+  o In G4NeutronInelasticXS, G4NeutronElasticXS and G4NeutronCaptureXS, split
+    data tables on two parts, low-energy for neutron resonance region and high
+    energy above this region. This allows to increase accuracy of neutron cross
+    sections for non HP (for example, HEP) applications.
+- models/coherent_elastic (hadr-cohe-V11-03-04)
+  o In G4ChargeExchange, implemented angular distribution of pion charge
+    exchange according to the V.Lubovitsky parameterisation for different
+    reaction channels.
+- models/de_excitation (hadr-deex-V11-03-23)
+  o G4StatMFMicroCanonical: replaced use of hard-coded solver with
+    G4FunctionSolver. Fixed surface energy computation and removed unnecessary
+    computations.
+  o Multifragmentation models are now using G4FunctionSolver instead of
+    G4Solver.
+  o G4CoulombBarrier, G4DeexPrecoUtils, G4EvaporationFragment,
+    G4EvaporationProbability and G4EvaporationGEMFactoryVI, use the default
+    evaporation for neutrons, protons and light ions.
+  o In G4GEMChannelVI, use G4DeexPrecoUtils.
+  o Emit fatal exception in G4LevelReader if path to G4LEVELGAMMADATA is empty.
+- models/inclxx (hadr-inclxx-V11-03-02)
+  o Extension of the INCLXX model to handle anti-neutron (at rest and in-flight).
+  o Fixed the use of INCL for the reactions antineutron + H1/H2 and decay
+    omega/eta.
+- stopping (hadr-stopping-V11-03-01)
+  o G4HadronicAbsorptionINCLXX: the energy max is different for anti-proton
+    and anti-neutron in INCLXX.
+
+run                                              run-V11-03-04
+---
+- Enabled worker threads to receive next sub-event before completing the
+  current sub-event in G4WorkerSubEvtRunManager. Some code cleanup.
+
+visualization
+-------------
+- management (visman-V11-03-19)
+  o G4VisExecutive: in Vtk, removed "#undef G4VIS_USE_TOOLSSG_QT_GLES" patch,
+    as now ToolsSG-GLES builds with OpenGL-3.2. Vtk and ToolsSG-GLES can now
+    cowork at run time.
+  o Smooth dots are default at end-of-run drawing.
+    Removed temporary "workaround" in G4VisManager.
+  o In G4VisCommandsViewerSet, improved guidance for "vis/viewer/set/dotsSmooth"
+    "Smooth" typically means rounded, i.e., dots drawn as filled circles.
+    The vis system is configured by default to draw smooth dots. This may
+    be switched off with "/vis/viewer/set/dotsSmooth false" and typically
+    this will result in square dots.
+  o Added "/vis/viewer/set/dotsSize and dotsSmooth" commands.
+    G4PolyMarkers have a MarkerType that can be dots, circles, or squares.
+  o In G4ViewParameters, added data members and methods to handle dots.
+    Changed GetZoomToCursor() to IsZoomToCursor() to follow convention
+    for Boolean parameters.
+  o In G4VSceneHandler, enforce the above policy in GetMarkerSize().
+- OpenGL (opengl-V11-03-08)
+- OpenInventor (openinventor-V11-03-03)
+- Qt3D (visQt3D-V11-03-03)
+  o Implemented policy for dotsSize and dotsSmooth.
+- ToolsSG (vis_toolssg-V11-03-12)
+  o Upgraded driver to work with OpenGL-3.2 and cowork with Vtk.
+  o Implemented policy for dotsSize and dotsSmooth.
+  o Fixed reported Coverity defects.
+
+data sets:
+---------
+- G4EMLOW-8.8:
+  o Extension of ELSEPA elastic cross-section files for electrons in water
+    up to 10 MeV.
+- G4PARTICLEXS-4.2
+  o Added data for elements and isotopes for neutrons in the resonance region,
+    which are using more detailed energy scale and better reproduce resonance
+    structure.
+- G4CHANNELING-2.0
+  o Updated Si-axis-100.dat file after revision of the algorithm and increasing
+    the accuracy.
+  o Added files for: Si, Ge and Diamond.
+- G4INCL-1.3:
+  o New data files for in-flight antiprotons (Channel probabilities)
+    inflight*FS*.dat.
+
+examples                                         examples-V11-03-10
+--------
+- Updated documentation and reference outputs.
+- advanced/dna/moleculardna (molecularDNA-V11-03-14)
+  o Fixed cell geometry in human_cell_chromosomes.mac.
+- advanced/gammaknife (gammaknife-V11-03-00)
+  o Fixed visualisation of geometry, which can be now drawn with
+    "/vis/drawVolume". Corrected positioning of boxmesh.
+  o Based on [GitHub PR#92](https://github.com/Geant4/geant4/pull/92).
+- basic/B1 (exampleB1-V11-03-01)
+  o RunAction: modified printout to use the expression "Absorbed dose"
+    Print Edep and mass of scoring volume.
+  o Increased statistics in exampleB1.in.
+- basic/B3 (exampleB3-V11-03-00)
+  o Removed StackingAction class and using method SetDefaultClassification()
+    from G4RunManager for killing neutrinos.
+- extended/exoticphysics/channeling/ch2 (ch2-V11-03-00)
+  o New macros dedicated to specific applications.
+  o Extended output at the detector.
+  o Added scoring of radiation spectrum from the Baier-Katkov method;
+    introduced virtual collimator.
+- extended/hadronic/Hadr03 (exhadr03-V11-03-01)
+- extended/hadronic/Hadr05 (exhadr05-V11-03-01)
+- extended/hadronic/Hadr06 (exhadr06-V11-03-01)
+- extended/hadronic/Hadr07 (exhadr07-V11-03-01)
+- extended/hadronic/NeutronSource (NeutronSource-V11-03-02)
+  o GammaNuclearPhysics: use G4GammaNuclearXS data set.
+- extended/medical/dna/AuNP (AuNP-V11-03-00)
+  o Added chemistry functionality.
+  o Code refactoring and cleanup.
+- extended/medical/dna/neuron (neuron-V11-03-00)
+  o Added UI commands to calculate water radiolysis products in specific
+    regions.
+  o Commented out the initialization in main() to allow G4DNAPhysicsActivator
+    to register DNA regions in the macro input file.
+- extended/parameterisations/Par04 (expar04-V11-03-03)
+  o Bump Keras version from 3.9.0 to 3.12.0.
+- extended/radioactivedecay/Activation (activation-V11-03-01)
+  o GammaNuclearPhysics: use G4GammaNuclearXS data set.
+- extended/runAndEvent/RE03 (exampleRE03-V11-03-00)
+  o Temporarily protect against the use of parallel geometry initialization
+    if running in sub-event parallel mode.
+
+tests                                            tests-V11-03-10
+-----
+- Updated reference outputs and tools.
+- tests/ctests_integration/test65 (test65-V11-03-01)
+  o Updated MD5 hash for LEND data tarball to match LLNL version.
+- tests/ctests_integration/test69 (test69-V11-03-00)
+  o Extension of INCLXX for anti-neutron interaction (at rest and in-flight).
+    Added new input macros: nbar_10MeV_Pb.in, nbar_500MeV_Pb.in.

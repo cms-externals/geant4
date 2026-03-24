@@ -1,0 +1,339 @@
+
+                       geant4-11-04-ref-00
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Updated particle properties to PDG-2025.
+ o Implemented mechanism to weight score in G4VPrimitiveScorer.
+ o In G4GoudsmitSaundersonMscModel, added back the "range-rejection" like
+   optimisation to the stepping algorithm in order to bring back the number
+   of simulation steps to values as before previous modification.
+ o Updated Reverse MC simulation to work in MT mode.
+ o Removed HepRepFile and Qt3D visualisation drivers, no longer viable to
+   develop and maintain.
+ o New dataset version: G4PhotonEvaporation-6.1.2.
+ 
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-03-17
+-----
+- Removed all references to HepRepFile and Qt3D visualisation drivers.
+- Updated datasets: G4PhotonEvaporation-6.1.2.
+
+config                                           config-V11-03-03
+------
+- Removed all references to HepRepFile and Qt3D visualisation drivers.
+
+analysis                                         analysis-V11-03-07
+--------
+- Added a protection against a call to non-existing n-tuple manager in
+  G4VAnalysisManager. Fixes a problem happening when all created n-tuples
+  are inactivated and a file is not open.
+
+digits_hits                                      digits_hits-V11-03-00
+--------
+- Implemented mechanism to weight score in G4VPrimitiveScorer.
+  The weighting is activated with 'scoreWeighted' option (default is off).
+  The applied weighting function is defined via std::function which can be
+  set via a new setter method. The weighting function is taken into account
+  only in the G4PSCellFlux scorer type.
+
+event                                            event-V11-03-03
+-----
+- G4AdjointPrimaryGenerator: made it G4ThreadLocal and added GetInstance()
+  method to fix a bug in Reverse MC simulation in MT mode.
+- In G4EventManager::GetNumberOfRemainingSubEvents(), fixed compilation
+  warning on macOS/XCode for implicit type conversion losing integer precision.
+
+geometry/magneticfield                           field-V11-03-09
+----------------------
+- In G4TClassicalRK4, fixed typo identified by CMS.
+
+geometry/solids/Boolean                          geom-bool-V11-03-02
+-----------------------
+- Fixed potential thread-safety issue in GetCubicVolume() and GetSurfaceArea()
+  on Boolean solids in case those functions are called from worker threads.
+
+geometry/solids/CSG                              geom-csg-V11-03-08
+-------------------
+- Fixed potential thread-safety issue in GetCubicVolume() and GetSurfaceArea()
+  on all solids in case those functions are called from worker threads.
+
+geometry/solids/specific                         geom-specific-V11-03-11
+------------------------
+- Fixed potential thread-safety issue in GetCubicVolume() and GetSurfaceArea()
+  on all solids in case those functions are called from worker threads.
+
+global                                           global-V11-03-31
+------
+- Updated date and tag-ID for geant4-11-04-ref-00.
+
+graphics_reps                                    greps-V11-03-03
+-------------
+- In G4Att* classes, fixed link to description of HepRep data communication
+  format (used by G4Atts).
+
+interfaces                                       interfaces-V11-03-10
+----------
+- In G4VInteractiveSession, added UpdateDrawingStyle(), UpdateProjectionStyle(),
+  and UpdateTransparencySlider() virtual methods to update the control widgets.
+- G4UIQt: added methods to update the control widgets; moved transparency
+  slider radio buttons to be class members; added icon for point cloud surface
+  style; added icon to reset target point; changed behavior of the icon "Reset
+  camera" to avoid popup window with dedicated call back; improved picking
+  behavior avoiding opening picking window when picking is enabled; fixed
+  icons selection behaviour and syncronisation.
+
+particles                                        particles-V11-03-01
+---------
+- Updated particle properties to PDG-2025. Scanned all mesons and baryons,
+  including their resonances; updated mass, decay width, and lifetime for the
+  following particles: mesons - G4AntiBsMesonZero, G4BsMesonZero, G4Etac,
+  G4Eta, G4JPsi, G4Upsilon; baryons - G4AntiSigmabMinus, G4AntiSigmabPlus,
+  G4LambdacPlus, G4OmegacZero, G4XicZero; resonances - G4ExcitedSigmaConstructor,
+  G4ExcitedLambdaConstructor, G4ExcitedNucleonConstructor,
+  G4ExcitedMesonConstructor, mesons and baryons implemented in
+  G4ShortLivedConstructor.
+
+physics_lists
+-------------
+- builders (phys-builders-V11-03-02)
+  o Code cleanup in G4AntiBarionBuilder and G4VAntiBarionBuilder.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V11-03-06)
+  o G4HadronicPhysicsQGSP_BIC_HP and G4HadronicPhysicsQGSP_BIC_AllHP inherits
+    from G4HadronicPhysicsQGSP_BIC. The size of the classes have been
+    significantly reduced due to the removal of duplicated code.
+    In local tests physics appears to be in statistical agreement with the
+    previous version of the code. In all classes of this family except
+    G4HadronicPhysicsQGSP_BIC_AllHP, the G4PARTICLEXSDATA proton cross-section
+    is used.
+  o G4HadronPhysicsQGSP_BERT, G4HadronInelasticQBBC: return back cross-section
+    G4BGGNucleonInelasticXS for protons, as it was in 11.3.
+  o G4HadronPhysicsQGSP_BIC, G4HadronInelasticQBBC: enabled usage of R-files
+    for neutron XS cross-sections for more accurate simulation in neutron
+    resonance region.
+  o In G4HadronPhysicsQGS_BIC, do not use QGS/Binary and FTF/Binary models
+    for pions and kaons.
+  o G4HadronPhysicsShielding: technical clean-up: removed unused headers,
+    fixed constructors and destructors.
+- lists (phys-list-V11-03-05)
+  o G4PhysListFactory: allow definition of EM  physics Opt0 on top of any
+    reference Physics Lists (currently this provides more simple EM physics
+    together with HP); improved printout for the HP case, now the EMZ option
+    is printed in the name. For HP physics use the default EM constructor as
+    it was in Geant4 11.3 version.
+
+processes/biasing/generic                        proc-biasgen-V11-03-00
+-------------------------
+- Fixed initialisation in G4ParticleChangeForNothing, responsible for crash
+  when enabling track verbosity.
+
+processes/electromagnetic
+-------------------------
+- adjoint (emadjoint-V11-03-01)
+  o Fixed compilation warning on Intel/icx compiler for overlapping comparison
+    on condition in G4AdjointAlongStepWeightCorrection.
+- lowenergy (emlowen-V11-03-06)
+  o Fixed compilation warnings on Intel/icx compiler for overlapping comparison
+    on condition in G4eIonisationSpectrum, by removing checks on numerical
+    condition which never happens.
+- standard (emstand-V11-03-16)
+  o In G4GoudsmitSaundersonMscModel, added back the "range-rejection" like
+    optimisation to the stepping algorithm in order to bring back the number
+    of simulation steps to values as before previous modification.
+  o G4eDPWACoulombScatteringModel, G4eDPWAElasticDCS: fixed some of the mixed
+    simulation mode functionalities of the numerical ELSEPA DCS based model
+    for e-/e+ Coulomb scattering (which are still not utilised).
+- utils (emutils-V11-03-15)
+  o In G4EmParameters, fixed typo in printout.
+- xrays (xrays-V11-03-06)
+  o Fixed compilation warning for implicit type conversion on macOS/XCode
+    in G4GeneralCherenkov::BuildPhysicsTable().
+  o G4GeneralCerenkov, G4StandardCerenkovModel: fixed reported Coverity defects.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-03-09)
+  o G4ChargeExchangeXS: fixed units inside SampleTforPion() method.
+  o In G4NeutronInelasticXS, G4NeutronElasticXS, G4NeutronCaptureXS, added
+    extra flag to enable/disable reading and usage of precise data in resonance
+    region, allowing to reduce RSS memory for simple applications. For
+    applications requiring higher precision of neutron transport, the
+    flag should be defined via G4HadronicParameters::SetUseRFilesForXS(true).
+  o Fixed compilation warning on Intel/icx compiler for overlapping comparison
+    on condition in G4EMDissociationCrossSection.
+- models/cascade (hadr-casc-V11-03-01)
+  o Fixed compilation warning on Intel/icx compiler for overlapping comparison
+    on condition in G4BigBanger, fixes typo in the computation of probability.
+- models/coherent_elastic (hadr-cohe-V11-03-05)
+  o Fixed cases of non-accurate checks on potential numerical problems in
+    computing scattering angles in G4NuclNuclDiffuseElastic, G4DiffuseElastic
+    and G4AntiNuclElastic, addressing compilation warnings on Intel/icx
+    compiler for overlapping comparison on conditions.
+- models/de_excitation (hadr-deex-V11-03-25)
+  o G4LevelReader, G4GammaTransition, G4photonEvaporation: addressing problem
+    reports #2672, #2588 and #2451. The vector of IC probabilities is limited
+    by number of levels in an atom; if in gamma level data all IC transitions
+    are zero, then instead of K-shell probability, 1.0 is assigned to the last
+    existing level; electron emission is sampled if nuclear excitation is above
+    the bound level and if number of electrons on electron shell is above 1;
+    more accurate sampling of final state using masses of the nucleus plus
+    masses of electrons from electron shells.
+  o G4StatMFMicroCanonical: fixed computation of temperature.
+  o G4DeexPrecoParameters: reduced upper limit of energy per nucleon for the
+    pre-compound model 30 to 15 MeV, according to the prescription of
+    Botvina A. S. et al. Nucl. Phys. A, 475:663, 1987.
+- models/inclxx (hadr-inclxx-V11-03-03)
+  o Fixed compilation warning for implicit type conversion on macOS/XCode
+    in G4INCLAntinucleiAtrestEntryChannel::getAnnihilationPosition().
+- models/lend (hadr-lend-V11-03-06)
+  o Removed the default evaluation string from G4LEND. This change means the
+    user only needs to update the G4LENDDATA environment variable to switch to
+    a different nuclear data library.
+  o Fixed various Coverity reported defects and implicit conversion compilation
+    warnings in macOS/XCode.
+- models/pre_equilibrium (hadr-pre-V11-03-08)
+  o G4PreCompoundModel: send to evaporation all fragments with excitation
+    energy exceeding energy limit.
+- models/qmd (qmd-V11-03-00)
+  o Fixed reported Coverity defect for potential division by zero.
+- models/quasi_elastic (hadr-qelastic-V11-03-00)
+  o Fixed compilation warning on Intel/icx compiler for overlapping comparison
+    on condition in G4QuasiElRatios.
+- util (hadr-util-V11-03-06)
+  o G4HadronicParameters: added extra flag to enable/disable usage of precise
+    cross-section data for neutrons in resonance energy region.
+
+run                                              run-V11-03-06
+---
+- In G4PhysicsListHelper, changed ordering of processes: for X-Ray production
+  use ordering parameter 100 for post step instead of 1000; fixed ordering
+  for muon capture at rest.
+- G4VModularPhysicsList: deleted confusing printout if the same physics type
+  is substituted.
+- In G4AdjointPrimaryGeneratorAction, removed pointer attribute on
+  G4AdjointPrimaryGenerator and call it by the static GetInstance() method
+  to fix a bug in Reverse MC simulation in MT mode.
+
+
+visualization                                    vis-V11-03-01
+-------------
+- Removed HepRepFile and Qt3D visualisation drivers, no longer viable to
+  develop and maintain.
+- management (visman-V11-03-24)
+  o Removed all references to HepRepFile and Qt3D.
+  o In G4VViewer, added UpdateGUIControlWidgets(), UpdateGUIDrawingStyle(),
+    UpdateGUIProjectionStyle() and UpdateGUITransparencySlider() methods to
+    update the GUI control widgets.
+  o In G4VisCommandsViewer, added UpdateGUIControlWidgets() to
+    G4VisCommandViewerSelect::SetNewValue() to update the control widget when
+    the viewer is changed.
+  o Fixed reported Coverity defects in G4VSceneHandler.
+- OpenGL (opengl-V11-03-09)
+  o In G4OpenGLQtViewer, improved context menu behavior for picking; added
+    condition to avoid picking with rigth mouse button.
+
+data sets:
+---------
+- G4PhotonEvaporation-6.1.2:
+  o Correction to files z94.a239 (addressing problem report #2682),
+    z91.a234 (addressing problem report #2170), z5.a11 (addressing
+    problem report #2577) and z75.a187 (addressing problem report #2685).
+
+examples                                         examples-V11-04-00
+--------
+- Updated documentation and reference outputs.
+- Updated examples macros for removal of HepRep[File] vis drivers.
+- advanced/dna/moleculardna (molecularDNA-V11-03-15)
+  o Fixed the wrong gap: a gap (distance between 2 hits) can be 0
+    Addressing problem report #2681.
+  o Added protection for over counting damage.
+  o Fixed the printed info by Batmunkh.
+  o Updated analysis macros for statistical analysis of errors.
+  o Updated absorbed dose calculation in analysis macros to avoid double
+    counting of energy deposition in DNA geometry, and inclusion of error
+    on the dose.
+- advanced/eFLASH_radiotherapy (eFLASH_radiotherapy-V11-03-00)
+  o Added new class FlashMinibeamTemplate implementing the geometry of
+    collimatiors for minibeam production, including the different geometrical
+    configurations (grid and planar). Modified FlashDetectorConstruction
+    accordigly.
+  o Added a macro file for minibeam production.
+- advanced/exp_microdosimetry (exp_microdosimetry-V11-03-00)
+  o Added mini tissue equivalent proportional counter (mini TEPC) in Detector
+    Construction.
+  o Added a new macro implementing a parallel monoenergetic 100 MeV proton
+    beam.
+- advanced/IAEAphsp (IAEAphsp-V11-03-01)
+  o New example demonstrating how to read and write IAEA phase-space (IAEAphsp)
+    files within a minimal, configurable application. The IAEAphsp format is
+    defined by the IAEA Nuclear Data Section; this example shows how to use
+    IAEAphsp files as input source (i.e. as a primary generator) and how to
+    produce IAEAphsp outputs at given scoring planes. Reference paper:
+    M.A. Cortes-Giraldo et al., Int J Radiat Biol 88(1-2): 200-208 (2012).
+- extended/biasing/ReverseMC01 (ReverseMC01-V11-03-01)
+  o Migrated to work in MT mode.
+  o Fixed coding conventions (removal of tabs and code formatting).
+- extended/exoticphysics/channeling/ch2 (ch2-V11-03-01)
+  o Updated python analysis tools, no change in simulation code.
+    Added a jupyter notebook version of a python script.
+- extended/exoticphysics/channeling/ch5 (ch5-V11-03-00)
+  o New example for simulating a positron source. Although the conventional
+    approach based on an **amorphous target** is possible, the application is
+    primarily designed to simulate positron sources based on oriented crystals.
+    In the latter case, both the **single-crystal** and the **hybrid scheme**
+    can be investigated.
+- extended/geometry/vecGeomNavigation (VecGeomNavigation-V11-03-02)
+  o Fixed coding conventions for long lines in VG01DetectorConstruction source.
+- extended/hadronic/FlukaCern (FlukaCern-V11-03-04)
+  o Fixed coding conventions for long lines and tabs in source.
+- extended/hadronic/NeutronSource (NeutronSource-V11-03-04)
+  o In PhysicsList, use local RadioactiveDecayPhysics instead of
+    G4RadioaciveDecayPhysics. Use G4EmStandardPhysics_option3 instead of opt4;
+    added G4EmExtraPhysics as an alternative to GammaNuclearPhysics; use
+    G4HadronElasticPhysicsXS instead of HP.
+- extended/medical/dna/AuNP (AuNP-V11-03-01)
+  o Fixed coding conventions for long lines in source.
+- extended/medical/dna/dnaphysics (dnaphysics-V11-03-04)
+  o Fixed coding conventions for long lines in SteppingAction source.
+- extended/medical/dna/microtrack (microtrack-V11-03-00)
+  o New example implementing a geometry to calculate microdosimetry quantities
+    for ion tracks in liquid water at a given energy, ensuring secondary
+    electron equilibrium when needed. At each event, a random track hit defines
+    a spherical scoring site; weighted sampling is then used to estimate energy
+    imparted and related quantities.
+- extended/medical/dna/molcounters (molcounters-V11-03-01)
+- extended/medical/dna/phasespace (phasespace-V11-03-01)
+  o Fixed coding conventions for tabs and long lines in source.
+- extended/medical/dna/UHDR (UHDR-V11-03-07)
+  o Added user notices.
+  o Fixed coding conventions for tabs and long lines in source.
+- extended/parameterisations/Par04 (expar04-V11-03-05)
+  o Bump scikit-learn from 1.1.1 to 1.5.0, to address security vulnerabilities
+    tagged by GitHub's dependabot.
+  o Fixed coding conventions for tabs in Par04Hit source.
+
+tests                                            tests-V11-04-00
+-----
+- Updated reference outputs and tools.
+- tests/ctests_integration/test08 (test08-V11-03-00)
+- tests/ctests_integration/test15 (test15-V11-03-00)
+  o Removed settings of HepRep in vis macro.
+- tests/ctests_integration/test31 (test31-V11-03-00)
+  o In test31Histo, added dump of the table of dEdx for anti_protons.
+    Addressing problem report #2669.
+- tests/ctests_integration/test32 (test32-V11-03-00)
+  o Removed settings of HepRep in vis macro.
+- tests/ctests_integration/test46 (test46-V11-03-00)
+  o In CMSHadronPhysicsFTFP_BERT, use inheritence from G4HadronPhysicsFTFP_BERT.
+    Same configuration as used for CMS Run3.
+- tests/ctests_integration/test56 (test56-V11-03-00)
+- tests/ctests_integration/test69 (test69-V11-03-01)
+- tests/ctests_integration/test73 (test73-V11-03-00)
+- tests/ctests_integration/test78 (test78-V11-03-00)
+- tests/ctests_integration/test320 (test320-V11-03-00)
+  o Removed settings of HepRep in vis macro.

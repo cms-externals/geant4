@@ -1,0 +1,209 @@
+
+                       geant4-11-04-ref-02
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o First modifications to EM classes for preparing implementation of parallel
+   initialisation of EM physics.
+ o In hadronic de_excitation model, limit energy non-conservation to 0.5 MeV
+   in G4UnstableFragmentBreakUp.
+ o Updated data set G4EMLOW-8.9.
+ 
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.4.1
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-04-01
+-----
+- Use CMake 3.16-3.19 compatible construction of interface libraries.        (o)
+  Addresses problem report #2700.
+  Fixed logic error in construction of link interface to such interface
+  libraries that resulted in empty target creation/export.
+- Updated data set G4EMLOW-8.9.
+
+externals
+---------
+- g4tools (g4tools-V11-04-07)
+  o Removed obsolete 'rtausmef' RNG; C++ Standard Library provides sufficient
+    quality and distributions for use within tools itself.
+  o Removed unused 'carray' header; simplified 'text_valop' to allow removal
+    of 'valop' and 'valop2sg'.
+  o In tools/sg/group, added takeover_nodes() method to transfer nodes from
+    another group.
+  o In toolx/sg/text_freetype_marker, override char_height_touched() to properly
+    handle the field 'height'.
+  o Fixed compilation warning for implicit type conversion on macOS/XCode.
+
+geometry/magneticfield                           field-V11-04-00
+----------------------
+- Fixed reported Coverity defect for restoring original stream precision     (o)
+  in G4FieldManager::ReportBadEpsilonValue().
+
+global                                           global-V11-04-04
+------
+- Protect debug warning printout from G4Cache destructor within 'g4cdebug'   (o)
+  flag as it was originally intended. Addressing long-standing false-positive
+  issue happening in MT mode (G4MTRunManager only) on macOS/clang.
+  Also addressing problem report #2696.
+- Updated date and tag-ID for geant4-11-04-ref-02.
+
+interfaces                                       interfaces-V11-04-04
+----------
+- In G4UIQt, fix in ComputeStringMatchScore(..) in setting number of         (o)
+  elements for a QVector; use G4 types where appropriate.
+  Fixed compilation warning for implicit type conversion on macOS/XCode.
+
+materials                                        materials-V11-04-01
+---------
+- G4NistMaterialBuilder: added a new material "G4_BlackBody", needed for
+  simulation of Compton process on black body photons.
+
+particles                                        particles-V11-04-02
+---------
+- Extented excited isomer name from 3 to 5 digits after dot; also            (o)
+  addressing problem report #2680.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-04-05)
+  o G4EmStandardPhysics_option4: added possibility to use external dEdx      (o)
+    tables for ions, done through substitution of the G4LindhardSorencenIonModel
+    model class by G4IonParameterisedModel. Addressing problem report #2703.
+  o G4EmDNAPhysics, G4EmDNAPhysics_option2, G4EmDNAPhysics_option4,
+    G4EmDNAPhysics_option6, G4EmDNAPhysics_option8, G4EmDNABuilder,
+    G4EmDNAPhysicsActivator: added deuteron to the list of DNA particles using
+    track structure Rudd model of ionisation at low-energy.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-04-02)
+  o G4DNARuddIonisationDynamicModel: fixed max energy transfer.
+  o G4DNARuddIonisationDynamicModel, G4DNARuddIonisationExtendedModel: at
+    initialisation, changed the order of definition of type of charged
+    particle to enable deuteron ionisation in DNA.
+  o G4DNAIonisation: use EM parameters to define energy limits for a model.
+  o G4DNAElastic: use correct type of ions.
+- muons (emmuons-V11-04-02)
+  o G4EnergyLossForExtrapolator: in order to avoid data race in the MT mode,
+    implemented backward propagation only for materials used in geometry,
+    and ignore base material approach.
+  o G4EnergyLossForExtrapolator, G4TablesForExtrapolator: technical
+    modifications daccording to changes in 'utils' module. No changes in
+    Physics behavior.
+  o Fixed compilation warnings for implicit type conversions on macOS/XCode.
+- utils (emutils-V11-04-04)
+  o Most classes are modified to prepare implementation of parallel
+    initialisation of EM physics: computation of physics tables are performed
+    using static utilities; tables and vector built during initialisation are
+    stored in static area; processes for different particles may be initialized
+    independently. Also some technical changes are done, like more use of const
+    pointers and methods; improved debug printouts; removed old commented debug
+    printouts; removed TABS; improved comments; removed unused headers.
+    Results of 25 EM tests show full numerical agreement with the results of
+    the 11.4 release.
+  o G4LossTableBuilder: in order to avoid data race in backward propagator,
+    added extra logical parameter to public methods; should not affect any
+    existing application. 
+  o Fixed compilation warnings for implicit type conversions on macOS/XCode.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-04-03)
+  o Fix to address potential division by zero reported by Coverity.
+- models/binary_cascade (had-binary-V11-04-01)
+  o Fixed reported Coverity defects to avoid parameter string copy in        (o)
+    G4BinaryCascade.
+- models/de_excitation (hadr-deex-V11-04-03)
+  o G4UnstableFragmentBreakUp: limit energy non-conservation to 0.5 MeV.
+    Removed parasitic printout, which is seen in the case of deuteron target;
+    removed also debug printout.
+- models/fission (hadr-fission-V11-04-00)                                    (o)
+  o Fixed reported Coverity defects in G4fissioner for avoiding unnecessary
+    copy of strings.
+  o Fixed layout of G4fissionEvent class.
+- models/inclxx (hadr-inclxx-V11-04-01)
+  o In G4INCLCrossSectionsAntiparticles, corrected wrong formulae with       (o)
+    isospins concerning the cross-sections N Nbar -> N Nbar + 2 pions.
+  o In G4INCLNNToNSK2piChannel, fixed 'iso' condition.                       (o)
+- models/nudex (hadr-nudex-V11-04-00)
+  o Fixed reported Coverity defects in G4NuDEXPSF for avoiding unnecessary   (o)
+    copy of strings.
+- models/particle_hp (hadr-hpp-V11-04-01)
+  o G4ParticleHPContAngularPar: reduced allocator fragmentation and memory
+    churn in BuildByInterpolation() by removing unconditional deep copies
+    of input angular distributions. Copies are now created only in case of
+    self-aliasing, preserving correctness while avoiding excessive per-call
+    heap allocations.
+
+processes/solidstate
+--------------------
+- channeling (channeling-V11-04-00)
+  o In G4ChannelingMaterialData, fixed reported Coverity defects for string  (o)
+    parameters copying. Use consistently G4 types and minor code formatting.
+
+visualization
+-------------
+- management (visman-V11-04-02)
+  o In G4VSceneHandler::GetMarkerSize(), fixed missing
+    "markerSizeType = screen" in the case of dots.
+- gMocren (gMocren-V11-04-00)                                                (o)
+  o Fixed reported Coverity defect for unnecessary string copy in G4GMocrenIO.
+- OpenGL (opengl-V11-04-01)
+  o G4OpenGLViewer: removed unnecessary #include statements.                 (o)
+- ToolsSG (vis_toolssg-V11-04-02)
+  o In G4ToolsSGSceneHandler, added a "trash group" logic to handle properly,
+    deletion of the graphics storage in MT mode; it fixes a "crash at exit"
+    when using textures.
+  o In G4ToolsSGViewer::DrawView(), use fpSceneHandler.EmptyTrash() to remove
+    no more used nodes deposited in the "trash" in G4ToolsSceneHandler.
+  o In G4ToolsSGViewer destructor, proprely clear the SceneHandler nodes.
+  o G4ToolsSGSceneHandler: obtain applicable auxiliary edge flag.            (o)
+- Tree (vistree-V11-04-00)
+  o Moved 'fVerbosityGuidance' to G4ASCIITree factory to fix sanitizer       (o)
+    warnings. Addressing problem report #2699.
+
+data sets:
+---------
+- G4EMLOW-8.9:
+  o Corrected sigmadiff_cumulated_ionisation_e_cpa100_rel.dat:
+    section for 32 eV should be 32.2 eV.
+
+examples                                         examples-V11-04-02
+--------
+- Updated documentation and reference outputs.
+- advanced/dna/moleculardna (molecularDNA-V11-04-00)
+  o Fixed display of error for 'SSBm_yield' in analysis macros.              (o)
+- basic/B5 (exampleB5-V11-04-00)
+  o Fixed compilation warnings for implicit type conversion on macOS/XCode.
+- extended/exoticphysics/channeling/ch2 (ch2-V11-04-00)                      (o)
+  o Correction in main() for fixing error at the end of execution when
+    G4ChannelingFastSimModel is switched off.
+  o Corrections in plot labels and some comments in the python scripts.
+  o Fixed CMake script to copy also Jupyter notebook in the build folder.
+  o Small corrections in comments in macro.
+- extended/medical/dna/chem6 (chem6-V11-04-02)
+  o Modified PrimaryKiller in order to terminate transportation for ions as
+    well as electrons following energy range set through macro files.
+
+tests                                            tests-V11-04-02
+-----
+- Updated reference outputs and tools.
+- tests/ctests_integration/test04 (test04-V11-04-01)
+- tests/ctests_integration/test11 (test11-V11-04-01)
+- tests/ctests_integration/test15 (test15-V11-04-01)
+  o Excluded test from BoundsCheck builds as it times out even with small
+    statistics; added additional labels to test to ensure it still runs in
+    all non-BoundsCheck builds.
+- tests/ctests_integration/test65 (test65-V11-04-00)
+  o Use CVMFS deployment of (unpacked) LEND data if present in preference
+    to downloading large tarball. Fall back to download if CVMFS not present,
+    but use CERN STT website URL first, then LLNL if the former fails.
+- tests/ctests_integration/test67 (test67-V11-04-00)
+  o Include required Root/TMath header no longer transitively available
+    since version 6.38.
+- tests/ctests_integration/test69 (test69-V11-04-00)
+  o Excluded test from BoundsCheck builds as it times out even with small
+    statistics.
