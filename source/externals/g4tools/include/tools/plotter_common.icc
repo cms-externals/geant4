@@ -1,0 +1,49 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+  //proxies to have less verbose user programming :
+
+  //WARNING : the plotter must have at least 1x1 plotting area,
+  //          else the below will crash because current_plotter()
+  //          will return a null pointer.
+
+  tools::sg::plots& plots() {return m_plots;}
+  const tools::sg::plots& plots() const {return m_plots;}
+
+  void next() {m_plots.next();}
+  bool set_current_plotter(unsigned int a_index) {return m_plots.set_current_plotter(a_index);}
+
+  void add_plottable(tools::sg::plottable* a_plottable) {
+    m_plots.current_plotter().add_plottable(a_plottable); //it takes ownership.
+  }
+
+  tools::sg::plottable* plot(const tools::histo::h1d& a_histo) {
+    tools::sg::plottable* p = new tools::sg::h1d2plot(a_histo);
+    m_plots.current_plotter().add_plottable(p); //it takes ownership.
+    return p;
+  }
+
+  tools::sg::plottable* plot(const tools::histo::h2d& a_histo) {
+    tools::sg::plottable* p = new tools::sg::h2d2plot(a_histo);
+    m_plots.current_plotter().add_plottable(p); //it takes ownership.
+    return p;
+  }
+
+  tools::sg::plottable* plot(const tools::histo::p1d& a_histo) {
+    tools::sg::plottable* p = new tools::sg::p1d2plot(a_histo);
+    m_plots.current_plotter().add_plottable(p); //it takes ownership.
+    return p;
+  }
+
+  tools::sg::plottable* plot(const tools::histo::c2d& a_cloud) {
+    tools::sg::plottable* p = new tools::sg::c2d2plot(a_cloud);
+    m_plots.current_plotter().add_plottable(p); //it takes ownership.
+    return p;
+  }
+
+  tools::sg::plottable* plot(const tools::histo::c3d& a_cloud) {
+    tools::sg::plottable* p = new tools::sg::c3d2plot(a_cloud);
+    m_plots.current_plotter().add_plottable(p); //it takes ownership.
+    return p;
+  }
+

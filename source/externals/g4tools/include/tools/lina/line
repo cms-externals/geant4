@@ -1,0 +1,48 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_line
+#define tools_line
+
+#include "vec"
+
+namespace tools {
+
+// Parametric description:
+//  l(t) = pos + t * dir
+
+template <class T>
+class line {
+public:
+  line() = default;
+  line(const vec3<T>& a_p0,const vec3<T>& a_p1) {
+    // Construct a line from two points lying on the line.  If you
+    // want to construct a line from a position and a direction, use
+    // line(p, p + d).
+    // line is directed from p0 to p1.
+    m_pos = a_p0;
+    m_dir = a_p0;
+    m_dir.multiply(-1);
+    m_dir.add(a_p1);
+    m_dir.normalize();
+  }
+  ~line() = default;
+
+  line(const line& a_from) = default;
+  line& operator=(const line& a_from) = default;
+
+public:  
+  const vec3<T>& position() const {return m_pos;}
+  const vec3<T>& direction() const {return m_dir;}
+
+private:   
+  vec3<T> m_pos;
+  vec3<T> m_dir; //normalized.
+};
+
+// Backward compatibility
+using line3f = line<float>;
+
+}
+
+#endif

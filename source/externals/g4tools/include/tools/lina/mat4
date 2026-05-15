@@ -1,0 +1,423 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_mat4
+#define tools_mat4
+
+#include "mat"
+
+#include <cmath>
+#include <ostream>
+
+namespace tools
+{
+// 4x4 matrix class for 3D graphics transformations
+//
+// Matrix storage: Column-major order (OpenGL/DirectX convention)
+//   Index layout: m_vec[row + col*4]
+//   Example for row 0: m_vec[0], m_vec[4], m_vec[8], m_vec[12]
+//
+// Matrix representation (conceptual row-major view):
+//   m00 m01 m02 m03
+//   m10 m11 m12 m13
+//   m20 m21 m22 m23
+//   m30 m31 m32 m33
+//
+// Actual memory layout:
+//   [m00, m10, m20, m30,  m01, m11, m21, m31,  m02, m12, m22, m32,  m03, m13, m23, m33]
+//   [ 0,   1,   2,   3,    4,   5,   6,   7,    8,   9,  10,  11,   12,  13,  14,  15 ]
+template<class T>
+class mat4 : public mat<T, 4>
+{
+    using parent = mat<T, 4>;
+    using pr = parent;
+
+  public:
+    mat4() = default;
+    mat4(const mat<T, 4>& a_from) : parent(a_from) {}
+    virtual ~mat4() = default;
+
+  public:
+    mat4(const mat4& a_from) = default;
+    mat4& operator=(const mat4& a_from) = default;
+
+  public:
+    mat4(const T& a_00, const T& a_01, const T& a_02, const T& a_03,  // first  row
+         const T& a_10, const T& a_11, const T& a_12, const T& a_13,  // second row
+         const T& a_20, const T& a_21, const T& a_22, const T& a_23,  // third  row
+         const T& a_30, const T& a_31, const T& a_32, const T& a_33)  // fourth row
+    {
+      set_matrix(a_00, a_01, a_02, a_03, a_10, a_11, a_12, a_13, a_20, a_21, a_22, a_23, a_30, a_31,
+                 a_32, a_33);
+    }
+
+  public:
+    void set_matrix(const mat4<T>& a_m) { parent::set_matrix(a_m); }
+    void set_matrix(const T& a_00, const T& a_01, const T& a_02, const T& a_03,  // 1 row
+                    const T& a_10, const T& a_11, const T& a_12, const T& a_13,  // 2 row
+                    const T& a_20, const T& a_21, const T& a_22, const T& a_23,  // 3 row
+                    const T& a_30, const T& a_31, const T& a_32, const T& a_33)  // 4 row
+    {
+      // a_<R><C>
+      // pr::m_vec[R + C * 4];
+      // clang-format off
+      pr::m_vec[0] = a_00; pr::m_vec[4] = a_01;  pr::m_vec[8] = a_02; pr::m_vec[12] = a_03;
+      pr::m_vec[1] = a_10; pr::m_vec[5] = a_11;  pr::m_vec[9] = a_12; pr::m_vec[13] = a_13;
+      pr::m_vec[2] = a_20; pr::m_vec[6] = a_21; pr::m_vec[10] = a_22; pr::m_vec[14] = a_23;
+      pr::m_vec[3] = a_30; pr::m_vec[7] = a_31; pr::m_vec[11] = a_32; pr::m_vec[15] = a_33;
+      // clang-format on
+    }
+
+    void set_scale(const T& a_s) { _set_scale(a_s, a_s, a_s, pr::m_vec); }
+
+    void set_scale(const T& a_1, const T& a_2, const T& a_3)
+    {
+      _set_scale(a_1, a_2, a_3, pr::m_vec);
+    }
+
+    void set_translate(const T& a_x, const T& a_y, const T& a_z)
+    {
+      _set_translate(a_x, a_y, a_z, pr::m_vec);
+    }
+
+    void set_rotate(const T& a_x, const T& a_y, const T& a_z, const T& a_angle)
+    {
+      _set_rotate(a_x, a_y, a_z, a_angle, pr::m_vec);
+    }
+
+    void set_ortho(const T& a_l, const T& a_r,  // left,right
+                   const T& a_b, const T& a_t,  // bottom,top
+                   const T& a_n, const T& a_f)
+    {
+      // Create an orthographic projection matrix (parallel projection)
+      // Maps the axis-aligned box [l,r] × [b,t] × [-f,-n] to NDC cube [-1,1]³
+      //
+      // Equivalent to glOrtho(left, right, bottom, top, near, far)
+      // See: https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glOrtho.xml
+      //
+      // Note: In OpenGL convention, the camera looks down -Z axis, so near/far
+      // planes are at z = -near and z = -far (with near < far, both positive)
+
+      T tx = -(a_r + a_l) / (a_r - a_l);
+      T ty = -(a_t + a_b) / (a_t - a_b);
+      T tz = -(a_f + a_n) / (a_f - a_n);
+
+      // clang-format off
+      set_matrix(2 / (a_r - a_l), 0,                0,                 tx,
+                 0,               2 / (a_t - a_b),  0,                 ty,
+                 0,               0,                -2 / (a_f - a_n),  tz,
+                 0,               0,                0,                 1);
+      // clang-format on
+    }
+
+    void set_frustum(const T& a_l, const T& a_r,  // left,right
+                     const T& a_b, const T& a_t,  // bottom,top
+                     const T& a_n, const T& a_f)
+    {
+      // Create a perspective projection matrix with arbitrary frustum
+      // Maps the view frustum to the NDC cube [-1,1]³ with perspective division
+      //
+      // Equivalent to glFrustum(left, right, bottom, top, near, far)
+      // See: https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glFrustum.xml
+      //
+      // Parameters define the frustum at the near plane (z = -near):
+      //   left, right:  x coordinates of left/right edges
+      //   bottom, top:  y coordinates of bottom/top edges
+      //   near, far:    distances to near/far clipping planes (both positive)
+      //
+      // After transformation and perspective division (x/w, y/w, z/w):
+      //   - Near plane (z=-near) maps to z_ndc = -1
+      //   - Far plane (z=-far) maps to z_ndc = +1
+      //   - Frustum edges at near plane map to ±1 in x,y
+
+      T A = (a_r + a_l) / (a_r - a_l);
+      T B = (a_t + a_b) / (a_t - a_b);
+      T C = -(a_f + a_n) / (a_f - a_n);
+      T D = -(2 * a_f * a_n) / (a_f - a_n);
+
+      // clang-format off
+      set_matrix((2 * a_n) / (a_r - a_l), 0,                        A,  0,
+                 0,                       (2 * a_n) / (a_t - a_b),  B,  0,
+                 0,                       0,                        C,  D,
+                 0,                       0,                       -1, 0);
+      // clang-format on
+    }
+
+    void no_translate()
+    {
+      pr::m_vec[12] = 0;
+      pr::m_vec[13] = 0;
+      pr::m_vec[14] = 0;
+    }
+
+  public:
+    void mul_4(T& a_x, T& a_y, T& a_z, T& a_p) const
+    {
+      // a_[x,y,z,p] = this * a_[x,y,z,p]
+      T tmp[4];
+      mul_4_opt(a_x, a_y, a_z, a_p, tmp);
+    }
+
+    void mul_4_opt(T& a_x, T& a_y, T& a_z, T& a_p, T a_tmp[4]) const
+    {
+      // Multiply 4D vector (a_x, a_y, a_z, a_p) by this matrix (in-place)
+      // result = this * [a_x, a_y, a_z, a_p]^T
+      //
+      // Note: Matrix is stored in column-major order (OpenGL convention)
+      // Use a_tmp to avoid aliasing issues during computation
+      // clang-format off
+      a_tmp[0] = pr::m_vec[0] * a_x + pr::m_vec[4] * a_y + pr::m_vec[8] * a_z + pr::m_vec[12] * a_p;
+      a_tmp[1] = pr::m_vec[1] * a_x + pr::m_vec[5] * a_y + pr::m_vec[9] * a_z + pr::m_vec[13] * a_p;
+      a_tmp[2] = pr::m_vec[2] * a_x + pr::m_vec[6] * a_y + pr::m_vec[10] * a_z + pr::m_vec[14] * a_p;
+      a_tmp[3] = pr::m_vec[3] * a_x + pr::m_vec[7] * a_y + pr::m_vec[11] * a_z + pr::m_vec[15] * a_p;
+      // clang-format on
+      a_x = a_tmp[0];
+      a_y = a_tmp[1];
+      a_z = a_tmp[2];
+      a_p = a_tmp[3];
+    }
+
+    void mul_3(T& a_x, T& a_y, T& a_z) const
+    {
+      // a_[x,y,z] = this * a_[x,y,z]
+      T tmp[3];
+      mul_3_opt(a_x, a_y, a_z, tmp);
+    }
+
+    void mul_3_opt(T& a_x, T& a_y, T& a_z, T a_tmp[3]) const
+    {
+      // Multiply 3D point (a_x, a_y, a_z) by this matrix (in-place)
+      // Treats input as homogeneous coordinate with w=1 (translation applied)
+      // result = this * [a_x, a_y, a_z, 1]^T
+      a_tmp[0] = pr::m_vec[0] * a_x + pr::m_vec[4] * a_y + pr::m_vec[8] * a_z + pr::m_vec[12];
+      a_tmp[1] = pr::m_vec[1] * a_x + pr::m_vec[5] * a_y + pr::m_vec[9] * a_z + pr::m_vec[13];
+      a_tmp[2] = pr::m_vec[2] * a_x + pr::m_vec[6] * a_y + pr::m_vec[10] * a_z + pr::m_vec[14];
+      a_x = a_tmp[0];
+      a_y = a_tmp[1];
+      a_z = a_tmp[2];
+    }
+
+    void mul_dir_3(T& a_x, T& a_y, T& a_z) const
+    {
+      // used to multiply normals.
+      // a_[x,y,z] = rot_part(this) * a_[x,y,z]
+      T tmp[3];
+      mul_dir_3_opt(a_x, a_y, a_z, tmp);
+    }
+
+    void mul_dir_3_opt(T& a_x, T& a_y, T& a_z, T a_tmp[3]) const
+    {
+      // Multiply 3D direction/normal vector by rotation part of matrix (in-place)
+      // Only applies rotation/scale, ignores translation (w=0 implied)
+      // result = upper-left 3x3 * [a_x, a_y, a_z]^T
+      a_tmp[0] = pr::m_vec[0] * a_x + pr::m_vec[4] * a_y + pr::m_vec[8] * a_z;
+      a_tmp[1] = pr::m_vec[1] * a_x + pr::m_vec[5] * a_y + pr::m_vec[9] * a_z;
+      a_tmp[2] = pr::m_vec[2] * a_x + pr::m_vec[6] * a_y + pr::m_vec[10] * a_z;
+      a_x = a_tmp[0];
+      a_y = a_tmp[1];
+      a_z = a_tmp[2];
+    }
+
+    template<class VEC>
+    void mul_dir_3(VEC& a_dir) const
+    {
+      mul_dir_3(a_dir[0], a_dir[1], a_dir[2]);
+    }
+
+    void mul_scale(const T& a_sx, const T& a_sy, const T& a_sz)
+    {
+      // this = this * mat4_scale(a_s[x,y,z])
+      // Scale affects entire columns 0, 1, and 2
+      for (unsigned int i = 0; i < 4; i++)
+      {
+        pr::m_vec[i + 0 * 4] *= a_sx;  // Column 0
+        pr::m_vec[i + 1 * 4] *= a_sy;  // Column 1
+        pr::m_vec[i + 2 * 4] *= a_sz;  // Column 2
+      }
+    }
+
+    void mul_scale(const T& a_s)
+    {
+      mul_scale(a_s, a_s, a_s);  // Delegate to 3-parameter version
+    }
+
+    void mul_translate(const T& a_x, const T& a_y, const T& a_z)
+    {
+      pr::m_vec[12] = pr::m_vec[0] * a_x + pr::m_vec[4] * a_y + pr::m_vec[8] * a_z + pr::m_vec[12];
+      pr::m_vec[13] = pr::m_vec[1] * a_x + pr::m_vec[5] * a_y + pr::m_vec[9] * a_z + pr::m_vec[13];
+      pr::m_vec[14] = pr::m_vec[2] * a_x + pr::m_vec[6] * a_y + pr::m_vec[10] * a_z + pr::m_vec[14];
+      pr::m_vec[15] = pr::m_vec[3] * a_x + pr::m_vec[7] * a_y + pr::m_vec[11] * a_z + pr::m_vec[15];
+    }
+
+    void mul_rotate(const T& a_x, const T& a_y, const T& a_z, const T& a_angle)
+    {
+      T rot[16];
+      _set_rotate(a_x, a_y, a_z, a_angle, rot);
+      parent::_mul_mtx(rot);
+    }
+
+    void left_mul_rotate(const T& a_x, const T& a_y, const T& a_z, const T& a_angle)
+    {
+      T _m[16];
+      _set_rotate(a_x, a_y, a_z, a_angle, _m);
+      parent::_left_mul_mtx(_m);
+    }
+
+    void left_mul_scale(const T& a_x, const T& a_y, const T& a_z)
+    {
+      T _m[16];
+      _set_scale(a_x, a_y, a_z, _m);
+      parent::_left_mul_mtx(_m);
+    }
+
+    void left_mul_translate(const T& a_x, const T& a_y, const T& a_z)
+    {
+      T _m[16];
+      _set_translate(a_x, a_y, a_z, _m);
+      parent::_left_mul_mtx(_m);
+    }
+
+    void v00(const T& a_value) { pr::m_vec[0 + 0 * 4] = a_value; }
+    void v10(const T& a_value) { pr::m_vec[1 + 0 * 4] = a_value; }
+    void v20(const T& a_value) { pr::m_vec[2 + 0 * 4] = a_value; }
+    void v30(const T& a_value) { pr::m_vec[3 + 0 * 4] = a_value; }
+
+    void v01(const T& a_value) { pr::m_vec[0 + 1 * 4] = a_value; }
+    void v11(const T& a_value) { pr::m_vec[1 + 1 * 4] = a_value; }
+    void v21(const T& a_value) { pr::m_vec[2 + 1 * 4] = a_value; }
+    void v31(const T& a_value) { pr::m_vec[3 + 1 * 4] = a_value; }
+
+    void v02(const T& a_value) { pr::m_vec[0 + 2 * 4] = a_value; }
+    void v12(const T& a_value) { pr::m_vec[1 + 2 * 4] = a_value; }
+    void v22(const T& a_value) { pr::m_vec[2 + 2 * 4] = a_value; }
+    void v32(const T& a_value) { pr::m_vec[3 + 2 * 4] = a_value; }
+
+    void v03(const T& a_value) { pr::m_vec[0 + 3 * 4] = a_value; }
+    void v13(const T& a_value) { pr::m_vec[1 + 3 * 4] = a_value; }
+    void v23(const T& a_value) { pr::m_vec[2 + 3 * 4] = a_value; }
+    void v33(const T& a_value) { pr::m_vec[3 + 3 * 4] = a_value; }
+
+    const T& v00() const { return pr::m_vec[0 + 0 * 4]; }
+    const T& v10() const { return pr::m_vec[1 + 0 * 4]; }
+    const T& v20() const { return pr::m_vec[2 + 0 * 4]; }
+    const T& v30() const { return pr::m_vec[3 + 0 * 4]; }
+
+    const T& v01() const { return pr::m_vec[0 + 1 * 4]; }
+    const T& v11() const { return pr::m_vec[1 + 1 * 4]; }
+    const T& v21() const { return pr::m_vec[2 + 1 * 4]; }
+    const T& v31() const { return pr::m_vec[3 + 1 * 4]; }
+
+    const T& v02() const { return pr::m_vec[0 + 2 * 4]; }
+    const T& v12() const { return pr::m_vec[1 + 2 * 4]; }
+    const T& v22() const { return pr::m_vec[2 + 2 * 4]; }
+    const T& v32() const { return pr::m_vec[3 + 2 * 4]; }
+
+    const T& v03() const { return pr::m_vec[0 + 3 * 4]; }
+    const T& v13() const { return pr::m_vec[1 + 3 * 4]; }
+    const T& v23() const { return pr::m_vec[2 + 3 * 4]; }
+    const T& v33() const { return pr::m_vec[3 + 3 * 4]; }
+
+  protected:
+    static void _set_translate(const T& a_x, const T& a_y, const T& a_z, T v[])
+    {
+      // Translation matrix (column-major storage):
+      // 1  0  0  tx
+      // 0  1  0  ty
+      // 0  0  1  tz
+      // 0  0  0  1
+
+      // clang-format off
+      v[0]  = T(1); v[4] = 0;     v[8] = 0;    v[12] = a_x;
+      v[1]  = 0;    v[5] = T(1);  v[9] = 0;    v[13] = a_y;
+      v[2]  = 0;    v[6] = 0;    v[10] = T(1); v[14] = a_z;
+      v[3]  = 0;    v[7] = 0;    v[11] = 0;    v[15] = T(1);
+      // clang-format on
+    }
+
+    static void _set_scale(const T& a_1, const T& a_2, const T& a_3, T v[])
+    {
+      // Scale matrix (column-major storage):
+      // sx  0   0   0
+      // 0   sy  0   0
+      // 0   0   sz  0
+      // 0   0   0   1
+
+      // clang-format off
+      v[0]  = a_1;  v[4] = 0;     v[8] = 0;    v[12] = 0;
+      v[1]  = 0;    v[5] = a_2;   v[9] = 0;    v[13] = 0;
+      v[2]  = 0;    v[6] = 0;    v[10] = a_3;  v[14] = 0;
+      v[3]  = 0;    v[7] = 0;    v[11] = 0;    v[15] = T(1);
+      // clang-format on
+    }
+
+    static void _set_rotate(const T& a_x, const T& a_y, const T& a_z, const T& a_angle, T v[])
+    {
+      // Create a rotation matrix using Rodrigues' rotation formula
+      // Rotates by a_angle radians around axis (a_x, a_y, a_z)
+      //
+      // WARNING: (a_x, a_y, a_z) MUST be a normalized vector (unit length)
+      //
+      // This implements an "active rotation" (rotates the object, not the coordinate system)
+      // in a right-handed coordinate system. Positive angles rotate counter-clockwise
+      // when looking down the axis toward the origin.
+      //
+      // Formula: R = I + sin(θ)K + (1-cos(θ))K²
+      // where K is the skew-symmetric cross-product matrix of the axis vector
+      //
+      // Equivalent to glRotate(angle_degrees, x, y, z) with angle in radians
+      // See: https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
+      //      https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glRotate.xml
+
+      T si = std::sin(a_angle);
+      T co = std::cos(a_angle);
+      T x = a_x;
+      T y = a_y;
+      T z = a_z;
+      T x2 = x * x;
+      T y2 = y * y;
+      T z2 = z * z;
+      T xy = x * y;
+      T xz = x * z;
+      T yz = y * z;
+
+      // Rotation matrix (column-major storage):
+      // clang-format off
+      v[0] = x2 + (1 - x2) * co;      v[4] = xy * (1 - co) - z * si;   v[8] = xz * (1 - co) + y * si;  v[12] = 0;
+      v[1] = xy * (1 - co) + z * si;  v[5] = y2 + (1 - y2) * co;       v[9] = yz * (1 - co) - x * si;  v[13] = 0;
+      v[2] = xz * (1 - co) - y * si;  v[6] = yz * (1 - co) + x * si;  v[10] = z2 + (1 - z2) * co;      v[14] = 0;
+      v[3] = 0;                       v[7] = 0;                       v[11] = 0;                       v[15] = 1;
+      // clang-format on
+    }
+};
+
+// for sf, mf :
+template<class T>
+inline const T* get_data(const mat4<T>& a_v)
+{
+  return a_v.data();
+}
+
+template<class T>
+inline std::ostream& operator<<(std::ostream& a_out, const mat4<T>& a_mtx)
+{
+  const T* v = a_mtx.data();
+  a_out << v[0] << "," << v[4] << "," << v[8] << "," << v[12] << std::endl
+        << v[1] << "," << v[5] << "," << v[9] << "," << v[13] << std::endl
+        << v[2] << "," << v[6] << "," << v[10] << "," << v[14] << std::endl
+        << v[3] << "," << v[7] << "," << v[11] << "," << v[15] << std::endl;
+  return a_out;
+}
+
+// Alias/RTTI for 4x4 matrix of float
+using mat4f = mat4<float>;
+
+// for sf_vec<mat4f,float>, sf_mat4f :
+inline const std::string& stype(const mat4f&)
+{
+  static const std::string s_v("tools::mat4f");
+  return s_v;
+}
+
+}  // namespace tools
+
+#endif

@@ -1,0 +1,150 @@
+
+                       geant4-11-04-ref-03
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Use smart pointer and C++11 static semantics to implement G4Cache backing
+   store.
+ o Improved performance of GetCollectionID() in G4SDManager and G4HCTable by
+   avoiding unneeded memory allocations.
+ o Removed G4UserSpecialCuts process from G4StepLimiterPhysics.
+ 
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.4.1
+
+Summarised, the list of changes is the following:
+
+digits_hits/detector                             det-V11-04-01
+--------------------
+- Improved performance of GetCollectionID() in G4SDManager and G4HCTable by
+  avoiding unneeded memory allocations; further improve it by adding a second
+  interface, avoiding the need to concatenate strings together and then take
+  them apart again.
+
+geometry/management                              geommng-V11-04-00
+-------------------
+- In G4VoxelisationHelper, moved checks printouts in method
+  ReportWorkerIsDoneOptimising(..) under verbosity control.
+
+geometry/navigation                              geomnav-V11-04-00
+-------------------
+- Fixed inverted comments in G4Navigator.icc.
+
+geometry/solids/Boolean                          geom-bool-V11-04-00
+-----------------------
+- Fixed calculation of normal in G4ScaledSolid::DistanceToOut(p,v,..) to
+  use inverse transformation. Addressing problem report #2709.
+
+global                                           global-V11-04-07
+------
+- Use smart pointer and C++11 static semantics to implement G4Cache backing
+  store.
+- Always initialize G4CacheReference for a G4Cache instance on construction  (o)
+  of latter. Prevents fatal G4Exception when only low ID G4Cache elements are
+  accessed.
+- Updated date and tag-ID for geant4-11-04-ref-03.
+
+parameterisations/gflash                         gflash-V11-04-00
+------------------------
+- In GVFlashShowerParameterisation, added GetEffZoA() method.
+- GFlashHomoShowerParameterisation, GFlashSamplingShowerParameterisation: made
+  SetMaterial() privete; corrected Ec calculation.
+- In GFlashShowerModel, added methods SetParameterisation(), SetHitMaker(),
+  SetParticleBounds() and GetPBound().
+  Use GetPBound() in GFlashShowerModelMessenger.
+
+physics_lists
+-------------
+- constructors/limiters (phys-ctor-limiters-V11-04-00)
+  o Removed G4UserSpecialCuts process from G4StepLimiterPhysics.
+  o Moved processes classes G4UserSpecialCuts, G4SpecialCuts, G4MaxTimeCuts
+    and G4MinEkineCuts to /processes/biasing/management module.
+- lists (phys-list-V11-04-01)
+  o Added dependency on /processes/biasing/management module.
+
+processes/biasing/management                     proc-biasmng-V11-04-00
+----------------------------
+- Moved processes classes G4UserSpecialCuts, G4SpecialCuts, G4MaxTimeCuts
+  and G4MinEkineCuts from physics_lists/constructors/limiters module.
+
+processes/electromagnetic
+-------------------------
+- utils (emutils-V11-04-06)
+  o G4EmDataRegistry, G4EmTableUtil, G4EmUtility, G4LossTableManager,
+    G4VEnergyLossProcess, G4VMultipleScattering: the first implementation
+    of parallel initialisation of EM physics.
+  o G4ionEffectiveCharge: removed hidden mutable 'chargeCorrection' member
+    state; EffectiveChargeSquareRatio() depended on a member variable written
+    as a side effect by EffectiveCharge(). This was sensitive to compiler
+    optimization and inlining, causing wrong 'q2' values for ions and breaking
+    event reproducibility on Windows MSVC. The value 'chargeCorrection' is now
+    returned via an output parameter.
+
+processes/hadronic
+------------------
+- models/pre_equilibrium (hadr-pre-V11-04-00)
+  o In G4PreCompoundDeuteron, G4PreCompoundTriton, G4PreCompoundHe3, and
+    G4PreCompoundAlpha, promoted combinatorial products to G4double before
+    multiplication to avoid intermediate integer overflow in precompound
+    fragment-emission probability calculations. In heavy-target cases, this
+    could have generated negative alpha-emission probabilities and thereby
+    alter precompound fragment selection.
+
+run                                              run-V11-04-05
+---
+- Fix in G4MaterialScanner to delete G4Event object at the end of each       (o)
+  event and make sure geometry is optimized before starting the scan.
+  In G4MSSteppingAction, fixed average A and average Z taking number of
+  atoms into account. In G4MatScanMessenger, prevent material scanner
+  UI commands from broadcasting to worker threads; material scanner is
+  centrally managed by the master thread.
+- Further fix in G4MSSteppingAction, to remove average A and Z and add
+  integrated mass length (a.k.a. column density) instead.
+- In G4MaterialScanner and G4MatScanMessenger, unify the length unit to cm;
+  added an option to ignore low-density materials.
+- Set verbosity in call to G4GeometryManager::CloseGeometry(..) only if
+  level greater than 1 in G4MTRunManager and G4RunManager.
+
+visualization
+-------------
+- modeling (modeling-V11-04-01)
+  o In G4PhysicalVolumeModel, fix to replace the helper class                (o)
+    G4PhysicalVolumeModelTouchable with a temporary G4TouchableHistory
+    object when calling a nested parameterisation, building and maintaining
+    a private G4NavigationHistory.
+
+examples                                         examples-V11-04-03
+--------
+- Updated documentation and reference outputs.
+- advanced/eFLASH_radiotherapy (eFLASH_radiotherapy-V11-04-00)
+  o Fixed PVDF material composition in FlashApplicator: replaced incorrect
+    mass fractions (34/33/33%) with atom counts (2/2/2).
+  o Fixed integer division bug in MonitorChamber (FlashApplicator):
+    1/2 evaluated to 0, causing wrong PVDF layer positioning.
+- advanced/ICRP110_HumanPhantoms (ICRP110Phantoms-V11-04-00)
+  o In ICRP110PhantomConstruction, ICRP110PhantomNestedParameterisation and
+    ICRP110UserScoreWriter, fixed compilation warnings on macOS/XCode for
+    implicit type conversions.
+- extended/medical/dna/spower (spower-V11-04-00)
+  o Removed references to stationary constructors.
+- extended/parameterisations/gflash/gflasha (exgflasha-V11-04-00)
+  o In ExGflashMessenger, limited max number of crystals per raw/col.
+  o In ExGflashDetectorConstruction, not use GFlashHomoShowerParameterisation
+    SetMaterial() call, potentially erroneous.
+- extended/parameterisations/gflash/gflash1 (exgflash1-V11-04-00)
+- extended/parameterisations/gflash/gflash2 (exgflash2-V11-04-00)
+- extended/parameterisations/gflash/gflash3 (exgflash3-V11-04-00)
+  o Corrected crystal copy numbering.
+  o Simplified processing; draw hits as circles.
+  o Pass Gflash classes by pointer.
+  o In test.mac, test both gflash on and off cases.
+  o Code cleanup.
+- extended/parameterisations/Par04 (expar04-V11-04-00)
+  o Bump keras from 3.12.0 to 3.12.1 and protobuf from 4.25.8 to 5.29.6.
+    Addresses security vulnerabilities tagged by GitHub's dependabot.
+
+tests                                            tests-V11-04-03
+-----
+- Updated reference outputs and tools.

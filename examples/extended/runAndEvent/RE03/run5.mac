@@ -1,0 +1,52 @@
+########################################
+#
+# define Probes to score dose
+#
+#
+/score/create/probe Probes 5 cm
+#/score/probe/material G4_WATER
+/score/probe/locate 0 0 -80 cm
+/score/probe/locate 0 0 -60 cm
+/score/probe/locate 0 0 -40 cm
+/score/probe/locate 0 0 -20 cm
+/score/probe/locate 0 0 0 cm
+/score/probe/locate 0 0 20 cm
+/score/probe/locate 0 0 40 cm
+/score/probe/locate 0 0 60 cm
+/score/probe/locate 0 0 80 cm
+/score/probe/locate 20 20 0 cm
+/score/probe/locate 40 40 0 cm
+/score/probe/locate 60 60 0 cm
+/score/probe/locate 80 80 0 cm
+/score/probe/locate 20 -20 0 cm
+/score/probe/locate 40 -40 0 cm
+/score/probe/locate 60 -60 0 cm
+/score/probe/locate 80 -80 0 cm
+/score/probe/locate -20 20 0 cm
+/score/probe/locate -40 40 0 cm
+/score/probe/locate -60 60 0 cm
+/score/probe/locate -80 80 0 cm
+/score/probe/locate -20 -20 0 cm
+/score/probe/locate -40 -40 0 cm
+/score/probe/locate -60 -60 0 cm
+/score/probe/locate -80 -80 0 cm
+/score/quantity/doseDeposit dose 
+/score/quantity/volumeFlux volFlx
+/score/close
+#
+/score/list
+#
+/control/doifInteractive /vis/disable
+/gun/particle e-
+/run/beamOn 2000
+/control/doifInteractive /vis/enable
+#
+########################################
+#
+# drawing probes with log-scale color map
+# and dump those scored dose to a file
+#
+/control/doifInteractive /score/drawProbes Probes dose logColorMap
+/score/dumpQuantityToFile Probes dose probes_dose.txt
+#
+#

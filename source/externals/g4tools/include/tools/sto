@@ -1,0 +1,142 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_sto
+#define tools_sto
+
+#include "strip"
+#include "tokenize"
+
+#include <algorithm>
+#include <limits>
+#include <charconv>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <system_error>
+
+namespace tools {
+
+inline bool to(const std::string& a_string,bool& a_value,bool a_def = false){
+  if(  (a_string=="1")
+     ||(a_string=="true")||(a_string=="TRUE")||(a_string=="True")
+     ||(a_string=="yes")||(a_string=="YES")||(a_string=="Yes")
+     ||(a_string=="on")||(a_string=="ON")||(a_string=="On")
+     ){
+    a_value = true;
+    return true;
+  } else if((a_string=="0")
+          ||(a_string=="false")||(a_string=="FALSE")||(a_string=="False")
+          ||(a_string=="no")||(a_string=="NO")||(a_string=="No")
+          ||(a_string=="off")||(a_string=="OFF")||(a_string=="Off")
+          ){
+    a_value = false;
+    return true;
+  } else {
+    a_value = a_def;
+    return false;
+  }
+}
+
+template <class T>
+inline bool to(const std::string& a_s,T& a_v,const T& a_def = T()) {
+  if(a_s.empty()) {a_v = a_def;return false;} //for TOOLS_STL istringstream.
+
+  if constexpr (std::is_floating_point_v<T>) {
+    // NB: assumes that NaN/Inf alway representatable in 3 or 4 chars
+    if ((a_s.size() == 3) || (a_s.size() == 4)) {
+      std::string lower;
+      std::transform(a_s.begin(), a_s.end(), std::back_inserter(lower), ::tolower);
+      if (lower == "nan") {
+        a_v = std::numeric_limits<T>::quiet_NaN();
+        return false;
+      }
+      if (lower == "inf" || lower == "+inf") {
+        a_v = std::numeric_limits<T>::infinity();
+        return false;
+      }
+      if (lower == "-inf") {
+        a_v = -std::numeric_limits<T>::infinity();
+        return false;
+      }
+    }
+    char* endptr = nullptr;
+    if constexpr (std::is_same_v<T, float>) {
+      a_v = std::strtof(a_s.c_str(), &endptr);
+    } else if constexpr (std::is_same_v<T, double>) {
+      a_v = std::strtod(a_s.c_str(), &endptr);
+    } else { // long double
+      a_v = std::strtold(a_s.c_str(), &endptr);
+    }
+    if (endptr == a_s.c_str() || *endptr != '\0') {
+      a_v = a_def;
+      return false;
+    }
+    return true;
+  }
+  else if constexpr (std::is_integral_v<T>) {
+    auto [ptr, ec] = std::from_chars(a_s.data(), a_s.data() + a_s.size(), a_v);
+    if (ec != std::errc() || ptr != a_s.data() + a_s.size()) {
+      a_v = a_def;
+      return false;
+    }
+    return true;
+  }
+  else {
+    std::istringstream strm(a_s.c_str());
+    strm >> a_v;
+    // For consistency, a partial parse is also considered a fail
+    if(strm.fail() || !strm.eof()) {a_v = a_def;return false;}
+    return strm.eof();
+  }
+}
+
+// Full specialization for time_t
+template <>
+inline bool to(const std::string& a_s, time_t& a_v, const time_t& a_def) {
+  std::tm tp = {};
+  std::istringstream ss(a_s);
+  ss >> std::get_time(&tp, "%Y-%m-%d %H:%M:%S");
+  if (ss.fail()) {
+    a_v = a_def;
+    return false;
+  }
+  tp.tm_isdst = 0;
+  a_v = std::mktime(&tp);
+  return true;
+}
+
+// Optimization for working with vectors
+template <class T> //T must be numbers (not std::string).
+inline bool to_opt(const std::string& a_s,
+                   std::vector<T>& a_v,
+                   const std::string& a_sep,
+                   std::vector<std::string>& a_tmp) {
+  a_v.clear();
+  words(a_s, a_sep, false, a_tmp);
+  a_v.reserve(a_tmp.size());
+  T value;
+  for(auto& it : a_tmp) {
+    // to<> requires clean parsing, so need to strip whitespace
+    strip(it);
+    if(!to(it, value)) {
+      a_v.clear();
+      return false;
+    }
+    a_v.push_back(value);
+  }
+  return true;
+}
+
+
+// Full specialization for working with vector<T>
+template <typename T>
+inline bool to(const std::string& a_s, std::vector<T>& a_v, const std::string& a_sep) {
+  std::vector<std::string> words;
+  return to_opt(a_s, a_v, a_sep, words);
+}
+
+}
+
+#endif

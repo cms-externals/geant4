@@ -1,0 +1,237 @@
+
+                       geant4-11-04-ref-04
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Removed G4Exception in G4VSolid default implementation of ComputeDimensions().
+   Dispatching for ComputeDimensions() is enabled only for solids where full
+   parameterisation is allowed, for all others it is simply disabled and
+   performing no actions.
+ o Fix in G4VRangeToEnergyConverter to enable the use of UI command such as
+   "/cuts/setLowEdge" at the Pre_Init state before initializing the run manager.
+ o Optimised computation of mass ratio for ions in G4VEnergyLossProcess.
+ o Removed obsolete DNA option 1, 3, 5, 7 and all G4EmDNAPhysics_stationary*
+   constructors.
+ o Added options for writing scan results to a file from material scanner.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-04-02
+-----
+- Added first setup for Doxygen-ation of toolkit code.
+
+digits_hits/utils                                detutil-V11-04-00
+--------------------
+- Added draw() method for Probe.
+
+geometry/management                              geommng-V11-04-06
+-------------------
+- Updated Reallocate() function in G4GeomSplitter to zero-initialise any slots
+  added beyond the previous allocated space, ensuring that uninitialised slots
+  in the master array contain null pointers, which then propagate correctly via
+  CopyMasterContents() to all workers. Addressing potential crash in MT mode
+  in setups with relatively complex geometry being re-initialised between runs
+  (see GitLab issue #287).
+- Removed G4Exception in G4VSolid default implementation of ComputeDimensions().
+  Dispatching for ComputeDimensions() is enabled only for solids where full
+  parameterisation is allowed, for all others it is simply disabled and
+  performing no actions.
+- Use shared_ptr for the shared voxelisation helper in G4GeometryManager
+  and simplified the destructor.
+- G4PhysicsVolumeStore, G4LogicalVolumeStore, G4SolidStore, G4RegionStore
+  added CleanStore private method called from class destructor and from
+  method Clean() in order to avoid minor memory leak at exit. The problem
+  was in call to the singleton G4GeometryManager in class destructor,
+  but this manager may be already deleted and a new instance of it is created
+  and never deleted.
+- Removed redundant virtual destructor in G4TouchableHistory, as no longer
+  necessary. Updated comments and descriptions.
+- Fixed error/warning codes in G4VoxelisationHelper and minor cleanup.
+
+geometry/navigation                              geomnav-V11-04-01
+-------------------
+- Refresh navigator for tracking and mass world in G4MultiNavigator from
+  G4PathFinder whenever geometry is modified/rebuilt, to avoid stale pointers.
+  Addresses problem report #2714.
+
+geometry/solids/Boolean                          geom-bool-V11-04-01
+-----------------------
+- Removed redundant specialisations of ComputeDimensions() in Boolean solids.
+  Dispatching for ComputeDimensions() is enabled only for solids where full
+  parameterisation is allowed, for all others it is simply disabled and
+  performing no actions.
+
+geometry/solids/specific                         geom-specific-V11-04-00
+------------------------
+- Removed redundant disabled specialisation of ComputeDimensions()
+  in twisted solids. Dispatching for ComputeDimensions() is enabled only
+  for solids where full parameterisation is allowed, for all others it is
+  simply disabled and performing no actions.
+
+global                                           global-V11-04-08
+------
+- Updated date and tag-ID for geant4-11-04-ref-04.
+
+particles                                        particles-V11-04-03
+---------
+- In G4DecayProducts, fixed check of absolute zero decay time of the
+  pre-assigned daughter particle.
+
+persistency/ascii                                ascii-V11-04-00
+-----------------
+- Fix in G4tgbVolume::FindOrConstructG4Solid() to close tessellated solid
+  at construction. Addressing problem report #2718.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-04-08)
+  o Removed DNA option 1, 3, 5, 7 and all G4EmDNAPhysics_stationary*
+    constructors.
+  o G4EmDNAPhysics, G4EmDNAPhysics_option2, G4EmDNAPhysics_option4,
+    G4EmDNAPhysics_option6, G4EmDNAPhysics_option8, G4EmDNABuilder,
+    G4EmDNAPhysicsActivator: use new parameters for transition between
+    DNA and standard physics, which are defined inside G4EmParameters.
+  o G4EmDNABuilder: all energy limits with values are now taken from
+    EM parameters or from namespace for the class.
+- constructors/factory (phys-ctor-fact-V11-04-01)
+  o Removed DNA option 1, 3, 5, 7 and all G4EmDNAPhysics_stationary*
+    constructors.
+
+processes/cuts                                   proccuts-V11-04-02
+--------------
+- In G4VRangeToEnergyConverter, instantiate energy bin vector object only once
+  unless it is requested to rebuild by methods such as SetEnergyRange().
+  This fix enables the use of UI command such as "/cuts/setLowEdge" at the
+  Pre_Init state before initializing the run manager.
+  Restore low energy cut limit as it was originally, i.e. 990 eV instead of
+  1 keV. It was an overlooked leftover since version 11.0.
+  Fixed minor memory leak at exit.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-04-03)
+  o G4DNAIonisation, G4DNARuddIonisationDynamicModel and
+    G4DNARuddIonisationExtendedModel: use updated EM parameters.
+- muons (emmuons-V11-04-03)
+  o G4TablesForExtrapolator: fixed reported Coverity defect on memory leak
+    at exit.
+- utils (emutils-V11-04-09)
+  o G4ionEffectiveCharge: renamed private method EffectiveCharge(..) to
+    ComputeCharge(..); return unitless charge square ratio and effective
+    charge in units of charge; added comments to all methods in header file.
+  o G4VEnergyLossProcess: optimised computation of mass ratio for ions.
+  o G4EmCalculator: fixed reported Coverity defect on computation of ion dEdx.
+  o G4EmDataHandler: fixed destruction at exit.
+  o G4EmParameters, G4EmLowEParameters: added extra parameters and extended
+    information printout for energy transition between DNA and standard models.
+    Defined new parameters for e-, protons, and ions.
+  o G4EmLowEParameterMessenger: added UI commands for transition energies.
+
+processes/hadronic
+------------------
+- management (hadr-man-V11-04-00)
+  o G4HadronicProcessStore: introduced GetInteractionLength() method.
+- models/models/cascade (hadr-casc-V11-04-01)
+  o In G4CascadeFinalStateAlgorithm::GenerateCosTheta(), revert to the original
+    algorithm for 4-or-higher body generation of cos(theta)b, to fix an
+    observed symmetric double bump in the Feynman-x distribution; the update
+    also repairs unphysical bumps in the centain spectra of secondary pions
+    coming from h+A interactions and does not induce any additional unphysical
+    effects in the simulated spectra of secondary pions, protons, and neutrons
+    resulting from h+A interactions.
+- models/particle_hp (hadr-hpp-V11-04-02)
+  o In G4ParticleHPLegendreTable, added protection in the inlined method Init()
+    to protect against the possibility of negative input parameter, which
+    could cause writing on a zero-size allocated buffer.
+- models/parton_string/hadronization (had-hadronization-V11-04-00)
+  o G4VLongitudinalStringDecay: fixed wrong MesonWeight indices in the d-dbar
+    neutral-meson table in SetMinMasses(); eta and eta' weights now match their
+    proper state indices.
+- models/parton_string/qgsm (hadr-qgsm-V11-04-02)
+  o G4QuarkExchange: fixed a missing line in the target-diffraction branch
+    for kaon projectiles. The sampled value x was not stored in TPlusNew, so
+    this branch could not complete successfully.
+  o G4SPBaryon: fixed wrong antidiquark code in the anti-Delta0 (PDG = -2114)
+    QGSM splitting table; changed -2103 to -1103.
+
+run                                              run-V11-04-07
+---
+- Added options for writing messages to a file. In G4ExceptionHandler and
+  G4ExceptionHandlerMessenger, write specified or all warning messages to a
+  file rather than on display. In G4MaterialScanner and G4MatScanMessenger,
+  write scan results to a file rather than on display.
+  Added a UI command to alter the particle type and its momentum for estimating
+  the hadronic interaction length.
+- Further polishing of the material scanner; in G4MaterialScanner,
+  G4MatScanMessenger and G4MSSteppingAction, calculate hadronic interaction
+  length from hadron inelastic cross-sections instead of relying on the
+  empirical formula of G4Material.
+
+visualization
+-------------
+- OpenInventor (openinventor-V11-04-00)
+  o Fixed compilation warning on Windows/VC for SbBool/bool type comparison
+    in G4OpenInventorQtExaminerViewer.
+- Vtk (visVtk-V11-04-00)
+  o Remove inclusion of unused Vtk headers in G4VtkViewer. Addresses problem
+    reported in [GitHub PR#99](https://github.com/Geant4/geant4/pull/99).
+
+examples                                         examples-V11-04-04
+--------
+- Updated documentation and reference outputs.
+- advanced/dna/dsbandrepair (dsbandrepair-V11-04-00)
+- advanced/dna/moleculardna (molecularDNA-V11-04-02)
+- extended/electromagnetic/TestEm2 (testem2-V11-04-00)
+  o Reduced number of DNA physics constructors.
+- extended/electromagnetic/TestEm3 (testem3-V11-04-01)
+  o In main(), use 4 threads by default.
+  o In PhysicsList, define particle via constructor of EM, decay, hadronic
+    physics to avoid situation when an update in some constructors (like
+    extra DNA particle) needs to be propagated in the example by hand.
+  o In RunAction, added extra timer to print initialisation time in the
+    master thread.
+  o Reduced number of DNA physics constructors.
+- extended/electromagnetic/TestEm5 (testem5-V11-04-00)
+- extended/electromagnetic/TestEm12 (testem12-V11-04-00)
+- extended/medical/dna/chem1 (chem1-V11-04-00)
+- extended/medical/dna/chem2 (chem2-V11-04-00)
+- extended/medical/dna/chem3 (chem3-V11-04-00)
+- extended/medical/dna/chem4 (chem4-V11-04-00)
+- extended/medical/dna/chem5 (chem5-V11-04-00)
+- extended/medical/dna/chem6 (chem6-V11-04-03)
+- extended/medical/dna/clustering (clustering-V11-04-00)
+- extended/medical/dna/dnadamage1 (dnadamage1-V11-04-00)
+- extended/medical/dna/dnadamage2 (dnadamage2-V11-04-01)
+- extended/medical/dna/dnaphysics (dnaphysics-V11-04-00)
+- extended/medical/dna/jetcounter (jetcounter-V11-04-00)
+- extended/medical/dna/mfp (mfp-V11-04-00)
+- extended/medical/dna/microdosimetry (microdosimetry-V11-04-00)
+- extended/medical/dna/microprox (microprox-V11-04-00)
+- extended/medical/dna/microtrack (microtrack-V11-04-00)
+- extended/medical/dna/neuron (neuron-V11-04-00)
+- extended/medical/dna/pdb4dna (pdb4dna-V11-04-00)
+- extended/medical/dna/radial (radial-V11-04-00)
+- extended/medical/dna/range (range-V11-04-00)
+- extended/medical/dna/scavenger (scavenger-V11-04-00)
+- extended/medical/dna/slowing (slowing-V11-04-00)
+- extended/medical/dna/spower (spower-V11-04-01)
+- extended/medical/dna/svalue (svalue-V11-04-00)
+- extended/medical/dna/wholeNuclearDNA (wholeNuclearDNA-V11-04-00)
+- extended/medical/dna/wvalue (wvalue-V11-04-00)
+  o Reduced number of DNA physics constructors.
+- extended/parameterisations/gflash/gflasha (exgflasha-V11-04-01)
+  o Some code cleanup.
+
+tests                                            tests-V11-04-04
+-----
+- Updated reference outputs and tools.
+- tests/ctests_integration/test30 (test30-V11-04-00)
+  o In main(), improved histograms for elastic scattering.
+- tests/ctests_integration/test60 (test60-V11-04-00)
+  o Reduced number of DNA physics constructors.
+- tests/ctests_integration/test70 (test70-V11-04-00)
+  o Switched to DNA option 2 constructor.

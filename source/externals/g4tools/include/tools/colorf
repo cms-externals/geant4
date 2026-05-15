@@ -1,0 +1,125 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_colorf
+#define tools_colorf
+
+#include "lina/vec"
+
+#include <algorithm>
+
+namespace tools {
+
+class colorf {
+public:
+  using uchar = unsigned char;
+
+public:
+  colorf():m_rgba(0,0,0,1){}
+  colorf(float a_r,float a_g,float a_b,float a_a = 1):m_rgba(a_r,a_g,a_b,a_a){}
+  ~colorf() = default;
+  colorf(const colorf& a_from) = default;
+  colorf& operator=(const colorf& a_from) = default;
+  colorf(colorf&&) = default;
+  colorf& operator=(colorf&&) = default;
+
+  float r() const {return m_rgba[0];}
+  float g() const {return m_rgba[1];}
+  float b() const {return m_rgba[2];}
+  float a() const {return m_rgba[3];}
+
+  void set_r(float a_v) {m_rgba[0] = a_v;}
+  void set_g(float a_v) {m_rgba[1] = a_v;}
+  void set_b(float a_v) {m_rgba[2] = a_v;}
+  void set_a(float a_v) {m_rgba[3] = a_v;}
+
+  // Forward set_value from vec4f for compatibility
+  void set_value(float a_r, float a_g, float a_b, float a_a) {
+    m_rgba.set_value(a_r, a_g, a_b, a_a);
+  }
+
+  // Forward subscript operators for compatibility
+  float& operator[](size_t a_index) {
+    return m_rgba[a_index];
+  }
+  
+  const float& operator[](size_t a_index) const {
+    return m_rgba[a_index];
+  }
+
+  uchar ruchar() const {return uchar(255.0f*m_rgba[0]);}
+  uchar guchar() const {return uchar(255.0f*m_rgba[1]);}
+  uchar buchar() const {return uchar(255.0f*m_rgba[2]);}
+  uchar auchar() const {return uchar(255.0f*m_rgba[3]);}
+
+  colorf& operator*=(const colorf& a_v) {
+    m_rgba[0] *= a_v.m_rgba[0];
+    m_rgba[1] *= a_v.m_rgba[1];
+    m_rgba[2] *= a_v.m_rgba[2];
+    m_rgba[3] *= a_v.m_rgba[3];
+    return *this;
+  }
+  colorf& operator*=(float a_v) {
+    m_rgba[0] *= a_v;
+    m_rgba[1] *= a_v;
+    m_rgba[2] *= a_v;
+    m_rgba[3] *= a_v;
+    return *this;
+  }
+
+  colorf& operator+=(const colorf& a_v) {
+    m_rgba[0] += a_v.m_rgba[0];
+    m_rgba[1] += a_v.m_rgba[1];
+    m_rgba[2] += a_v.m_rgba[2];
+    m_rgba[3] += a_v.m_rgba[3];
+    return *this;
+  }
+
+  // Equality operators - needed for bsf comparison
+  bool operator==(const colorf& a_v) const {
+    return m_rgba == a_v.m_rgba;
+  }
+  
+  bool operator!=(const colorf& a_v) const {
+    return m_rgba != a_v.m_rgba;
+  }
+  
+  void clamp(float a_min = 0,float a_max = 1) {
+    m_rgba[0] = std::clamp(m_rgba[0], a_min, a_max);
+    m_rgba[1] = std::clamp(m_rgba[1], a_min, a_max);
+    m_rgba[2] = std::clamp(m_rgba[2], a_min, a_max);
+    m_rgba[3] = std::clamp(m_rgba[3], a_min, a_max);
+  }
+
+  // Add size/dimension if sf_vec needs them
+  constexpr size_t size() const { return 4; }
+  constexpr unsigned int dimension() const { return 4; }
+  // Add data() if sf_vec needs it
+  const float* data() const { return m_rgba.data(); }
+ 
+private:
+  vec4f m_rgba;
+};
+
+// for sf???:
+inline const std::string& stype(const colorf&)
+{
+  static const std::string s_v("tools::colorf");
+  return s_v;
+}
+
+// for sf_vec::dump().
+inline std::ostream& operator<<(std::ostream& a_out,const colorf& a_this){
+  a_out << "r = " << a_this.r()
+        << ",g = " << a_this.g()
+        << ",b = " << a_this.b()
+        << ",a = " << a_this.a();
+  return a_out;
+}
+
+//for sf, mf :
+inline const float* get_data(const colorf& a_v) {return a_v.data();}
+
+}
+
+#endif
