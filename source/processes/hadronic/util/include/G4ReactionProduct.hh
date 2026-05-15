@@ -190,6 +190,8 @@ class G4ReactionProduct
     inline G4bool GetMayBeKilled() const
     { return MayBeKilled; }
 
+    void SetZero();
+  
     void Lorentz( const G4ReactionProduct &p1, const G4ReactionProduct &p2 );
     
     G4double Angle( const G4ReactionProduct &p ) const;
