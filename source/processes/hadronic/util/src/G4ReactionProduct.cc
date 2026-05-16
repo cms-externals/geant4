@@ -135,6 +135,23 @@ void G4ReactionProduct::SetMomentum( const G4double z )
   momentum.setZ( z );
 }
 
+void G4ReactionProduct::SetZero()
+{
+  SetMomentum( 0.0, 0.0, 0.0 );
+  totalEnergy = 0.0;
+  kineticEnergy = 0.0;
+  mass = 0.0;
+  timeOfFlight = 0.0;
+  side = 0;
+  theCreatorModel = -1;
+  theParentResonanceDef = nullptr;
+  theParentResonanceID = 0;
+  NewlyAdded = false;
+  SetPositionInNucleus( 0.0, 0.0, 0.0 );
+  formationTime = 0.0;
+  hasInitialStateParton = false;
+}
+
 void G4ReactionProduct::Lorentz(
    const G4ReactionProduct &p1, const G4ReactionProduct &p2 )
 {
