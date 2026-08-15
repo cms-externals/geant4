@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+#------------------------------------------------------------------------------
+# - Top level CI script for UNIX platforms
+#
+# This script is the main entrypoint for Jenkins jobs on UNIX platforms, 
+# whether physical or inside a Docker container. It stages are relatively
+# straightforward:
+#
+# 1. Setup logging into Jenkins log files that will be uploaded to the CDash
+#    dashboard along with the results.
+# 2. Source the `jk-setup.sh` script to do the heavy lifting of setting up the
+#    build environment.
+# 3. Run the `g4<MODE>.cmake` CTest script with `ctest` to actually run the
+#    configure, build, and test. Here, `<MODE>` can be:
+#    - `continuous`   : Job run on each Merge Request
+#    - `nightly`      : Scheduled job run each night on staged Merge Requests
+#    - `experimental` : Non-standard nightly builds, usually reserved for
+#                       testing new compilers, build configurations.
+#    - `release`      : Used to build releases (reference and public tags)
+#
+# See also:
+# - g4jk-win-run-pipe.py: Equivalent script on Windows platforms
+#------------------------------------------------------------------------------
+# - Basic setup
+SCRIPT_NAME=$(basename ${BASH_SOURCE[0]})
+THIS=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
+
+# - Make common functions available
+source ${THIS}/common_functions.sh
+
+# - Not clear this variable is actually used...
+BO=`echo $BuildOptions | tr -d " " | tr "," " "`
+
+#------------------------------------------------------------------------------
+# - Jenkins setup
+#------------------------------------------------------------------------------
+# - Create stampfile to enable Jenkins to purge old builds
+touch controlfile
+
+# - Redirect outputs to log files for later upload to CDash
+j_log=jenkins.log
+j_err=jenkins.err
+exec 3>&1 4>&2  1> >(/usr/bin/tee -a ${j_log} >&3) \
+                2> >(/usr/bin/tee -a ${j_log} > >(/usr/bin/tee ${j_err} >&4) )
+
+log_info "${SCRIPT_NAME}: Jenkins Console Output ${BUILD_URL}/console"
+
+#------------------------------------------------------------------------------
+# - Setup build environment given Jenkins environment
+#------------------------------------------------------------------------------
+cmd="source $THIS/jk-setup.sh \
+  -version \"$VERSION\" \
+  -mode \"$MODE\" \
+  -type \"$BUILDTYPE\" \
+  -options \"$BuildOptions\" \
+  -xoptions \"$ExtraCMakeOptions\" \
+  -label \"$LABEL\"  \
+  -compiler \"$COMPILER\"     \
+  -externals \"$EXTERNALS\" \
+  -thread \"$THREAD\" "
+echo $cmd > setup.sh
+log_info "${SCRIPT_NAME}: will setup with '$cmd'"
+$cmd
+
+# - Setup track for main/patches branches under Nightlies
+CdashTrack='Nightly'
+if test "$MODE" == 'patch' ; then
+  CdashTrack='PatchesNightly'
+  MODE='nightly'
+fi
+export MODE
+export CdashTrack
+
+log_info "${SCRIPT_NAME}: host: `hostname`"
+log_info "${SCRIPT_NAME}: date: `date`"
+log_info "${SCRIPT_NAME}: Dumping the full environment <<<"
+# use special char 036 (<rs>) to avoid wrong replacements
+env | sort | sed 's/:/:     /g' | tr '' '\n'
+log_info "${SCRIPT_NAME}: >>> Dumped environment"
+
+#------------------------------------------------------------------------------
+# - Run CTest workflow
+#------------------------------------------------------------------------------
+log_info "${SCRIPT_NAME}: Starting CTest script for configuration ${MODE}" 
+ctest -V -S ${THIS}/g4${MODE}.cmake 
+status=$?
+
+# - Copy Jenkins log files for ???
+log_info "${SCRIPT_NAME}: About to move ${j_log}"
+ls -larth
+mv ${j_log} ${BINARY}/Testing/${j_log}-$$
+mv ${j_err} ${BINARY}/Testing/${j_err}-$$
+
+exit $status

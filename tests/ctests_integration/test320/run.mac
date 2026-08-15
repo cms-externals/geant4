@@ -1,0 +1,127 @@
+# Macro file for test320 that defines run conditions
+# Called from run-xxx.mac
+
+# reduce output in MT
+/control/cout/ignoreThreadsExcept 0
+
+# initialize
+/run/initialize
+
+# set file type via parameter passed from calling macro
+# or use the default value "root" set in main
+/analysis/setDefaultFileType {defaultOutput}
+
+# set another file name for histo #3 and ntuple #3 and #5
+# that will be deleted (in order to test 'keepSetting' option)
+/analysis/h1/setFileName 3 e-extra{appendName}
+/analysis/ntuple/setFileName 3 e-extra{appendName}
+/analysis/ntuple/setFileName 5 e-extra{appendName}
+
+# open analysis file
+/analysis/openFile e-{appendName}
+
+# e- 100MeV
+#
+/gun/particle e-
+/gun/energy 100 MeV
+/run/beamOn 100
+/analysis/write
+# uncomment if in interactive mode
+#/control/execute plotter.mac
+/runAction/printStatistics
+/analysis/reset
+
+# e- 200MeV
+/gun/energy 200 MeV
+#
+# delete h1 with id 1 and 3
+/analysis/h1/delete 1
+/analysis/h1/delete 3 true
+# delete other histograms with id 1
+/analysis/h2/delete 1
+/analysis/h3/delete 1
+/analysis/p1/delete 1
+/analysis/p2/delete 1
+/analysis/ntuple/delete 1
+/analysis/ntuple/delete 3
+/analysis/ntuple/delete 5 true
+
+#
+/run/beamOn 200
+/analysis/write
+/runAction/printStatistics
+/analysis/reset
+#
+# e- 300MeV
+/gun/energy 300 MeV
+#
+#/analysis/verbose 4
+#
+# create again deleted histograms with lower number of bins
+#
+/analysis/h1/create "Edep-1-new" "Edep in absorber Bis" 10 0. 200.
+/analysis/h1/create "Edep-3-new" "Edep in absorber Bis" 10 0. 200.
+#
+/analysis/h2/create "PX-PY-1-new" "PX PY in absorber layer #2 Bis"
+/analysis/h2/setX 1 10 -10. 10
+/analysis/h2/setY 1 10 -10. 10
+#
+/analysis/h3/create "PX-PY-PZ-1-new" "PX PY PZ in absorber layer #2 Bis"
+/analysis/h3/setX 1 10 -10. 10
+/analysis/h3/setY 1 10 -10. 10
+/analysis/h3/setZ 1 10 -10. 10
+#
+/analysis/p1/create "Profile-Edep-vs-Z-1-new" "Longit Edep pseudo-profile Bis"
+/analysis/p1/setX 1 40 0. 300.
+/analysis/p1/setY 1 0. 10.e03
+#
+/analysis/p2/create "Profile-Edep-vs-XY-1-new" "Longit Edep pseudo-profile Bis"
+/analysis/p2/setX 1 10 -200. 200.
+/analysis/p2/setY 1 10 -200. 200.
+/analysis/p2/setZ 1 0. 10.e03
+#
+# create again deleted ntuples
+#
+/analysis/ntuple/create TrackL-1-new "Track Length Bis"
+/analysis/ntuple/createDColumn Labs
+/analysis/ntuple/finish
+#
+/analysis/ntuple/create TrackL-3-new "Track Length Bis"
+/analysis/ntuple/createDColumn Labs
+/analysis/ntuple/finish
+#
+/analysis/ntuple/create TrackL-5-new "Track Length Bis"
+/analysis/ntuple/createDColumn Labs
+/analysis/ntuple/finish
+#
+/run/beamOn 300
+/analysis/write
+/runAction/printStatistics
+/analysis/closeFile
+
+## TODO: if next runs, the e-new.root gets deleted !!!
+
+# set another file name for histo #3 and ntuple #3 and #5
+/analysis/h1/setFileName 3 proton-extra{appendName}
+/analysis/ntuple/setFileName 3 proton-extra{appendName}
+/analysis/ntuple/setFileName 5 proton-extra{appendName}
+
+# open analysis file
+/analysis/openFile proton{appendName}
+
+# proton 400MeV
+/gun/particle proton
+/gun/energy 400 MeV
+/run/beamOn 400
+/analysis/write
+/runAction/printStatistics
+/analysis/reset
+
+# proton 500MeV
+/gun/energy 500 MeV
+#
+/run/beamOn 500
+/analysis/write
+/runAction/printStatistics
+/analysis/closeFile
+#

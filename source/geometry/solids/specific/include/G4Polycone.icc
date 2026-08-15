@@ -1,0 +1,128 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+// Implementation of inline methods of G4Polycone
+// --------------------------------------------------------------------
+
+inline G4double G4Polycone::GetStartPhi() const
+{
+  return startPhi;
+}
+
+inline G4double G4Polycone::GetEndPhi() const
+{
+  return endPhi;
+}
+
+inline G4double G4Polycone::GetSinStartPhi() const
+{
+  return fSinStartPhi;
+}
+
+inline G4double G4Polycone::GetCosStartPhi() const
+{
+  return fCosStartPhi;
+}
+
+inline G4double G4Polycone::GetSinEndPhi() const
+{
+  return fSinEndPhi;
+}
+
+inline G4double G4Polycone::GetCosEndPhi() const
+{
+  return fCosEndPhi;
+}
+
+inline G4bool G4Polycone::IsOpen() const
+{
+  return phiIsOpen;
+}
+
+inline G4int G4Polycone::GetNumRZCorner() const
+{
+  return numCorner;
+}
+
+inline G4PolyconeSideRZ G4Polycone::GetCorner(G4int index) const
+{
+  return corners[index];
+}
+
+inline G4PolyconeHistorical* G4Polycone::GetOriginalParameters() const
+{
+  return original_parameters;
+}
+
+inline G4bool G4Polycone::HasZPlaneInsideFastPath() const
+{
+  return fZPlanesMonotonic;
+}
+
+inline EInside G4Polycone::PhiState(const G4ThreeVector& p) const
+{
+  return G4VCSGfaceted::PhiState(phiIsOpen, startPhi, endPhi,
+                                 fSinStartPhi, fCosStartPhi,
+                                 fSinEndPhi, fCosEndPhi, p);
+}
+
+inline G4double G4Polycone::DistanceToPhiBoundary(const G4ThreeVector& p,
+                                                  G4ThreeVector* normal) const
+{
+  return G4VCSGfaceted::DistanceToPhiBoundary(phiIsOpen,
+                                              fSinStartPhi, fCosStartPhi,
+                                              fSinEndPhi, fCosEndPhi,
+                                              p, normal);
+}
+
+inline EInside G4Polycone::InsideRZ(const G4ThreeVector& p) const
+{
+  const EInside answer = InsideZPlane(p);
+  const EInside phi = PhiState(p);
+  if (phi == kOutside || answer == kOutside)
+  {
+    return kOutside;
+  }
+  return (phi == kSurface || answer == kSurface) ? kSurface : kInside;
+}
+
+
+inline G4double G4Polycone::DistanceToRZ(const G4ThreeVector& p,
+                                         G4bool outgoing) const
+{
+  return DistanceToRZSections(p.perp(), p.z(), fRZSection, fRZVoxel, outgoing);
+}
+
+inline void G4Polycone::SetOriginalParameters(G4PolyconeHistorical* pars)
+{
+  if (pars == nullptr)
+  {
+    G4Exception("G4Polycone::SetOriginalParameters()", "GeomSolids0002", FatalException,
+                "NULL pointer to parameters!");
+  }
+  *original_parameters = *pars;
+  fCubicVolume = 0.;
+  fRebuildPolyhedron = true;
+}

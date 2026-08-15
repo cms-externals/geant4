@@ -1,0 +1,169 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+// Implementation of inline methods of G4Polyhedra
+// --------------------------------------------------------------------
+
+inline G4int G4Polyhedra::GetNumSide() const
+{
+  return numSide;
+}
+
+inline G4double G4Polyhedra::GetStartPhi() const
+{
+  return startPhi;
+}
+
+inline G4double G4Polyhedra::GetEndPhi() const
+{
+  return endPhi;
+}
+
+inline G4double G4Polyhedra::GetSinStartPhi() const
+{
+  return fSinStartPhi;
+}
+
+inline G4double G4Polyhedra::GetCosStartPhi() const
+{
+  return fCosStartPhi;
+}
+
+inline G4double G4Polyhedra::GetSinEndPhi() const
+{
+  return fSinEndPhi;
+}
+
+inline G4double G4Polyhedra::GetCosEndPhi() const
+{
+  return fCosEndPhi;
+}
+
+inline G4bool G4Polyhedra::IsOpen() const
+{
+  return phiIsOpen;
+}
+
+inline G4bool G4Polyhedra::IsGeneric() const
+{
+  return genericPgon;
+}
+
+inline G4int G4Polyhedra::GetNumRZCorner() const
+{
+  return numCorner;
+}
+
+inline G4PolyhedraSideRZ G4Polyhedra::GetCorner(const G4int index) const
+{
+  return corners[index];
+}
+
+inline G4PolyhedraHistorical* G4Polyhedra::GetOriginalParameters() const
+{
+  return original_parameters;
+}
+
+inline EInside G4Polyhedra::PhiState(const G4ThreeVector& p) const
+{
+  return G4VCSGfaceted::PhiState(phiIsOpen, startPhi, endPhi,
+                                 fSinStartPhi, fCosStartPhi,
+                                 fSinEndPhi, fCosEndPhi, p);
+}
+
+inline G4double G4Polyhedra::DistanceToPhiBoundary(const G4ThreeVector& p,
+                                                   G4ThreeVector* normal) const
+{
+  return G4VCSGfaceted::DistanceToPhiBoundary(phiIsOpen,
+                                              fSinStartPhi, fCosStartPhi,
+                                              fSinEndPhi, fCosEndPhi,
+                                              p, normal);
+}
+
+inline G4double G4Polyhedra::ProjectToRZRadius(const G4ThreeVector& p,
+                                     G4double* midCos, G4double* midSin) const
+{
+  if (fRZMidCos.empty() || fRZDeltaPhi <= 0.)
+  {
+    return -kInfinity;
+  }
+
+  G4double best = -kInfinity;
+  G4int iBest = 0;
+  const G4int nSide = G4int(fRZMidCos.size());
+
+  // A maximum dot product selects the panel without an angular transform.
+  for (G4int i = 0; i < nSide; ++i)
+  {
+    const G4double dot = p.x() * fRZMidCos[i] + p.y() * fRZMidSin[i];
+    if (dot > best)
+    {
+      best = dot;
+      iBest = i;
+    }
+  }
+
+  if (midCos != nullptr)
+  {
+    *midCos = fRZMidCos[iBest];
+  }
+  if (midSin != nullptr)
+  {
+    *midSin = fRZMidSin[iBest];
+  }
+
+  // Convert the panel apothem back to the profile's vertex-radius convention.
+  return best / fRZCosHalfPhi;
+}
+
+inline EInside G4Polyhedra::InsideRZ(const G4ThreeVector& p) const
+{
+  const EInside phi = PhiState(p);
+  if (phi == kOutside)
+  {
+    return kOutside;
+  }
+  const EInside answer = InsideRZOnly(p);
+  return (phi == kSurface || answer == kSurface) ? kSurface : answer;
+}
+
+inline G4double G4Polyhedra::DistanceToRZ(const G4ThreeVector& p,
+                                          G4bool outgoing) const
+{
+  return DistanceToRZSections(ProjectToRZRadius(p), p.z(), fRZSection, fRZVoxel,
+                              outgoing, fRZCosHalfPhi);
+}
+
+inline void G4Polyhedra::SetOriginalParameters(G4PolyhedraHistorical* pars)
+{
+  if (pars == nullptr)
+  {
+    G4Exception("G4Polyhedra::SetOriginalParameters()", "GeomSolids0002",
+                FatalException, "NULL pointer to parameters!");
+  }
+  *original_parameters = *pars;
+  fCubicVolume = 0.;
+  fRebuildPolyhedron = true;
+}

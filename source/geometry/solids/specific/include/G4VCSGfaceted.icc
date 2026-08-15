@@ -1,0 +1,453 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+// G4VCSGfaceted inline methods implementation
+//
+// Author: Gabriele Cosmo (CERN), July 2026
+// --------------------------------------------------------------------
+
+inline G4VCSGfaceted::G4StackVisited::G4StackVisited(G4int entries)
+{
+  // Keep the usual face set on the stack and allocate only for large solids.
+  const auto words = std::size_t((entries + 63) / 64);
+  if (words > fStack.size())
+  {
+    fHeap.assign(words, 0);
+  }
+}
+
+inline G4bool G4VCSGfaceted::G4StackVisited::TestAndSet(G4int i)
+{
+  const auto word = std::size_t(i) >> 6;
+  const auto mask = 1ULL << (std::size_t(i) & 63U);
+  auto& entry = fHeap.empty() ? fStack[word] : fHeap[word];
+  const G4bool visited = (entry & mask) != 0;
+  entry |= mask;
+  return visited;
+}
+
+inline G4bool G4VCSGfaceted::HasZSectionIndex() const
+{
+  return numFace >= kMinZSectionIndexFaces && G4int(fZSectionMin.size()) == numFace
+         && G4int(fZSectionMax.size()) == numFace && !fZSlabCandidate.empty();
+}
+
+inline G4bool
+G4VCSGfaceted::FaceCanImprovePoint(G4int i, G4double z,
+                                   G4double best, G4double tolerance) const
+{
+  if (best == kInfinity)
+  {
+    return true;
+  }
+
+  G4double dz = 0.;
+  if (z < fZSectionMin[i])
+  {
+    dz = fZSectionMin[i] - z;
+  }
+  else if (z > fZSectionMax[i])
+  {
+    dz = z - fZSectionMax[i];
+  }
+  return dz <= best + tolerance;
+}
+
+inline G4bool
+G4VCSGfaceted::RayIntersectsFaceZ(G4int i, const G4ThreeVector& p, const G4ThreeVector& v,
+                                  G4double best, G4double tolerance) const
+{
+  const G4double zMin = fZSectionMin[i] - tolerance;
+  const G4double zMax = fZSectionMax[i] + tolerance;
+  const G4double z = p.z();
+  const G4double vz = v.z();
+
+  if (std::fabs(vz) < DBL_MIN)
+  {
+    return z >= zMin && z <= zMax;
+  }
+
+  G4double s1 = (zMin - z) / vz;
+  G4double s2 = (zMax - z) / vz;
+  if (s1 > s2)
+  {
+    std::swap(s1, s2);
+  }
+
+  if (s2 < -tolerance)
+  {
+    return false;
+  }
+  return best == kInfinity || s1 <= best + tolerance;
+}
+
+inline EInside G4VCSGfaceted::InsideNoZ(const G4ThreeVector& p) const
+{
+  EInside answer = kOutside;
+  G4VCSGface** face = faces;
+  G4double best = kInfinity;
+  const G4double tolerance = kCarTolerance / 2;
+
+  do  // Loop checking, 13.08.2015, G.Cosmo
+  {
+    G4double distance;
+    EInside result = (*face)->Inside(p, tolerance, &distance);
+    if (result == kSurface)
+    {
+      return kSurface;
+    }
+    if (distance < best)
+    {
+      best = distance;
+      answer = result;
+    }
+  } while (++face < faces + numFace);
+
+  return answer;
+}
+
+inline EInside G4VCSGfaceted::InsideZ(const G4ThreeVector& p) const
+{
+  EInside answer = kOutside;
+  G4double best = kInfinity;
+  const G4double tolerance = kCarTolerance / 2;
+  const G4double z = p.z();
+  const auto& candidates = GetZCandidates(z);
+
+  if (candidates.empty())
+  {
+    return InsideNoZ(p);
+  }
+
+  for (auto i : fZGlobalCandidate)
+  {
+    G4double distance;
+    EInside result = faces[i]->Inside(p, tolerance, &distance);
+    if (result == kSurface)
+    {
+      return kSurface;
+    }
+    if (distance < best)
+    {
+      best = distance;
+      answer = result;
+    }
+  }
+
+  for (auto i : candidates)
+  {
+    G4double distance;
+    EInside result = faces[i]->Inside(p, tolerance, &distance);
+    if (result == kSurface)
+    {
+      return kSurface;
+    }
+    if (distance < best)
+    {
+      best = distance;
+      answer = result;
+    }
+  }
+  return answer;
+}
+
+inline std::unique_ptr<G4VCSGfaceted::G4ZCandidateData>
+G4VCSGfaceted::CopyZCandidateData(const std::unique_ptr<G4ZCandidateData>& source)
+{
+  return source == nullptr ? nullptr : std::make_unique<G4ZCandidateData>(*source);
+}
+
+inline std::unique_ptr<G4VCSGfaceted::G4ZCandidateData>
+G4VCSGfaceted::MakeZCandidateData(G4int nFace)
+{
+  // Candidate indexing does not amortise its storage cost for small solids.
+  return nFace >= kMinZSectionIndexFaces ? std::make_unique<G4ZCandidateData>() : nullptr;
+}
+
+inline std::size_t G4VCSGfaceted::GetZSlabIndex(G4double z) const
+{
+  return FindZSlabIndex(fZSlabBoundary, z);
+}
+
+template <typename Corner>
+G4bool G4VCSGfaceted::HasRZEdge(const Corner& a, const Corner& b)
+{
+  return !(a.r < 1 / kInfinity && b.r < 1 / kInfinity);
+}
+
+template <typename Section, typename Corner>
+G4bool G4VCSGfaceted::InitRZSection(Section& section, const Corner& a,
+                                   const Corner& b)
+{
+  section.r0 = a.r;
+  section.z0 = a.z;
+  const G4double dr = b.r - section.r0;
+  const G4double dz = b.z - section.z0;
+  section.length = std::sqrt(dr * dr + dz * dz);
+  if (section.length <= 0.)
+  {
+    return false;
+  }
+  section.rS = dr / section.length;
+  section.zS = dz / section.length;
+  section.rNorm = section.zS;
+  section.zNorm = -section.rS;
+  section.zMin = std::min(section.z0, b.z);
+  section.zMax = std::max(section.z0, b.z);
+  return true;
+}
+
+template <typename Section>
+void G4VCSGfaceted::AddRZSectionCandidate(const Section& section,
+                                          std::vector<Section>& sections,
+                                          G4ZCandidateData* data) const
+{
+  sections.push_back(section);
+  if (data != nullptr && section.zMax - section.zMin <= kCarTolerance)
+  {
+    // Nearly horizontal edges span no slab, so visit them for every query.
+    data->global.push_back(G4int(sections.size()) - 1);
+  }
+}
+
+template <typename Section>
+void G4VCSGfaceted::BuildRZVoxel(const std::vector<Section>& sections,
+                                 std::unique_ptr<G4ZCandidateData>& data) const
+{
+  if (data != nullptr)
+  {
+    BuildZVoxelizer(sections, 10. * kCarTolerance, data->boundary, data->candidate);
+  }
+}
+
+template <typename Section>
+inline G4double G4VCSGfaceted::DistanceToRZSections(
+  G4double radius, G4double z, const std::vector<Section>& sections,
+  const std::unique_ptr<G4ZCandidateData>& data, G4bool outgoing,
+  G4double metricScale) const
+{
+  const G4double normSign = outgoing ? -1. : 1.;
+  G4double best = kInfinity;
+  auto check = [&](G4int i)
+  {
+    const auto& sec = sections[i];
+    G4double dzBound = 0.;
+    if (z < sec.zMin)
+    {
+      dzBound = sec.zMin - z;
+    }
+    else if (z > sec.zMax)
+    {
+      dzBound = z - sec.zMax;
+    }
+    if (dzBound > best + kCarTolerance)
+    {
+      return;
+    }
+    const G4double dr = radius - sec.r0;
+    const G4double dz = z - sec.z0;
+    const G4double q = dr * sec.rS + dz * sec.zS;
+    const G4double norm = dr * sec.rNorm + dz * sec.zNorm;
+    if (normSign * norm <= -0.5 * kCarTolerance)
+    {
+      return;
+    }
+    G4double distOut2 = 0.;
+    if (q < 0.)
+    {
+      distOut2 = q * q;
+    }
+    else if (q > sec.length)
+    {
+      distOut2 = (q - sec.length) * (q - sec.length);
+    }
+    const G4double d = distOut2 > 0.
+      ? std::sqrt(norm * norm + distOut2) : std::fabs(norm);
+    if (d < best)
+    {
+      best = d;
+    }
+  };
+
+  if (data != nullptr && !data->candidate.empty() && data->boundary.size() >= 2)
+  {
+    for (auto i : data->global)
+    {
+      check(i);
+      if (best <= 0.)
+      {
+        return 0.;
+      }
+    }
+    VisitZSlabsBySafety(data->boundary, z, best, kCarTolerance,
+      [&](std::size_t slab)
+      {
+        for (auto i : data->candidate[slab])
+        {
+          check(i);
+        }
+        return best <= 0.;
+      });
+    if (best <= 0.)
+    {
+      return 0.;
+    }
+  }
+  else
+  {
+    for (G4int i = 0; i < G4int(sections.size()); ++i)
+    {
+      check(i);
+    }
+  }
+  // The R coordinate may be a scaled projection, as for G4Polyhedra.
+  // Multiplication by the minimum metric scale converts the distance in
+  // the R/Z parameter space into a conservative Cartesian safety.
+  return metricScale * best;
+}
+
+inline EInside G4VCSGfaceted::PhiState(G4bool phiIsOpen,
+                                       G4double startPhi, G4double endPhi,
+                                       G4double sStart, G4double cStart,
+                                       G4double sEnd, G4double cEnd,
+                                       const G4ThreeVector& p) const
+{
+  if (!phiIsOpen)
+  {
+    return kInside;
+  }
+  if (p.x() == 0. && p.y() == 0.)
+  {
+    return kSurface;
+  }
+  const G4double tol = 0.5 * kCarTolerance;
+  const G4double crossStart = cStart * p.y() - sStart * p.x();
+  const G4double crossEnd = p.x() * sEnd - p.y() * cEnd;
+  const G4bool shortSection = (endPhi - startPhi) <= CLHEP::pi;
+  const G4bool inside = shortSection ? (crossStart >= -tol && crossEnd >= -tol)
+                                     : (crossStart >= -tol || crossEnd >= -tol);
+  if (!inside)
+  {
+    return kOutside;
+  }
+  return (std::fabs(crossStart) <= tol || std::fabs(crossEnd) <= tol)
+         ? kSurface : kInside;
+}
+
+inline G4double G4VCSGfaceted::DistanceToPhiBoundary(
+  G4bool phiIsOpen, G4double sStart, G4double cStart,
+  G4double sEnd, G4double cEnd, const G4ThreeVector& p,
+  G4ThreeVector* normal) const
+{
+  if (!phiIsOpen)
+  {
+    return kInfinity;
+  }
+  const G4double dStart = std::fabs(cStart * p.y() - sStart * p.x());
+  const G4double dEnd = std::fabs(p.x() * sEnd - p.y() * cEnd);
+  if (dStart <= dEnd)
+  {
+    if (normal != nullptr)
+    {
+      normal->set(sStart, -cStart, 0.);
+    }
+    return dStart;
+  }
+  if (normal != nullptr)
+  {
+    normal->set(-sEnd, cEnd, 0.);
+  }
+  return dEnd;
+}
+
+template <typename Visit>
+G4bool G4VCSGfaceted::VisitZSlabsBySafety(const std::vector<G4double>& boundaries,
+                                          G4double z, const G4double& best,
+                                          G4double tolerance, Visit&& visit)
+{
+  if (boundaries.size() < 2)
+  {
+    return false;
+  }
+
+  const std::size_t firstSlab = FindZSlabIndex(boundaries, z);
+  const std::size_t nSlab = boundaries.size() - 1;
+  for (std::size_t offset = 0; offset < nSlab; ++offset)
+  {
+    G4bool any = false;
+    if (firstSlab >= offset)
+    {
+      const auto slab = firstSlab - offset;
+      const G4double dzBound = (z < boundaries[slab])
+        ? boundaries[slab] - z
+        : (z > boundaries[slab + 1] ? z - boundaries[slab + 1] : 0.);
+      if (dzBound <= best + tolerance)
+      {
+        any = true;
+        if (visit(slab))
+        {
+          return true;
+        }
+      }
+    }
+    if (firstSlab + offset < nSlab && offset != 0)
+    {
+      const auto slab = firstSlab + offset;
+      const G4double dzBound = (z < boundaries[slab])
+        ? boundaries[slab] - z
+        : (z > boundaries[slab + 1] ? z - boundaries[slab + 1] : 0.);
+      if (dzBound <= best + tolerance)
+      {
+        any = true;
+        if (visit(slab))
+        {
+          return true;
+        }
+      }
+    }
+    if (!any && offset != 0)
+    {
+      break;
+    }
+  }
+  return false;
+}
+
+template <typename Section>
+void G4VCSGfaceted::BuildZVoxelizer(const std::vector<Section>& sections,
+                                    G4double minHalfZ, std::vector<G4double>& slabBoundary,
+                                    std::vector<std::vector<G4int>>& slabCandidate)
+{
+  std::vector<G4double> zMin;
+  std::vector<G4double> zMax;
+  zMin.reserve(sections.size());
+  zMax.reserve(sections.size());
+  for (const auto& sec : sections)
+  {
+    zMin.push_back(sec.zMin);
+    zMax.push_back(sec.zMax);
+  }
+  BuildZVoxelizer(zMin, zMax, minHalfZ, slabBoundary, slabCandidate);
+}

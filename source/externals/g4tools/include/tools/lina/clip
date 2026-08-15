@@ -1,0 +1,102 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_clip
+#define tools_clip
+
+#include "line"
+#include "plane"
+#include "vec"
+
+#include <vector>
+
+namespace tools
+{
+
+template<class T>
+class clip
+{
+  public:
+
+    clip() = default;
+    ~clip() = default;
+
+    clip(const clip&) = delete;
+    clip& operator=(const clip&) = delete;
+
+  public:
+
+    void reset()
+    {
+      m_data[0].clear();
+      m_data[1].clear();
+      m_cur = 0;
+    }
+
+    void add(const vec3<T>& a_point) { m_data[m_cur].push_back(a_point); }
+
+    void execute(const plane<T>& plane)
+    {
+      // Clip polygon against plane. This might change the number of
+      // vertices in the polygon.
+
+      size_t n = m_data[m_cur].size();
+      if (!n) return;
+
+      // create a loop :
+      vec3<T> dummy = m_data[m_cur][0];
+      m_data[m_cur].push_back(dummy);
+
+      const vec3<T>& planeN = plane.normal();
+
+      for (size_t i = 0; i < n; i++)
+      {
+        vec3<T> v0 = m_data[m_cur][i];
+        vec3<T> v1 = m_data[m_cur][i + 1];
+
+        T d0 = plane.distance(v0);
+        T d1 = plane.distance(v1);
+
+        if (d0 >= 0.0f && d1 < 0.0f)
+        {  // exit plane
+          vec3<T> dir = v1 - v0;
+          // we know that v0 != v1 since we got here
+          dir.normalize();
+          T dot = dir.dot(planeN);
+          vec3<T> newvertex = v0 - dir * (d0 / dot);
+          out_point(newvertex);
+        }
+        else if (d0 < 0.0f && d1 >= 0.0f)
+        {  // enter plane
+          vec3<T> dir = v1 - v0;
+          // we know that v0 != v1 since we got here
+          dir.normalize();
+          T dot = dir.dot(planeN);
+          vec3<T> newvertex = v0 - dir * (d0 / dot);
+          out_point(newvertex);
+          out_point(v1);
+        }
+        else if (d0 >= 0.0f && d1 >= 0.0f)
+        {  // in plane
+          out_point(v1);
+        }
+      }
+      m_data[m_cur].clear();
+      m_cur ^= 1;
+    }
+
+    const std::vector<vec3<T>>& result() const { return m_data[m_cur]; }
+
+  private:
+
+    void out_point(const vec3<T>& a_p) { m_data[m_cur ^ 1].push_back(a_p); }
+
+  private:
+
+    std::vector<vec3<T>> m_data[2]{};
+    unsigned int m_cur{0};
+};
+
+}  // namespace tools
+
+#endif

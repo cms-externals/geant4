@@ -1,0 +1,139 @@
+//
+// This pipeline helps starting the nightly build. By default,
+//  it comments on staged MRs, sets the nightly label(s),
+//  and starts builds per OS.
+//
+//  Normally, this triggered by TagnBbuild job (g4np-TagnBuild)
+//   but you may use this to (re-)run build(s)
+//
+// Gunter Folger, June 2021
+//
+
+def g4
+
+def StartBuild() {
+  println "${OS}"
+  build wait: false,
+    job: "/g4np-" + "${OS}",
+    parameters: [string(name: 'OS', value: "${OS}"),
+                 string(name: 'MODE', value: "$MODE"),
+                 string(name: 'EXTERNALS', value: "${EXTERNALS}"),
+                 string(name: 'SourceBranch', value: "${SourceBranch}"),
+                 string(name: 'VerificationSourceBranch', value: "${VerificationSourceBranch}"),
+                 string(name: 'BenchmarksSourceBranch', value: "${BenchmarksSourceBranch}"),]
+}
+
+pipeline {
+  parameters {
+    booleanParam(name: 'CreateLabel',
+                 defaultValue: true,
+                 description: 'Create a nightly label and comment for staged merge requests before sarting jobs')
+    booleanParam(name: 'alma9',
+                 defaultValue: true,
+                 description: 'start builds for alma9')
+    booleanParam(name: 'alma10',
+                 defaultValue: true,
+                 description: 'start builds for alma10')
+    booleanParam(name: 'rhel9',
+                 defaultValue: true,
+                 description: 'start builds for rhel9')
+    booleanParam(name: 'mac',
+                 defaultValue: true,
+                 description: 'start builds for mac platforms')
+    booleanParam(name: 'ubuntu',
+                 defaultValue: true,
+                 description: 'start builds for ubuntu platforms')
+    booleanParam(name: 'windows',
+                 defaultValue: true,
+                 description: 'start builds for windows platforms')
+    booleanParam(name: 'arm64',
+                 defaultValue: true,
+                 description: 'start builds for arm64 platforms')
+
+    choice(name: 'MODE',
+           choices: ['nightly', 'experimental', 'release', 'physicschecks', 'patch'] ,
+           description: 'set the build mode for CMake')
+
+    string(name: 'SourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: 'branch to checkout')
+    string(name: 'VerificationSourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: 'branch to checkout for verification')
+    string(name: 'BenchmarksSourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: 'branch to checkout for benchmarks')
+
+    string(name: 'EXTERNALS', defaultValue: '',
+           description: 'version of EXTERNALS to use, leave blank to use default')
+  }
+
+  options {
+    buildDiscarder(logRotator( daysToKeepStr: '14' ))
+    timestamps()
+  }
+
+  environment {
+    GITLAB_API    = 'https://gitlab.cern.ch/api/v4'
+    GITLAB_MR_API = 'projects/geant4%2Fgeant4-dev/merge_requests'
+    SourceRepoHttpUrl       = 'ssh://git@gitlab.cern.ch:7999/geant4/geant4-dev.git'
+    VerificationRepoHttpUrl = 'ssh://git@gitlab.cern.ch:7999/geant4/g4tests-verification.git'
+    BenchmarksRepoHttpUrl   = 'ssh://git@gitlab.cern.ch:7999/geant4/g4tests-benchmarks.git'
+    Geant4GitLabToken       = credentials('Geant4-GitLabToken')
+  }
+
+  agent {label 'startup-jobs'}
+
+  stages {
+    stage('load functions') {
+      steps {
+        script{
+          g4 = load 'scripts/tests/tools/ctest/JenkinsFunctions.groovy'
+          sh 'touch controlfile'
+        }
+      }
+    }
+
+    stage('Comment in GitLab') {
+      when {
+        beforeAgent true
+        expression { params.CreateLabel }
+      }
+      agent {
+        node { label 'docker-host-noafs' }
+      }
+      steps {
+        script{
+          g4.doCheckout(false)
+          sh 'scripts/tests/tools/ctest/addLabelComment.sh'
+        }
+      }
+    }
+
+    stage ('Submit jobs') {
+      matrix {
+        axes {
+          axis {
+            name 'OS'
+            values  'rhel9', 'alma9', 'alma10', 'mac',  'ubuntu', 'windows', 'arm64'
+          }
+        }
+
+        stages {
+          stage('Run build jobs') {
+            when {
+              expression { params."${OS}" }
+            }
+
+            steps("Build for $OS") {
+              script{
+                println "Starting job for:" + "${OS}"
+                StartBuild()
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

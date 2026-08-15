@@ -1,0 +1,184 @@
+# Category test69 History
+
+See `CONTRIBUTING.rst` for details of **required** info/format for each entry,
+which **must** added in reverse chronological order (newest at the top).
+It must **not** be used as a substitute for writing good git commit messages!
+
+-------------------------------------------------------------------------------
+
+## 2026-02-18 Ben Morgan (test69-V11-04-00)
+- Exclude test from BoundsCheck builds as it times out even with small statistics.
+
+## 2025-11-06 Gabriele Cosmo (test69-V11-03-01)
+- Removed settings of HepRep in vis macro.
+
+## 2025-09-22 Jean-Christophe David (test69-V11-03-00)
+- Extension of INCLXX for antineutron interaction (at rest and in-flight):
+  added new macros: nbar_10MeV_Pb.in, nbar_500MeV_Pb.in.
+
+## 2023-10-20 Jean-Christophe David (test69-V11-01-01)
+- Extension (by Demid Zharenov and Jean-Christophe David) of INCLXX for 
+  in-flight antiproton interaction:
+  added new macros: pbar_500MeV_C.in, pbar_5GeV_mix_long.in.
+  added new macros: pbar_50MeV_C.in, pbar_50MeV_mix_long.in.
+
+## 2023-05-15 Alberto Ribon (test69-V11-01-00)
+- Extension (by Demid Zharenov and Jean-Christophe David) of INCLXX for 
+  antiproton annihilation at rest:
+  modified the class  Tst69INCLXXTallyAnalysis;
+  added new macros: pbar_0MeV_C.in, pbar_0MeV_Pb.in pbar_100MeV_C.in.
+
+## 2022-11-09 Vladimir Ivanchenko (test69-V11-00-01)
+- test69.cc - use G4RunManagerFactory.
+- Tst69RunAction, Tst69INCLXXTallyAnalysis update Open() and Close()
+  methods.
+- Tst69INCLXXTallyROOT - removed.
+
+## 2021-12-10 Ben Morgan (test69-V11-00-00)
+- Change to new Markdown History format.
+
+---
+
+# History entries prior to 11.0
+
+6 October 2021 I. Hrivnacova  (test69-V10-07-03)
+- Migration to new G4AnalysisManager.hh header;
+  define the default output file type (root)
+
+4 August 2021 Ben Morgan (test69-V10-07-02)
+- Modernize CMake script allowing test to be built in system testing
+  or as a standalone project
+
+19 July 2021, Ivana Hrivnacova (test69-V10-07-01)
+- Updated for changes in the analysis category:
+  removed deleting of the analysis manager,
+  as this is now done by the Geant4 kernel.
+
+18 February 2021, Ben Morgan (test69-V10-07-00)
+- Support same CMake version range as core Geant4
+
+05 August 2020, Alberto Ribon (test69-V10-06-00)
+- CMakeLists.txt , test69.cc : removed deprecated environmental
+  variable G4NEUTRONHP_NEGLECT_DOPPLER from CMakeLists.txt, and
+  replace it with a C++ call in test69.cc .
+
+28 November 2017, Ben Morgan (test69-V10-03-00)
+- Replace ROOT_INCLUDE_DIR with ROOT_INCLUDE_DIRS
+
+11 December 2015, Davide Mancusi (test69-V10-02-00)
+- Kill neutrons below 1 MeV and neglect Doppler broadening in tests with
+  NeutronHP. This should speed up the tests.
+
+16 October 2014, Davide Mancusi (test69-V10-00-14)
+- Extend timeout on PhysicsChecks test to 3 hours
+
+14 October 2014, Jean-Christophe David (test69-V10-00-13)
+- Add PhysicsChecks label to test69-build.
+
+3 October 2014, Davide Mancusi (test69-V10-00-12)
+- Add some output statements about mean and RMS energies of outgoing particles.
+
+26 September 2014, Davide Mancusi (test69-V10-00-11)
+- Introduce PhysicsChecks.
+
+21 July 2014, Davide Mancusi (test69-V10-00-10)
+- Reduce the number of shots to 1000 (avoids timeout in boundscheck build).
+
+18 July 2014, Davide Mancusi (test69-V10-00-09)
+- Force number of threads using envvar (necessary to avoid out-of-memory errors
+  on MTmax builds).
+- Fix a compilation warning.
+
+17 July 2014, Davide Mancusi (test69-V10-00-06, -07, -08)
+- Suppress some leftover debug statements.
+- Add some debug statements (so much for nothing).
+- Compile and run the tests even if ROOT is not found.
+- Suppress the step limiter; should no longer be needed.
+
+15 July 2014, Davide Mancusi (test69-V10-00-05)
+- Add a step limiter (minimum KinE=1 MeV). This should prevent timeouts in
+  tests with *_HP physics lists.
+
+9 July 2014, Davide Mancusi (test69-V10-00-04)
+- Resize the target to 20x20x20 cm^3.
+- Revert the number of shots to 2500 for the normal physics lists and 100 for
+  the *_HP physics lists.
+- Don't hard-code the number of threads, let the macros set it.
+
+8 July 2014, Davide Mancusi (test69-V10-00-03)
+- Reduce number of shots to 1000 for the normal physics lists and 10 for the
+  *_HP physics lists.
+- Increase timeout to 1 h for FTFP_INCLXX_ABLA.
+
+7 July 2014, Davide Mancusi (test69-V10-00-01, -02)
+- Add possibility to tally the INCL++ reactions. The tallies are disabled by
+  default and are controlled by the TEST69_TALLY envvar. A G4analysis-based
+  tally and a ROOT-based tally are available. The ROOT tally is more
+  sophisticated, but it requires ROOT (duh).
+- Adjust the abundances of the mixed material so that the mean free path is
+  roughly the same for all component nuclei.
+- Fix README file.
+- Fix coupling to ABLA -- previously only the first INCL++ model in the
+  G4HadronicInteractionRegistry was actually coupled to ABLA.
+
+16 May 2014, Davide Mancusi (test69-V10-00-00)
+- Extend test timeout to 1 hour.
+
+12 November 2013, Davide Mancusi (test69-V09-06-10)
+- Remove the quick-and-dirty fix for Windows crash, the problem (?) was in
+  G4INCLXXInterfaceStore.
+
+12 November 2013, Davide Mancusi (test69-V09-06-09)
+- Quick-and-dirty fix for Windows crash.
+
+7 November 2013, Davide Mancusi (test69-V09-06-08)
+- Limit number of threads for HP-based tests.
+
+6 November 2013, Davide Mancusi (test69-V09-06-07)
+- Fix the path to the macro for the INCLXX/ABLA test
+
+6 November 2013, Davide Mancusi (test69-V09-06-06)
+- Activate the INCLXX/ABLA test.
+
+6 November 2013, Davide Mancusi (test69-V09-06-05)
+- Shorten tests with NeutronHP-based physics lists.
+- Add a test for INCLXX/ABLA.
+
+6 November 2013, Davide Mancusi (test69-V09-06-04)
+- Nothing new, just resubmit the tag.
+
+6 November 2013, Davide Mancusi (test69-V09-06-03)
+- Overhaul of test69.
+- Add "mix" material, which should help with exercising different sectors of
+  the physics list.
+- Reduce the number of test cases to 2:
+  o 40-GeV p + mix
+  o 12-GeV C12 + mix
+- Add the possibility to test different physics lists via an envvar.
+- Define unit tests for all the INCLXX-based physics lists.
+- Add visualisation and UIExecutive in interactive mode.
+
+21 May 2013, Davide Mancusi (test69-V09-06-01,test69-V09-06-02)
+- Fix: test69 was actually NOT testing the reactions due to particles being
+  prematurely killed.
+- Add definition for Li detector material.
+- Revise macros.
+
+13 May 2013, Davide Mancusi (test69-V09-06-00)
+- Migration to MT.
+- Suppress unused user stepping action.
+
+11 October 2012, Gabriele Cosmo (test69-V09-05-02)
+- Explicit inclusion of units and constants headers.
+
+14 September 2012, Davide Mancusi (test69-V09-05-01)
+- Move all macro files in a dedicated directory.
+
+14 September 2012, Davide Mancusi (test69-V09-05-00)
+- Split big test69 into many small tests, so that it can be run in parallel.
+- Updated README.
+
+26 October 2011, Pekka Kaitaniemi (test69-V09-04-00)
+- Created a new test for INCL++ cascade model.
+- Requires INCL++ tag hadr-inclxx-V09-04-03 or later.
+

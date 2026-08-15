@@ -1,0 +1,210 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+// -------- Start run processing
+
+G4StateManager* g4State = G4StateManager::GetStateManager();
+if (!g4State->SetNewState(G4State_Init))
+{
+  G4cout << "error changing G4state" << G4endl;
+  ;
+}
+G4cout << "###### Start new run # " << run << "   for " << nevt << " events  #####" << G4endl;
+
+// -------- Target
+
+material = mate->GetMaterial(nameMat);
+if (!material)
+{
+  G4cout << "Material <" << nameMat << "> is not found out" << G4endl;
+  exit(1);
+}
+const G4Element* elm = material->GetElement(0);
+
+// Uzhi 1.02.13 -----------------------
+G4ProductionCuts* cuts = new G4ProductionCuts();
+G4MaterialCutsCouple* couple = new G4MaterialCutsCouple(material, cuts);
+couple->SetIndex(0);
+G4ProductionCutsTable* pkt = G4ProductionCutsTable::GetProductionCutsTable();
+std::vector<G4double>* vc = const_cast<std::vector<G4double>*>(pkt->GetEnergyCutsVector(3));
+vc->push_back(0.0);
+// Uzhi 1.02.13 -----------------------
+
+// -------- Projectile
+G4ParticleDefinition* part(0);
+if (!ionParticle)
+{
+  part = (G4ParticleTable::GetParticleTable())->FindParticle(namePart);
+}
+else
+{
+  part = (G4IonTable::GetIonTable())->GetIon(ionZ, ionA, 0.);
+}
+if (!part)
+{
+  G4cout << " Sorry, No definition for particle" << namePart << " found" << G4endl;
+  exit(1);
+}
+energy = std::sqrt(sqr(Plab) + sqr(part->GetPDGMass())) - part->GetPDGMass();
+
+if (ionParticle)
+{  // VU
+  energy *= ionA;  // VU
+}
+
+G4DynamicParticle dParticle(part, aDirection, energy);
+
+// ------- Select model
+G4VProcess* proc = phys->GetProcess(nameGen, part, material);  // Uzhi 1.02.13
+
+if (!proc)
+{
+  G4cout << "For particle: " << part->GetParticleName() << " generator " << nameGen
+         << " is unavailable" << G4endl;
+  exit(1);
+}
+// ------- Define target A
+G4int Z = elm->GetZasInt();
+G4int A = G4lrint(elm->GetN());
+G4cout << "targetA " << targetA << G4endl;
+if (targetA > 0) A = targetA;
+phys->SetA(targetA);
+
+G4cout << "The particle:  " << part->GetParticleName() << G4endl;
+if (verbose > 0)
+{
+  G4cout << "The material:  " << material->GetName() << " Z= " << Z << " A= " << A << G4endl;
+  G4cout << "The step:      " << theStep / mm << " mm" << G4endl;
+  G4cout << "The position:  " << aPosition / mm << " mm" << G4endl;
+  G4cout << "The direction: " << aDirection << G4endl;
+  G4cout << "The time:      " << aTime / ns << " ns" << G4endl;
+}
+
+G4cout << G4endl << "energy = " << energy / MeV << " MeV   "
+       << " RMS(MeV)= " << sigmae / MeV << " Plab " << Plab / GeV << " GeV/c" << G4endl;
+
+// -------- Normalisation
+
+G4double cross_sec = 0.0;
+G4double cross_secel = 0.0;
+G4double cross_inel = 0.0;
+
+if ((part == anti_proton) || (part == anti_neutron) || (part == anti_deuteron)
+    || (part == anti_triton) || (part == anti_He3) || (part == anti_alpha))
+{
+  G4VComponentCrossSection* cs = 0;  // Uzhi
+  cs = new G4ComponentAntiNuclNuclearXS();  // Uzhi
+
+  cs->BuildPhysicsTable(*part);
+  cs->GetTotalElementCrossSection(part, energy, Z, (G4double)A);
+  cross_sec = cs->GetInelasticElementCrossSection(part, energy, Z, (G4double)A);
+  cross_inel = cs->GetInelasticElementCrossSection(part, energy, Z, (G4double)A);
+  cross_secel = cs->GetElasticElementCrossSection(part, energy, Z, (G4double)A);
+}
+else
+{
+  G4VCrossSectionDataSet* cs = 0;
+
+  if (part == proton)
+  {
+    if (xsbgg)
+    {
+      cs = new G4BGGNucleonInelasticXS(part);
+    }
+    else
+    {
+      cs = new G4ParticleInelasticXS(part);
+    }
+  }
+  else if (part == neutron)
+  {
+    cs = new G4NeutronInelasticXS();
+  }
+  else if (part == pin || part == pip)
+  {
+    cs = new G4BGGPionInelasticXS(part);
+  }
+  else if (part == deu || part == tri || part == he3 || part == alp)
+  {
+    cs = new G4ParticleInelasticXS(part);
+  }
+  else if (ionParticle)
+  {
+    cs = new G4CrossSectionInelastic(new G4ComponentGGNuclNuclXsc());
+  }
+  else
+  {
+    cs = new G4CrossSectionInelastic(new G4ComponentGGHadronNucleusXsc());
+  }
+  cs->BuildPhysicsTable(*part);
+  // it is inelastic x-section
+  cross_sec = cs->GetCrossSection(&dParticle, elm);
+  cross_inel = cross_sec;
+  G4cout << "InelasticXS cross_sec= " << cross_sec / millibarn << G4endl;
+}
+
+// -------- Track
+G4Track* gTrack;
+gTrack = new G4Track(&dParticle, aTime, aPosition);
+G4TouchableHandle fpTouchable(new G4TouchableHistory());
+gTrack->SetTouchableHandle(fpTouchable);
+
+// -------- Step
+
+G4Step* step;
+step = new G4Step();
+step->SetTrack(gTrack);
+gTrack->SetStep(step);
+
+G4StepPoint *aPoint, *bPoint;
+aPoint = new G4StepPoint();
+aPoint->SetPosition(aPosition);
+aPoint->SetMaterial(material);
+G4double safety = 10000. * cm;
+aPoint->SetSafety(safety);
+step->SetPreStepPoint(aPoint);
+
+bPoint = aPoint;
+G4ThreeVector bPosition = aDirection * theStep;
+bPosition += aPosition;
+bPoint->SetPosition(bPosition);
+step->SetPostStepPoint(bPoint);
+step->SetStepLength(theStep);
+
+//-------------------------------------------------------
+if (!G4StateManager::GetStateManager()->SetNewState(G4State_Idle))
+  G4cout << "G4StateManager PROBLEM! " << G4endl;
+G4RotationMatrix* rot = new G4RotationMatrix();
+G4double phi0 = aDirection.phi();
+G4double theta0 = aDirection.theta();
+rot->rotateZ(-phi0);
+rot->rotateY(-theta0);
+
+if (verbose > 0)
+{
+  G4cout << "Test rotation= " << (*rot) * (aDirection) << G4endl;
+}
+G4Timer* timer = new G4Timer();
+timer->Start();

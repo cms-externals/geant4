@@ -1,0 +1,67 @@
+FNAME        = test41
+getenv       = true
+executable   = $ENV(G4BWORK)/test41
+ID           = $(ClusterId).$(ProcId)
+output       = $(nam)_$(phys).out
+error        = $(nam)_$(phys).err
+log          = $(FNAME).$(ID).log
+request_cpus = 1
+requirements = (OpSysAndVer =?= "AlmaLinux9")
++JobFlavour = "workday"
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+arguments = $ENV(G4INSTALL)/tests/ctests_integration/$(FNAME)/$(nam).in
+
+environment = "PHYSLIST=emstandard_$(phys) HISTFILENAME=$(nam)_$(phys).log"
+queue phys, nam from (
+opt0, li_1
+opt0, li_2
+opt0, be_1
+opt0, be_2
+opt0, ch2
+opt0, c
+opt0, al
+opt0, fe
+opt0, h2_1
+opt0, h2_2
+opt3, li_1
+opt3, li_2
+opt3, be_1
+opt3, be_2
+opt3, ch2
+opt3, c
+opt3, al
+opt3, fe
+opt3, h2_1
+opt3, h2_2
+optG, li_1
+optG, li_2
+optG, be_1
+optG, be_2
+optG, ch2
+optG, c
+optG, al
+optG, fe
+optG, h2_1
+optG, h2_2
+optS, li_1
+optS, li_2
+optS, be_1
+optS, be_2
+optS, ch2
+optS, c
+optS, al
+optS, fe
+optS, h2_1
+optS, h2_2
+opt4, li_1
+opt4, li_2
+opt4, be_1
+opt4, be_2
+opt4, ch2
+opt4, c
+opt4, al
+opt4, fe
+opt4, h2_1
+opt4, h2_2
+)

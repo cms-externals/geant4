@@ -1,0 +1,323 @@
+
+                       geant4-11-04-ref-06
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Parallelised overlap checks for placed volumes in G4GeomTestVolume using
+   the available tasking thread pool, or a temporary local pool in MT builds.
+ o Introduced new classes G4TouchableWalker and interface G4VTouchableVisitor,
+   allowing perusal of the full tree of touchables. Added new classes
+   G4VolumeTreeWalker and G4VVolumeTreeVisitor to visit each physical and
+   logical volume.
+ o In GDML, added support for importing/exporting G4DisplacedSolid entities.
+   Extended GDML schema with new element 'displacedSolid' and updated to
+   version 3.2.0.
+ o Added G4MesoscopicMoleculeCounter and added hooks for
+   G4MoleculeCounterManager into G4DNAEventScheduler to record snapshots.
+ o Updated LEND model to GIDI+ 3.34.0-42 and pugixml v1.15.
+ o Added support for FPE handling on macOS with Apple Silicon.
+ o Applied clang-format to the entire code base.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in patch release 11.4.2
+
+Summarised, the list of changes is the following:
+
+analysis                                         analysis-V11-04-06
+--------
+- Applied clang-format to the entire code base.
+- Added headers required for used declarations.
+
+digits_hits                                      digits_hits-V11-04-01
+-----------
+- Applied clang-format to the entire code base.
+
+error_propagation                                error_propagation-V11-04-01
+-----------------
+- Applied clang-format to the entire code base.
+
+event                                            event-V11-04-03
+-----
+- Fixed lock contention in G4Event::GetNumberOfRemainingSubEvents() by using (*)
+  a lock only in sub-event parallel mode for the event in the master thread.
+  Addressing problem report #2734.
+- Applied clang-format to the entire code base.
+
+externals
+---------
+- g4tools (g4tools-V11-04-13)
+  o Applied clang-format to the entire code base.
+
+g3tog4                                           g3tog4-V11-04-01
+------
+- Use standard Geant4 header guard without value for definition.
+- Applied clang-format to the entire code base.
+- Added headers required for used declarations.
+
+geometry                                         geometry-V11-04-02
+--------
+- Applied clang-format to the entire code base.
+- management(geommng-V11-04-08)
+  o Fixed tolerance treatment in G4GeomTools::TriangulatePolygon().          (*)
+- navigation (geomnav-V11-04-05)
+  o Parallelised overlap checks for placed volumes in G4GeomTestVolume using
+    the available tasking thread pool, or a temporary local pool in MT builds.
+    Temporary results are cached by G4GeomTestVolume and reported in geometry
+    traversal order. Parameterised and other specialised physical volumes
+    retain their existing serial overlap checks.
+    Added task-local geometry and solids workspaces, deterministic random seeds
+    and surface sampling warm-up, including constituents of G4MultiUnion, for
+    safe concurrent overlap calculations.
+    Made UI commands for checking overlaps master-only commands to avoid
+    repeating the full overlap check on every worker in MT/tasking applications.
+  o Introduced new classes G4TouchableWalker and interface G4VTouchableVisitor,
+    allowing perusal of the full tree of touchables, i.e. all the trunk and
+    leaf volumes of the geometry (descending every copy of replicas and/or
+    parameterised volumes).
+    A concrete example visitor class G4TouchableCollector identifies any
+    touchables that are instances of a particular logical or physical volume.
+  o Added new classes G4VolumeTreeWalker and G4VVolumeTreeVisitor which
+    visit each physical and logical volume. In this case a replicated volume
+    (replica, parameterised volume) is visited only once. A concrete example
+    visitor class G4VolumeTreeReporter prints the volume tree, one line per
+    logical and physical volume.
+  o Fixed compilation warnings on Intel/icx compiler for variables set       (*)
+    but not used in G4VoxelSafety and G4_NO_VERBOSE mode.
+  o Added rounding protection in G4ParameterisedNavigation::ComputeSafety()  (*)
+    in the computation of the current voxel node for the 1D optimisation case.
+    Addressing problem report #2735.
+- solids/CSG (geom-csg-V11-04-00)
+  o In G4Tubs, G4CutTubs, G4Cons and G4Torus, fixed defects (DIVIDE_BY_ZERO)
+    reported by Coverity in ApproxSurfaceNormal().
+- solids/specific (geom-specific-V11-04-01)
+  o Fixed data races in twisted solids implementation; solids now remain     (*)
+    read-only after construction and navigation queries are stateless.
+    Addressing problem reports #2654 and #2704.
+- volumes (geomvol-V11-04-00)
+  o Refactored G4PVPlacement overlap checking to separate computation from
+    reporting without retaining results in the physical volume, enabling
+    concurrent checks with ordered diagnostic output.
+    Added optional task-local random streams for deterministic surface
+    sampling without changing the random stream used by serial overlap checks.
+
+global                                           global-V11-04-16
+------
+- Added support for FPE handling on macOS with Apple Silicon.
+  In G4FPEDetection, refactored InvalidOperationDetection() and
+  TerminationSignalHandler() into a common implementation.
+- Provided basic Doxygen docstrings. In G4PhysicsVector, document
+  pre and post conditions on some functions.
+- Use standard Geant4 header guard without value for definition.
+- Applied clang-format to the entire code base.
+- Added headers required for used declarations.
+- Updated date and tag-ID for geant4-11-04-ref-06.
+
+graphics_reps                                    greps-V11-04-01
+-------------
+- Applied clang-format to the entire code base.
+
+intercoms                                        intercoms-V11-04-02
+---------
+- Applied clang-format to the entire code base.
+
+interfaces                                       interfaces-V11-04-05
+----------
+- Applied clang-format to the entire code base.
+
+materials                                        materials-V11-04-03
+---------
+- In G4NistManager, fixed implementation of SetDensityEffectCalculatorFlag() (*)
+  and removed redundant unused vectors data members for elements and materials.
+  Addressing problem report #2739.
+- Added explicitly deleted copy constructor and assignment operator for      (*)
+  G4NistManager. Addressing problem report #2738.
+- Applied clang-format to the entire code base.
+
+parameterisations                                gpara-V11-04-01
+-----------------
+- Applied clang-format to the entire code base.
+- gflash (gflash-V11-04-01)
+  o Use standard Geant4 header guard without value for definition.
+
+particles                                        particles-V11-04-06
+---------
+- Fix in G4IonTable::AddProcessManager() for G4MuonicAtom setup when assigning
+  the shared particle definition ID, keeping late-created G4MuonicAtom
+  instances complete for MT SetupShadowProcess() on subsequent runs.
+  Addressing problem report #2716.
+- Applied clang-format to the entire code base.
+
+persistency                                      persistency-V11-04-01
+-----------
+- Applied clang-format to the entire code base.
+- gdml (gdml-V11-04-00)
+  o Added support for G4DisplacedSolid to reader and writer.
+  o Extended GDML schema with new element 'displacedSolid'.
+    Updated GDML schema to version 3.2.0.
+
+physics_lists                                    physics-lists-V11-04-01
+-------------
+- Applied clang-format to the entire code base.
+- constructors/electromagnetic (phys-ctor-em-V11-04-11)
+  o Set 'ApplyCuts' to true for G4EmStandard_opt2.
+
+processes                                        processes-V11-04-01
+---------
+- Applied clang-format to the entire code base.
+
+processes/biasing/importance                     proc-biasimp-V11-04-00
+----------------------------
+- Fixed setting of parallel world navigator in G4ImportanceProcess to avoid  (*)
+  reported cases of stale pointers when geometry gets rebuilt/reinitialised.
+- In G4WeightWindowConfigurator constructor, fixed the inverted ternary in   (*)
+  the initialiser list. Addressing problem report #2694.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-04-10)
+  o Added G4MesoscopicMoleculeCounter and added hooks for
+    G4MoleculeCounterManager into G4DNAEventScheduler to record snapshots.
+  o Fixed compilation warning on Intel/icx compiler for variable defined
+    but not used in G4_NO_VERBOSE mode in G4ITTransportation::AlongStepDoIt().
+  o Use standard Geant4 header guard without value for definition.
+  o Added headers required for used declarations.
+- muons (emmuons-V11-04-05)
+  o In G4EnergyLossForExtrapolator, use FindIndex() in TrueStepLength as per
+    use in other functions. Preventing segmentation fault under certain
+    circumstances on alma10/gcc-15.
+- standard (emstand-V11-04-02)
+  o In G4eplusTo3GammaOKVIModel, fixed the transverse direction sign of      (*)
+    the third photon in on-fly 3-gamma positron annihilation.
+    This restores zero total photon momentum in the CMS before boosting
+    to the lab frame and prevents unphysical energy non-conservation in
+    EM option4. Addressing problem report #2737.
+  o Fix in G4eeToTwoGammaModel and G4eplusTo2or3GammaModel on gamma          (*)
+    spectra in annihilation on fly, by restoring algorithm which was used
+    in release 11.2.2. Addressing problem report #2730.
+
+processes/hadronic
+------------------
+- management (hadr-man-V11-04-01)
+  o Added headers required for used declarations.
+- models/cascade (hadr-casc-V11-04-02)
+  o Fixed Bertini secondary creator model IDs in G4CascadeInterface, tagging 
+    particles from precompound and evaporation stages with their corresponding 
+    submodel instead of always using 'model_BertiniCascade'.
+- models/de_excitation (hadr-deex-V11-04-08)
+  o Fixed compilation warning on Intel/icx compiler for variable set but
+    not used in G4_NO_VERBOSE mode in G4LevelReader.
+- models/inclxx (hadr-inclxx-V11-04-03)
+  o In G4INCLKinematicsUtils, added protections in function momentumInCM() to
+    avoid potential square root of negative number leading to observed FPE in
+    system testing.
+  o Avoid unnecessary use of generic pow() in momentumInCM() functions.
+- models/lend (hadr-lend-V11-04-02)
+  o Updated model to GIDI+ 3.34.0-42 and pugixml v1.15.
+  o Add LUPI_HOST_DEVICE_INLINE macro and shared memory placement options
+    for GPU performance improvements.
+  o Fixed a bug in thermal upscatter models B and DBRC: angular distribution
+    was sampled at the wrong projectile energy.
+  o Fixed compilation warnings on gcc-16.1 and addressed reported Coverity
+    defects.
+- models/nudex (hadr-nudex-V11-04-03)
+  o In G4NuDEXStatisticalNucleus, replaced use of reserve() with resize()    (*)
+    for vectors in two methods, InsertHighEnergyKnownLevels() and
+    ReadKnownLevels().
+  o Added .clang-format file to explicitly exclude NuDEX code from formatting.
+- parton_string/diffraction (hadr-string-diff-V11-04-01)
+  o G4FTFAnnihilation: protected the two- and three-string annihilation
+    kinematics against a floating-point exception caused by a small negative
+    roundoff in the squared decay momentum near threshold.
+    Fixes occasional FPE crashes detected on test64 with ftfp.in input macro.
+  o Added headers required for used declarations.
+
+processes/scoring                                procscore-V11-04-00
+-----------------
+- Fixed setting of parallel world navigator in G4ParallelWorldProcess to     (*)
+  avoid reported cases of stale pointers when geometry gets rebuilt/
+  reinitialised.
+- Avoid string copy in input in G4ParallelWorldProcess::SetParallelWorld().  (*)
+
+processes/transportation                         transport-V11-04-00
+------------------------
+- In G4CoupledTransportation, fixed field configuration in StartTracking(..) (*)
+  before any AlongStep process can ask the shared G4PathFinder to compute the
+  first step of a track.  Addressing problem report #2732.
+- Refactored code in G4Transportation adding a new protected helper method   (*)
+  ConfigureFieldForTrack(..) used in AlongStepGetPhysicalInteractionLength(..).
+
+readout                                          readout-V11-04-01
+-------
+- Applied clang-format to the entire code base.
+
+run                                              run-V11-04-16
+---
+- In G4SubEvtRunManager, in ProccessOneEvent(), set flag for using mutex in  (*)
+  G4Event::GetNumberOfRemainingSubEvents() only for the event used in the
+  master thread in sub-event parallel mode. Addressing problem report #2734.
+- Use "const G4String&" as arguments in G4ExceptionHandler.
+- Fixed compilation warning on macOS/XCode for implicit type conversion.
+- Applied clang-format to the entire code base.
+
+track                                            track-V11-04-04
+-----
+- Added an overload of IncrementCurrentStepNumber() in G4Track, taking a
+  an argument to increment the current step number by more than one.
+- Applied clang-format to the entire code base.
+- Use standard Geant4 header guards without value for definition.
+
+tracking                                         tracking-V11-04-02
+--------
+- Applied clang-format to the entire code base.
+- Use standard Geant4 header guards without value for definition.
+
+visualization                                    vis-V11-04-01
+-------------
+- Applied clang-format to the entire code base.
+- management(visman-V11-04-03)
+  o In G4VisManager, fixed End-of-run bug; test of 'isValidViewForRun' was
+    preventing printing of number of kept events when vis was disabled. Moved
+    to after test for ableness.
+- OpenGL (opengl-V11-04-03)
+  o Fixed shadowing compilation warning on Windows for 'pascal' symbol
+    in G4OpenGL header.
+  o Fixed bounds check compilation warnings on Alma9/gcc-15.
+- OpenInventor (openinventor-V11-04-02)
+  o Use standard Geant4 header guards without value for definition.
+- Vtk (visVtk-V11-04-01)
+  o Added headers required for used declarations.
+
+examples                                         examples-V11-04-06
+--------
+- Updated documentation and reference outputs.
+- extended/geometry/volumeTreeVisitors (exGeomVolumeTreeVisitors-V11-04-00)
+  o New example demonstrating use of G4TouchableWalker, its associated
+    G4VTouchableVisitor interface and the concrete class G4TouchableCollector.
+    It uses the G4TouchableCollector concrete class which collects a list of
+    touchables which correspond to a logical or physical volume.
+- extended/medical/dna/chem4 (chem4-V11-04-01)
+  o Fix to use std namespace for mathematical functions in Plot.cc.
+- extended/parameterisations/gflash/gflash1 (exgflash1-V11-04-01)
+- extended/parameterisations/gflash/gflash2 (exgflash2-V11-04-01)
+- extended/parameterisations/gflash/gflash3 (exgflash3-V11-04-01)
+- extended/parameterisations/gflash/gflasha (exgflasha-V11-04-02)
+  o Removed delete GFlash classes in DetectorConstruction.
+  o Removed static G4ThreadLocal pointers to GFlash classes.
+  o Applied clang-format to code.
+- extended/parameterisations/Par04 (expar04-V11-04-01)
+  o Bump keras from 3.12.1 to 3.13.2.
+    Addresses security vulnerability tagged by GitHub's dependabot.
+
+tests                                            tests-V11-04-06
+-----
+- Updated reference outputs and tools.
+- Applied clang-format to the entire code base.
+- tests/ctests_integration/test34 (test34-V11-04-00)
+  o Removed delete GFlash classes in DetectorConstruction.
+  o Delete MaterialManager in DetectorConstruction destructor.
+  o Removed pointers to GFlash classes.
+- tests/ctests_integration/test65 (test65-V11-04-01)
+  o Re-enabled test65 in both Continuous and Nightly workflows.              (*)
+

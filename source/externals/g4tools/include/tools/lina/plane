@@ -1,0 +1,105 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_plane
+#define tools_plane
+
+#include "line"
+#include "vec"
+
+namespace tools
+{
+
+template<class T>
+class plane
+{
+  public:
+
+    plane() = default;
+
+    plane(const vec3<T>& a_p0, const vec3<T>& a_p1, const vec3<T>& a_p2)
+    {
+      // Construct a plane given 3 points.
+      // Orientation is computed by taking (p1 - p0) x (p2 - p0) and
+      // pointing the normal in that direction.
+      m_normal = direction(a_p0, a_p1, a_p2);
+      if (!m_normal.normalize())
+      {}  // throw
+      m_distance = m_normal.dot(a_p0);
+    }
+
+    plane(const vec3<T>& a_normal, const T& a_distance) { set(a_normal, a_distance); }
+
+    plane(const vec3<T>& a_normal, const vec3<T>& a_point) { set(a_normal, a_point); }
+
+    ~plane() = default;
+
+    plane(const plane& a_from) = default;
+    plane& operator=(const plane& a_from) = default;
+
+  public:
+
+    bool is_valid() const { return m_normal.length() ? true : false; }
+
+    bool intersect(const line<T>& a_line, vec3<T>& a_intersection) const
+    {
+      // Intersect line and plane, returning true if there is an intersection
+      // false if line is parallel to plane
+      const vec3<T>& pos = a_line.position();
+      const vec3<T>& dir = a_line.direction();
+      T d = m_normal.dot(dir);
+      if (d == T()) return false;
+      T t = (m_distance - m_normal.dot(pos)) / d;
+      // a_intersection = pos + t * dir;
+      a_intersection = dir;
+      a_intersection.multiply(t);
+      a_intersection.add(pos);
+      return true;
+    }
+
+    const vec3<T>& normal() const { return m_normal; }
+
+    T distance_from_origin() const { return m_distance; }
+
+    T distance(const vec3<T>& a_point) const
+    {
+      // Return the distance from point to plane. Positive distance means
+      // the point is in the plane's half space.
+      return a_point.dot(m_normal) - m_distance;
+    }
+
+  private:
+
+    void set(const vec3<T>& a_normal, const T& a_distance)
+    {
+      m_normal = a_normal;
+      if (!m_normal.normalize())
+      {}  // throw
+      m_distance = a_distance;
+    }
+
+    void set(const vec3<T>& a_normal, const vec3<T>& a_point)
+    {
+      // Construct a plane given normal and a point to pass through
+      // Orientation is given by the normal vector n.
+      m_normal = a_normal;
+      if (!m_normal.normalize())
+      {}  // throw
+      m_distance = m_normal.dot(a_point);
+    }
+
+  private:
+
+    // equation of the plane is :
+    //  norm[0]*x+norm[1]*y+norm[2]*z = dist
+
+    vec3<T> m_normal;  // normalized.
+    T m_distance;
+};
+
+// Backward compatibility
+using plane3f = plane<float>;
+
+}  // namespace tools
+
+#endif

@@ -1,0 +1,27 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_wroot_imutex
+#define tools_wroot_imutex
+
+namespace tools
+{
+namespace wroot
+{
+
+class imutex
+{
+  public:
+
+    virtual ~imutex() {}
+
+  public:
+
+    virtual bool lock() = 0;
+    virtual bool unlock() = 0;
+};
+
+}  // namespace wroot
+}  // namespace tools
+
+#endif

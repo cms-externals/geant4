@@ -1,0 +1,188 @@
+
+                       geant4-11-04-ref-07
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Parallelised EstimateCubicVolume() and EstimateSurfaceArea() calculations
+   in G4VSolid, using the tasking infrastructure on demand.
+ o Parallelised GetMass() calculation G4LogicalVolume for independent daughter
+   contributions using the tasking infrastructure on demand.
+ o Optimised G4Polycone, G4GenericPolycone and G4Polyhedra queries with
+   solid-specific RZ/phi fast paths, cached phi-boundary trigonometry and
+   flattened Z/RZ candidate tables allocated only for large solids.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-04-05
+-----
+- Fix to escape special characters so they don't get interpreted as regex
+  directives, so that a build path containing valid but special characters
+  like "+", don't get module composition step failing due to use of regexing,
+  as proposed in [GitHub PR #102](https://github.com/Geant4/geant4/pull/102).
+  Addressing problem report #2744. 
+
+geometry
+--------
+- divisions (geomdiv-V11-04-00)
+  o Fix in G4VDivisionParameterisation to cure a double-free in MT mode.
+    ChangeRotMatrix() assigned one thread-local rotation matrix to multiple
+    division physical volumes; as each replica owns and deletes its rotation
+    during worker teardown, this was producing a double-free. The fix reuses
+    the per-volume rotation matrix already allocated by G4PVReplica, resets
+    it before applying each phi rotation and removes the shared thread-local
+    rotation and G4AutoDelete registration.
+- management (geommng-V11-04-10)
+  o Parallelised G4VSolid::EstimateCubicVolume() and EstimateSurfaceArea()
+    using the tasking infrastructure on demand, splitting Monte Carlo samples
+    into deterministic chunks with local random streams and reductions.
+  o Parallelised G4LogicalVolume::GetMass() for independent daughter
+    contributions using the tasking infrastructure on demand.
+    Warm cubic-volume caches before parallel mass traversal, avoiding lock
+    ordering deadlocks in lazily computed composed solids while preserving
+    on-demand initialisation.
+  o Added G4GeomTaskHelper to factorise setup and cleanup of geometry tasking
+    thread pools, PTL thread data and registered task-local workspace callbacks.
+    Added an independent seed stream and G4QuickRand seeding helper for
+    on-demand geometry calculations, avoiding use of the simulation random
+    engine.
+  o Added G4GeometryManager switches to force serial processing for GetMass(),
+    GetPointOnSurface() related estimates and geometry overlap checks.
+  o Fixed segmentation fault in G4GeomSplitter; offset is defined as
+    thread-local, but its allocation capacity was tracked globally. A second
+    thread therefore could believe storage was already allocated, leaving its
+    own offset null before dereferencing it. Addressing problem report #2747.
+- navigation (geomnav-V11-04-06)
+  o Reuse G4GeomTaskHelper in G4GeomTestVolume to share the tasking pool,
+    PTL thread-data and task-local geometry workspace setup with geometry
+    management code while preserving the overlap-check execution policy.
+    Use the independent G4GeomTaskHelper seed stream for parallel overlap
+    checks and composed-solid surface warm-up, avoiding use of the simulation
+    random engine.
+  o Added /geometry/test UI commands to force serial processing for
+    GetMass(), GetPointOnSurface() related estimates and overlap checks.
+- solids/CSG (geom-csg-V11-04-01)
+  o In G4Cons::GetPointOnSurface(), uses G4QuickRand instead of CLHEP
+    RandFlat, keeping surface sampling on the geometry quick-random stream.
+- solids/specific (geom-specific-V11-04-05)
+  o G4SolidsWorkspace now registers task-local workspace setup and cleanup
+    callbacks with G4GeomTaskHelper.
+  o Use area-weighted point-on-surface sampling for G4VCSGfaceted and
+    G4TessellatedSolid without adding persistent cumulative area tables;
+    G4TessellatedSolid now samples facets proportionally to facet area.
+  o Fixed lazy initialisation races for point-on-surface surface-element
+    tables in G4GenericPolycone, G4Polycone and G4Polyhedra.
+  o Strengthened lazy cache initialisation for faceted and tessellated solids,
+    computing area/volume in local temporaries before publishing cached values.
+  o Optimised G4Polycone, G4GenericPolycone and G4Polyhedra queries with
+    solid-specific RZ/phi fast paths, cached phi-boundary trigonometry and
+    flattened Z/RZ candidate tables allocated only for large solids.
+    Added an analytic exact-vector-distance path for G4Polycone using cached
+    cone sections, Z-directed section traversal and integrated phi-plane tests.
+    Removed atan2() from G4Polyhedra/G4PolyhedraSide segment selection and
+    improved G4IntersectingCone line intersections.
+  o Reduced G4VCSGfaceted exact-distance and safety overhead with Z-section
+    indexing, early candidate rejection and stack-backed visited tracking.
+  o Extended G4Voxelizer to support voxelisation along a subset of axes.
+- volumes (geomvol-V11-04-01)
+  o G4PVPlacement overlap checking now seeds only the independent geometry
+    quick-random stream through G4GeomTaskHelper, avoiding temporary
+    replacement of the simulation random engine.
+  o G4GeometryWorkspace now registers task-local workspace setup and cleanup
+    callbacks with G4GeomTaskHelper.
+
+global                                           global-V11-04-18
+------
+- In G4VSIntegration, use random array with 3 random values instead of 2;
+  removed divisions operations; clearer logic by keeping algorithm basically
+  unchanged; moved computation of possible second peak height to the
+  ComputeIntegral() method; made integration less dependent on shape of the
+  probability function; improved and reorganized comments to the code.
+- Updated date and tag-ID for geant4-11-04-ref-07.
+
+processes/biasing/generic                        proc-biasgen-V11-04-00
+-------------------------
+- In G4BiasingProcessInterface, invoke Initialize(track) in PostStepDoIt()
+  for G4ParticleChangeForOccurenceBiasing instance.
+  Addressing problem report #2593.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-04-11)
+  o G4DNARuddIonisationExtendedModel: correction to delta-electron energy
+    distribution is now different for neutral hydrogen and helium.
+    Addressing problem report #2710.
+
+processes/hadronic
+------------------
+- management (hadr-man-V11-04-02)
+  o In G4HadronicProcess, fixed a memory leak by deleting secondary particles
+    when an invalid final state is rejected.
+    Based on [GitHub PR #95](https://github.com/Geant4/geant4/pull/95).
+- models/cascade (hadr-casc-V11-04-03)
+  o G4InuclCollider now retries elastic-like hadron-nucleus cascade trials
+    before de-excitation. This avoids sending an unchanged ground-state target
+    recoil fragment to de-excitation and then removing it during
+    recoil-fragment cleanup, which leaves only the original projectile and
+    causes a later retry.
+- models/de_excitation (hadr-deex-V11-04-09)
+  o Use G4double type variables to read data on IC and gamma probabilities.
+    In the internal data structure G4float still is used. The limit on 'fAlpha'
+    value is removed but extra check on numerical accuracy is added to avoid
+    precision loss in arithmetics. Addressing problem reports #2702 and #2706.
+- models/lepto_nuclear (hadr-lepnuc-V11-04-00)
+  o In G4ElectroVDNuclearModel and G4MuonVDNuclearModel, added missing
+    rotation of the final-state secondaries produced by the real-gamma/pi0
+    inelastic nuclear interaction. Addressing problem report #2695.
+    Note that 3-momentum is still not fully conserved (although the violation
+    before was larger): this is due to the fact that the approach relies on
+    an unphysical transformation of a virtual gamma into an on-shell particle,
+    either a real gamma or a pi0.
+- models/particle_hp (hadr-hpp-V11-04-06)
+  o In G4ParticleHPParticleYield, fixed interpolation for thermal neutron class
+    Based on [GitHub PR #103](https://github.com/Geant4/geant4/pull/103).
+    This fixes a silent type conversion by the compiler of the energy argument
+    leading to wrong getter call.
+
+run                                              run-V11-04-17
+---
+- Implemented a guard in G4ExceptionHandler::DumpTrackInfo() such that
+  incomplete step data is handled by checking the step point and its
+  G4TouchableHandle before calling G4StepPoint::GetPhysicalVolume().
+  It still prints the usual step-point diagnostics when available, but
+  reports "not available" when the track is too new or the touchable has
+  not been initialized yet. Addressing problem report #2740.
+
+track                                            track-V11-04-05
+-----
+- In G4Track, in SetAuxiliaryTrackInformation(), removed unnecessary and now
+  wrong check of the model-index of the integer argument of the method; the
+  integer argument is assumed to be a model-id, but for a custom/user-defined
+  physics model, only the model-id is defined, not the model-index.
+
+examples                                         examples-V11-04-07
+--------
+- Updated documentation and reference outputs.
+- advanced (exadvanced-V11-04-00)
+  o Updated header guards of all files to all upper case without a value.
+- advanced/fastAerosol (fastAerosol-V11-04-00)
+  o Use G4QuickRand() instead of G4UniformRand() for generating points on
+    surface in custom FastAerosolSolid. This avoids contaminating the random
+    sequence in event processing if invoking on-demand tasks.
+- basic (exbasic-V11-04-00)
+  o Updated header guards of all files to all upper case without a value.
+- extended (exextended-V11-04-00)
+  o Updated header guards of all files to all upper case without a value.
+- extended/electromagnetic/TestEm5 (testem5-V11-04-01)
+  o In EventAction, TrackingAction and Run: added transmitted and reflected
+    energy analysis.
+- extended/medical/dna/AuNP (AuNP-V11-04-00)
+  o Added macros for physics test and chemistry test.
+  o Changed the name of the analysis code.
+
+tests                                            tests-V11-04-07
+-----
+- Updated reference outputs and tools.

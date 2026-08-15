@@ -1,0 +1,108 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_num2s
+#define tools_num2s
+
+// write numerics in a string as if done with a std::ostringstream::operator<<(<num>).
+
+#include "sout"
+#include "sprintf"
+#include "typedefs"
+
+#include <cstddef>  //ptrdiff_t
+#include <vector>
+
+namespace tools
+{
+
+inline bool num2s(unsigned short a_value, std::string& a_s)
+{  // used in value
+  return sprintf(a_s, 32, "%u", a_value);
+}
+
+inline bool num2s(short a_value, std::string& a_s)
+{  // used in value
+  return sprintf(a_s, 32, "%d", a_value);
+}
+
+inline bool num2s(unsigned int a_value, std::string& a_s)
+{
+  return sprintf(a_s, 32, "%u", a_value);
+}
+
+inline bool num2s(int a_value, std::string& a_s)
+{
+  return sprintf(a_s, 32, "%d", a_value);
+}
+
+inline bool num2s(uint64 a_value, std::string& a_s)
+{
+  return sprintf(a_s, 32, uint64_format(), a_value);
+}
+
+inline bool num2s(int64 a_value, std::string& a_s)
+{
+  return sprintf(a_s, 32, int64_format(), a_value);
+}
+
+inline bool num2s(float a_value, std::string& a_s)
+{
+  return sprintf(a_s, 32, "%g", a_value);
+}
+
+inline bool num2s(double a_value, std::string& a_s)
+{
+  return sprintf(a_s, 32, "%g", a_value);
+}
+
+// for the below std::vector num2s in case T=std::string :
+inline bool num2s(const std::string& a_value, std::string& a_s)
+{
+  a_s = a_value;
+  return true;
+}
+
+template<class T>
+inline bool numas(const T& a_value, std::string& a_s)
+{
+  std::string stmp;
+  if (!num2s(a_value, stmp)) return false;
+  a_s += stmp;
+  return true;
+}
+
+template<class VEC>
+inline bool nums2s(const VEC& a_vals, std::string& a_s, const std::string& a_sep = "\n")
+{
+  a_s.clear();
+  bool status = true;
+  std::string stmp;
+  bool first = true;
+  for (const auto& val : a_vals)
+  {
+    if (!first) a_s += a_sep;
+    first = false;
+    if (!num2s(val, stmp)) status = false;
+    a_s += stmp;
+  }
+  return status;
+}
+
+template<class T>
+inline bool nums2s(const std::vector<T>& a_vals, std::string& a_s, const std::string& a_sep = "\n")
+{
+  return nums2s<std::vector<T>>(a_vals, a_s, a_sep);
+}
+
+template<class T>
+inline std::string num_out(const T& a_value)
+{
+  std::string stmp;
+  num2s(a_value, stmp);
+  return sout(stmp);
+}
+
+}  // namespace tools
+
+#endif
