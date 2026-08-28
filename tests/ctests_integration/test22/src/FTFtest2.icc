@@ -1,0 +1,99 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+// ------- Initialisation
+
+G4String OutFile = "Output";
+
+G4int verbose = 0;
+G4bool saverand = false;
+
+G4String namePart = "proton";
+G4bool ionParticle = false;
+G4double Plab = 100. * GeV;
+G4double energy = 100. * GeV;
+G4double sigmae = 0.0;
+
+G4int ionZ(0), ionA(0);
+G4int targetA = 0;
+G4String nameMat = "G4_Al";
+
+G4String nameGen = "binary";
+
+G4int nevt = 1000;
+G4int modu = 1000;
+
+G4double theStep = 0.01 * micrometer;
+G4Material* material = nullptr;
+G4NuclearLevelData* fLevelData = G4NuclearLevelData::GetInstance();
+G4DeexPrecoParameters* fParam = fLevelData->GetParameters();
+
+G4bool xsbgg = true;
+
+// Track
+G4ThreeVector aPosition = G4ThreeVector(0., 0., 0.);
+G4double aTime = 0.;
+G4ThreeVector aDirection = G4ThreeVector(0.0, 0.0, 1.0);
+G4double nx = 0.0, ny = 0.0, nz = 0.0;
+
+G4cout.setf(std::ios::scientific, std::ios::floatfield);
+
+// -------------------------------------------------------------------
+//--------- Materials definition ---------
+Test30Material* mate = new Test30Material();
+G4NistManager::Instance()->SetVerbose(0);
+
+//--------- Particles definition ---------
+Test30Physics* phys = new Test30Physics();
+
+const G4ParticleDefinition* electron = G4Electron::Electron();
+const G4ParticleDefinition* proton = G4Proton::Proton();
+const G4ParticleDefinition* neutron = G4Neutron::Neutron();
+const G4ParticleDefinition* pin = G4PionMinus::PionMinus();
+const G4ParticleDefinition* pip = G4PionPlus::PionPlus();
+const G4ParticleDefinition* deu = G4Deuteron::DeuteronDefinition();
+const G4ParticleDefinition* tri = G4Triton::TritonDefinition();
+const G4ParticleDefinition* he3 = G4He3::He3Definition();
+const G4ParticleDefinition* alp = G4Alpha::AlphaDefinition();
+
+const G4ParticleDefinition* anti_proton = G4AntiProton::AntiProton();
+const G4ParticleDefinition* anti_neutron = G4AntiNeutron::AntiNeutron();
+const G4ParticleDefinition* anti_deuteron = G4AntiDeuteron::AntiDeuteron();
+const G4ParticleDefinition* anti_triton = G4AntiTriton::AntiTriton();
+const G4ParticleDefinition* anti_He3 = G4AntiHe3::AntiHe3();
+const G4ParticleDefinition* anti_alpha = G4AntiAlpha::AntiAlpha();
+
+G4GenericIon* gion = G4GenericIon::GenericIon();
+gion->SetProcessManager(new G4ProcessManager(gion));
+
+G4DecayPhysics decays;
+decays.ConstructParticle();
+
+G4ParticleTable* partTable = G4ParticleTable::GetParticleTable();
+G4IonTable* ions = partTable->GetIonTable();
+
+partTable->SetReadiness();
+ions->CreateAllIon();
+ions->CreateAllIsomer();

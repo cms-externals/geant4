@@ -1,0 +1,181 @@
+//
+// This pipeline is running the nightly build and testing for one single specific platform
+// in general started by another upstream job defining all setting for this platform, including BuildOptions
+//   It can be run directly, though, if all needed options are set.
+//
+// Gunter Folger, March 2021
+//
+
+def g4
+
+def needVecGeom() {
+  if ( params.BuildOptions =~ 'UseUsolids' ) return true
+  if ( params.BuildOptions =~ 'UseVecGeom' ) return true
+  return false
+}
+
+def defaultEXTERNALS() {
+   def default_EXTERNALS = sh (
+     script: 'source scripts/tests/tools/ctest/versions.sh&&get_EXTERNALS',
+     returnStdout: true
+   ).trim()
+   echo "default EXTERNAL version : ${default_EXTERNALS}"
+      
+   return default_EXTERNALS
+}
+
+pipeline {
+  parameters {
+    string(name: 'OS',
+           defaultValue: 'alma9',
+           description: 'OS required to run the job, current values centos7, centos8, alma9, mac12, mac12arm, mac13, mac13arm, ubuntu20, ubuntu22, windows10, windows11, g4-alma9, g4-rhel9')
+    string(name: 'COMPILER' ,
+           defaultValue: 'native',
+           description: 'Choice of compiler to use' )
+    choice(name: 'THREAD',
+           choices: ['Seq', 'MT', 'MTmax'],
+           description: 'choice of threading mode')
+    choice(name: 'MODE',
+           choices: ['nightly', 'experimental', 'release', 'physicschecks', 'patch'],
+           description: 'set the build mode for CMake')
+    choice(name: 'BUILDTYPE',
+           choices: ['RelWithDebInfo', 'Release', 'Debug', 'FullRelWithDebInfo'],
+           description: 'Value for CMAKE_BUILD_TYPE, allowed values are those allowed in CMake')
+    string(name: 'EXTERNALS',
+           defaultValue: '',
+           description: 'CVMFS directory keeping the external libraries, leave blank for default')
+    string(name: 'BuildOptions',
+           defaultValue: 'none',
+           description: 'extra build options, like: staticlibs, UseVecGeom, BoundsCheck, EpCheck, UseInternalCLHEP, UseGranularCLHEP, MemCheck (valgrind), ....  Combinations allowed, separate options by comma: ,')
+    string(name: 'ExtraCMakeOptions',
+           defaultValue: '',
+           description: 'Additional CMake configuration options of the form "-Doption1=value1 -Doption2=value2"')
+    string(name: 'SourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: 'branch to checkout')
+    string(name: 'VerificationSourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: '')
+    string(name: 'BenchmarksSourceBranch',
+           defaultValue: 'stage/master/nightly',
+           description: '')
+  }
+
+  options {
+    buildDiscarder(logRotator( daysToKeepStr: '14' ))
+    timestamps()
+  }
+
+  environment {
+    SourceRepoHttpUrl       = 'ssh://git@gitlab.cern.ch:7999/geant4/geant4-dev.git'
+    VerificationRepoHttpUrl = 'ssh://git@gitlab.cern.ch:7999/geant4/g4tests-verification.git'
+    BenchmarksRepoHttpUrl   = 'ssh://git@gitlab.cern.ch:7999/geant4/g4tests-benchmarks.git'
+    scriptToRun             = "${ !needVecGeom() ? 'jk-all' : 'jk-vecgeom && jk-all'}"
+    CTEST_SITE              = "${ (params.OS =~ '^g4-')  ? params.OS : 'g4-' + params.OS}"
+    EXTERNALS               = "${ params.EXTERNALS ?: defaultEXTERNALS()}"             // default for EXTERNALS
+  }
+
+  agent {label 'startup-jobs'}
+
+  stages {
+    stage('load functions') {
+      steps {
+        script{
+          g4 = load 'scripts/tests/tools/ctest/JenkinsFunctions.groovy'
+        }
+      }
+    }
+
+    stage('docker run') {
+      when {
+        beforeAgent true
+        expression { g4.getLABEL() =~ 'docker' }
+      }
+
+      agent {
+        node {
+          label g4.getLABEL()
+          customWorkspace "workspace/g4np-build/${MODE}/${OS}/${COMPILER}/${THREAD}/" + g4.GetBuildOptionDir() + "${BUILDTYPE}"
+        }
+      }
+
+      steps {
+        buildName "#${BUILD_NUMBER}" + ' ' + params.OS + '-' + params.COMPILER + '-' + params.THREAD + '-' + params.MODE + '-' + params.BUILDTYPE + g4.GetBuildOptionText()
+        buildDescription "Executed @ ${NODE_NAME}"
+        dir('geant4') {
+          deleteDir()
+        }
+        dir('build') {
+          deleteDir()
+        }
+        script{
+          g4.doCheckout(needVecGeom())
+          g4.doDockerBuildTest()
+        }
+      }
+    }
+
+    stage('run on hardware'){
+      when {
+        beforeAgent true
+        anyOf {
+          expression { params.OS =~ 'mac'  }
+          expression { g4.getLABEL() =~ '^g4-alma' }
+          expression { g4.getLABEL() =~ '^g4-rhel' }
+        }
+      }
+
+      agent {
+        node {
+          label g4.getLABEL() + ' && ' + g4.getLABELSelector()
+          customWorkspace "workspace/g4np-build/${MODE}/${OS}/${COMPILER}/${THREAD}/" + g4.GetBuildOptionDir() + "${BUILDTYPE}"
+        }
+      }
+
+      steps {
+        buildName "#${BUILD_NUMBER}" + ' ' + params.OS + '-' + params.COMPILER + '-' + params.THREAD + '-' + params.MODE + '-' + params.BUILDTYPE + g4.GetBuildOptionText()
+        buildDescription "Executed @ ${NODE_NAME}"
+        dir('geant4') {
+          deleteDir()
+        }
+        dir('build') {
+          deleteDir()
+        }
+        script{
+          g4.doCheckout(needVecGeom())
+	  g4.CheckForCvmfs()
+          g4.doHWBuildTest()
+        }
+      }
+    }
+
+    stage('run for Windows'){
+      when {
+        beforeAgent true
+        expression { params.OS =~ 'win' }
+      }
+
+      agent {
+        node { label g4.getLABEL()
+          customWorkspace "workspace/g4np-build/${MODE}/x64/${COMPILER}/${THREAD}/" + g4.GetBuildOptionDir() + "${BUILDTYPE}"
+        }
+      }
+
+      steps {
+        echo "Building for os: " + params.OS + " on label " + g4.getLABEL() + " on node ${NODE_NAME}"
+        buildName "#${BUILD_NUMBER}" + ' win-' + params.COMPILER + '-' + params.THREAD + '-' + params.MODE + '-' + params.BUILDTYPE + g4.GetBuildOptionText()
+        buildDescription "Executed @ ${NODE_NAME}"
+        dir('geant4') {
+          deleteDir()
+        }
+        dir('build') {
+          deleteDir()
+        }
+        script{
+          g4.doCheckout(needVecGeom())
+          g4.doWinBuildTest()
+        }
+      }
+    }
+  }
+}

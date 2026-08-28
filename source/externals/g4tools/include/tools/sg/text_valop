@@ -1,0 +1,276 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_sg_text_valop
+#define tools_sg_text_valop
+
+#include "../nostream"
+#include "base_freetype"
+#include "base_text"
+#include "mnmx"
+#include "nodekit"
+
+namespace tools
+{
+namespace sg
+{
+
+class text_valop : public base_text
+{
+  public:
+
+    TOOLS_NODE(text_valop, tools::sg::text_valop, base_text)
+
+  public:
+
+    sf_string encoding;
+    sf_string font;
+    sf_enum<sg::font_modeling> font_modeling;
+
+  public:
+
+    text_valop(const base_freetype& a_ttf)
+      : parent(),
+        encoding(encoding_none()),
+        font(font_hershey()),
+        font_modeling(font_filled),
+        m_ttf(a_ttf)
+    {
+      add_fields();
+    }
+
+    virtual ~text_valop() = default;
+
+    text_valop(const text_valop& a_from)
+      : parent(a_from),
+        encoding(a_from.encoding),
+        font(a_from.font),
+        font_modeling(a_from.font_modeling),
+        m_ttf(a_from.m_ttf)
+    {
+      add_fields();
+    }
+
+    text_valop& operator=(const text_valop& a_from)
+    {
+      parent::operator=(a_from);
+      encoding = a_from.encoding;
+      font = a_from.font;
+      font_modeling = a_from.font_modeling;
+      return *this;
+    }
+
+    virtual const desc_fields& node_desc_fields() const
+    {
+      TOOLS_FIELD_DESC_NODE_CLASS(tools::sg::text_valop)
+      static const desc_fields s_v(
+        parent::node_desc_fields(), 3,  // WARNING : take care of count.
+        TOOLS_ARG_FIELD_DESC(encoding), TOOLS_ARG_FIELD_DESC(font),
+        TOOLS_ARG_FIELD_DESC_ENUMS_BEG(font_modeling, 3) TOOLS_ARG_ENUM(font_outline),
+        TOOLS_ARG_ENUM(font_filled), TOOLS_ARG_ENUM(font_pixmap) TOOLS_ARG_FIELD_DESC_ENUMS_END);
+      return s_v;
+    }
+
+  public:
+
+    virtual void render(render_action& a_action)
+    {
+      if (touched())
+      {
+        update_sg(a_action.out());
+        reset_touched();
+      }
+      m_sep.render(a_action);
+    }
+
+    virtual void pick(pick_action& a_action)
+    {
+      if (touched())
+      {
+        update_sg(a_action.out());
+        reset_touched();
+      }
+      nodekit_pick(a_action, m_sep, this);
+    }
+
+    virtual void bbox(bbox_action& a_action)
+    {
+      if (touched())
+      {
+        update_sg(a_action.out());
+        reset_touched();
+      }
+      m_sep.bbox(a_action);
+    }
+
+    virtual void search(search_action& a_action)
+    {
+      if (touched())
+      {
+        update_sg(a_action.out());
+        reset_touched();
+      }
+      parent::search(a_action);
+      if (a_action.done()) return;
+      if (a_action.do_path()) a_action.path_push(this);
+      m_sep.search(a_action);
+      if (a_action.done()) return;
+      if (a_action.do_path()) a_action.path_pop();
+    }
+
+  public:  // sg::base_text :
+
+    virtual void get_bounds(float /*a_height*/, float& a_mn_x, float& a_mn_y, float& a_mn_z,
+                            float& a_mx_x, float& a_mx_y, float& a_mx_z) const
+    {
+      text_valop& self = const_cast<text_valop&>(*this);
+      if (self.touched())
+      {
+        self.update_sg(self.m_out);
+        self.reset_touched();
+      }
+      vec3f mn, mx;
+      mnmx(self.m_out, self.m_sep, mn, mx);
+      a_mn_x = mn[0];
+      a_mn_y = mn[1];
+      a_mn_z = mn[2];
+      a_mx_x = mx[0];
+      a_mx_y = mx[1];
+      a_mx_z = mx[2];
+    }
+    virtual float ascent(float) const { return 1; }
+    virtual float y_advance(float) const { return 1; }
+    virtual float descent(float) const { return 0; }
+    virtual bool truncate(const std::string&, float, float, std::string&) const { return false; }
+
+  private:
+
+    void update_sg(std::ostream& a_out)
+    {
+      m_sep.clear();
+      matrix* tsf = new matrix;
+      m_sep.add(tsf);
+
+      for (const auto& it : strings.values())
+      {
+        sg::base_freetype* tft = sg::base_freetype::create(m_ttf);
+        tft->font = sg::font_stixgeneral_otf();
+
+        std::vector<unsigned int> line;
+        line.reserve(it.size());
+        for (char c : it)
+        {
+          line.push_back(char2stix(c));
+        }
+
+        tft->unitext.add(line);
+
+        m_sep.add(tft);
+      }
+
+      vec3f mn, mx;
+      mnmx(a_out, m_sep, mn, mx);
+      float h = mx[1] - mn[1];
+      if (!h)
+      {
+        a_out << "tools::sg::text_valop::upate_sg : valop has null height." << std::endl;
+        m_sep.clear();
+        return;
+      }
+      float scale = height.value() / h;
+      tsf->set_scale(scale, scale, 1);
+    }
+
+    unsigned int char2stix(char a_c)
+    {
+      if (a_c == '-') return 0x0002D;
+      if (a_c == '.') return 0x0002E;
+
+      if (a_c == '0') return 0x00030;
+      if (a_c == '1') return 0x00031;
+      if (a_c == '2') return 0x00032;
+      if (a_c == '3') return 0x00033;
+      if (a_c == '4') return 0x00034;
+      if (a_c == '5') return 0x00035;
+      if (a_c == '6') return 0x00036;
+      if (a_c == '7') return 0x00037;
+      if (a_c == '8') return 0x00038;
+      if (a_c == '9') return 0x00039;
+
+      if (a_c == 'A') return 0x00041;
+      if (a_c == 'B') return 0x00042;
+      if (a_c == 'C') return 0x00043;
+      if (a_c == 'D') return 0x00044;
+      if (a_c == 'E') return 0x00045;
+      if (a_c == 'F') return 0x00046;
+      if (a_c == 'G') return 0x00047;
+      if (a_c == 'H') return 0x00048;
+      if (a_c == 'I') return 0x00049;
+      if (a_c == 'J') return 0x0004A;
+      if (a_c == 'K') return 0x0004B;
+      if (a_c == 'L') return 0x0004C;
+      if (a_c == 'M') return 0x0004D;
+      if (a_c == 'N') return 0x0004E;
+      if (a_c == 'O') return 0x0004F;
+      if (a_c == 'P') return 0x00050;
+      if (a_c == 'Q') return 0x00051;
+      if (a_c == 'R') return 0x00052;
+      if (a_c == 'S') return 0x00053;
+      if (a_c == 'T') return 0x00054;
+      if (a_c == 'U') return 0x00055;
+      if (a_c == 'V') return 0x00056;
+      if (a_c == 'W') return 0x00057;
+      if (a_c == 'X') return 0x00058;
+      if (a_c == 'Y') return 0x00059;
+      if (a_c == 'Z') return 0x0005A;
+
+      if (a_c == 'a') return 0x00061;
+      if (a_c == 'b') return 0x00062;
+      if (a_c == 'c') return 0x00063;
+      if (a_c == 'd') return 0x00064;
+      if (a_c == 'e') return 0x00065;
+      if (a_c == 'f') return 0x00066;
+      if (a_c == 'g') return 0x00067;
+      if (a_c == 'h') return 0x00068;
+      if (a_c == 'i') return 0x00069;
+      if (a_c == 'j') return 0x0006A;
+      if (a_c == 'k') return 0x0006B;
+      if (a_c == 'l') return 0x0006C;
+      if (a_c == 'm') return 0x0006D;
+      if (a_c == 'n') return 0x0006E;
+      if (a_c == 'o') return 0x0006F;
+      if (a_c == 'p') return 0x00070;
+      if (a_c == 'q') return 0x00071;
+      if (a_c == 'r') return 0x00072;
+      if (a_c == 's') return 0x00073;
+      if (a_c == 't') return 0x00074;
+      if (a_c == 'u') return 0x00075;
+      if (a_c == 'v') return 0x00076;
+      if (a_c == 'w') return 0x00077;
+      if (a_c == 'x') return 0x00078;
+      if (a_c == 'y') return 0x00079;
+      if (a_c == 'z') return 0x0007A;
+
+      if (a_c == '_') return 0x0005F;
+
+      return 0x0003F;  //?
+    }
+
+    void add_fields()
+    {
+      add_field(&encoding);
+      add_field(&font);
+      add_field(&font_modeling);
+    }
+
+  private:
+
+    const base_freetype& m_ttf;
+    separator m_sep;
+    nostream m_out;
+};
+
+}  // namespace sg
+}  // namespace tools
+
+#endif

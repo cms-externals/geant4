@@ -1,0 +1,61 @@
+#!/bin/bash -l 
+
+export GEOM=CaTs_Test  # Geometry name
+#source env.sh
+export RNG_SEED=0
+export RNG_OFFSET=0
+export SProf__WRITE=0
+## Opticks settings
+export OPTICKS_MAX_PHOTON=200000000 # Max Amount of photons
+export OPTICKS_MAX_SLOT=$OPTICKS_MAX_PHOTON
+export OPTICKS_PROPAGATE_EPSILON=0.01
+export OPTICKS_PROPAGATE_EPSILON0=0.01
+export OPTICKS_MAX_BOUNCE=100
+export OPTICKS_INTEGRATION_MODE=3  # Running both GPU and CPU simulation
+export OPTICKS_EVENT_MODE=Minimal  # Hits or Minimal Prefered. Hits will create .npy files in /tmp/user/opticks/GEOM/NEXUS_CRAB/nexus/ALL
+export CUDA_VISIBLE_DEVICES=0 # GPU id
+### Opticks Detector Identification (Boundary Names for Identifying small number of detectors)
+## Skipahead is used for offseting the random generator values so photons produce per event is not repeated
+if [ -z ${SKIPAHEAD+x} ]; then
+        echo " SKIPAHEAD is not set";
+        #echo "Setting SKIPAHEAD to 100k";
+        SKIPAHEAD=$OPTICKS_MAX_PHOTON
+        echo "Setting SKIPAHEAD to ${SKIPAHEAD}"
+	sleep 2
+fi
+export OPTICKS_EVENT_SKIPAHEAD=$OPTICKS_MAX_PHOTON
+
+
+
+
+## for debugging purposeses
+#export QSim=INFO
+#export SEvt=INFO
+#export QEvent=INFO
+#export G4CXOpticks=INFO
+#export U4=INFO
+#export SSim=INFO
+#export CSGImport=INFO
+#export U4Material=INFO
+#export X4PhysicalVolume=INFO
+#export U4VolumeMaker=INFO
+#export X4Geo=INFO
+#export SSim__stree_level=1
+#export GBndLib=INFO
+#export ShimG4OpAbsorption=INFO
+#export G4CXOpticks__simulate_saveEvent=0
+#export SBT=INFO
+#export GAS_Builder=INFO
+#export GPropertyLib=INFO
+#export GSurfaceLib=INFO
+export G4CXOpticks__setGeometry_saveGeometry=$HOME/.opticks/GEOM/$GEOM
+export G4CXOpticks__saveGeometry_saveGGeo=0
+export GGeo__postDirectTranslation_save=0
+#export IDPath=$G4CXOpticks__setGeometry_saveGeometry
+#export PIDX=100
+#export CFBASE=$HOME/.opticks/GEOM/$GEOM
+echo "RNG_Offset -->$RNG_OFSEET"
+echo "RNG SEED  --> $RNG_SEED"
+echo "SKIPAHEAD--> $OPTICKS_EVENT_SKIPAHEAD"
+echo "MaxPhoton--> $OPTICKS_MAX_PHOTON"
+sleep 2

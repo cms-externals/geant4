@@ -1,0 +1,23 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_charp_out
+#define tools_charp_out
+
+#include "sprintf"
+
+#include <string>
+
+namespace tools
+{
+
+inline std::string charp_out(const char* a_value)
+{
+  char buf[32];
+  snpf(buf, sizeof(buf), "%llu", reinterpret_cast<unsigned long long>(a_value));
+  return std::string(buf);
+}
+
+}  // namespace tools
+
+#endif

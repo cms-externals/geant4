@@ -1,0 +1,151 @@
+
+                       geant4-11-04-ref-08
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Simplified and optimised code in G4Tubs, G4CutTubs and G4Cons, boosting
+   overall performance for phi-section configurations.
+ o Accelerated polycone/polyhedra queries for large, stepped and non-convex RZ
+   profiles and more code improvements.
+ o Accelerated sphere/torus queries by replacing atan2-based phi checks, use
+   a scale-normalised analytical Newton quartic in torus and simplifying code.
+ o Account for electron mass in sampling and kinematics of G4MuonDecayChannel
+   daughters, with improved kinematic endpoint/singularity handling.
+ o Fixed thread safety issues in G4FermiBreakUpAN de-excitation hadronic model.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+geometry
+--------
+- management (geommng-V11-04-11)
+  o Exposed G4VSolid::EstimateSurfaceArea() through G4UAdapter, resolving its
+    ambiguity with VecGeom shapes.
+- solids/CSG (geom-csg-V11-04-03)
+  o G4Tubs, G4CutTubs and G4Cons: replaced atan2-based phi checks with cached
+    phi-plane predicates in Inside(), surface-normal and DistanceToOut()
+    queries. Simplified code overall in those queries.
+    Navigation benchmark averages improved by 1.8x for G4Tubs, 1.7x for
+    G4CutTubs and 1.6x for G4Cons, using different topology configurations.
+  o In G4Torus, use a scale-normalised analytical quartic with Newton polishing
+    and residual validation for exact-distance queries, retaining Jenkins-Traub
+    as a fallback. Use fixed-size root buffers and cached phi trigonometry
+    throughout. Fixed selection of the VecGeom wrapper by removing the obsolete
+    G4GEOM_USE_SYS_USOLIDS guard. In G4UTorus wrapper, rebuild all VecGeom
+    derived state when setters are used, preserving phi wedges and bounds for
+    parameterised solids.
+  o In G4Sphere and G4Torus, replaced atan2-based phi checks with cached
+    predicates in Inside() and surface-normal queries; also use the predicate
+    when filtering exact G4Torus intersections. Removed the remaining
+    atan2-based angular checks using cached cone/wedge predicates and monotonic
+    polar-angle comparisons. In G4Sphere, avoid computing the point theta angle
+    in DistanceToIn() for solids without theta cuts.
+    Code cleanup, removed obsolete branches, redundant temporary arrays,
+    repeated phi trigonometry and verbose safety calculations. Expressed theta
+    safeties directly as cone-plane distances.
+    Speedup mean over all benchmarked queries improved by 2.26x for G4Sphere
+    and 5.00x for G4Torus.
+- solids/specific (geom-specific-V11-04-10)
+  o Accelerated polycone/polyhedra queries for large, stepped and non-convex RZ
+    profiles using indexed candidate traversal, with exact faceted fallbacks.
+  o Added a compact exact-distance kernel for full-phi, two-plane G4Polycone,
+    including hollow profiles, while retaining the general faceted fallback.
+  o Use direct or binary Z-segment lookup for monotonic standard polycones.
+  o Apply more aggressive inlining, where feasible.
+  o Improved timings of 62.6% and 59.9% for full-phi, two-plane G4Polycone
+    DistanceToIn(p,v) and DistanceToOut(p,v), respectively. For 100 Z planes,
+    Inside(p) is 69.5% lower and all G4Polycone queries average 18.5% lower.
+  o Restricted G4Polycone, G4Polyhedra and G4GenericPolycone RZ fast paths
+    to profiles where their signed RZ safety/normal classification is
+    semantically equivalent to the faceted implementation.
+    Added supporting-boundary convexity checks for RZ profiles; allow ordered
+    z-plane fast paths for G4Polycone and closed-phi G4Polyhedra while keeping
+    open G4Polyhedra sectors on the faceted path. Fixes CMS navigation
+    regressions from unsafe RZ shortcuts while preserving performance gains
+    for regular monotonic and convex profiles.
+  o Removed obsolete G4GEOM_USE_SYS_USOLIDS guards from the VecGeom wrappers
+    for G4Ellipsoid, G4EllipticalCone, G4EllipticalTube, G4Hype and
+    G4Paraboloid, enabling their replacement when GEANT4_USE_USOLIDS is set
+    to ALL. Corrected the include ordering in G4EllipticalCone so its
+    wrapper-selection macro is defined before guarding the native
+    implementation.
+  o Fixed stale polyhedra after dimension or visualisation changes in the
+    VecGeom wrappers for G4Ellipsoid, G4EllipticalCone, G4EllipticalTube,
+    G4GenericTrap and G4Paraboloid, and while building or finalising
+    G4TessellatedSolid. Applied the matching visualisation-subdivision fix to
+    native G4GenericTrap.
+  o Added the missing parameterisation dispatch to G4UEllipsoid and corrected
+    G4UHype bounding limits to use the outer end radius.
+
+global                                           global-V11-04-19
+------
+- Updated date and tag-ID for geant4-11-04-ref-08.
+
+materials                                        materials-V11-04-04
+---------
+- In G4Material, raise a fatal exception if adding material recursively to
+  itself in AddMaterial().
+
+particles                                        particles-V11-04-07
+---------
+- Account for electron mass in sampling and kinematics of G4MuonDecayChannel
+  daughters, with improved kinematic endpoint/singularity handling.
+  Addresses detected issue about floating point exceptions and off-mass-shell
+  kinematics. Addressing problem report #2678.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-04-12)
+  o In G4DNAPTBExcitationStructure, fixed index retrieval for N2 in function
+    ReplaceMaterial(). Addressing problem report #2756.
+
+processes/hadronic
+------------------
+- models/binary_cascade (had-binary-V11-04-03)
+  o G4GeneratorPrecompoundInterface: in the method Propagate(), removed older
+    check on whether the string model is FTF or QGS.
+    The exciton's 4-momentum is now determined by imposing the overall
+    4-momentum conservation of the hadronic interaction, rather than by
+    summing the residual and captured 4-momenta, as done before.
+- models/de_excitation (hadr-deex-V11-04-10)
+  o Fixed thread safety issues in G4FermiBreakUpAN; removed shared mutable
+    state from a const method and made BreakItUp() properly reentrant; made
+    singletons fully build themselves in their constructors.
+- models/radioactive_decay (radioactive_decay-V11-04-01)
+  o In G4BetaMinusDecay and G4BetaPlusDecay, fixed low-energy step artifacts
+    at Q/100 boundaries by including the non-zero lower-endpoint density when
+    constructing the CDF.
+
+examples                                         examples-V11-04-08
+--------
+- Updated documentation and reference outputs.
+- advanced/CaTS (CaTS-V11-04-01)
+  o Added QuasiOpticalPhysics constructor with quasi-optical processes.
+    QuasiOpticalPhysics is equivalent to G4OpticalPhysics, with extensions
+    for quasi-optical processes to support offloading of optical photon
+    generation and transport.
+- advanced/dna/moleculardna (molecularDNA-V11-04-05)
+  o Fixed a bug in computing the mean pairwise distance in AnalysisManager.
+- extended/hadronic/Hadr02 (exhadr02-V11-04-00)
+  o Revived the optional UrQMD 1.3cr interface (gated behind G4_USE_URQMD)
+    and fixed several long-standing defects: in G4UrQMD1_3Model, removed the
+    target mass number from GetA_asInt(); seed the UrQMD generator from
+    Geant4 default engine; re-initialise the nucleus per event (was
+    done once and frozen, which broke energy conservation and re-sampling);
+    R_proj+R_target impact parameter (was target-only); build secondaries
+    on-shell (Fermi momentum had been added to the momentum but not the energy).
+  o In HadronPhysicsUrQMD, IonUrQMDPhysics, UrQMD*Builder, compilation fixes
+    for the current API and registration of the nucleon/pion inelastic cross
+    sections (fixes a runtime had001 exception).
+  o In CMake script, G4_USE_URQMD option (OFF by default) compiles the
+    UrQMD 1.3cr FORTRAN via enable_language(Fortran); no separate build step.
+  o Usable for hadron beams; the ion path remains unsupported (a pre-existing
+    UrQMD-1.3cr limitation - no coalescence/residual-nucleus stage, and an
+    internal FORTRAN stop on ion final states).
+
+tests                                            tests-V11-04-08
+-----
+- Updated reference outputs and tools.

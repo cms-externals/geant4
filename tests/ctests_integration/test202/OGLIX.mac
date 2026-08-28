@@ -1,0 +1,44 @@
+/control/verbose 2
+/vis/verbose warnings
+
+# Open OGLIX viewer
+/vis/open OGLIX 600x600-0+0
+# Draw volume
+/vis/drawVolume
+/vis/viewer/set/autoRefresh false
+
+# printEPS
+/vis/ogl/set/printFilename OGLIX-output/visTest-DrawVolume
+/vis/ogl/printEPS
+
+# Execute testVisSceneAdd.mac
+/control/execute testVisSceneAdd.mac
+
+# printEPS
+/vis/ogl/set/printFilename OGLIX-output/visTest-VisAdd
+/vis/ogl/printEPS
+
+# Execute testVisSet.mac
+/control/execute testVisSet.mac
+/vis/viewer/flush
+
+# printEPS
+/vis/ogl/set/printFilename OGLIX-output/visTest-VisSet
+/vis/ogl/printEPS
+
+# Fire a e+
+# /vis/geometry/set/visibility calo_L 1 false
+# /vis/viewer/zoom 40
+# /vis/viewer/set/viewpointThetaPhi -60 75
+# /vis/ogl/set/printSize 4000 4000
+# /gun/energy 1000 MeV
+# /gun/particle e+
+# /vis/scene/endOfEventAction accumulate
+# /vis/modeling/trajectories/create/drawByCharge
+# /vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+# /vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 5
+# /run/beamOn 2
+
+# printEPS
+# /vis/ogl/set/printFilename OGLIX-output/visTest-BeamOn
+# /vis/ogl/printEPS

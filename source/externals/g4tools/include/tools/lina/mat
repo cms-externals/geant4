@@ -1,0 +1,560 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_mat
+#define tools_mat
+
+#include "../eqT"
+
+#include <algorithm>
+#include <cstddef>  //size_t
+
+namespace tools
+{
+
+template<class T, unsigned int D>
+class mat
+{
+    static_assert(D >= 1 && D <= 4, "mat supports dimensions 1-4 only");
+
+  public:
+
+    using size_type = unsigned int;
+    using value_type = T;
+
+  public:
+
+    mat() = default;
+    virtual ~mat() = default;
+
+    mat(const mat& a_from) = default;
+    mat& operator=(const mat& a_from) = default;
+
+    void set_value(size_type aR, size_type aC, const T& a_value)
+    {
+      m_vec[aR + aC * dimension()] = a_value;
+    }
+
+    const T& value(size_type aR, size_type aC) const { return m_vec[aR + aC * dimension()]; }
+
+    T value(size_type aR, size_type aC) { return m_vec[aR + aC * dimension()]; }
+
+    void set_matrix(const mat& a_m) { /*optimization.*/ _copy(a_m.m_vec); }
+
+    void set_zero() { std::fill(std::begin(m_vec), std::end(m_vec), zero()); }
+
+    void set_identity()
+    {
+      set_zero();
+      for (size_type i = 0; i < dimension(); i++)
+        m_vec[i + i * dimension()] = one();
+    }
+
+    void mul_mtx(const mat& a_m) { _mul_mtx(a_m.m_vec); }
+
+    void mul_mtx(const mat& a_m, T a_tmp[]) { _mul_mtx(a_m.m_vec, a_tmp); }
+
+    void left_mul_mtx(const mat& a_m)
+    {
+      /* this = a_m * this :*/
+      _left_mul_mtx(a_m.m_vec);
+    }
+
+    bool equal(const mat& a_m) const
+    {
+      if (&a_m == this) return true;
+      return std::equal(std::begin(m_vec), std::end(m_vec), std::begin(a_m.m_vec));
+    }
+
+    const T* data() const { return m_vec; }
+    unsigned int size() const { return dim2(); }
+
+    void transpose()
+    {
+      const size_type _D = dimension();
+      for (size_type r = 0; r < _D; r++)
+      {
+        for (size_type c = (r + 1); c < _D; c++)
+        {
+          T vrc = value(r, c);
+          T vcr = value(c, r);
+          set_value(r, c, vcr);
+          set_value(c, r, vrc);
+        }
+      }
+    }
+    bool invert(mat& a_res) const { return invert_prec<double>(a_res, 0, zero_fabs); }
+
+  public: /*operators*/
+
+    T& operator[](size_t a_index)
+    { /*for tools/sg/sf_vec*/
+      /*WARNING : no check on a_index.*/
+      return m_vec[a_index];
+    }
+
+    const T& operator[](size_t a_index) const
+    {
+      /*WARNING : no check on a_index.*/
+      return m_vec[a_index];
+    }
+
+    bool operator==(const mat& a_array) const { return equal(a_array); }
+
+    bool operator!=(const mat& a_array) const { return !operator==(a_array); }
+
+    mat& operator*=(const mat& a_m)
+    {
+      _mul_mtx(a_m.m_vec);
+      return *this;
+    }
+
+    mat& operator+=(const mat& a_m)
+    {
+      _add_mtx(a_m.m_vec);
+      return *this;
+    }
+
+    mat& operator-=(const mat& a_m)
+    {
+      _sub_mtx(a_m.m_vec);
+      return *this;
+    }
+
+    mat& operator*=(const T& a_fac)
+    {
+      for (size_type i = 0; i < dim2(); i++)
+        m_vec[i] *= a_fac;
+      return *this;
+    }
+
+    mat operator*(const T& a_fac)
+    {
+      mat res;
+      res.operator*=(a_fac);
+      return res;
+    }
+
+  protected:
+
+    void _copy(const T a_m[])
+    {
+      T* tp = (T*)m_vec;
+      T* ap = (T*)a_m;
+      for (size_type i = 0; i < dim2(); i++, tp++, ap++)
+        *tp = *ap;
+    }
+
+    void _add_mtx(const T a_m[])
+    { /* this = this + a_m, */
+
+      T* tp = (T*)m_vec;
+      T* ap = (T*)a_m;
+      for (size_type i = 0; i < dim2(); i++, tp++, ap++)
+        *tp += *ap;
+    }
+    void _sub_mtx(const T a_m[])
+    { /* this = this - a_m, */
+      T* tp = (T*)m_vec;
+      T* ap = (T*)a_m;
+      for (size_type i = 0; i < dim2(); i++, tp++, ap++)
+        *tp -= *ap;
+    }
+
+    void _mul_mtx(const T a_m[], T a_tmp[])
+    { /*OPTIMIZATION*/
+      /* this = this * a_m */
+      typedef T* Tp;
+      Tp tpos, ttpos, rpos, apos, mpos, aapos;
+      T _value;
+      unsigned int r, c, i;
+
+      unsigned int _D = dimension();
+
+      tpos = a_tmp;
+      for (r = 0; r < _D; r++, tpos++)
+      {
+        ttpos = tpos;
+        rpos = m_vec + r;
+        apos = (T*)a_m;
+        for (c = 0; c < _D; c++, ttpos += _D, apos += _D)
+        {
+          _value = zero();
+          mpos = rpos;
+          aapos = apos;
+          for (i = 0; i < _D; i++, mpos += _D, aapos++)
+            _value += (*mpos) * (*aapos);
+          *ttpos = _value;
+        }
+      }
+      _copy(a_tmp);
+    }
+
+    void _mul_mtx(const T a_m[])
+    {
+      T* _tmp = new T[dim2()];
+      _mul_mtx(a_m, _tmp);
+      delete[] _tmp;
+    }
+
+    void _left_mul_mtx(const T a_m[])
+    {
+      /* this = a_m * this */
+      unsigned int _D = dimension();
+      T* _tmp = new T[dim2()];
+      for (unsigned int r = 0; r < _D; r++)
+      {
+        for (unsigned int c = 0; c < _D; c++)
+        {
+          T _value = zero();
+          for (unsigned int i = 0; i < _D; i++)
+          {
+            _value += (*(a_m + r + i * _D)) * (*(m_vec + i + c * _D)); /*optimize.*/
+          }
+          *(_tmp + r + c * _D) = _value;
+        }
+      }
+      _copy(_tmp);
+      delete[] _tmp;
+    }
+
+    template<class PREC>
+    T sub_determinant_prec(unsigned int a_ord, unsigned int aRs[], unsigned int aCs[],
+                           const PREC& a_prec, PREC (*a_fabs)(const T&)) const
+    {
+      /*WARNING : to optimize, we do not check the content of aRs, aCs.*/
+      unsigned int ord = a_ord;
+      if (ord == 0)
+        return zero();
+      else if (ord == 1)
+        return value(aRs[0], aCs[0]);
+      else if (ord == 2)
+      {
+        /*return (value(aRs[0],aCs[0]) * value(aRs[1],aCs[1]) -
+                 value(aRs[1],aCs[0]) * value(aRs[0],aCs[1]));
+        Optimize the upper :*/
+
+        unsigned int _ord = dimension();
+
+        return ((*(m_vec + aRs[0] + aCs[0] * _ord)) * (*(m_vec + aRs[1] + aCs[1] * _ord))
+                - (*(m_vec + aRs[1] + aCs[0] * _ord)) * (*(m_vec + aRs[0] + aCs[1] * _ord)));
+      }
+      else if (ord == 3)
+      {
+        /*   00 01 02
+             10 11 12
+             20 21 22
+        */
+        unsigned int _ord = dimension();
+
+        T v00 = *(m_vec + aRs[0] + aCs[0] * _ord);
+        T v10 = *(m_vec + aRs[1] + aCs[0] * _ord);
+        T v20 = *(m_vec + aRs[2] + aCs[0] * _ord);
+        T v01 = *(m_vec + aRs[0] + aCs[1] * _ord);
+        T v11 = *(m_vec + aRs[1] + aCs[1] * _ord);
+        T v21 = *(m_vec + aRs[2] + aCs[1] * _ord);
+        T v02 = *(m_vec + aRs[0] + aCs[2] * _ord);
+        T v12 = *(m_vec + aRs[1] + aCs[2] * _ord);
+        T v22 = *(m_vec + aRs[2] + aCs[2] * _ord);
+        T cof_00 = v11 * v22 - v21 * v12;
+        T cof_10 = v01 * v22 - v21 * v02;
+        T cof_20 = v01 * v12 - v11 * v02;
+        return (v00 * cof_00 - v10 * cof_10 + v20 * cof_20);
+      }
+
+      unsigned int rord = ord - 1;
+      unsigned int* cs = new unsigned int[rord];
+      unsigned int* rs = new unsigned int[rord];
+
+      T v_rc;
+
+      T det = zero();
+      {
+        for (unsigned int i = 0; i < rord; i++)
+        {
+          cs[i] = aCs[i + 1];
+        }
+      }
+      unsigned int c = 0;
+      /*if(c>=1) cs[c-1] = c-1;*/
+
+      {
+        for (unsigned int i = 0; i < rord; i++)
+        {
+          rs[i] = aRs[i + 1];
+        }
+      }
+      bool sg = true; /*c=0+r=0*/
+      for (unsigned int r = 0; r < ord; r++)
+      {
+        if (r >= 1) rs[r - 1] = aRs[r - 1];
+        v_rc = value(aRs[r], aCs[c]);
+        if (!is_zero(v_rc, a_prec, a_fabs))
+        {
+          T subdet = sub_determinant_prec(rord, rs, cs, a_prec, a_fabs);
+          if (sg)
+            det += v_rc * subdet;
+          else
+            det -= v_rc * subdet;
+        }
+        sg = sg ? false : true;
+      }
+
+      delete[] cs;
+      delete[] rs;
+
+      return det;
+    }
+
+    static double zero_fabs(const T& a_number) { return a_number == zero() ? 0 : 1000000; }
+
+    unsigned int dimension() const { return D; }
+
+  protected:
+
+    static T zero() { return T(); }
+    static T one() { return T(1); }
+    static T minus_one() { return T(-1); }
+
+  protected:
+
+    T m_vec[D * D]{};
+
+  private:
+
+    template<class PREC>
+    bool invert_prec(mat& a_res, unsigned int a_tmp_rs[], unsigned int a_tmp_cs[], /*[rord=dim-1]*/
+                     const PREC& a_prec, PREC (*a_fabs)(const T&) /*for det=?zero*/
+    ) const
+    {
+      unsigned int ord = dimension();
+      if (ord == 0) return true;
+
+      if (ord == 1)
+      {
+        T det = value(0, 0);
+        if (is_zero(det, a_prec, a_fabs)) return false;
+        a_res.set_value(0, 0, one() / det);
+        return true;
+      }
+      else if (ord == 2)
+      {
+        T v00 = *m_vec;
+        T v10 = *(m_vec + 1);
+        T v01 = *(m_vec + 2);
+        T v11 = *(m_vec + 3);
+        T det = (v00 * v11 - v10 * v01);
+        if (is_zero(det, a_prec, a_fabs)) return false;
+        a_res.set_value(0, 0, v11 / det);
+        a_res.set_value(1, 1, v00 / det);
+        a_res.set_value(0, 1, minus_one() * v01 / det);
+        a_res.set_value(1, 0, minus_one() * v10 / det);
+        return true;
+      }
+      else if (ord == 3)
+      {
+        /*   00 01 02
+             10 11 12
+             20 21 22
+        */
+        T v00 = *m_vec;
+        T v10 = *(m_vec + 1);
+        T v20 = *(m_vec + 2);
+        T v01 = *(m_vec + 3);
+        T v11 = *(m_vec + 4);
+        T v21 = *(m_vec + 5);
+        T v02 = *(m_vec + 6);
+        T v12 = *(m_vec + 7);
+        T v22 = *(m_vec + 8);
+        T cof_00 = v11 * v22 - v21 * v12;
+        T cof_10 = v01 * v22 - v21 * v02;
+        T cof_20 = v01 * v12 - v11 * v02;
+        T det = (v00 * cof_00 - v10 * cof_10 + v20 * cof_20);
+        if (is_zero(det, a_prec, a_fabs)) return false;
+        T cof_01 = v10 * v22 - v20 * v12;
+        T cof_11 = v00 * v22 - v20 * v02;
+        T cof_21 = v00 * v12 - v10 * v02;
+        T cof_02 = v10 * v21 - v20 * v11;
+        T cof_12 = v00 * v21 - v20 * v01;
+        T cof_22 = v00 * v11 - v10 * v01;
+        a_res.set_value(0, 0, cof_00 / det);
+        a_res.set_value(1, 0, minus_one() * cof_01 / det);
+        a_res.set_value(2, 0, cof_02 / det);
+        a_res.set_value(0, 1, minus_one() * cof_10 / det);
+        a_res.set_value(1, 1, cof_11 / det);
+        a_res.set_value(2, 1, minus_one() * cof_12 / det);
+        a_res.set_value(0, 2, cof_20 / det);
+        a_res.set_value(1, 2, minus_one() * cof_21 / det);
+        a_res.set_value(2, 2, cof_22 / det);
+        return true;
+      }
+
+      /*Generic invertion method.*/
+
+      unsigned int rord = ord - 1;
+
+      /* Get det with r = 0;*/
+      T det = zero();
+      T subdet;
+      {
+        {
+          for (unsigned int i = 0; i < rord; i++)
+          {
+            a_tmp_rs[i] = i + 1;
+          }
+        }
+        unsigned int r = 0;
+        {
+          for (unsigned int i = 0; i < rord; i++)
+          {
+            a_tmp_cs[i] = i + 1;
+          }
+        }
+        bool sg = true; /*r=0+c=0*/
+        for (unsigned int c = 0; c < ord; c++)
+        {
+          if (c >= 1) a_tmp_cs[c - 1] = c - 1;
+          subdet = sub_determinant_prec(rord, a_tmp_rs, a_tmp_cs, a_prec, a_fabs);
+          if (sg)
+          {
+            det += value(r, c) * subdet;
+            a_res.set_value(c, r, subdet);
+            sg = false;
+          }
+          else
+          {
+            det += value(r, c) * subdet * minus_one();
+            a_res.set_value(c, r, subdet * minus_one());
+            sg = true;
+          }
+        }
+      }
+
+      if (is_zero(det, a_prec, a_fabs)) return false;
+
+      {
+        for (unsigned int c = 0; c < ord; c++)
+        {
+          a_res.set_value(c, 0, a_res.value(c, 0) / det);
+        }
+      }
+
+      {
+        for (unsigned int i = 0; i < rord; i++)
+        {
+          a_tmp_rs[i] = i + 1;
+        }
+      }
+      bool sgr = false; /*r=1+c=0*/
+      for (unsigned int r = 1; r < ord; r++)
+      {
+        if (r >= 1) a_tmp_rs[r - 1] = r - 1;
+        {
+          for (unsigned int i = 0; i < rord; i++)
+          {
+            a_tmp_cs[i] = i + 1;
+          }
+        }
+        bool sg = sgr;
+        for (unsigned int c = 0; c < ord; c++)
+        {
+          if (c >= 1) a_tmp_cs[c - 1] = c - 1;
+          subdet = sub_determinant_prec(rord, a_tmp_rs, a_tmp_cs, a_prec, a_fabs);
+          if (sg)
+          {
+            a_res.set_value(c, r, subdet / det);
+            sg = false;
+          }
+          else
+          {
+            a_res.set_value(c, r, (subdet * minus_one()) / det);
+            sg = true;
+          }
+        }
+        sgr = sgr ? false : true;
+      }
+
+      return true;
+    }
+
+    template<class PREC>
+    bool invert_prec(mat& a_res, const PREC& a_prec, PREC (*a_fabs)(const T&)) const
+    {
+      unsigned int ord = dimension();
+      if (ord == 0) return true;
+
+      if (ord == 1)
+      {
+        T det = value(0, 0);
+        if (is_zero(det, a_prec, a_fabs)) return false;
+        a_res.set_value(0, 0, one() / det);
+        return true;
+      }
+      else if (ord == 2)
+      {
+        T v00 = *m_vec;
+        T v10 = *(m_vec + 1);
+        T v01 = *(m_vec + 2);
+        T v11 = *(m_vec + 3);
+        T det = (v00 * v11 - v10 * v01);
+        if (is_zero(det, a_prec, a_fabs)) return false;
+        a_res.set_value(0, 0, v11 / det);
+        a_res.set_value(1, 1, v00 / det);
+        a_res.set_value(0, 1, minus_one() * v01 / det);
+        a_res.set_value(1, 0, minus_one() * v10 / det);
+        return true;
+      }
+      else if (ord == 3)
+      {
+        /*   00 01 02
+             10 11 12
+             20 21 22
+        */
+        T v00 = *m_vec;
+        T v10 = *(m_vec + 1);
+        T v20 = *(m_vec + 2);
+        T v01 = *(m_vec + 3);
+        T v11 = *(m_vec + 4);
+        T v21 = *(m_vec + 5);
+        T v02 = *(m_vec + 6);
+        T v12 = *(m_vec + 7);
+        T v22 = *(m_vec + 8);
+        T cof_00 = v11 * v22 - v21 * v12;
+        T cof_10 = v01 * v22 - v21 * v02;
+        T cof_20 = v01 * v12 - v11 * v02;
+        T det = (v00 * cof_00 - v10 * cof_10 + v20 * cof_20);
+        if (is_zero(det, a_prec, a_fabs)) return false;
+        T cof_01 = v10 * v22 - v20 * v12;
+        T cof_11 = v00 * v22 - v20 * v02;
+        T cof_21 = v00 * v12 - v10 * v02;
+        T cof_02 = v10 * v21 - v20 * v11;
+        T cof_12 = v00 * v21 - v20 * v01;
+        T cof_22 = v00 * v11 - v10 * v01;
+        a_res.set_value(0, 0, cof_00 / det);
+        a_res.set_value(1, 0, minus_one() * cof_01 / det);
+        a_res.set_value(2, 0, cof_02 / det);
+        a_res.set_value(0, 1, minus_one() * cof_10 / det);
+        a_res.set_value(1, 1, cof_11 / det);
+        a_res.set_value(2, 1, minus_one() * cof_12 / det);
+        a_res.set_value(0, 2, cof_20 / det);
+        a_res.set_value(1, 2, minus_one() * cof_21 / det);
+        a_res.set_value(2, 2, cof_22 / det);
+        return true;
+      }
+
+      unsigned int rord = ord - 1;
+      unsigned int* cs = new unsigned int[rord];
+      unsigned int* rs = new unsigned int[rord];
+      bool status = invert_prec(a_res, rs, cs, a_prec, a_fabs);
+      delete[] cs;
+      delete[] rs;
+      return status;
+    }
+
+    static constexpr unsigned int _D2 = D * D;
+    constexpr unsigned int dim2() const { return _D2; }
+};
+
+}  // namespace tools
+
+#endif

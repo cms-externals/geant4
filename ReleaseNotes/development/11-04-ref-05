@@ -1,0 +1,335 @@
+
+                       geant4-11-04-ref-05
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o New module for configuration and build of Doxygen docs for toolkit code.
+ o Polished drawing methods of scorers; added options to refresh or overlay
+   new scoring mesh.
+ o In G4PhysicsModelCatalog, added the possibility to register
+   custom/user-defined physics models.
+ o In G4MTRunManager, added interface for initializing event seeds, enabling
+   flexible integration with external schedulers without requiring additional
+   code changes.
+ o Refactored G4LEND to make GIDI+ an implementation detail.
+   Made all GIDI+ headers private to G4LEND so they are not exposed to
+   toolkit code or when installed.
+ o Updated data set G4EMLOW-9.0.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in patch release 11.4.2
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-04-03
+-----
+- Updated data set G4EMLOW-9.0.
+
+doc                                              doc-V11-04-01
+---
+- New module for configuration and build of Doxygen docs for toolkit code.
+- Added full Doxygen grouping and build for the geometry category.
+
+analysis                                         analysis-V11-04-04
+--------
+- Fixed MT data race in G4PlotManager, by making the shared FreeType object  (*)
+  immutable after one-time initialization.
+- Fixed bounds-check errors in G4RootPNtupleManager; ensure n-tuple          (*)
+  description and pointer vectors are kept in sync.
+- Fixed compilation warnings "missing braces around initializer",            (*)
+  observed with gcc-11.5. Addressing the problem report #2705.
+
+digits_hits/utils                                detutil-V11-04-01
+--------------------
+- Polished drawing methods of scorers: added options to refresh or overlay
+  new scoring mesh; added options to write more than one color charts;
+  optimised the background black painting behind the texts in color chart;
+  added/modified drawing and related UI commands based on above changes.
+  Cleaned up the implementation of log-scale color map.
+
+event                                            event-V11-04-01
+-----
+- In G4StackManager::PushOneTrack(), removed check for generic ion having    (*)
+  proper process manager. This is to avoid rare race condition issue of 
+  G4ParticleDefinition::GetParticleDefinitionID() method.
+
+externals
+---------
+- clhep (clhep-V11-04-00)
+- expat (expat-V11-04-00)
+  o Added .clang-format file to explicitly exclude code from formatting.
+- externals/g4tools (g4tools-V11-04-12)
+  o Tidy unused/irrelevant/redundant code from within tools/sg plotting.
+  o Fixed compilation warning on gcc-16.1 for variable set but not used in   (*)
+    array::fill(). Fixed compilation warning in columns.icc; implemented
+    construction-order fix.
+  o Fixed compilation warnings for "missing braces around initializer",
+    observed with gcc-11.5. Addressing the problem report #2705.
+  o Added .clang-format file to explicitly exclude code from formatting.
+- externals/zlib (zlib-V11-04-00)
+  o Added .clang-format file to explicitly exclude code from formatting.
+
+geometry                                         geometry-V11-04-01
+--------
+- Updated Doxygen documentation with grouping commands to organise
+  classes/functions documentation by category/subcategory.
+- management(geommng-V11-04-07)
+  o In G4GeometryManager, fix resetting of flags in function OpenGeometry()  (*)
+    to allow for proper destruction of voxelisation data and geometry rebuild.
+    Addressing problem report #2733.
+- solids/Boolean (geom-bool-V11-04-02)
+  o Moved back method InsideNoVoxels(p) in G4MultiUnion to public section.   (*)
+
+global                                           global-V11-04-11
+------
+- In G4PhysicsModelCatalog, added the possibility to register                (*)
+  custom/user-defined physics models by calling the new method
+  RegisterCustomModel(). Made the class thread-safe, also in the case of
+  parallel initialisation.
+- Enriched and grouped Doxygen documentation for core global management
+  classes.
+- Updated date and tag-ID for geant4-11-04-ref-05.
+
+intercoms                                        intercoms-V11-04-01
+---------
+- Fixed MT data race in G4UImanager, by adding a file-local mutex and        (*)
+  guarded the four command-tree mutation paths AddNewCommand(),
+  AddWorkerCommand(), RemoveCommand(), RemoveWorkerCommand().
+
+particles                                        particles-V11-04-04
+---------
+- In G4ParticleDefinition, added idempotent guard in                         (*)
+  SetParticleDefinitionID() for setting the 'g4particleDefinitionInstanceID'
+  index and cure an MT data race through PropagateGenericIonID() in
+  G4RunManagerKernel, which is otherwise generating pointless cross-thread
+  writes on shared particle definitions.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-04-10)
+  o Modified G4EmDNAPhysics_option4 and G4EmDNABuilder; DNA physics is
+    unchanged; standard models for electrons are deactivated below 10 MeV;
+    added comments and better indentation of the code.
+  o In G4EmDNAPhysics_option4, extended to 10 MeV.
+    Modified G4EmDNABuilder accordingly
+  o Requiring new data set G4EMLOW-9.0.
+
+processes/cuts                                   proccuts-V11-04-03
+--------------
+- Fixed MT data race in G4ProductionCuts, which can be caused in MT mode by  (*)
+  workers replaying broadcast UI commands in G4WorkerRunManager; added a mutex
+  around G4ProductionCuts state access.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-04-07)
+  o Updated molecule counter dump templates and added counter output method.
+  o In G4DNARuddIonisationDynamicModel and G4DNARuddIonisationExtendedModel,
+    apply correction factor only on cross-section of Hydrogen; improved
+    initialisation of static data. Addressing problem report #2710.
+  o Fixed "out of bounds" access in Event Molecule Counter.
+  o In G4DNAEmfietzoglouExcitationModel, G4DNAEmfietzoglouIonisationModel and
+    G4DNAUeharaScreenedRutherfordElasticModel, modified for extension of DNA
+    option4 to 10 MeV.
+  o Requiring new data set G4EMLOW-9.0.
+- muons (emmuons-V11-04-04)
+  o In G4MuPairProductionModel, G4EnergyLossForExtrapolator, make static
+    initialisation safe for the MT mode.
+- standard (emstand-V11-04-02)
+  o Updated G4UrbanMscModel with final optimisation of the step limit
+    algorithm, used in EM physics option3.
+- utils (emutils-V11-04-12)
+  o In G4EmTableUtil, G4EmUtility, G4LossTableManager, G4VEnergyLossProcess,
+    rolled back implementation to version in 11-04-ref-02, i.e. before
+    emutils-V11-04-05, in order to recover event reproduciblity in MT mode.
+    The changes in G4EmDataRegistry and G4VMultipleScattering made afterwards
+    have been kept; in G4EmDataRegistry, new methods, related to parallel
+    physics initialisation have been added, but they are not used.
+    The optimized computation of mass ratio for ions introduced in
+    G4VEnergyLossProcess has been integrated.
+  o Fixed MT data race in G4EmParameters::fIsPrinted, by making the shared   (*)
+    print-suppression flag atomic.
+  o G4EmCalculator: fixed computation of EM corrections for ion ionisation   (*)
+    in the G4BetaBlockModel. Addressing problem report #2712.
+  o G4EmSaturation, G4EmBiasingManager: use std::size_t.
+- xrays (xrays-V11-04-00)
+  o G4QuasiScintillation: skip generating real optical photons if quasi
+    optical photon is created, following the same logic used in G4QuasiCerenkov.
+  o G4CerenkovQuasiTrackInfo, G4ScintillationQuasiTrackInfo: added Clone()
+    method. This method is used when cloning G4Track for sub-event.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-04-04)
+  o In G4GammaNuclearXS, protected initialisation of the shared static element
+    data table with G4AutoLock.
+- models/binary_cascade (had-binary-V11-04-02)
+  o In G4BinaryCascade, fixed compilation warning on gcc-16.1 for variable   (*)
+    set but not used in FillVoidNucleusProducts().
+- models/de_excitation (hadr-deex-V11-04-07)
+  o Fixed MT data race in G4NuclearLevelData, by removing the separate       (*)
+    std::vector<G4bool> loaded flag and making the manager pointer itself
+    the loaded state, protected by the existing mutex.
+  o G4StatMFMacroCanonical: fix in ChooseA() function to use assign() in     (*)
+    place of resize() for the mass distribution vector. Fix proposed in
+    in [GitHub PR#100](https://github.com/Geant4/geant4/pull/100).
+  o Fix in G4LevelReader for checking when G4LEVELGAMMADATA environment      (*)
+    variable is not set.
+  o In G4FermiBreakUpVI, protected initialisation of the shared static Fermi (*)
+    fragments pool with G4AutoLock. Addressing problem report #2724.
+    Minor code cleanup.
+- models/inclxx (hadr-inclxx-V11-04-02)
+  o Added .clang-format file to explicitly exclude code from formatting.
+- models/lend (hadr-lend-V11-04-01)
+  o Refactored G4LEND to make GIDI+ an implementation detail.
+    Made all GIDI+ headers private to G4LEND so they are not exposed to
+    toolkit code or when installed. Hide use of GIDI+ types in G4GIDI
+    classes behind a Pimpl pattern so that clients are not exposed directly
+    to GIDI+. As G4GIDI provides the core interface(s) needed to GIDI+, no
+    further changes are needed. No changes to GIDI+ code, while G4LEND code
+    changes are pure interface changes.
+  o Added .clang-format file to explicitly exclude code from formatting.
+- models/nudex (hadr-nudex-V11-04-01)
+  o Updated to produce capture cascades of very light nuclei, such as H-1,   (*)
+    H-2, etc.
+- models/particle_hp (hadr-hpp-V11-04-02)
+  o Fixed MT data race in G4ParticleHPFissionFS, by removing the shared      (*)
+    mutable 'produceFissionFragments' member and making the decision local
+    to each ApplyYourself() call. The race was from every worker writing the
+    same G4ParticleHPFissionFS heap object. The fix preserves the UI-controlled
+    behavior and avoids serializing the whole final-state sampling path.
+  o Fixed MT data race in G4ParticleHPLabAngularEnergy, by moving the lazy   (*)
+    G4ParticleHPVector::Integrate() work out of the worker-thread sampling path.
+    Also fixed a nearby latent race in the same class.
+  o Fixed MT data race in G4ParticleHPElasticFS; moved initialization of     (*)
+    SVT/DBRC scattering-kernel parameters from GetBiasedThermalNucleus(),
+    called during event processing, to Init(), called during final-state setup.
+    Worker threads now only read these cached parameters.
+  o Fixed MT data race in G4ParticleHPChannel; patched UpdateData() so the   (*)
+    elastic final state registers its isotope-wise cross-section once in
+    UpdateData(), after the cross-section vector is created; then removed the
+    racing write from ApplyYourself() at tracking time. This fixes a data race
+    reported by sanitizer for threads both calling RegisterCrossSection() on
+    the same shared G4ParticleHPElasticFS object during event processing;
+    now workers only read the pointer and the write happens during channel
+    initialization.
+- models/parton_string/management (hadr-partonstring-mgt-V11-04-01)
+  o Fix in G4VPartonStringModel: if at least one extra pion, the lightest    (*)
+    hadron type, is produced during the string fragmentation phase, then the
+    interaction between the projectile hadron and the target nucleus is not
+    quasi-elastic; in addition, to be a quasi-elastic interaction, no Delta
+    resonances should be formed by any of the interactions between the hadron
+    projectile and the target nucleons as, otherwise, these interactions are
+    not all of elastic type, as by definition of quasi-elastic.
+- models/pre_equilibrium (hadr-pre-V11-04-01)
+  o Fixed initialisation of fragments in G4LowEGammaNuclearModel.            (*)
+    Addresses problem report #2731.
+- models/radioactive_decay (radioactive_decay-V11-04-00)
+  o In G4VRadioactiveDecay, fixed MT data race in GetDecayTable(), adding a  (*)
+    mutex. Removed mutex from LoadDecayTable(), only called from
+    GetDecayTable().
+  o Made GetDecayTable() private.
+- util (hadr-util-V11-04-02)
+  o In G4ReactionProduct, restored SetZero() method for backwards compatibility.
+
+processes/management                             procman-V11-04-00
+--------------------
+- In G4ProcessTable, fixed compilation warning on gcc-16.1 for variable      (*)
+  set but not used in DumpInfo().
+
+run                                              run-V11-04-13
+---
+- In G4VUserPhysicsList::Construct(), removed the condition to be the        (*)
+  master-thread for calling G4PhysicsModelCatalog::Initialize(). This is now
+  possible with the revised thread-safe version of G4PhysicsModelCatalog,
+  and it is consistent with the possibility of parallel initialisation.
+- In G4UserTaskThreadInitialization, corrected initialisation of Ranlux      (*)
+  random engines in SetupRNGEngine(), to take in consideration the luxury level.
+  Further addressing problem report #2184.
+- In G4TaskRunManager and G4WorkerTaskRunManager, added protection not to    (*)
+  start a new task if the current run is aborted. In G4WorkerTaskRunManager,
+  added a check not to start a new event if the current run of the master run
+  manager is aborted. Addressing problem report #2729.
+- In G4RunManagerKernel::PropagateGenericIonID(), added a new mutex lock to  (*)
+  protect race condition problem.
+- Fixed data race in G4MTRunManager detected by Valgrind/DRD when running    (*)
+  with G4RUN_MANAGER_TYPE set to "MT", by moving UI command-stack preparation
+  behind the same action-request barrier that wakes the workers.
+- Added public interface for event seed initialization: in G4MTRunManager,
+  added interface for initializing event seeds, enabling flexible integration
+  with external schedulers without requiring additional code changes.
+
+track                                            track-V11-04-01
+-----
+- In G4Track, G4VAuxiliaryTrackInformation is cloned when cloning G4Track
+  for sub-event. Added virtual Clone() method to G4VAuxiliaryTrackInformation;
+  this method must be implemented in the concrete class if
+  AuxiliaryTrackInformation is used in sub-event parallel mode.
+
+visualization
+-------------
+- OpenInventor (openinventor-V11-04-01)
+  o In G4OpenInventorQtExaminerViewer, fixed compilation warning on gcc-16.1 (*)
+    for variable set but not used in sortElements().
+
+data sets:
+---------
+- G4EMLOW-9.0:
+  o Added files for extended option4 up to 10 MeV:
+    sigma_excitation_e_emfietzoglou-x.dat,
+    sigma_ionisation_e_emfietzoglou-x.dat,
+    sigmadiff_ionisation_e_emfietzoglou-x.dat,
+    sigmadiff_cumulated_ionisation_e_emfietzoglou-x.dat.
+  o Removed old files: sigma_excitation_e_emfietzoglou.dat,
+    sigma_ionisation_e_emfietzoglou.dat, sigmadiff_ionisation_e_emfietzoglou.dat
+    and sigmadiff_cumulated_ionisation_e_emfietzoglou.dat
+
+examples                                         examples-V11-04-05
+--------
+- Updated documentation and reference outputs.
+- advanced/CaTS (CaTS-V11-04-00)
+  o Updated CMake script to support proper compilation and linkage with the
+    latest Opticks version.
+  o Added MySensorIdentifier.hh and OpticksHitHandler.hh to provide
+    sensor'ID assignment and Opticks hit collection.
+  o Implemented a new SteppingAction to transfer optical photon information
+    (Cerenkov and scintillation) to Opticks and to register boundary
+    interactions as hits.
+  o Modified IArTPCSD, PhotonSD, and RadiatorSD to incorporate Opticks
+    generated hits into their sensitive detector workflows.
+  o Added simpleLArTPC_Opticks.gdml for testing geometry and validating
+    Opticks integration.
+  o Added a new example macro, electron.mac, which generates a single electron
+    for testing and validation.
+  o Performed code cleanup: removed unused and commented code; replaced int
+    with G4int and std::cout with G4cout in multiple files.
+  o Corrected indentation issues across the codebase.
+  o Use swap in OpticksHitHandler::GetHits() to prevent data races.
+- advanced/dna/moleculardna (molecularDNA-V11-04-04)
+  o Updated analysis macros for statistical analysis of errors and fixed
+    a bug regarding error calculation in ecoli.C.
+  o Fixed wrong gap: too long gaps can be identified sometime; base-pair ids
+    were assigned to the molecules in the voxel located outside of defined
+    chromosome geometry.
+- extended/medical/dna/chem6 (chem6-V11-04-04)
+  o Fixed FTE failure in messenger.
+- extended/medical/dna/microyz (microyz-V11-04-01)
+  o Minor fix in TrackerSD commented lines.
+  o Reduced number of DNA physics constructors.
+- extended/medical/dna/molcounters (molcounters-V11-04-00)
+  o Added UI for counter examples.
+  o Added abstract base for molecule scorers.
+- extended/medical/dna/UHDR (UHDR-V11-04-00)
+  o Corrected README file.
+- extended/parameterisations/Par04 (expar04-V11-04-01)
+  o Bumped idna version from 3.7 to 3.15.                                    (*)
+    Addresses security vulnerabilities tagged by GitHub's dependabot in
+    GitHub PR#101 (https://github.com/Geant4/geant4/pull/101).
+- extended/runAndEvent/RE03 (exampleRE03-V11-04-00)
+  o Updated macro files to draw various scoring meshes and probes.
+
+tests                                            tests-V11-04-05
+-----
+- Updated reference outputs and tools.

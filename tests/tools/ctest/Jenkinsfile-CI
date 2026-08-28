@@ -1,0 +1,177 @@
+//
+// This pipeline is running the CI triggered by gitlab.
+//   A Job  per platform is started is started.
+//
+// Gunter Folger, June 2021
+//
+
+
+def g4
+
+pipeline {
+  parameters {
+    string(name: 'EXTERNALS',
+           defaultValue: '',
+           description: 'CVMFS directory keeping the external libraries, leave blank to use default')
+    string(name: 'BuildOptions',
+            defaultValue: 'none',
+            description: 'extra build options, like: staticlibs, UseVecGeom, BoundsCheck, EpCheck, UseInternalCLHEP, UseGranularCLHEP, MemCheck (valgrind), ....  Combinations allowed, separate options by comma: ,')
+  }
+  options {
+    buildDiscarder(logRotator( daysToKeepStr: '5' ))
+    timestamps()
+  }
+  environment {
+    TargetRepoUrl  = "ssh://git@gitlab.cern.ch:7999/geant4/geant4-dev.git"
+    TargetBranch   = "${gitlabTargetBranch}"
+    MergeRequestId = "${gitlabMergeRequestIid}"
+    MergeRequestLastCommit = "${gitlabMergeRequestLastCommit}"
+    gitlabUserName = "${gitlabUserName}".replaceAll("\\s","")
+    scriptToRun    = 'jk-all'
+  }
+
+  agent {label 'startup-jobs' }
+  stages {
+    stage('load functions') {
+      steps {
+        script{
+          g4 = load 'scripts/tests/tools/ctest/JenkinsFunctions.groovy'
+        }
+      }
+    }
+
+    stage('abort previous builds') {
+      when {
+        not {
+          environment name: 'MergeRequestId', value: 'null'
+        }
+      }
+      steps {
+        buildName "#${BUILD_NUMBER} MR-${MergeRequestId}"         // build name is checked for aborting previous builds
+        addGitLabMRComment comment: "Starting a CI build for merge request ${MergeRequestId}"
+        script {
+          g4.abortPreviousCI()
+        }
+      }
+    }
+
+    stage('Parallel Stage') {
+      failFast false
+      when {
+        not {
+          environment name: 'MergeRequestId', value: 'null'
+        }
+      }
+
+      parallel {
+        stage('info') {
+          agent {
+            node {
+              label 'docker-host-noafs'
+            }
+          }
+
+          steps {
+            sh 'touch controlfile'
+            sh 'date'
+            sh 'hostname'
+            sh 'env | sort'
+            sh 'date'
+          }
+        }
+
+        stage('alma9 gcc13 MT') {
+          steps {
+            script {
+              g4.doContinuousBuild('alma9', 'gcc13', 'MT', 'RelWithDebInfo', ['none'])
+            }
+          }
+        }
+ 
+        stage('alma9 gcc14 MT') {
+          steps {
+            script {
+              g4.doContinuousBuild('alma9', 'gcc14', 'MT', 'RelWithDebInfo', ['none'])
+            }
+          }
+        }
+
+        stage('alma9 gcc15 MT GranularCheck') {
+          steps {
+            script {
+              g4.doContinuousBuild('alma9', 'gcc15', 'MT', 'RelWithDebInfo', ['GranularCheck'])
+            }
+          }
+        }
+
+        stage('alma9 gcc15 MT DisableVerbose') {
+          steps {
+            script {
+              g4.doContinuousBuild('alma9', 'gcc15', 'MT', 'RelWithDebInfo', ['DisableVerbose'])
+            }
+          }
+        }
+
+        stage('alma10 gcc15 MT') {
+          steps {
+            script {
+              g4.doContinuousBuild('alma10', 'gcc15', 'MT', 'RelWithDebInfo', ['none'])
+            }
+          }
+        }
+
+        stage('ubuntu24 native MT') {
+          steps {
+            script {
+              g4.doContinuousBuild('ubuntu24', 'native', 'MT', 'RelWithDebInfo', ['none'])
+            }
+          }
+        }
+
+        stage('mac15arm native MT') {
+          steps {
+            script {
+              g4.doContinuousBuild('mac15arm-cvmfs', 'native', 'MT', 'RelWithDebInfo', ['none'])
+            }
+          }
+        }
+
+        stage('mac26arm native MT') {
+          steps {
+            script {
+              g4.doContinuousBuild('mac26arm-cvmfs', 'native', 'MT', 'RelWithDebInfo', ['none'])
+            }
+          }
+        }
+
+        stage('windows11 vs22 MT') {
+          steps {
+            script {
+              g4.doContinuousBuild('windows11', 'vs26', 'MT', 'RelWithDebInfo', ['none'])
+            }
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      addGitLabMRComment comment: 'Build for CI (continuous) successful.\n See log files in <a href="https://cdash.cern.ch/index.php?project=Geant4&date=' +
+        g4.GetToday() + "&filtercount=1&showfilters=1&field1=buildname/string&compare1=63&value1=${gitlabUserName}_${MergeRequestId}" +
+        '">CDash</a>\n Jenkins log: <a href="' + "${JOB_URL}/${BUILD_ID}" + '">Jenkins job page</a>, then click Console Output on the left.'
+    }
+
+    aborted {
+      addGitLabMRComment comment: 'Build for CI (continuous) aborted.\n See log files in <a href="https://cdashcern.ch/index.php?project=Geant4&date=' +
+        g4.GetToday() + "&filtercount=1&showfilters=1&field1=buildname/string&compare1=63&value1=${gitlabUserName}_${MergeRequestId}" +
+        '">CDash</a>\n Jenkins log: <a href="' + "${JOB_URL}/${BUILD_ID}" + '">Jenkins job page</a>, then click Console Output on the left.'
+    }
+
+    failure {
+      addGitLabMRComment comment: 'Build for CI (continuous) failed.\n See log files in <a href="https://cdash.cern.ch/index.php?project=Geant4&date=' +
+        g4.GetToday() + "&filtercount=1&showfilters=1&field1=buildname/string&compare1=63&value1=${gitlabUserName}_${MergeRequestId}" +
+        '">CDash</a>\n Jenkins log: <a href="' + "${JOB_URL}/${BUILD_ID}" + '">Jenkins job page</a>, then click Console Output on the left.'
+    }
+  }
+}

@@ -1,0 +1,222 @@
+
+                       geant4-10-05-ref-09
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added new factory function ManagerInstance() in G4Analysis, which allows
+   to create the analysis manager of the type selected via a string argument.
+ o Introducing G4ScoringRealWorld, allowing to define command-based scorers
+   to a logical volume in the mass world.
+ o In G4PairProductionRelModel and G4GammaConversion, the high energy model
+   for e-/e+ pair production has been extended down to threshold (2mc^2) such
+   that it gives results (both cross-section and final state) identical to
+   those produced by the low energy model.
+ o In G4HadronNucleonXsc, added new interface to G4ComponentGGHadronNucleonXsc
+   including s-,c-,b- particles.
+ o Changed logic in G4UnstableFragmentBreakUp, to allow for decay of an exotic
+   fragment and never release it.
+ o Improvements to FTF model for nucleus-nucleus interactions (with
+    negligible effects for hadron-nucleus) and extended range of excited
+    hadron masses in G4DiffractiveExcitation, starting from ground-state values.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-05-12
+-----
+- Set OpenGL_GL_PREFERENCE to LEGACY, to prevent warning on CMake >= 3.10,
+  and keeping existing behaviour.
+- Only scope location of test executable when using a generator that supports
+  multi-config; allows tests to be run with Ninja Generator as "ninja test".
+
+config                                           config-V10-05-05
+------
+- Fixed compilation warning on gcc-9.2 for liblist.c.
+- Added new analysis/factory subdirectory in includes in binmake.gmk;
+  removed analysis/parameters which does not exist anymore.
+
+analysis                                         analysis-V10-05-03
+--------
+- Added new factory function ManagerInstance() in G4Analysis, which allows
+  to create the analysis manager of the type selected via a string argument.
+- Added new analysis sub-category "factory".
+- Cleaned-up analysis type definitions: G4Hn*, G4Pn* types moved out of type
+  specific namespace.
+- Added methods for setting ntuple merge mode in G4VAnalysisManager with a
+  default implementation (issuing a warning if merging is not available). 
+- Fix in g4tools: fixed memory leak in mpi_create_basket().
+
+digits_hits/utils                                detutils-V10-05-01
+-----------------
+- Introducing G4ScoringRealWorld, allowing to define command-based scorers
+  to a logical volume in the mass world.
+
+geometry/biasing                                 geombias-V10-05-00
+----------------
+- Implemented minor c++11 revision and code cleanup.
+
+geometry/divisions                               geomdiv-V10-05-01
+------------------
+- G4PVDivision: added missing implementation of alternative constructor.
+- Implemented minor c++11 revision; code cleanup and formatting.
+
+geometry/magneticfield                           field-V10-05-12
+----------------------
+- Minor c++11 revision. Code formatting and cleanup.
+
+geometry/management                              geommng-V10-05-10
+-------------------
+- G4VSolid: use G4QuickRand() in EstimateCubicVolume() / EstimateSurfaceArea().
+
+geometry/solids/Boolean                          geom-bool-V10-05-03
+-----------------------
+- G4BooleanSolid: use G4QuickRand() in GetPointOnSurface(); reduced max number
+  of tries to generate a point to 100k.
+- Fixed defect in G4ScaledSolid detected by Coverity.
+
+geometry/solids/specific                         geom-specific-V10-05-18
+------------------------
+- Rationalise header inclusions for faceted solids.
+- Removed unnecessary forward declaration in G4VFacet header.
+
+geometry/volumes                                 geomvol-V10-05-04
+----------------
+- Revised G4PVPlacement::CheckOverlaps() for speed up; improved diagnostics.
+- Use pre-increment wherever possible.
+
+global                                           global-V10-05-18
+------
+- Added G4QuickRand header in HEPRandom sub-module.
+- Updated date and tag-ID for geant4-10-05-ref-09.
+
+interfaces                                       interfaces-V10-05-00
+----------
+- Fixed square backets around optional parameters.
+  Addressing problem report #2132.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-05-16
+------------------------------------------
+- G4EmLivermorePhysics, G4EmLowEPPhysics, G4EmStandardPhysics_option4:
+  use SetEmModel(..) instead of AddEmModel(..) for gamma conversion.
+  Updated settings of the gamma conversion process to provide the original
+  model combinations when the low energy G4BetheHeitlerModel model was
+  replaced by the G4BetheHeitler5DModel. 
+- G4OpticalPhysics: set boundary process to last.
+  Addressing problem report #2113.
+
+processes/electromagnetic/standard               emstand-V10-05-18
+----------------------------------
+- G4PairProductionRelModel, G4GammaConversion: the high energy model for e-/e+
+  pair production has been extended down to threshold (2mc^2) such that it
+  gives results (both cross-section and final state) identical to those
+  produced by the low energy (G4BetheHeitlerModel). Since this new version of
+  the high energy model can describe e-/e+ pair production from threshold up
+  to PeV (LPM effects are included) the G4BetheHeitlerModel is now removed from
+  the G4GammaConversion process.
+
+processes/electromagnetic/utils                  emutils-V10-05-17
+-------------------------------
+- G4EmParameters: disable "General Process" for gamma by default.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-05-27)
+  o G4HadronNucleonXsc: new interface to G4ComponentGGHadronNucleonXsc
+    including s-,c-,b-, particles.
+  o G4BGGNucleonInelasticXS, G4BGGNucleonElasticXS, G4BGGPionInelasticXS,
+    G4BGGPionElasticXS: clean-up low-energy.
+  o G4UPiNuclearCrossSection: below 20 MeV cross-section is now const, BGGPion
+    cross-section implementing the low-energy part.
+- management (hadr-man-V10-05-05)
+  o G4HadronicProcess: fixed defects reported by Coverity.
+- models/de_excitation (hadr-deex-V10-05-14)
+  o G4ExcitationHandler removed second photon evaporation loop, as all gamma
+    decays are already happening in the first loop. Use more C++11 constructs.
+    Added limit on number of warnings on high excitation of input fragment.
+    Fixed defects reported by Coverity.
+  o G4FermiFragmentsPoolVI: implemented new method HasChannels().
+  o G4FermiBreakUpVI: use new method HasChannels() inside IsApplicable().
+  o G4Evaporation: make coherent use of IsApplicable() from G4FermiBreakUp and
+    force simplified decay of exotic fragments with G4UnstableFragmentBreakUp.
+  o G4UnstableFragmentBreakUp: changed logic, allowing decay of an exotic
+    fragment (fragment is not known in gamma level DB) and never release it.
+- models/parton_string/diffraction (hadr-string-diff-V10-05-04)
+  o Improvements to FTF model for nucleus-nucleus interactions (with
+    negligible effects for hadron-nucleus).
+  o G4DiffractiveExcitation: extended range of excited hadron masses,
+    starting from ground-state values (before it was starting from current
+    hadron masses).
+  o G4ElasticHNScattering: improvement and simplification of the algorithm
+    of elastic scattering (before the masses of resonances were sampled,
+    now it is not needed any longer).
+  o G4FTFModel: improvement of the algorithm of string creation.       
+  o Deleted G4DiffractiveHHScatterer, no longer used.
+
+run                                              run-V10-05-05
+---
+- Introduced use of G4ScoringRealWorld to allow to define command-based
+  scorers to a logical volume in the mass world.
+
+visualization                                    vis-V10-05-25
+-------------
+- management (visman-V10-05-13):
+  o Several small improvements and fixes.
+  o G4VSceneHandler: added namespace scope to MeshScoreMap.
+- modeling (modeling-V10-05-08):
+  o G4CallbackModel: include modeling parameters in passed arguments.
+- externals (visexternalgl2ps-V10-05-01):
+  o Updated gl2ps sub-module to version 1.4.0.
+- OpenGL (OpenGL-V10-05-09):
+  o Removed default font size.
+
+examples                                         examples-V10-05-09
+--------
+- Updated documentation and reference outputs.
+- advanced/brachytherapy (brachy-V10-05-00)
+  o Added G4VScoringMesh:: scope identifier to BrachyUserScoreWriter.
+- advanced/ChargeExchangeMC (ChargeExchangeMC-V10-05-02)
+  o Removed usage of obsolete G4VIS_USE and G4UI_USE flags.
+- advanced/gammaknife (gammaknife-V10-05-01)
+  o Added G4VScoringMesh:: scope identifier to GammaKnifeController.
+- basic/B5 (exampleB5-V10-05-00)
+  o Use new factory method to create G4AnalysisManager.
+  o Removed B5Analysis header, no longer needed.
+- extended/biasing/ReverseMC01 (ReverseMC01-V10-05-00)
+  o Updated for clean-up in analysis typedefs: G4AnaHn types replaced with G4Hn.
+- extended/electromagnetic/TestEm0 (testem0-V10-05-01)
+  o PhysicsList: set BuildCSDARange to true.
+- extended/electromagnetic/TestEm1 (testem1-V10-05-02)
+  o PhysicsList: added BuildCSDARange() and set option3 as default.
+- extended/electromagnetic/TestEm13 (testem13-V10-05-00)
+- extended/electromagnetic/TestEm14 (testem14-V10-05-00)
+  o Updated PhysListEmStandard, Livermore and Penelope to return back to
+    register only post step part of the processes.
+  o PhysicsList: in SetCuts(), set lower limit to 100 eV.
+- extended/electromagnetic/TestEm17 (testem17-V10-05-01)
+  o Updated for clean-up in analysis typedefs: G4AnaHn types replaced with G4Hn.
+- extended/hadronic/Hadr00 (exhadr00-V10-05-01)
+  o Cleaned-up macro files.
+- extended/medical/dna/chem4 (chem4-V10-05-03)
+  o Create the analysis manager via the new factory function.
+- extended/medical/dna/chem5 (chem5-V10-05-02)
+  o Removed unused inclusion of g4analysis_defs header from ScoreSpecies.
+- extended/medical/dna/svalue (svalue-V10-05-00)
+  o Fixed code guidelines.
+- extended/persistency/gdml/G01 (G01-V10-05-05)
+  o Enabled overlaps checking in example.
+  o Corrected overlap in assembly.gdml sample.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-05-04)
+  o In 'timeWindow' command, allow t1 = 0.
+- extended/runandevent/RE03 (exampleRE03-V10-05-00)
+  o Added G4VScoringMesh:: scope identifier to RE03UserScoreWriter.
+
+tests                                            tests-V10-05-09
+-----
+- Updated reference outputs and tools.
+- tests/test44 (test44-V10-05-02)
+  o Updated plot.csh script.
+- tests/test46 (test46-V10-05-01)
+  o Extended test for studying of various limiters.
