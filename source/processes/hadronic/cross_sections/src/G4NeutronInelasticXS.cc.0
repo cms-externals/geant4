@@ -1,0 +1,293 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+// -------------------------------------------------------------------
+//
+// GEANT4 Class file
+//
+//
+// File name:    G4NeutronInelasticXS
+//
+// Author  Ivantchenko, Geant4, 3-Aug-09
+//
+// Modifications:
+//  20.07.2026 - use inheritance from G4CrossSectionXS
+
+#include "G4NeutronInelasticXS.hh"
+
+#include "G4AutoLock.hh"
+#include "G4ComponentGGHadronNucleusXsc.hh"
+#include "G4CrossSectionDataSetRegistry.hh"
+#include "G4DynamicParticle.hh"
+#include "G4Element.hh"
+#include "G4IsotopeList.hh"
+#include "G4Material.hh"
+#include "G4Neutron.hh"
+#include "G4SystemOfUnits.hh"
+#include "Randomize.hh"
+
+G4double G4NeutronInelasticXS::coeff[] = {1.0};
+G4ElementData* G4NeutronInelasticXS::data = nullptr;
+
+namespace
+{
+G4Mutex nInelasticXSMutex = G4MUTEX_INITIALIZER;
+}
+
+G4NeutronInelasticXS::G4NeutronInelasticXS()
+  : G4CrossSectionXS(20*CLHEP::MeV, Default_Name()), neutron(G4Neutron::Neutron())
+{
+  verboseLevel = 0;
+  if (verboseLevel > 0)
+  {
+    G4cout << "G4NeutronInelasticXS isotope data for Z < " << MAXZINEL
+           << " and energy " << pElimit/CLHEP::eV << " eV - "
+           << pEmax/CLHEP::MeV << " MeV  pLogEmax=" << pLogElimit
+           << G4endl;
+  }
+
+  ggXsection =
+    G4CrossSectionDataSetRegistry::Instance()->GetComponentCrossSection("Glauber-Gribov");
+  if (ggXsection == nullptr) ggXsection = new G4ComponentGGHadronNucleusXsc();
+
+  if (nullptr == data)
+  {
+    G4AutoLock l(&nInelasticXSMutex);
+    if (nullptr == data)
+    {
+      data = new G4ElementData(MAXZINEL);
+      data->SetName("nInelastic");
+      for (G4int Z = 1; Z < MAXZINEL; ++Z)
+      {
+        Initialise(Z);
+      }
+    }
+    l.unlock();
+  }
+}
+
+void G4NeutronInelasticXS::CrossSectionDescription(std::ostream& outFile) const
+{
+  outFile << "G4NeutronInelasticXS calculates the neutron inelastic scattering\n"
+          << "cross section on nuclei using data from the high precision\n"
+          << "neutron database.  These data are simplified and smoothed over\n"
+          << "the resonance region in order to reduce CPU time.\n"
+          << "For high energy Glauber-Gribov cross section model is used\n";
+}
+
+G4double G4NeutronInelasticXS::ElementCrossSection(G4double eKin, G4double logE, G4int ZZ)
+{
+  G4int Z = std::min(ZZ, MAXZINEL - 1);
+  G4double xs{0.0};
+
+  G4double ekin = eKin;
+  G4double loge = logE;
+  if (ekin < pElimit)
+  {
+    ekin = pElimit;
+    loge = pLogElimit;
+  }
+  
+  // always defined
+  auto pv = data->GetElementData(Z);
+  G4double e0 = pv->GetMinEnergy();
+  if (ekin < e0)
+  {
+    // the list of atoms with 1/velosity shape of low energy x-section
+    if (Z < 8 || (16 <= Z && 19 >= Z) || 43 == Z || 60 == Z || 62 == Z || 84 == Z)
+    {
+      xs = (*pv)[0] * std::sqrt(e0 / ekin);
+    }
+  }
+  else if (ekin <= pv->GetMaxEnergy())
+  {
+    xs = pv->LogVectorValue(ekin, loge);
+  }
+  else
+  {
+    xs = coeff[Z] * ggXsection->GetInelasticElementCrossSection(neutron, ekin, Z, aeff[Z]);
+  }
+
+#ifdef G4VERBOSE
+  if (verboseLevel > 1)
+  {
+    G4cout << "G4NeutronInelasticXS::ElementCrossSection Z= " << Z
+           << " Ekin(MeV)= " << ekin / CLHEP::MeV << ", ElmXSinel(b)= " << xs / CLHEP::barn
+           << G4endl;
+  }
+#endif
+  return xs;
+}
+
+G4double G4NeutronInelasticXS::IsoCrossSection(G4double ekin, G4double loge, G4int ZZ, G4int A)
+{
+  G4double xs;
+  G4int Z = std::min(ZZ, MAXZINEL - 1);
+
+  // always defined
+  auto pv = data->GetElementData(Z);
+  if (ekin <= pEmax)
+  {
+    G4bool done{false};
+    // use isotope x-section if possible
+    if (data->GetNumberOfComponents(Z) > 0)
+    {
+      auto pviso = data->GetComponentDataByID(Z, A);
+      if (pviso != nullptr)
+      {
+        G4double e00 = pviso->GetMinEnergy();
+        xs = (ekin > e00) ? pviso->LogVectorValue(ekin, loge) : (*pviso)[0];
+        done = true;
+      }
+    }
+    // isotope data are not available or applicable
+    // use element x-section but do not use 1/v extrapolation
+    if (!done)
+    {
+      G4double e0 = pv->GetMinEnergy();
+      xs = (ekin > e0) ? pv->LogVectorValue(ekin, loge) : (*pv)[0];
+    }
+  }
+  else
+  {
+    xs = coeff[Z] *
+      ggXsection->GetInelasticElementCrossSection(neutron, ekin, Z, aeff[Z]);
+  }
+
+#ifdef G4VERBOSE
+  if (verboseLevel > 1)
+  {
+    G4cout << "G4NeutronInelasticXS::IsoXS: Z= " << Z << " A= " << A
+           << " Ekin(MeV)= " << ekin / CLHEP::MeV
+           << ", ElmXS(b)= " << xs / CLHEP::barn << G4endl;
+  }
+#endif
+  return xs;
+}
+
+const G4Isotope* G4NeutronInelasticXS::SelectIsotope(const G4Element* anElement, G4double kine,
+                                                     G4double loge)
+{
+  std::size_t nIso = anElement->GetNumberOfIsotopes();
+  const G4Isotope* iso = anElement->GetIsotope(0);
+  if (1 == nIso)
+  {
+    return iso;
+  }
+
+  // more than 1 isotope
+  G4int Z = anElement->GetZasInt();
+  const G4double* abundVector = anElement->GetRelativeAbundanceVector();
+  G4double q = G4UniformRand();
+  G4double sum = 0.0;
+  std::size_t j;
+
+  // isotope wise cross section not available
+  if (Z >= MAXZINEL || 0 == data->GetNumberOfComponents(Z) || kine >= pEmax)
+  {
+    for (j = 0; j < nIso; ++j)
+    {
+      sum += abundVector[j];
+      if (q <= sum)
+      {
+        iso = anElement->GetIsotope((G4int)j);
+        break;
+      }
+    }
+    return iso;
+  }
+
+  // use isotope cross sectionsg
+  auto nn = temp.size();
+  if (nn < nIso)
+  {
+    temp.resize(nIso, 0.);
+  }
+
+  for (j = 0; j < nIso; ++j)
+  {
+    sum += abundVector[j] * IsoCrossSection(kine, loge, Z,
+                                            anElement->GetIsotope((G4int)j)->GetN());
+    temp[j] = sum;
+  }
+  sum *= q;
+  for (j = 0; j < nIso; ++j)
+  {
+    if (temp[j] >= sum)
+    {
+      iso = anElement->GetIsotope((G4int)j);
+      break;
+    }
+  }
+  return iso;
+}
+
+void G4NeutronInelasticXS::BuildPhysicsTable(const G4ParticleDefinition& p)
+{
+  CommonInit(temp, p);
+}
+
+void G4NeutronInelasticXS::Initialise(G4int Z)
+{
+  if (nullptr != data->GetElementData(Z))
+  {
+    return;
+  }
+
+  // upload element data
+  auto v = RetrieveVector(subDir, Z, 0, true);
+  data->InitialiseForElement(Z, v);
+
+  // upload isotope data
+  G4bool noComp = true;
+  if (amin[Z] < amax[Z])
+  {
+    for (G4int A = amin[Z]; A <= amax[Z]; ++A)
+    {
+      auto v1 = RetrieveVector(subDir, Z, A, false);
+      if (nullptr != v1)
+      {
+        if (noComp)
+        {
+          G4int nmax = amax[Z] - A + 1;
+          data->InitialiseForComponent(Z, nmax);
+          noComp = false;
+        }
+        data->AddComponent(Z, A, v1);
+      }
+    }
+  }
+  // no components case
+  if (noComp)
+  {
+    data->InitialiseForComponent(Z, 0);
+  }
+
+  // smooth transition
+  G4double sig1 = (*v)[v->GetVectorLength() - 1];
+  G4double ehigh = v->GetMaxEnergy();
+  G4double sig2 = ggXsection->GetInelasticElementCrossSection(neutron, ehigh, Z, aeff[Z]);
+  coeff[Z] = (sig2 > 0.) ? sig1 / sig2 : 1.0;
+}

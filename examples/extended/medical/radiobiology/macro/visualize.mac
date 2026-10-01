@@ -1,0 +1,42 @@
+################################################################################
+# Macro executed by default in radiobiology example
+# Creates the example geometry and opens visualization.
+#
+
+################################################################################
+# Set an example geometry
+#
+# Outer air world
+/detectorGeom/setWorldBoxSizes 15 8 8 cm
+
+################################################################################
+# Inner water phantom: 4 x 4 x 4 cm3
+#
+/detectorGeom/setMat G4_WATER
+/detectorGeom/setBoxSizes 4 4 4 cm
+
+################################################################################
+# Voxelization:
+# 1 mm along X
+# no subdivision along Y and Z
+#
+/voxels/setVoxelSizes 1 40 40 mm
+
+################################################################################
+# Initialize and start visualization
+#
+/run/initialize
+
+################################################################################
+# Open visualization
+#
+# Open a viewer
+/vis/open
+# This opens the default viewer - see examples/basic/B1/vis.mac for a
+# more comprehensive overview of options. Also the documentation.
+## To open OGLSQt driver
+#/vis/open OGLSQt
+/vis/drawVolume
+
+/vis/scene/endOfEventAction accumulate
+/vis/scene/add/trajectories smooth

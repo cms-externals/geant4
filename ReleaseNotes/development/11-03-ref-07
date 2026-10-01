@@ -1,0 +1,243 @@
+
+                       geant4-11-03-ref-07
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Make consistent use of the parameters introduced in G4FieldParameters
+   in field classes. Added functions for accessing the field, stepper and
+   equation types as defined in G4FieldParameters.
+ o New class G4QuasiOpticalPhoton, a non-physical particle definition
+   designed to encapsulate the conditions for generating a burst of optical
+   photons in processes such as scintillation or Cerenkov radiation.
+   Defined related processes G4QuasiCherenkov and G4QuasiScintillation.
+ o General optimization of zoom behavior in visualization when using mouse
+   wheel.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+externals/g4tools                                g4tools-V11-03-05
+-----------------
+- Removed obsolete tools::mem class and TOOLS_MEM blocks that use it.
+
+geometry/magneticfield                           field-V11-03-03
+-------------------
+- Make consistent use of the parameters introduced in G4FieldParameters
+  in field classes: extracted default parameters values as constexpr in new
+  namespace G4FieldDefaults, so that they can be used in other classes as
+  default parameters in functions declarations; replaced default values in
+  G4FieldManager and G4ChordFinder with G4FieldDefaults constants.
+- Added functions for accessing the field, stepper and equation types using
+  the enum types defined in G4FieldParameters.
+- Updated enums G4EquationType and  G4StepperType with missing constants
+  with a comment that these equations/templated steppers are not built by
+  G4FieldBuilder.
+- Renamed StepperType() in G4DormandPrince745 to StepperTypeName().
+
+global                                           global-V11-03-19
+------
+- Added model Ids and names for G4QuasiCherenkov and G4QuasiScintillation
+  processes.
+- G4VSIntegration: fixed bug in sampling of tail of a distribution.
+  Removed usage of G4Log and G4Exp; improved comments to the code.
+  Set limit number of iterations 100000 instead of 1000, which allows correct
+  sampling of tails, preventing from potential infinite loops.
+- Updated date and tag-ID for geant4-11-03-ref-07.
+
+interfaces                                       interfaces-V11-03-06
+----------
+- In G4UIQt, added icon to reset camera and improved base size of MainWindow.
+
+materials                                        materials-V11-03-02
+---------
+- Fixed initialisation problem in G4ICRU90StoppingData.
+  Addressing problem report #2663.
+- G4ElementData, G4ElementDataRegistry: code cleanup and added extra method.
+
+particles                                        particles-V11-03-00
+---------
+- Added new class G4QuasiOpticalPhoton, a non-physical particle definition
+  designed to encapsulate the conditions for generating a burst of optical
+  photons in processes such as scintillation or Cerenkov radiation.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-03-12)
+  o In G4EmDNABuilder, restored usage of Born model of ionisation in the
+    energy interval 0.5 - 100 MeV. 
+    Use Rudd extended model for light ions in all physics configurations
+    instead of old Rudd model, which should improve CPU performance; in opt8
+    configuration use the same models as in opt2 for electrons; increased
+    low-energy limit to 11 eV for the CPA100 elastic scattering model.
+  o G4EmDNAPhysics_option4, G4EmDNAPhysics_option6, G4EmDNAPhysics_option8:
+    use fast option for a significant speedup of physics.
+  o G4OpticalPhoton: added G4QuasiOpticalPhoton to support offloading of
+    optical photon generation.
+
+processes/electromagnetic
+-------------------------
+- adjoint (emadjoint-V11-03-00)
+  o In G4ContinuousGainOfEnergy, updated signature of CorrectionsAlongStep().
+- dna (emdna-V11-03-15)
+  o G4DNARuddIonisationDynamicModel: simplified model using alpha and alpha+
+    data; fixed problem in sampling of electron energy.
+  o In G4DNARuddIonisationExtendedModel, improved debug printout.
+  o Force cross-section to zero below limit of validity of
+    G4DNACPA100ElasticModel.
+- lowenergy (emlowen-V11-03-05)
+  o G4IonParametrisedLossModel: updated computation of ion effective charge
+    according to modifications in electromagnetic/utils.
+    Addressing problem report #2664.
+  o G4MicroElecElasticModel_new, G4MicroElecInelasticModel_new,
+    G4MicroElecLOPhononModel and G4MicroElecSurface: updated models using
+    more data files.
+- muons (emmuons-V11-03-01)
+  o G4MuPairProductionModel, G4MuPairProduction: cleanup for handling of data.
+- standard (emstand-V11-03-07)
+  o G4BraggModel, G4BraggIonModel, G4BetheBlochModel, G4AtimaEnergyLossModel,
+    G4LindhardSorensenIonModel and G4LowPAIH2O: store ion effective charge
+    square in each model, allowing to compute dEdx by G4EmCalculator.
+    Addressing problem report #2664.
+- utils (emutils-V11-03-11)
+  o G4OpticalParameters, G4OpticalParametersMessenger: introduced configurable
+    options to offload the generation of optical photons for the Cerenkov and
+    Scintillation processes.
+  o G4OpticalParameters: added QuasiCerenkov and QuasiScintillation in the
+    process activation map.
+  o G4VEmProcess, G4VEnergyLossProcess, G4EmDataHandler, G4EmDataRegistry:
+    cleanup handling of tables; removed unused methods and headers.
+  o G4EmCalculator: provided computation of dEdx for ions.
+    Addressing problem report #2664.
+  o G4VEmModel, G4VEnergyLossProcess: changed signature of the method
+    CorrectionsAlongStep() to something more convenient for G4EmCalulator.
+- xrays (xrays-V11-03-03)
+  o Added physics model catalog IDs and class descriptions for G4QuasiCerenkov
+    and G4QuasiScintillation.
+  o Added class G4ScintillationQuasiTrackInfo, a concrete implementation of
+    G4VAuxiliaryTrackInformation used to store metadata associated with a
+    quasi-scintillation track generated during the scintillation process.
+  o Added new class G4CerenkovQuasiTrackInfo, a concrete implementation of
+    G4VAuxiliaryTrackInformation used to store metadata associated with a
+    quasi-Cerenkov track generated during the Cerenkov process.
+  o Added G4QuasiOpticalData, a common data structure used for Cerenkov and
+    Scintillation photon sampling.
+  o Added G4QuasiScintillation, adding offloading capability for scintillation
+    photon generation.
+  o Added G4QuasiCerenkov, adding offloading capability for Cerenkov photon
+    generation.
+  o G4Scintillation: relocate loop-invariant variables outside the photon
+    generation loop.
+  o G4Cerenkov: relocate loop-invariant variables outside the photon
+    generation loop.
+
+processes/hadronic
+------------------
+- models/de_excitation (hadr-deex-V11-03-16)
+  o G4VEmissionProbability, G4EvaporationChannel, G4GEMChannelVI: use optimised
+    parameters for G4VSIntegrator; initial step 0.15 MeV for neutrons, 0.2 MeV
+    for charged, tolerance from 1.05 to 1.25.
+    Avoid precision loss for computation of minimal energy of emitted fragment. 
+  o G4ExcitationHandler: moved multi-fragmentation model to be called before
+    the pre-compound model and not inside G4ExcitationHandler. Interfaces are
+    preserved. Added deprecation warnings to obsolete methods
+  o G4StatMF: always return non-empty vector of final fragments, if
+    multi-fragmentation is not possible, then it returns the primary fragment.
+    Cleaned up method of final state energy correction and Lorentz boost.
+- models/lend (hadr-lend-V11-03-03)
+  o More fixes for reported Coverity defects.
+- models/pre_equilibrium (hadr-pre-V11-03-06)
+  o G4VPreCompoundFragment: optimised initial step of integrator from 1 MeV
+    to 0.5 MeV; increased tolerance from 1.05 to 1.1.
+  o G4PreCompoundModel: multi-fragmentation model is moved from the
+    G4ExcitationHandler to be called before this pre-compound model for very
+    hot fragments. Default excitation energy limit is very high, as it was
+    in the case of G4ExcitationHandler.
+- models/qmd (hadr-qmd-V11-03-00)
+  o G4QMDReaction and G4LightIonQMDReaction: added random rotation of the
+    momentum around the z-axis to solve the directional bias of the momentum 
+    of the secondary particles.
+
+visualization
+-------------
+- management (visman-V11-03-13)
+  o G4ViewParameters: added 'zoomToCursor' parameter to control the zoom
+    behavior of the mouse wheel.
+  o G4VisCommandsViewerSet: added command "/vis/viewer/set/zoomToCursor" to set
+    the 'zoomToCursor' parameter.
+  o G4VViewer: added ZoomFromMouseWheel() function to control mouse wheel
+    behavior; added virtual methods to get window size, render area size and
+    scene near width; implemented ZoomToCursor algorithm to zoom toward the
+    mouse cursor. General optimization of zoom behavior with mouse wheel.
+    Added Shift key modifier to change zoom mode in perspective projection
+    from Dolly (default) to zoomFactor.
+- OpenGL (opengl-V11-03-07)
+  o G4OpenGLQtViewer: implemented new virtual methods of G4VViewer,
+    GetWindowSize() and GetRenderAreaSize(); modified wheel_rotate() function
+    to call ZoomFromMouseWheel() of G4VViewer; updated the moveScene() method
+    to work correctly in perspective mode with dolly zoom.
+  o G4OpenGLWin32Viewer: implemented new virtual methods of G4VViewer,
+    GetWindowSize() and GetRenderAreaSize(); modified SetZoom() function to
+    call ZoomFromMouseWheel() of G4VViewer.
+- ToolsSG (vis_toolssg-V11-03-08)
+  o G4ToolsSGViewer: modified wheel_rotate() function to call
+     ZoomFromMouseWheel() of G4VViewer; added method GetSceneNearWidth().
+
+examples                                         examples-V11-03-07
+--------
+- Updated documentation and reference outputs.
+- advanced/dna/moleculardna (molecularDNA-V11-03-11)
+  o Added /scheduler/verbose 0 to all human* macros.
+  o Fixed phase_space_test.mac macro.
+- advanced/microelec_SEY (microelec-SEY-V11-03-00)
+  o New example simulating the passage of incident electrons [10eV, 10keV]
+    in a stack of 6 layers, where thicknesses and material nature can be user
+    defined. The number of electrons re-emitted by the irradiated surface is
+    counted by a spherical detector surrounding the whole geometry and
+    providing the SEY rate in a csv file as a function of the incident energy.
+- basic (exbasic-V11-03-00)
+  o Migraded READMEs to Markdown format.
+- extended/common (common-V11-03-00)
+  o New directory providing a set of classes independent on each other which
+    can be reused in "feature" examples or users applications, demonstrating
+    just a particular feature.
+- extended/electromagnetic/TestEm0 (testem0-V11-03-00)
+  o RunAction: introduced G4endl in several places to easy debugging.
+- extended/eventgenerator/pythia/decayer6 (p6decayer-V11-03-00)
+- extended/g3tog4 (g3tog4Tests-V11-03-00)
+  o Removed 'common' subdirectory and copied only classes used in this example.
+    Migrated README pages to Markdown format.
+- extended/hadronic/FlukaCern (FlukaCern-V11-03-03)
+  o Migrated existing README to Doxygen.
+- extended/medical/DICOM (DICOM-V11-03-01)
+  o Refactored DICOM examples into a single project; build everything together
+    for ease of use and demonstration. Code/behaviour otherwise unchanged.
+    Documentation not yet updated pending review and testing with
+    newer DMCTK and HEAD versions.
+- extended/medical/dna/phasespace (phasespace-V11-03-00)
+  o New example showing how to simulate particle tracks in a cube of liquid
+    water containing a scoring sphere, placed in its centre.
+- extended/medical/dna/radial (radial-V11-03-01)
+  o Added geometrical offset in front of cylinders.
+  o Renamed variables and UI commands.
+- extended/medical/dna/spower (spower-V11-03-03)
+  o In spower.in, added inactivation of nuclearStopping (for ions).
+- extended/medical/dna/svalue (svalue-V11-03-03)
+  o Added missing optional include file in TrackingAction header.
+  o Fixed Doxygen formatting.
+- extended/parallel/MPI (MPI-V11-03-03)
+  o Migrated existing README to Doxygen.
+- extended/parameterisations/Par04 (expar04-V11-03-02)
+  o Applied GitHub PRs from dependabot to update requirements:
+    idna from 2.10 to 3.7 [GitHub PR #89](https://github.com/Geant4/geant4/pull/89)
+    keras from 2.9.0 to 3.9.0 [GitHub PR #90](https://github.com/Geant4/geant4/pull/90)
+    protobuf from 3.19 to 4.25.8 [GitHub PR #91](https://github.com/Geant4/geant4/pull/91)
+  o Migrated existing README to Doxygen.
+
+tests                                            tests-V11-03-07
+-----
+- Updated reference outputs and tools.
+- ctests_integration/test00 (test00-V11-03-00)
+  o Report hostname and FQDN to help debugging node-specific issues in CI.

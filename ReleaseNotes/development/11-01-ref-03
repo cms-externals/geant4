@@ -1,0 +1,297 @@
+
+                       geant4-11-01-ref-03
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Implemented single scattering per region, active inside the region
+   and disabled outside.
+ o Implemented interfacte allowing the coupling between Binary Cascade (BIC)
+   and Abla, i.e. using BIC for the cascade and then Abla for the nuclear
+   de-excitation.
+ o Extended Bertini model to allow the use of Abla as alternative post-cascade
+   nuclear de-excitation (the default de-excitation remains unchanged).
+ o Accurate modeling of elastic resonant scattering in heavy nuclei by
+   by the use of DBRC (Doppler Broadening Rejection Correction) algorithm.
+ o Added neutron kinetic energy threshold as hadronic parameter for 
+   applying the SVT (Sampling of the Velocity of the Target) algorithm.
+ o New dataset G4ABLA-3.3.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(x)  Fixes included in patch release 11.1.2
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-01-09
+-----
+- Removed setting of -D flags in Geant4Config to enable visualisation drivers.
+  Libraries now export compile definitions for what they support to move to a
+  "use on link" model.
+- Updated to dataset G4ABLA-3.3.
+
+geometry/magneticfield                           field-V11-01-02
+----------------------
+- Fixed compilation warnings on clang-15 for mismatched bounds declarations  (x)
+  in input parameters for steppers.
+
+geometry/management                              geommng-V11-01-01           (x)
+-------------------
+- G4Region: issue fatal exception if attempting to add a root logical volume
+  which is already set as root for another region.
+
+geometry/solids/Boolean                          geom-bool-V11-01-02
+-----------------------
+- Added external Boolean processor visualisation interface G4VBooleanProcessor.
+
+geometry/solids/CSG                              geom-csg-V11-01-00
+-------------------
+- In G4UTrap wrapper, fixed constructor for Right Angular Wedge.             (x)
+
+geometry/solids/specific                         geom-specific-V11-01-02     (x)
+------------------------
+- Fixed potential uninitialised value for boundary type in
+  G4VTwistSurface::GetBoundaryAtPZ().
+  Fixed more potential uninitialised values in G4PolyconeSide,
+  G4SolidExtentList and G4VTwistSurface.
+
+global                                           global-V11-01-07
+------
+- Updated date and tag-ID for geant4-11-01-ref-03.
+
+intercoms                                        intercoms-V11-01-03
+---------
+- Applied clang-tidy and clang-format fixes plus normal ordering of
+  docstrings/access specifications.
+- Removed unused/pointless operators. Use C++17 type aliases.
+- Refactored G4UIaliasList to simplify implementation and in particular
+  memory management.
+- Simplified G4UImessenger implementation.
+- Moved clear implementation detail classes to private headers.
+
+interfaces                                       interfaces-V11-01-09
+----------
+- Export public compile definitions to indicate availablity of specific UIs.
+  Moves to "use on link" model.
+
+physics_lists
+-------------
+- builders (phys-builders-V11-01-01)
+  o G4HadronicBuilder: fixed bug in method BuildKaonsFTFQGSP_BERT().         (x)
+- constructors/electromagnetic (phys-ctor-em-V11-01-06)
+  o G4EmParticleList: added method EmChargedPartNames(), returning a minimal
+    list of charged EM particles.
+  o G4EmModelActivator: implemented single scattering per region by adding
+    extra single scattering process, which is active inside the region and not
+    active outside; multiple scattering and single scattering processes for a
+    given charged particle are disabled in the region.
+    Addressing problem report #2530.
+  o Fixed compilation warning on macOS/XCode for implicit type conversion
+    in G4EmModelActivator::FindOrAddProcess().
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-01-06)
+  o Added PTB model data to G4DNAMaterialManager singleton.
+    Updated RegisterModel() function with new structure.
+  o Fixed compilation warning on macOS/XCode for implicit type conversion
+    in G4DNAVacuumModel::Initialise().
+- lowenergy (emlowen-V11-01-03)
+  o G4LivermoreGammaConversionModel, G4LivermoreGammaConversion5DModel:
+    fixed Spline interpolation by calling FillSecondDerivatives().
+  o G4LowEWentzelVIModel: updated according to Coulomb scattering models.
+  o Use access to G4LEDATA via G4EmParameters for G4LivermoreComptonModel,
+    G4LivermoreGammaConversion5DModel and G4LivermoreGammaConversionModel.
+  o Applied clang-tidy and clang-format to Livermore code.
+- standard (emstand-V11-01-08)
+  o G4UrbanMscModel: code optimisation; no functional changes.
+  o G4CoulombScattering: added extra constructor to address all existing cases;
+    for pure single scattering, integral method type is changed and Spline
+    interpolation is used. Addressing problem report #2530.
+  o Code cleanup in G4PAI* classes.
+- utils (emutils-V11-01-04)
+  o G4VEnergyLossProcess: fixed static analyzer warning.                     (x)
+  o Allow /process/em/QuantumEntanglement in G4State_Idle.                   (x)
+  o G4EmTableUtil: fixed verbose output and class comments.                  (x)
+
+processes/hadronic
+------------------
+- models/abla (hadr-abla-V11-01-00)
+  o G4AblaInterface: implemented method ApplyYourself() to allow the coupling
+    between Binary Cascade (BIC) and Abla, i.e. using BIC for the cascade and
+    then Abla for the nuclear de-excitation.
+- models/cascade (hadr-casc-V11-01-00)
+  o Extended Bertini model to allow the use of Abla as alternative post-cascade
+    nuclear de-excitation (the default de-excitation remains unchanged).
+    There are two ways to set Abla as de-excitation for Bertini: via C++
+    interface, by calling G4CascadeInterface::useAblaDeexcitation();
+    via environmental variable, by setting G4CASCADE_USE_ABLA=1.
+  o G4AblaDeexcitation: new class that does the nuclear de-excitation,
+    after the Bertini cascade, by using the Abla model, and then tranforms
+    the secondaries in Bertini objects.
+  o G4CascadeInterface: added new method useAblaDeexcitation() which sets
+    Abla as nuclear de-excitation; this method can be called directly by the
+    user, or automatically in the constructor of the class when the flag
+    G4CascadeParameters::useAbla() is enabled.
+  o G4InuclCollider: added new method useAblaDeexcitation() which creates
+    an instance of the new class G4AblaDeexcitation.
+  o G4CascadeParameters: added Boolean flag that enables the Abla
+    de-dexcitation model in the case that the new environmental variable
+    G4CASCADE_USE_ABLA is set.
+- models/de_excitation (hadr-deex-V11-01-00)
+  o G4LevelReader: allow to add more levels of a given isotope than hardcoded
+    limit=635 (max number of levels in G4LEVELGAMMADATA).
+    Addressing problem report #2534.
+- models/inclxx (hadr-inclxx-V11-01-00)
+  o G4INCLNNToNLK2piChannel: fixed bug in the method fillFinalState().       (x)
+- models/particle_hp (hadr-hpp-V11-01-03)
+  o Accurate modeling of elastic resonant scattering in heavy nuclei by
+    by the use of DBRC (Doppler Broadening Rejection Correction) algorithm.
+    In G4ParticleHPManager, added new member variables and corresponding
+    methods, related to the DBRC algorithm.
+    In G4ParticleHPMessenger, added new UI commands to enable DBRC (which
+    is off by default) and to specify its parameters.
+    In G4ParticleHPVector, added new method GetMaxY() to provide the maximum
+    cross-section in the interval between two kinetic energy values.
+    In G4ParticleHPChannel, modified method ApplyYourself(), with an extra
+    argument, for a special treatment of the elastic channel.
+    In G4ParticleHPElastic, modified G4ParticleHPChannel::ApplyYourself()
+    call, with an extra parameter.
+    In G4ParticleHPElasticFS, implemented the DBRC algorithm in the new method
+    GetBiasedThermalNucleus(); modified the method ApplyYourself() to call the
+    new method GetBiasedThermalNucleus(); introduced two more new methods,
+    InitializeScatterKernelParameters() and RegisterCrossSection(), and
+    corresponding new member variables.
+  o G4ParticleHPMessenger: when changing the neutron kinetic energy threshold
+    for applying the SVT algorithm, as part of the setting of the DBRC (Double
+    Broadening Rejection Correction) algorithm, update the corresponding
+    value in G4HadronicParameters.
+  o G4ParticleHPManager: removed the neutron kinetic energy threshold for
+    applying the SVT (Sampling of the Velocity of the Target) algorithm, as
+    this parameter is in G4HadronicParameters.
+  o G4ParticleHPElasticFS: get the neutron kinetic energy threshold for
+    applying the SVT algorithm from G4HadronicParameters; in the method
+    GetBiasedThermalNucleus(), corrected mistake in the interval where the
+    max neutron cross-section is considered for rejection.
+  o G4ParticleHPGamma, G4ParticleHPLevel, G4ParticleHPDeExGammas: removed
+    internal counter; delete only objects which are created.
+- models/parton_string/qgsm (hadr-qgsm-V11-01-01)
+  o G4BaryonSplitter, G4MesonSplitter, G4QGSMSplittableHadron, G4SPBaryon:
+    some code cleanup.
+- models/radioactive_decay (radioactive_decay-V11-01-00)
+  o Fix in stairstep beta decay spectrum. Addressing problem report #2367.
+    Created new class G4BetaSpectrumSampler to sample a sloped distribution
+    instead of a flat one. Changed G4BetaMinusDecay and G4BetaPlusDecay to
+    use the above sampler. Added protection against very large arguments
+    in std::exp within G4BetaDecayCorrections::ModSquared.
+- util (hadr-util-V11-01-03)
+  o G4HadronicParameter: introduced the neutron kinetic energy threshold for 
+    applying the SVT (Sampling of the Velocity of the Target) algorithm. This
+    is needed to have a consistent value in methods GetBiasedThermalNucleus()
+    in G4Nucleus and G4ParticleHPElasticFS respectively, to avoid circular
+    dependency with 'particle_hp' module.
+  o G4Nucleus: in the method GetBiasedThermalNucleus(), get the neutron kinetic
+    energy threshold for applying the SVT algorithm from G4HadronicParameter
+    in method DoKinematicsOfThermalNucleus(), and corrected the way to pass
+    the last parameter, by reference instead of by value.
+    Split the method GetBiasedThermalNucleus() into two parts, by introducing
+    a new public method, DoKinematicsOfThermalNucleus(), which is used also
+    by G4ParticleHPElasticFS to implement the DBRC algorithm.
+
+processes/parameterisation                       param-V11-01-00             (x)
+--------------------------
+- Added missing virtual destructor to G4VFastSimSensitiveDetector.
+
+visualization
+-------------
+- OpenGL (opengl-V11-01-03)
+  o Removed obsolete G4OPENGL_VERSION_2 symbol and G4OpenGLVboDrawer class.
+  o Exporting public compile definitions to indicate availablity of specific
+    drivers. Moves to "use on link" model.
+- OpenInventor (openinventor-V11-01-01)
+- Qt3D (visQt3D-V11-01-02)
+- RayTracer (raytracer-V11-01-01)
+- ToolsSG (vis_toolssg-V11-01-02)
+  o Exporting public compile definitions to indicate availablity of specific
+    drivers. Moves to "use on link" model.
+- Vtk (visVtk-V11-01-07)
+  o Separated pipelines into source and include files.
+  o Use class inheritance for pipelines G4VVtkPipeline and added ability to
+    chain pipelines.
+  o Separated interactive cutters, clippers.
+  o 2D transparent image overlay.
+  o Improved geant4 commands (/vis/vtk/..).
+  o Applied clang-tidy and clang-format fixes.
+  o Removed dead code and no-ops.
+  o Exporting public compile definitions to indicate availablity of specific
+    drivers. Moves to "use on link" model.
+
+data
+----
+- G4ABLA-3.3:
+  o New file "mass2020.dat" with the binding energies from the atomic mass
+    evaluation AME2020.
+
+examples                                         examples-V11-01-03
+--------
+- Updated documentation and reference outputs.
+- advanced/ICRP110_HumanPhantoms (ICRP110Phantoms-V11-01-01)
+  o standalone.mac: disable auto refresh *before* creating scene.
+    For auto-refresh viewers, without this change the viewer attempts to draw
+    the detector with the default view parameters, and in the case of this
+    phantom, it overwhelms the graphics system.
+  o This phantom should be displayed with special mesh rendering.
+- advanced/ICRP145_HumanPhantoms (ICRP145Phantoms-V11-01-01)
+  o Introduce ICRP145standalone. Building two executables: ICRP145phantoms
+    and ICRP145standalone. ICRP145standalone allows to visualise the phantom
+    without the overhead of the run manager and physics tables and geometry
+    initialisation. Of course, you cannot run or visualise trajectories.
+    Disabled auto refresh *before* creating scene.
+- advanced/stim_pixe_tomography (stim_pixe_tomography-V11-01-00)
+  o New application for simulating three-dimensional STIM or PIXE tomography
+    experiments. References: NIM Phys.Res. B (536) 2023: 38-44; 
+    Phys. Med. (94) 2022: 85-93; Phys. Med. (65) 2019: 172-180
+- advanced/xray_TESdetector (xraytesdetector-V11-01-01)
+  o New example of the application of Geant4 in a space environment.
+    It represents an x-ray detector derived from the X-IFU, the X-ray
+    spectrometer designed and developed by the European Space Agency (ESA)
+    for use on the ATHENA telescope. The main purpose of the simulation is
+    the estimation of the particle radiation background impacting on the
+    detector. 
+- extended/electromagnetic/TestEm0 (testem0-V11-01-00)
+  o New input macro ion.mac.
+  o RunAction: restore output format.
+  o Code revision of all headers.
+- extended/electromagnetic/TestEm1 (testem1-V11-01-00)
+  o New input macro etaDecay.mac.
+  o PhysicsList::AddRadioactiveDecay(): set ARM false.
+  o Code revision of all headers.
+- extended/hadronic/Hadr03 (exhadr03-V11-01-00)
+  o In main(), set ProduceFissionFragments to true.
+  o PhysicsList: return to use QGSP_BIC_HP.
+  o SteppingAction: added protection against secondaries.
+  o Run::EndOfRun(): format adjustement.
+  o Code revision of all headers.
+- extended/medical/dna/icsd (exicsd-V11-01-01)
+  o Physics list: delete G4DNAVacuumModel.
+- extended/visualization/perspective (exam-ext-vis-persp-V11-01-01)
+  o In PerspectiveVisAction header, removed unnecessary forward class
+    declarations. Applied clang-format.
+
+tests                                            tests-V11-01-03
+-----
+- Updated reference outputs and tools.
+- tests/test19 (test19-V11-01-00)
+  o Updated NA49_chi2_tables.C to handle double diff. spectra of secondary
+    antiprotons by NA49.
+  o Various small scale cleanups and updates, including some related to FTF
+    "tunes".
+- tests/test23 (test23-V11-01-00)
+  o Updated Chi2CalcNA49.C to handle double diff. spectra of secondary
+    antiprotons by NA49.
+  o Various small scale cleanups and updates, including some related to FTF
+    "tunes".
+- tests/test41 (test41-V11-01-00)
+  o PhysListEMStandardSSM: updated instantiation of G4CoulombScattering.
+- tests/test58 (test58-V11-01-00)
+  o PhysListEmStandardISS: changed construction of single scattering.

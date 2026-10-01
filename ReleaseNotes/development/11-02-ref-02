@@ -1,0 +1,168 @@
+
+                       geant4-11-02-ref-02
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Fixed spurious compilation warnings on gcc when LTO settings are enabled.
+ o G4GammaGeneralProcess: fixed sampling of muon pair production.
+ o G4eeToTwoGammaModel: fixed precision lost in sampling of final state
+   for the very high energy.
+ o Fixed elastic and capture cross-sections in Argon in particle-HP.
+ o In G4BetaPlusDecay, G4BetaMinusDecay, added extra numerical protection
+   to avoid precision loss and production of neutrino with negative kinetic
+   energy.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.2.1
+(*)  Fixes included in patch release 11.2.2
+
+Summarised, the list of changes is the following:
+
+event                                            event-V11-02-01
+-----
+- Added UI command to switch on/off the vertex position check (default: on).
+
+externals/g4tools                                g4tools-V11-02-00
+-----------------
+- Fixed compilation warnings in ccontour and gl2ps on gcc when LTO settings  (*)
+  are enabled.
+
+geometry/solids/specific                         geom-specific-V11-02-00
+------------------------
+- Use std::size_t for array sizes in G4PolyhedraSide and G4PolyPhiFace,      (*)
+  fixing compilation warnings on gcc when LTO settings are enabled.
+
+global                                           global-V11-02-03
+------
+- Updated date and tag-ID for geant4-11-02-ref-02.
+
+interfaces                                       interfaces-V11-02-02
+----------
+- Use std::size_t as arrays size in G4InteractorMessenger and                (*)
+  G4UIArrayString, fixing compilation warnings on gcc when LTO settings
+  are enabled.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-02-02)
+  o G4EmStandardPhysics_option3: return back step limit type to
+    'fUseDistanceToBoundary' and the default RangeFactor to 0.04 from 0.03.
+    This will allow to restore more accurate distributions for several medical
+    benchmark tests.
+  o G4GammaGeneralProcess: fixed sampling of muon pair production.           (o)
+    Addressing problem report #2543.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V11-02-00)
+  o G4NeutrinoPhysics: fixed neutrino physics instantiation.                 (o)
+    Addressing problem report #2594.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-02-01)
+  o Optimised IRT-syn at 1 ps for high LET applications.
+- lowenergy (emlowen-V11-02-00)
+  o G4MicroElecInelasticModel_new: fixed Coverity report for memory leak at  (o)
+    exit. Minor code cleanup.
+- standard (emstand-V11-02-03)
+  o G4eeToTwoGammaModel: fixed precision lost in sampling of final state
+    for the very high energy (ATLAS report).
+  o G4IonFluctuations: withdrawn previous modifications and return to 11.2
+    version.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-02-01)
+  o G4NeutronCapture: lowest energy limit is set to 10^-5 eV; below this
+    energy no computations are done, to avoid numerical problems.
+    Improved comments to the code.
+  o G4NeutronInelastic: implemented 1/v cross-section dependence below
+    low-energy limit of a cross-section vector, if cross-section does not
+    start from null.
+  o Moved G4IsotopeList header to 'util' module.
+- models/fission (hadr-fission-V11-02-00)
+  o G4FissLib: fixed compilation warning on gcc when LTO settings are enabled.
+- models/lepto_nuclear (hadr-lepnuc-V11-02-00)
+  o Fixed Coverity warning on unused variable in neutrino models.
+- models/particle_hp (hadr-hpp-V11-02-03)
+  o G4CrossSectionHP: fixed method taking into account temperature effect    (*)
+    (the difference due to this fix is small).
+    Fixed elastic and capture cross-sections in Argon, by using only the main
+    isotope Z=18, A=40 (there was up to 50% overestimation of cross-sections
+    due to wrong data for rare isotopes of argon).
+    Fixed cross-sections for rare target atoms Promethium, Astatine, Radon
+    and Francium.
+  o G4ParticleHPFSFissionFS, G4ParticleHPFissionBaseFS: replaced use of      (o)
+    C-arrays with std::vector, clearing compilation warnings on gcc
+    compiler when LTO settings are enabled.
+  o Fixed remaining compilation warnings on gcc compiler when LTO settings   (*)
+    are enabled.
+- models/parton_string/hadronization (had-hadronization-V11-02-00)
+  o G4ExcitedStringDecay: fixed minor memory leak suggested by Coverity.
+- models/radioactive_decay (radioactive_decay-V11-02-02)
+  o G4BetaPlusDecay, G4BetaMinusDecay: added extra numerical protection on   (*)
+    level of 1 eV to avoid precision loss and production of neutrino with
+    negative kinetic energy.
+  o G4BetaPlusDecay, G4BetaMinusDecay: fixed sampling algorithm.             (o)
+    Addressing problem report #2588.
+- util (hadr-util-V11-02-00)
+  o Moved G4IsotopeList header with static data in this module, from
+    'cross_sections'.
+
+visualization
+-------------
+- management (visman-V11-02-08)
+  o G4VisCommandsTouchable: "/vis/touchable/dump" and "findPath" do not need
+    a scene handler nor a viewer.
+    Moved them to the beginning of G4VisCommandsTouchable::SetNewValue(),
+    before the check on scene handler and viewer. This allows the user to
+    "/vis/touchable/dump" even if he/she has not yet opened a viewer.
+  o G4VViewer: fixed Coverity reported defect.
+  o G4VSceneHandler: fixed Coverity reported defect, use 'const auto&'
+    instead of 'auto' to prevent copying.
+
+examples                                         examples-V11-02-02
+--------
+- Updated documentation and reference outputs.
+- extended/electromagnetic/TestEm5 (testem5-V11-02-01)
+  o TrackingAction: added protection against wrong argument of std::acos(),
+    rarely happening for very high energy projectile particles.
+- extended/electromagnetic/TestEm12 (testem12-V11-02-00)
+  o Added comments to dna.mac input macro.
+- extended/hadronic/Hadr03 (exhadr03-V11-02-00)
+  o PhysicsList: removed G4RadioactiveDecayPhysics.
+  o Updated fusion.mac input macro.
+- extended/hadronic/NeutronSource (NeutronSource-V11-02-00)
+  o PhysicsList: added G4HadronElasticPhysicsXS.
+  o RadioactiveDecayPhysics: added Triton.
+  o GammaNuclearPhysics, GammaNuclearPhysicsLEND: applied coding rules.
+- extended/medical/dna/dnaphysics (dnaphysics-V11-02-00)
+  o PhysicsList: switched to DNA physics constructors i/o model activator.
+  o Added new n-tuple to collect track information.
+- extended/medical/dna/microdosimetry (microdosimetry-V11-02-01)
+  o Removed original content of the example; replaced by dnaphysics example.
+  o Code simplification to demonstrate the usage of G4DNAPhysicsActivator.
+- extended/medical/dna/microyz (microyz-V11-02-00)
+  o Code cleanup.
+- extended/medical/dna/spower (spower-V11-02-00)
+  o SteppingAction: extended use for ions heavier than helium.
+  o In spower.in input macro, added extra commands to show how to shoot
+    ions heavier than helium.
+- extended/radioactivedecay/Activation (activation-V11-02-00)
+  o PhysicsList: added G4HadronElasticPhysicsXS.
+  o RadioactiveDecayPhysics: added Triton.
+  o GammaNuclearPhysics, GammaNuclearPhysicsLEND: applied coding rules.
+- extended/radioactivedecay/rdecay01 (rdecay01-V11-02-01)
+  o PhysicsList: set 'MeanLifeThreshold' to 1 nanosecond.
+  o Cosmetic change in rdecay01.in input macro.
+
+tests                                            tests-V11-02-02
+-----
+- Updated reference outputs and tools.
+- tests/test30 (test30-V11-02-01)
+  o Added histogram with alpha spectrum.
+- tests/test37 (test37-V11-02-01)
+- tests/test41 (test41-V11-02-01)
+- tests/test44 (test44-V11-02-01)
+- tests/test46 (test46-V11-02-00)
+  o Updated script for Condor and migrated to AlmaLinux9.

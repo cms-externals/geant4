@@ -1,0 +1,270 @@
+
+                       geant4-11-01-ref-05
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Split build of G4persistency library into G4mctruth, G4geomtext and
+   (optional) G4gdml libraries.
+ o G4IonTable: fixed GetIon() method for the case when the ground state level
+   of an isomere is floating.
+ o New submodule "channeling", implementing fast-simulation channeling model
+   in oriented crystals with Baier Katkov method for the calculation of
+   radiation probability, radiation point and parameters of photon production
+   as well as spectrum accumulation.
+ o New physics list names Shielding_HP and ShieldingM_HP, as alias of,
+   respectively, Shielding and ShieldingM. Replaced Shielding_T and
+   ShieldingM_T with, respectively, Shielding_HPT and ShieldingM_HPT.
+ o Implemented "generic cutaways" in visualization. Clips, sections and
+   cutaways will now be available to *all* viewers.
+ o Updated data-set G4INCL-1.1.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(x)  Fixes included in patch release 11.1.2
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-01-17
+-----
+- Added new capabilities to geant4_module_check.py script: given a module,
+  print list of modules that depend on it; print all modules sorted in
+  descending order of the number of modules using them; show which headers
+  from linked modules are included by a module in its usage requirements
+  output.
+- Make linking a source code module to a final Geant4 library a cmake-time
+  error.
+- Updated configuration scripts for splitting of G4persistency library.
+- Export VTK_DIR and QtX_DIR to package cache to assist in refinding both.
+- Find and refind Qt6OpenGLWidgets module in Qt6 for use by Qt/OpenGL
+  consumers.
+- Updated data-set to G4INCL-1.1.
+
+config                                           config-V11-01-02
+------
+- Updated scripts for splitting of the G4persistency library.
+
+digits_hits/utils                                detutil-V11-01-01           (x)
+-----------------
+- Fixed probe scorer with alternative material setting, that didn't properly 
+  work in tasking mode.
+
+geometry
+--------
+- biasing (geombias-V11-01-00)
+- divisions (geomdiv-V11-01-00)
+- management (geommng-V11-01-02)
+- solids( geomsolids-V11-01-00)
+- volumes (geomvol-V11-01-00)
+  o Applied clang-tidy fixes (readability, modernization, performance, ...).
+
+global                                           global-V11-01-10
+------
+- Updated date and tag-ID for geant4-11-01-ref-05.
+
+graphics_reps                                    greps-V11-01-04
+-------------
+- Added  data member 'fExpanded' to G4SceneTreeItem.
+
+intercoms                                        intercoms-V11-01-05
+---------
+- Fixed compilation warning on gcc-13.1 for array subscript outside array    (x)
+  bounds in G4ProfilerMessenger::SetNewValue().
+
+interfaces                                       interfaces-V11-01-17
+----------
+- G4UIQt: introduced new scene tree - Add colour choice.
+  Introduced widget for 'mouseDoubleClickEvent'.
+  Implemented callbacks SceneTreeItemExpanded() and SceneTreeItemCollapsed().
+  Improved command; allow for leading space in 'pvpath'.
+  Code tidying.
+- Removed header no longer used in Qt5, which is also not present in Qt6.
+
+parameterisations                                gpara-V11-01-01
+-----------------
+- New submodule "channeling", implementing fast-simulation channeling
+  model in oriented crystals with Baier Katkov method for the calculation of
+  radiation probability, radiation point and parameters of photon production
+  as well as spectrum accumulation.
+
+particles                                        particles-V11-01-04
+---------
+- G4IonTable: fixed GetIon() method for the case when the ground state level
+  of an isomere is floating. Removed some code duplication in FindIon() and
+  GetIon() methods.
+- G4NuclideTable: take into account of floating ground state levels.
+- G4Ion: added protection against unphysical index of floating level.
+
+persisteny                                       persistency-V11-01-01
+----------
+- Split build of G4persistency library into G4mctruth, G4geomtext and
+  (optional) G4gdml libraries.
+
+physics_lists
+-------------
+- lists (phys-lists-V11-01-02)
+  o G4PhysListFactory : introduced new physics list names Shielding_HP and
+    ShieldingM_HP, as alias of, respectively, Shielding and ShieldingM.
+    Replaced Shielding_T and ShieldingM_T with, respectively, Shielding_HPT
+    and ShieldingM_HPT. These new aliases allow to have a consistent notation
+    _HPT for all the HP-based physics lists when the special elastic scattering
+    treatment of thermal neutrons is enabled.
+  o Shielding: added information note that the new physics list names (to be
+    used with the physics list factory), Shielding_HP and ShieldingM_HP, are
+    equivalent to, respectively, Shielding and ShieldingM.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-01-11)
+  o Added DNA cross-section to dna_option6.
+  o Added time structure (pulsed beam) to water radiolysis (G4VUserPulseInfo).
+  o Corrected initial values of G4DNAEventScheduler.
+  o Fixed compilation warnings in XCode.
+- standard (emstand-V11-01-12)
+  o Updated hadron/ion ionisation models; initialise stopping power data once:
+    PSTAR and ICRU90 in G4BraggModel, ASTAR in G4BraggIonModel, ICRU73 and
+    ICRU90 ion (Z>2) data in G4LindHardSorensenIonModel.
+  o G4BraggIonModel inherits from G4Bragg model; fixed stopping power
+    of heavy ions at moderate energies.
+  o G4LindhardSorensenIonModel: use G4BraggModel for preliminary computation
+    of DEDX at initialisation for G4GenericIon instead of G4BraggIonModel,
+    which fixes a problem of low-energy ion tracking recently introduced.
+- utils (emutils-V11-01-09)
+  o G4VEnergyLossProcess: added extra protection excluding negative range;
+    renamed class member; changed condition to stop low-energy ion, use
+    kinetic energy and not scaled energy.
+    Added extra protection for the case of negative range of low-energy
+    particles. Addressing problem report #2542.
+  o G4VMscModel: removed empty lines.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-01-05)
+  o G4GammaNuclearXS: general code clean-up: instantiate data only once
+    for all instances of this cross-section class; upload data for all elements
+    before the first run; simplified computation of isotope cross-section;
+    added extra public method LowEnergyCrossSection().
+    More accurate usage of cache; simplified GetIsoCrosssection() and
+    SelectIsotope() methods.
+  o Fixed compilation warnings for implicit type conversions on
+    macOS/XCode>=14.1.
+- models/binary_cascade (had-binary-V11-01-00)
+  o G4BinaryCascade, G4BinaryLightIonReaction: avoid calls to getenv(), use
+    G4HadronicParameters instead.
+- models/particle_hp (hadr-hpp-V11-01-06)
+  o Applied clang-format and clang-tidy fixes.
+- util (hadr-util-V11-01-06)
+  o G4Fragment: replaced G4HadronicException with standard G4Exception.      (x)
+    Note: in the method CalculateMassAndExcitationEnergy(), the exception type
+    is "EventMustBeAborted" to avoid rare crashes seen in INCLXX, which are
+    difficult to reproduce and fix.
+
+run                                              run-V11-01-03
+---
+- Removed mistyped method declaration GetMasterTheadId() in G4MTRunManager.  (x)
+
+visualization
+-------------
+- management (visman-V11-01-11)
+  o Implemented "generic cutaways". It relies on the Boolean Processor
+    which handles the Boolean operations on polyhedral representations of
+    solids. Clips, sections and cutaways will now be available to *all*
+    viewers.
+  o New scene tree: implementing expand and collapse of touchables.
+    Expand only to depth 2, thereafter sub-trees are collapsed.
+    When the scene tree is expanded or collapsed it is remembered in
+    the viewer-side scene tree and may be propagated to other viewers.
+  o G4VSceneHandler: protect material pointer used to name G4Mesh item.
+    If null, use name of container. It avoids cases of crash when a G4Mesh
+    is in a parallel world.
+    In RequestPrimitives(), improved test for invalid Boolean solid.
+    In CreateSectionSolid() and CreateCutawaySolid(), improved algorithms.
+  o In G4VViewer::SceneTreeScene::FindOrInsertTouchable(), fixed Coverity
+    warning. Augmented to handle depth of descent.
+  o Fixed compilation warning for implicit type conversion on
+    macOS/XCode>=14.1.
+- modeling (modeling-V11-01-04)
+  o Updates to implement "generic cutaways".
+  o G4PhysicalVolumeModel: in DescribeSolid(), improved tests for invalid
+    Boolean solid in code for section and cutaway.
+- OpenGL (opengl-V11-01-08)
+  o G4OpenGLQtViewer: disabled "old" scene tree.
+  o Minimum build and code changes required to compile/link against both
+    Qt5 and Qt6.
+- OpenInventor (openinventor-V11-01-05)
+- Qt3D (visQt3D-V11-01-03)
+  o Support compilation against Qt5 and Qt6.
+- RayTracer (raytracer-V11-01-01)
+- ToolsSG (vis_toolssg-V11-01-06)
+  o Fixed Coverity warnings.
+  o Link to Qt6OpenGLWidgets library when using Qt6 to access QOpenGLWidget.
+- Vtk (visVtk-V11-01-09)
+  o Fixed compilation warnings for implicit type conversions on
+    macOS/XCode>=14.1.
+
+data
+----
+- G4INCL-1.1:
+  o Addec new files for antiproton annihilation at rest of INCL.
+
+examples                                         examples-V11-01-05
+--------
+- Updated documentation and reference outputs.
+- extended/electromagnetic/TestEm2 (testem2-V11-01-00)
+  o Code revision of all headers.
+- extended/electromagnetic/TestEm3 (testem3-V11-01-02)
+  o Run: fixed division by zero for the case if energy deposition
+    in a layer is zero.
+  o Code revision of all headers.
+- extended/electromagnetic/TestEm5 (testem5-V11-01-00)
+- extended/electromagnetic/TestEm12 (testem12-V11-01-00)
+- extended/electromagnetic/TestEm13 (testem13-V11-01-00)
+- extended/electromagnetic/TestEm14 (testem14-V11-01-00)
+  o Code revision of all headers.
+- extended/electromagnetic/TestEm18 (testem18-V11-01-00)
+  o Fix in destructor of StakingAction.
+  o Code revision of all headers.
+- extended/hadronic (exHadronic-V11-01-00)
+  o FlukaCern: new G4-FLUKA interface and two hadronic examples, providing
+    access to FLUKA hadron-nucleus inelastic physics:
+    + ProcessLevel/CrossSection: allows the study of Geant4 cross-sections,
+      and FLUKA hadron-nucleus reaction cross-sections.
+    + ProcessLevel/FinalState: shows how to simulate inelastic hadron-nucleus
+      interactions,  using Geant4 or FLUKA models.
+- extended/hadronic/Hadr01(exhadr01-V11-01-01)
+  o HistoManager: added protection agains secondary zero-energy particles.
+- extended/hadronic/ParticleFluence/Calo (exhadrParticleFluenceCalo-V11-01-00)
+- extended/hadronic/ParticleFluence/ConcentricSpheres (exhadrParticleFluenceConcentricSpheres-V11-01-00)
+- extended/hadronic/ParticleFluence/Layer (exhadrParticleFluenceLayer-V11-01-00)
+- extended/hadronic/ParticleFluence/Sphere (exhadrParticleFluenceSphere-V11-01-00)
+  o Run, TrackingAction: replaced G4int with G4long for keeping the information
+    on the multiplicity of particle production. This avoids rare cases of
+    negative multiplicities due to integer overflow, seen for runs with at
+    least 4000 events, in particular with heavy materials, such as Tungsten
+    and Lead.
+- extended/medical/dna/dnadamage2 (dnadamage2-V11-01-00)
+  o New example providing scoring of plasmid DNA strand breaks using the IRT
+    method (J. Ramos-Mendez, et al., Medical Physics, 2020, 47(11), 5919-5930).
+    Extends the chem6 example by adding DNA molecule information and the
+    scoring of Strand Breaks. Experimental conditions are considered such as
+    oxygen and DMSO molar concentrations.
+- extended/medical/dna/range (range-V11-01-00)
+- extended/medical/dna/spower (spower-V11-01-00)
+  o Added DNA materials.
+- extended/medical/dna/UHDR (UHDR-V11-01-00)
+  o New example showing how to activate the mesoscopic model in chemistry and
+    combine with SBS model (Tran et al.,Int. J. Mol. Sci. 22 (2021) 6023).
+    It allows to simulate chemical reactions longtime (beyond 1 us) of
+    post-irradiation.
+
+tests                                            tests-V11-01-05
+-----
+- Updated reference outputs and tools.
+- tests/test75 (test75-V11-01-00)
+  o Updates and cleanups towards integration with geant-val.
+    Removed obsolete scripts. Some code cleanup.
+- tests/test79 (test79-V11-01-00)
+  o New system test for Channeling FastSimulation model and Baier-Katkov
+    method.
+- tests/test202 (test202-V11-01-00)
+  o Tst202DetectorConstruction: fixed some typos.

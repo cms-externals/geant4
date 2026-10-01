@@ -1,0 +1,424 @@
+
+                       geant4-11-00-ref-00
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Revised and updated G4Exceptions in G4Material, now providing more complete
+   information and better diagnostics.
+ o Updated Livermore models to use EPICS2017 data.
+ o Included new PIXE data libraries following ANSTO recommendations.
+ o Reduced upper limit of parameterisation cross-section from 80 to 30 GeV
+   in G4PairProductionRelModel.
+ o New data structure for ion ionisation data.
+ o Extended hadronic models for projectile hypernuclei and anti-hypernuclei.
+ o Added new public function Clear() in G4VAnalysisManager to be used to delete at
+   the end of run, all allocated analysis objects and clear their collections.
+ o Introducing in-app plotting with visualization and related UI command.
+ o New data set: G4EMLOW-8.0.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(+)  Fixes included in release 10.7.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-07-53
+-----
+- Improved and modernized CPack source packaging.
+  Use XZ compression instead of BZIP for source package.
+- Retired G4VIS_*, G4UI/G4INTY_* preprocessor symbols in toolkit build,
+  only required by obsolete GNUmake system.
+- Added ToolsSG in the list of Qt moc-able modules.
+- Configure/find Vtk alongside other UI/Vis options.
+- Removed FindAIDA.cmake from Modules.
+- Set VecGeom-1.1.18 as minimum required version for VecGeom interface.
+- New data set: G4EMLOW-8.0.
+
+config                                           config-V10-07-09
+------
+- Updated default Qt5 include paths for Linux targets.
+
+analysis                                         analysis-V10-07-30
+--------
+- G4VAnalysisManager: added new public function Clear() that deletes all
+  allocated analysis objects and clears their collections. This function should
+  be used as a replacement for deleting the analysis manager in the applications
+  that allocate the analysis data in begin of run and deleted the analysis
+  manager in end of run. Renamed ReadNtuple() back in GetNtuple().
+- Fix in G4MPIToolsManager: do not call Receive() twice.
+- Implemented missing WriteOnAscii() for h2,h3,p1,p2.
+- Use fonts from tools in G4PlotManager.
+- Added G4ToolsAnalysisMessenger that implements "get" commands
+  "/analysis/hn|pn/get id".
+- Code cleanup: moved data members initialization in header files; added deleted
+  default constructor where appropriate; added explicit keyword to one argument
+  constructors where missing; use brace data members initialization everywhere.
+  Fixed Coverity issues.
+- Removed CMake -DTOOLS_USE_EXPAT definition, no longer needed.
+
+event                                            event-V10-07-08
+-----
+- G4EventManager: moved StackTracks() to be public.
+
+externals
+---------
+- g4tools (g4tools-V10-07-11):
+  o Restored files for MPI.
+
+g3tog4                                           g3tog4-V10-07-04
+------
+- Fixed Coverity defect in G3EleTable for uninitialized variable.
+
+geometry/biasing                                 geombias-V10-07-01
+----------------
+- Added missing include of G4Threading header for G4Mutex for self-consistency
+  in G4ImportanceAlgorithm header.
+
+geometry/divisions                               geomdiv-V10-07-04
+------------------
+- G4ReplicatedSlice: added protection against null pointer for mother        (+)
+  physical-volume in constructor.
+
+geometry/solids/CSG                              geom-csg-V10-07-06
+-------------------
+- Revision of G4UTrap wrapper: list of accessors and modifiers made consistent
+  with G4Trap; implemented check of parameters similar to G4Trap.
+- Corrected typo in G4UPara::GetXHalfLength(). Addressing problem report #2446.
+
+geometry/solids/specific                         geom-specific-V10-07-13
+------------------------
+- G4TwistedTubs: more accurate calculation of the bounding box in
+  BoundingLimits() and GetExtent(), fixing measured performance penalty.
+  Addressing problem report #2450.
+- G4TwistedTubs, G4VTwistedFaceted: fixed GetCubicVolume().
+
+global                                           global-V10-07-36
+------
+- G4PhysicsModelCatalog: extended number of EM types.
+- Updated date and tag-ID for geant4-11-00-ref-00.
+
+graphics_reps                                    greps-V10-07-13
+-------------
+- Added G4Plotter class, a kind of "high level" primitive to capture plots
+  (tools::histo:h1d, h2d for the moment) and the style of a plotter.
+  Style description is done by handling named lists of (parameter,value).
+  It is sufficently generic to be usable by various implementations of a
+  plotter. It is assumed that a plotter manages a grid of "regions" to
+  visualize various histograms in a same representation/view/viewport.
+  Updated G4VGraphicsScene accordingly.
+
+intercoms                                        intercoms-V10-07-14
+---------
+- G4UIcommandTree, G4UIdirectory, G4GenericMessenger: improved output HTML
+  file layout.
+- Added option to sort command/directory names in alphabetic order.
+
+interfaces                                       interfaces-V10-07-23
+----------
+- Added verbose setting in G4UIExecutive. Addressing problem report #2402.
+- G4UIQt: Replace '<' by "&lt" in session output.
+- Fixed HTML links in Qt UI Start page.
+- Retired G4UI/G4INTY_... preprocessor symbols in toolkit build,
+  only required by obsolete GNUmake system
+
+materials                                        materials-V10-07-26
+---------
+- G4Material: revised and updated G4Exceptions, now providing complete
+  information and more precise diagnostics.
+
+particles                                        particles-V10-07-10
+---------
+- G4ParticleTable: fixed case for potential null pointer dereferencing in
+  FindParticle().
+  Based on GitHub PR#30 (https://github.com/Geant4/geant4/pull/30).
+- G4IonConstructor: added hyper-nuclei.
+
+persistency
+-----------
+- ascii (ascii-V10-07-04):
+  o Added support for G4MultiUnion and G4ScaledSolid.
+    Based on GitHub PR#28 (https://github.com/Geant4/geant4/pull/28).
+  o G4tgbVolume: corrected missing conversion degree-radian for Polycone.
+  o G4tgbMaterialSimple,G4tgrMaterial: changed STP_Temperature to
+    NTP_Temperature to be consistent with NIST materials.
+  o Change prefix to free math functions in G4tgrEvaluator source, to avoid  (+)
+    potential clashes with system functions carrying same name and signature.
+    Addressing problem report #2444.
+- gdml (gdml-V10-07-15)
+  o G4GDMLParser: scan for all possible logical volumes with same name in
+    ImportRegions() and set them as root logical volumes.
+    Issue notification warning in case more than one logical volume with same
+    name is found, to be set a root logical volume for a region.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-07-23)
+  o G4EmStandardPhysicsWVI: making this experimantal configuration 
+    compatible for CPU performance with Opt3 (it was similar to SS).
+    Use similar options as in Opt3, for ions use G4LinhardSorensenIonModel.
+  o G4EmModelActivator: updated according to the current Opt3 and Opt4
+    configurations.
+  o G4GammaGeneralProcess: make some methods/fields visible for derived classes.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V10-07-06)
+  o G4EmExtraPhysics: added option for positron annihilation to tau pair.
+
+processes/electromagnetic/adjoint                emadjoint-V10-07-07
+---------------------------------
+- G4AdjointForcedInteractionForGamma: improved forced interaction for gamma
+  reverse tracking in thick shielding. 
+- G4AdjointhIonisationModel: updated weight correction to limit dependence
+  of proton dose results on cut in range.
+- Fixed coverity warnings in G4AdjointCSManager and G4VEMAdjointModel.
+
+processes/electromagnetic/dna                    emdna-V10-07-15
+-----------------------------
+- Added G4VDNAMolecularGeometry, a virtual class for DNA geometry.
+- Added new mesoscopic model for DNA chemistry.
+- Updates in G4DNAIRT, G4DNAIRTMoleculeEncounterStepper, G4ITModelProcessor,
+  G4Scheduler and G4DNAMolecularReactionTable classes, and fixed sub-modules
+  dependencies.
+
+processes/electromagnetic/lowenergy              emlowen-V10-07-27
+-----------------------------------
+- Updated Livermore models to use EPICS2017 data.
+- Included new PIXE data libraries following ANSTO recommendations.
+  Added new classes to model the ANSTO ECPSSR cross-sections for protons and
+  alpha particles. Added option to activate the ANSTO fluorescence radiation
+  yield (Z < 93).
+- G4LivermorePolarizedRayleighModel: read data from $G4LEDATA/livermore
+  directory. Code clean-up.
+- Removed unused classes G4LivermoreGammaConversionModelRC and
+  G4LivermoreComptonModifiedModel.
+- Some code clean-up.
+
+processes/electromagnetic/standard               emstand-V10-07-28
+----------------------------------
+- G4BetheBlochModel, G4BraggIonModel, G4ionIonisation: use ion corrections
+  for all ions except alpha. Addressing problem report #2440.
+- G4PairProductionRelModel: reduced upper limit of parameterisation
+  cross-section from 80 to 30 GeV.
+- G4LindhardSorensenIonModel: use G4BraggIonModel, G4BetheBlochModel and
+  G4IonICRU73Data, do not apply corrections at the last step of an ion.
+- G4BraggIonModel, G4BetheBlochModel: do not apply corrections at the last
+  step of an ion.
+- G4IonICRU73Data: new data structure for ion ionisation data.
+- G4ionIonisation: minor code clean-up.
+
+processes/electromagnetic/utils                  emutils-V10-07-38
+-------------------------------
+- G4EmCalculator: fixed computation of dedx for He3 and alpha.
+  In G4VEnergyLossProcess, exclude ion corrections only from d, t, alpha.
+  Addressing problem report #2440.
+- G4ionEffectiveCharge: return back limit on effective charge from 0.5 to 1
+  as used in previous releases.
+- Changed ANSTO parameters in  UI interface commands.
+
+processes/hadronic
+------------------
+- management (hadr-man-V10-07-10)
+  o G4HadronicProcessStore: fixed memory leak at exit.
+- models/abla (hadr-abla-V10-07-05)
+  o Updated G4Abla for hypernuclei.
+- models/binary_cascade (had-binary-V10-07-03)
+  o G4GeneratorPrecompoundInterface: extended method PropagateNuclNucl() to
+    deal with projectile hypernuclei and anti-hypernuclei.
+- models/de_excitation (hadr-deex-V10-07-08)
+  o G4PhotonEvaporation: changed logic in de-excitation from levels which    (+)
+    have no data on transitions: instead of transition to closest level
+    continuous transition is performed. This should reduce production of
+    fragments with high excitation and high angular momentum.
+    Addressing problem report #2434.
+  o G4DeexPrecoParameters: fixed propagation of verbosity level between
+    components of the de-excitation module.
+- models/inclxx (hadr-inclxx-V10-07-06)
+  o G4INCLXXInterface: extended to projectile hypernuclei.
+  o G4INCLNuclearPotentialIsospin: improved nuclear potential for Lambda
+    particles.
+- models/particle_hp (hadr-hpp-V10-07-11)
+  o G4ParticleHPThermalScattering, G4ParticleHPElastic: corrected the original
+    treatment of the temperature interpolation when computing the neutron final
+    state, with the temperature interpolation performed stochastically now. 
+  o G4ParticleHPThermalScatteringNames: extended the list of materials which
+    can have thermal data libraries.
+- models/parton_string/diffraction (hadr-string-diff-V10-07-04)
+  o Interface extension in G4FTFModel, G4FTFParticipants to provide the
+    following information: number of projectile spectator nucleons; number of
+    target spectator nucleons, number of nucleon-nucleon collisions and impact
+    parameter. In the latter case, there is also the possibility, switched off
+    by default, to set the range from which to sample the square of the impact
+    parameter.
+  o Extended G4FTFModel for projectile hypernuclei and anti-hypernuclei.
+- models/parton_string/management (hadr-partonstring-mgt-V10-07-02)
+  o G4VParticipants, G4VPartonStringModel: extended for projectile hypernuclei
+    and anti-hypernuclei.
+- models/pre_equilibrium (hadr-pre-V10-07-05)
+  o G4LowEIonFragmentation: fixed memory leak reported by Coverity.
+- models/radioactive_decay (radioactive_decay-V10-07-13)
+  o G4RadioactiveDecay: updated printout of parameters according to recent
+    modifications in atomic de-excitation module.
+- util (hadr-util-V10-07-08)
+  o G4Nucleus: rewritten method GetBiasedThermalNucleus() according to the
+    sampling of the Velocity of the Target nucleus (SVT) algorithm.
+  o G4Nucleon, G4Nucleus, G4V3DNucleus, G4Fancy3DNucleus, G4Fragment: extended
+    for hypernuclei and anti-hypernuclei.
+
+visualization                                    vis-V10-07-13
+-------------
+- Retired G4VIS_*, G4UI/G4INTY_* preprocessor symbols in toolkit build,
+  only required by obsolete GNUmake system.
+- management (visman-V10-07-28):
+  o Introducing in-app plotting; added AddPrimitive(const G4Plotter&)
+    and "/vis/plotter/" UI command.
+  o Introducing nicknames for TSG and Vtk drivers.
+  o Sort /vis/* UI commands in alphabetical order.
+  o In G4VisCommansCompound, with "/vis/drawTree", invoke "/vis/viewer/reset"
+    to ensure culling is off, so that all volumes are printed.
+  o Introducing GetColour(const G4Visible&).
+  o Protect pointers in G4VisManager::GeometryHasChanged().
+  o Fixed Windows static issue in G4VVisCommand.
+- modeling (modeling-V10-07-16):
+  o Introducing new primitive G4Plotter.
+  o Fixed bug in calculation of extent of G4PhysicalVolumeModel.
+- OpenGL (opengl-V10-07-25):
+  o Make better use of G4VSceneHandler::AddPrimitive().
+  o Fix in G4OpenGLStoredXmViewer destructor.
+- RayTracer (raytracer-V10-07-06):
+  o Make better use of G4VSceneHandler::AddPrimitive().
+- ToolsGS (vis_toolsg-V10-07-16):
+  o Handle local list of styles and more development.
+- Tree (vistree-V10-07-03):
+  o Make better use of G4VSceneHandler::AddPrimitive().
+- Vtk (visVtk-V10-07-03):
+  o Implemented G4VtkQt::IsUISessionCompatible().
+
+data
+----
+- G4EMLOW-8.0:
+  o Added ANSTO atomic de-excitation data.
+  o Added updated epics2017 data.
+  o Removed some unused data.
+
+environments
+------------
+- G4Py (geant4py-V10-07-05):
+  o Use exact version of Python for boost.python module.
+    Based on GitHub PR#31 (https://github.com/Geant4/geant4/pull/31).
+
+examples                                         examples-V11-00-00
+--------
+- Updated documentation and reference outputs.
+- advanced/air_shower (air_shower-V10-07-04)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+  o Updated code to use C++11 features.
+- advanced/CaTS (CaTS-V10-07-01)
+  o Fixed PrimaryGeneratorAction destructor.
+- advanced/doiPET (doiPET-V10-07-03)
+  o Fixed compilation warnings for unused private variables in
+    doiPETDetectorConstruction and doiPETEventAction. Removed tabs.
+- advanced/gammaknife (gammaknife-V10-07-03)
+  o Delete runManager at the end of the run.
+- advanced/gorad (gorad-V10-07-05)
+  o Protect explicit inclusion of G4UIQt header.
+- advanced/HGCal_testbeam (exhgcaltb-V10-07-05)
+  o Fixed compilation warning for unused private member in
+    PrimaryGeneratorAction.
+- advanced/human_phantom (human_phantom-V10-07-03)
+- advanced/microbeam (microbeam-V10-07-06)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- advanced/microelectronics (microelectronics-V10-07-07)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+  o Updated analysis script plot.C.
+- advanced/nanobeam (nanobeam-V10-07-03)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- advanced/radioprotection (radioprotection-V10-07-05)
+  o Added the Bridge silicon microdosimeter and a macro to perform microdosimetric
+    calculations. Analysis macros run with Root version 6.
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- advanced/xray_fluorescence (XRayFluo-V10-07-07)
+  o Updated for changes in the analysis category to use GetNtuple().
+- advanced/xray_telescope (xraytel-V10-07-04)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- basic/B5 (exampleB5-V10-07-11)
+  o Added analysisManager->Reset() in begin of run, as resetting was disabled
+    for plotting in end of run.
+  o Added input script plotter.mac to use new plotter commands.
+- examples/extended/analysis (analysisExample-V10-07-01)
+  o Removed AnaEx03 with the AIDA implementation.
+- extended/analysis/AnaEx01 (AnaEx01-V10-07-03)
+  o Define analysis manager configuration and create histograms only once.
+  o Always close analysis files in EndOfRunAction.
+- extended/biasing/ReverseMC01 (ReverseMC01-V10-07-02)
+- extended/electromagnetic/TestEm2 (testem2-V10-07-08)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- extended/electromagnetic/TestEm5 (testem5-V10-07-12)
+  o Fixed inconsistency of target/world size defined by a user
+    Addressing problem report #2379.
+  o DetectorConstruction: if any geometry size is changed then recompute
+    all geometry parameters.
+  o PrimaryGeneratorAction: reinitialise beam position for each new run.
+  o Included new macro pixe_ANSTO.mac to show how to activate the ANSTO PIXE
+    data libraries. Use ANSTO radiation yields instead of EADL.
+  o StackingAction: use new modelID scheme.
+- extended/electromagnetic/TestEm6 (testem6-V10-07-04)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- extended/electromagnetic/TestEm7 (testem7-V10-07-08)
+  o Improved macro files for ion ionisation.
+- extended/electromagnetic/TestEm8 (testem8-V10-07-03)
+- extended/electromagnetic/TestEm9 (testem9-V10-07-03)
+- extended/electromagnetic/TestEm17 (testem17-V10-07-03)
+- extended/exoticphysics/dmparticle (dmparticle-V10-07-02)
+- extended/exoticphysics/monopole (monopole-V10-07-01)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- extended/exoticphysics/phonon (phononExample-V10-07-00)
+  o Download CrystalMap files and fixed build issues.
+- extended/hadronic/Hadr00 (exhadr00-V10-07-02)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- extended/hadronic/Hadr01 (exhadr01-V10-07-03)
+  o HistoManager, DetectorConstruction, DetectorMessenger: corrected         (+)
+    counting of leaking neutrons. Addressing problem report #2441.
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- extended/hadronic/Hadr02 (exhadr02-V10-07-05)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- extended/hadronic/Hadr09 (exhadr09-V10-07-01)
+  o HadronicGenerator: extended interface and functionality; used new methods
+    available in the FTF model.
+- extended/medical/dna/chem6 (chem6-V10-07-02)
+  o Deleted limit time step.
+  o Reduced number of incident particles.
+- extended/medical/dna/dnadamage1 (dnadamage1-V10-07-03)
+- extended/medical/dna/microdosimetry (microdosimetry-V10-07-04)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- extended/medical/dna/scavenger (scavenger-V10-07-01)
+  o New example showing how to activate the scavenging process in chemistry
+    using the deterministic treatment of the IRT model.
+- extended/medical/dna/wholeNuclearDNA (wholeNuclearDNA-V10-07-02)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- extended/parallel/MPI (MPI-V10-07-03)
+  o Updated analysis classes for recent changes in analysis.
+  o More updates in g4mpi for changes in G4String.
+- extended/parameterisations/Par03 (expar03-V10-07-02)
+  o Added analysis manager Clear() call instead of deleting in the end of run.
+- extended/parameterisations/Par04 (expar04-V10-07-00)
+  o New example demonstrating how to use the Machine Learning (ML) inference
+    to create energy deposits as a fast simulation model using ONNX runtime and
+    LWTNN libraries.
+- extended/persistency/gdml/G02 (G02-V10-07-00)                              (+)
+  o Fixed visualisation settings in input macros.
+- extended/persistency/gdml/G03 (G03-V10-07-00)                              (+)
+  o Fixed visualisation settings in input macros.
+- extended/runAndEvent/RE07 (exampleRE07-V10-07-01)
+  o New example demonstrating how to register specialized tracking managers for
+    a particle or a set of particles.
+
+tests                                            tests-V11-00-00
+-----
+- Updated reference outputs and tools.
+- tests/test03 (test03-V10-07-12)
+  o Updated for changes in the analysis category, to use GetNtuple().
+  o Added option for testing ascii output: -ascii on|off (default: off)
+    and updated code to take it into account.
+  o Activated ascii output for test03-Generic-write.
+  o Added test for new /analysis/hn|pn/get commands (always activated).
+- tests/test30 (test30-V10-07-07)
+  o Histo: fixed usage of G4AnalysisManager.

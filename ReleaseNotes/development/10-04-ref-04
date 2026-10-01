@@ -1,0 +1,253 @@
+
+                       geant4-10-04-ref-04
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added track/step/volume information in G4ExceptionHandler when an
+   exception happens while event is being processed.
+ o G4PhaseSpaceDecayChannel: fixed incorrect indexing in ManyBodyDecayIt(),
+   causing incorrect setting of daughter momentum in 4-body phase-space decay.
+ o G4LindhardSorensenIonModel, G4LindhardSorensenData: new relativistic ion 
+   ionisation model.
+ o Introduced switch in cross-sections to allow transuranic elements.
+ o Implemented simple algorithm in visualization to allow colouring of
+   detector elements based on materials density.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.4.p02
+
+Summarised, the list of changes is the following:
+
+config                                           config-V10-04-05
+------
+- WIN32-VC.gmk: updated obsolete configuration for Qt5.                      (o)
+
+event                                            event-V10-04-06
+-----
+- Use G4TrackStack as default and make use of G4SmartTrackStack optional.    (o)
+  Addressing problem report #2040.
+
+geometry
+--------
+- magneticfield (field-V10-04-04):
+  o Fix for missing interface method in G4VIntegrationDriver; added method
+    RenewStepperAndAdjust() which used to exist in G4MagInt_Driver. This
+    method must be defined in those derived driver classes which accept
+    a Runge Kutta stepper.
+  o Defined default implementation of the method in G4IntegrationDriver
+    and G4FSALIntegrationDriver, and implementations in the templated classes
+    G4IntegrationDriver and G4FSALIntegrationDriver.
+- management (geommng-V10-04-02):
+  o G4AffineTransform: minor optimisation to multiplication of matrix by vector,
+    to make use of temporaries in accessing vector components.
+  o Replaced USOLIDS_LIBRARIES with VECGEOM_LIBRARIES in sources.cmake.
+- navigation (geomnav-V10-04-03):                                            (o)
+  o G4PathFinder: in DoNextLinearStep(), use flag for relocated point to
+    signal move from call to ReLocate(), and ensure that new point is used
+    in cross-checks in subsequent Locate().
+    Fix to revert change previously introduced in release 10.4, to keep
+    fMinStep as 'logical' value, which can be kInfinity when step is not
+    limited by Navigators. Resolves warnings issued by G4PathFinder for
+    inaccuracies in relocation. Addressing problem report #2033.
+  o G4Navigator: fix in Set/RestoreSavedState() for setting of ReplicaNumber.
+  o G4SafetyHelper: do not limit memorisation of safety in case of parallel
+    geometries (when a length is not passed to safety method).
+    Fix to include full message in Exception.
+- solids/Boolean (geom-bool-V10-04-03):                                      (o)
+  o G4BooleanSolid: enhanced warning message for the case of an invalid
+    (NULL) Boolean construct in GetPointOnSurface() and StackPolyhedron().
+    Use -1 instead of 0 as default initialisation value for area and capacity,
+    so to distinguish cases when values are zero referring to NULL Boolean
+    constructs.
+  o G4UnionSolid: define simple bounding-box and make use of early returns
+    in Inside() for points laying outside.
+  o Replaced USOLIDS_LIBRARIES with VECGEOM_LIBRARIES in sources.cmake.
+- solids/CSG (geom-csg-V10-04-02):                                           (o)
+  o G4Box: simplified and optimised calculation of normal in method
+    DistanceToOut(p,v,..).
+  o Replaced USOLIDS_LIBRARIES with VECGEOM_LIBRARIES in sources.cmake.
+- solids/specific (geom-specific-V10-04-08):
+  o Replaced USOLIDS_LIBRARIES with VECGEOM_LIBRARIES in sources.cmake.      (o)
+
+graphics_reps                                    greps-V10-04-04
+-------------
+- Replaced DBL_MAX by G4VisAttributes::veryLargeTime = 1.e100*ns,
+  (i.e. about 1.e75 billion years), to avoid for consistency DBL_MAX
+  which is dimensionless.
+
+interfaces                                       interfaces-V10-04-04        (o)
+----------
+- G4UIQt: fixed bug with command guidance including HTML tags inside
+  (<, > and &).
+
+particles                                        particles-V10-04-02
+---------
+- G4PhaseSpaceDecayChannel: fixed incorrect indexing in ManyBodyDecayIt(),   (o)
+  causing incorrect setting of daughter momentum in 4-body phase-space decay.
+  Addressing problem report #2053.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-04-02)
+  o G4EmStandardPhysics_option1/2: use Livermore photo-effect model.
+  o G4EmStandardPhysics_option4, G4EmLivermorePhysics, G4EmPenelopePhysics:
+    set upper energy limit to 100 TeV.
+  o G4EmLowEPPhysics: use new 5D gamma conversion model below 80 GeV,
+    use new Lindhard-Sorensen ion ionisation model above 20 MeV/u.
+  o G4EmModelActivator: modified accordingly.                                (o)
+  o In several constructors, return back the order of photo-effect and Compton
+    in order to keep log file stable.
+
+processes/electromagnetic/dna                    emdna-V10-04-02
+-----------------------------
+- Updated G4DNAOneStepThermalizationModel for chemistry.
+
+processes/electromagnetic/highenergy             emhighenergy-V10-04-01
+------------------------------------
+- Minor code cleanup in G4eeToHadronsMultiModel, G4mplIonisationWithDeltaModel
+  and G4eeToHadronsModel.
+
+processes/electromagnetic/lowenergy              emlowen-V10-04-01           (o)
+-----------------------------------
+- G4LivermorePhotoElectricModel: fixed incorrect deletion of static members
+  when models defined per region. Addressing problem report #2052.
+
+processes/electromagnetic/muons                  emmuons-V10-04-01
+-------------------------------
+- G4ePairProduction: fixed model name.
+
+processes/electromagnetic/standard               emstand-V10-04-16
+----------------------------------
+- G4LindhardSorensenIonModel, G4LindhardSorensenData: new relativistic ion 
+  ionisation model.
+- G4UrbanMscModel: use second type of parameterisation in all EM physics.
+- G4BetheHeitler5DModel: added detailed description of the model and fixed
+  Coverity warnings.
+- G4BetheBlochModel: minor cleanup.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-04-06)
+  o Introduced switch to allow transuranic elements.
+- models/particle_hp (hadr-hpp-V10-04-01)                                    (o)
+  o G4ParticleHPFissionFS: protect against very rare cases of division by zero.
+- models/quasi_elastic (hadr-qelastic-V10-04-00)
+  o G4QuasiElRatios: removed unnecessary protection against heavy elements.
+- models/radioactive_decay (radioactive_decay-V10-04-02)                     (o)
+  o G4RadioactiveDecay: in ConvolveSourceTimeProfile(), switch from std::exp()
+    to std::expm1() where small exp arguments are expected. This greatly
+    reduces cancellation errors as well as the accumulated error in the
+    variance reduction weight calculation. Although negative weights still
+    occur, their size is reduced by about ten orders of magnitude, enough
+    to set negative weights to zero. Addresses problem report #1480.
+  o G4Radioactivation::ConvolveSourceTimeProfile(): same as above.
+
+run                                              run-V10-04-06
+---
+- G4ExceptionHandler: added track/step/volume information when an            (o)
+  exception happens while event is being processed.
+
+visualization                                    vis-V10-04-04
+-------------
+- management (visman-V10-04-08):
+  o Implemented UI command /vis/viewer/set/colourByDensity: simple algorithm
+    to allow colouring of detector elements based on materials density.
+  o G4VSceneHandler: reduced repetitive error messages.
+- modeling (modeling-V10-04-04):
+  o Implemented UI command /vis/viewer/set/colourByDensity.
+- OpenGL (opengl-V10-04-05),
+- OpenInventor (openinventor-V10-04-01),
+- XXX (visXXX-V10-04-00):
+  o Implemented kernel visit for "colour by density".
+
+examples                                         examples-V10-04-04
+--------
+- Updated documentation and reference outputs.
+- advanced/amsEcal (amsEcal-V10-04-01)
+- extended/electromagnetic/TestEm1 (testem1-V10-04-01)
+- extended/electromagnetic/TestEm4 (testem4-V10-04-01)
+  o Set visualisation only in interactive mode in main().
+- extended/electromagnetic/TestEm5 (testem5-V10-04-03)
+  o Mimor code cleanup.
+- extended/electromagnetic/TestEm6 (testem6-V10-04-02)
+- extended/electromagnetic/TestEm7 (testem7-V10-04-01)
+  o Set visualisation only in interactive mode in main().
+- extended/electromagnetic/TestEm8 (testem8-V10-04-04)
+  o RunAction: removed G4VIS_USE and G4UI_USE.
+- extended/electromagnetic/TestEm9 (testem9-V10-04-03)
+  o Set visualisation only in interactive mode in main().
+  o RunAction: removed G4VIS_USE and G4UI_USE.
+- extended/electromagnetic/TestEm10 (testem10-V10-04-01)
+- extended/electromagnetic/TestEm11 (testem11-V10-04-01)
+- extended/electromagnetic/TestEm12 (testem12-V10-04-01)
+- extended/electromagnetic/TestEm13 (testem13-V10-04-02)
+- extended/electromagnetic/TestEm14 (testem14-V10-04-02)
+  o Set visualisation only in interactive mode in main().
+- extended/electromagnetic/TestEm15 (testem15-V10-04-02)
+  o Extended with gamma -> e+ e- 5D conversion code.
+  o Set visualisation only in interactive mode in main().
+- extended/electromagnetic/TestEm16 (testem16-V10-04-01)
+- extended/electromagnetic/TestEm17 (testem17-V10-04-01)
+- extended/electromagnetic/TestEm18 (testem18-V10-04-02)
+- extended/eventgenerator/exgps (exgps-V10-04-01)
+- extended/eventgenerator/particleGun (particleGunExample-V10-04-01)
+- extended/eventgenerator/userPrimaryGenerator (userPrimaryGenerator-V10-04-01)
+- extended/hadronic/Hadr03 (exhadr03-V10-04-02)
+- extended/hadronic/Hadr04 (exhadr04-V10-04-02)
+- extended/hadronic/Hadr06 (exhadr06-V10-04-01)
+- extended/hadronic/Hadr07 (exhadr07-V10-04-01)
+- extended/hadronic/NeutronSource (NeutronSource-V10-04-01)
+  o Set visualisation only in interactive mode in main().
+- extended/medical/DICOM (DICOM-V10-04-00)
+  o Enabled CMake package configuration. Added DICOM_USE_DCMTK and
+    DICOM_USE_HEAD options backwards compatible with environment variables.
+  o Updated READMEs.
+- extended/medical/DICOM2 (DICOM2-V10-04-00)
+  o New example demonstrating how to inherit from DICOM example.
+- extended/medical/dna/pdb4dna (pdb4dna-V10-04-00)
+  o Fixed analysis code.
+- extended/medical/electronScattering (electronScattering-V10-04-01)
+- extended/medical/electronScattering2 (exampleES2-V10-04-02)
+- extended/medical/fanoCavity (fano-V10-04-02)
+- extended/medical/fanoCavity2 (fano2-V10-04-01)
+- extended/medical/GammaTherapy (gtherapy-V10-04-01)
+  o Set visualisation only in interactive mode in main().
+- extended/optical/LXe (LXe-V10-04-02)
+  o LXeDetectorConstruction: moved DefineMaterials() to constructor.
+  o Replaced local physics configuration with FTFP_BERT + G4OpticalPhysics
+    Deleted LXeEMPhysics, LXeGeneralPhysics, LXeMuonPhysics and LXePhysicsList.
+  o Removed class LXeSteppingVerbose.
+  o In input macros, removed /LXe/detector/update and added /run/initialize.
+    General cleanup.
+  o Addressing problem report #2042.
+- extended/radioactivedecay/Activation (activation-V10-04-01)
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-04-01)
+  o Set visualisation only in interactive mode in main().
+- extended/radioactivedecay/rdecay02 (rdecay02-V10-04-02)
+  o PhysicsList: in constructor, set nuclide table half-life threshold to
+    0.1 picosecond and level tolerance to 1.0 eV, to not miss short-lived
+    nuclides
+  o HistoManager, TrackingAction: added two histograms to look at 0-0.1 MeV,
+    and 0-1 MeV ranges in particle emission spectra.
+  o Input macros: updated to latest UserEvapData_z83.a210, UserRadData_z82.a210,
+    UserEvapData_z102.a252 database formats.
+    Removed energy unit (keV) from call to /gun/ion in u238b.mac,
+    po201m.mac and UserEvapDataBiTest.mac.
+  o Set visualisation only in interactive mode in main().
+
+tests                                            tests-V10-04-04
+-----
+- Updated reference outputs and tools.
+- tests/test15 (test15-V10-04-15)
+  o Introduced clarifications in comments and removed overlapping parallel
+    geometry clash (double placement).
+  o Correction in main() for physics-list selection and output text files.
+  o Added protection against log(0) in neutron time-energy histogram.
+- tests/test31 (test31-V10-04-00)
+  o test31Histo: added extra test of ion stopping.
+  o Removed G4VIS_USE and G4UI_USE flags.
+- tests/test44 (test44-V10-04-01)
+  o Modified plot format.
+

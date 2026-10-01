@@ -1,0 +1,297 @@
+
+                       geant4-10-02-ref-05
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o CMake: enhanced advanced option for use of external USolids/VecGeom library;
+   it is now possible to select individual shapes for partial use of the
+   set of primitives provided by the library
+ o Updated internal CLHEP module to CLHEP-2.3.3.0.
+ o Added new stepper classes G4BogackiShampine23, G4BogackiShampine45
+   and DormandPrince745, implementing third order and fifth order embedded
+   Runga-Kutta tableaus. Set G4BogackiShampine45 as default stepper for testing.
+ o Reimplemented algorithm for computation of GetPointOnSurface() in
+   G4BooleanSolid, now using cached list of primitives to boost performance.
+ o Allow addition of new evaporation or FermiBreakUp models after the
+   initialisation in de-excitation hadronic model.
+ o New tuning of the FTF model parameters; introduced smearing of delta-isobar
+   mass and improved di-quark fragmentation into baryons in Lund string
+   fragmentation.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in release 10.2.p02
+(o)  Fixes included in release 10.2.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-02-13
+-----
+- Enhanced advanced option for use of external USolids/VecGeom library;      (*)
+  it is now possible to select individual shapes for partial use of the
+  set of primitives provided by the library, by specifying through the
+  GEANT4_USE_USOLIDS the list of primitives to consider, i.e. using:
+  -DGEANT4_USE_USOLIDS="box;tubs" will replace box and tubs shapes with
+  USolids/VecGeom ones; -DGEANT4_USE_USOLIDS="all" or -DGEANT4_USE_USOLIDS
+  will replace with all shapes enabled in the library.
+- Fix for treatment of FindCLHEP module for the case of external CLHEP       (*)
+  installation. Addressing problem report #1855.
+- Added missing Xmu to X11_LIBRARIES when using Motif/OpenInventor on        (*)
+  MacOSX.
+
+analysis                                         analysis-V10-02-03          (o)
+--------
+- Updated to g4tools 1.27.2:
+  o Fixed compilation warnings on gcc-6.1                                    (*)
+  o Fixed compilation warning and MacOSX (when using freetypes).
+
+event                                            event-V10-02-03
+-----
+- Fixed typo in printout. Addressing problem report #1860.                   (*)
+
+externals                                        externals-V10-02-09
+---------
+- CLHEP: updated to CLHEP-2.3.3.0:
+  o Restored skipping of sequences for safer seeds setting in setSeeds()
+    in MixMaxRng. Changed number of N in mixmax to 17 (was 256) and provided
+    new skipping coefficients for the new value of N and for the case N=8.
+    Corrected check for counter range in MixMaxRng::getState().
+    Avoid hard-coded constant for initialisation of VECTOR_STATE_SIZE in
+    MixMaxRng, to directly use actual value of "N" from mixmax.
+  o Added symbols 'us' and 'ps' for microsend and picosecond respectively
+    to SystemOfUnits.h and setSystemOfUnits.cc and converted all symbols and
+    constants from "static const" to "static constexpr".
+
+geometry
+--------
+- divisions (geomdiv-V10-02-00):
+  o Updated unit tests.
+- magneticfield (field-V10-02-04):
+  o Added new stepper classes G4BogackiShampine23 (BS23), G4BogackiShampine45
+    (BS45) and DormandPrince745 (DP45), implementing third order (BS23) and
+    fifth order (BS45, DP45) embedded RK tableaus.
+  o Corrected implementation of operator=() and copy-ctor for G4Field,       (*)
+    G4ElectroMagneticField, G4ElectricField and G4CachedMagneticField.
+    Fixed Clone() signatures in derived Field classes.
+- management (geommng-V10-02-09):
+  o Added transformations for normal vectors in G4ScaleTransform.
+  o Properly use 3D transformations in G4ReflectedSolid. Removed unused
+    affine-transformation data and related methods; removed not used cached
+    inverse transformation. Corrected GetPolyhedron() for multi-threading.
+    Simplified code.
+  o Updated unit test visualization macros and UI setup.
+- navigation (geomnav-V10-02-06):                                            (*)
+  o Reinstated check on anomalous mother-step with corrective action,
+    previously moved only in check-mode in G4VoxelNavigation and
+    G4NormalNavigation.
+  o Fixed compilation warning on gcc-6.1.
+- solids/Boolean (geom-bool-V10-02-05):
+  o Boosted computation of GetPointOnSurface() for G4BooleanSolid;
+    reimplemented algorithm, using cached list of primitives.
+  o Use transformations for normals from G4ScaleTransform in G4ScaledSolid.
+  o Fixed GetPolyhedron() in G4ScaledSolid and G4DisplacedSolid for MT.
+  o Moved accessors and modifiers in UMultiUnion wrapper to be not inlined.  (*)
+    Required modification in order to allow correct dispatching to VecGeom
+    types.
+- solids/CSG (geom-csg-V10-02-04)                                            (*)
+  o Moved accessors and modifiers in USolids wrappers to be not inlined.
+    Required modification in order to allow correct dispatching to VecGeom
+    types.
+- solids/specific (geom-specific-V10-02-11)
+  o Moved accessors and modifiers in USolids wrappers to be not inlined.     (*)
+    Required modification in order to allow correct dispatching to VecGeom
+    types.
+  o Correction in G4UExtrudedSolid for definition of CreatePolyhedron().     (*)
+- volumes (geomvol-V10-02-01)                                                (*)
+  o Updated unit tests build scripts.
+
+global                                           global-V10-02-14
+------
+- Added 'us' and 'ps' units symbols for microsend and picosecond
+  respectively to G4UnitsTable. Temporarly commented out in G4SystemOfUnits.hh,
+  pending release of new CLHEP library 2.3.2.3.
+- Converted all units and constants from "static const" to "static constexpr".
+
+materials                                        materials-V10-02-10
+---------
+- G4MaterialPropertiesTable: moved complex methods from inline to source.
+- G4UCNMicroRoughnessHelper: all methods declared as const.
+- G4NistManager, G4NistMaterialBuilder, G4NistElementBuilder: added new const
+  methods FindElement(), FindMaterial() and FindSimpleMaterial(), for possible
+  run-time use in MT mode.
+- G4Material: avoid deletion of G4MaterialPropertyTable.
+- G4Element: added method GetZ_asInt().
+- Code cleanup; adoption of nullptr, use of const/static.
+
+particles                                        particles-V10-02-14
+---------
+- Fixed G4IonTable::GetIon() with non-zero level.
+- Fixed Coverity defects.
+
+persistency/gdml                                 gdml-V10-02-06
+----------------
+- Added ability to automatically export the names of sensitive detectors
+  as auxiliary information.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-02-16)
+  o G4EmStandardPhysicsGS: change back default step limit type to opt0-like
+    and set default range factor to 0.1.
+  o Updated G4EmModelActivator.
+  o DNA and ModelActivator constructors: corrected model/process names;
+    adjusted high energy threshold of solvation (kill) in respect to the
+    energy range of the elastic model.
+    Added G4DNAElectronSolvation to all DNA constructors.
+
+processes/electromagnetic/dna                    emdna-V10-02-20
+-----------------------------
+- G4DNAElectronSolvation, G4DNAOneStepThermalizationModel: corrected model
+  and process names for solvation.
+- G4DNAChampionElasticModel: deprecated GetKillBelowThreshold() method;
+  removed attributes; modified Theta() method.
+- G4DNAUeharaScreenedRutherfordElasticModel: deprecated SetKillBelowThreshold()
+  and GetKillBelowThreshold() methods, use G4LowECapture or
+  G4DNAElectronSolvatation; modified SelectHighEnergyLimit() method; removed
+  attributes.
+- G4DNAChampionElasticModel, G4DNAUeharaScreenedRutherfordElasticModel:
+  added pre-processor flag to control Verbose check mode; checking energy
+  boundaries in Initialise(), removed call to G4Electron; cleanup in
+  CrossSectionPerVolume by removing unnecessary checks and calls to map;
+  removed energy checks in SampleSecondaries().
+- G4DNAOneStepThermalizationModel: using pre-processor flag to control check
+  mode verbosity; removed call to G4Electron at initialization.
+- G4DNATransformElectronModel: using pre-processor flag to control check
+  mode verbosity; removed call to G4Electron at initialization; added check
+  for creation of solvated electron.
+- G4VUserChemistryList: added flag; some code cleanup.
+- G4MoleculeCounter: at initialization time, prevent creating entries for 
+  unregistered molecule definition.
+- Fixed compilation warnings in gcc-6.1.                                     (*)
+
+processes/electromagnetic/lowenergy              emlowen-V10-02-06           (*)
+-----------------------------------
+- Updated G4LowEPComptonModel; addressing problem report #1676.
+- Fixed compilation warnings in gcc-6.1.
+
+processes/electromagnetic/standard               emstand-V10-02-16
+----------------------------------
+- Added c++11 keywords: explicit, final, override, delete; use nullptr
+  and use G4Element::GetZasInt().
+
+processes/electromagnetic/utils                  emutils-V10-02-19
+-------------------------------
+- G4VEmModel, G4VAtomDeexcitation, G4EmCalculator: use new method GetZasInt()
+  from G4Element.
+- G4VEmModel: fix in SelectRandomAtomNumber() method.
+- G4VAtomDeexcitation: fixed possible data race at initialistion.
+- Fixed Coverity defects.
+
+processes/hadronic
+------------------
+- models/de_excitation (hadr-deex-V10-02-27)
+  o G4VEvaporation, G4Evaporation, G4VFermiBreakUp, G4FermiBreakUp,
+    G4PhotonEvaporation, G4ExcitationHandler: cleaned up initialisation;
+    added G4VFermiBreakUp pure virtual methods allowing to have alternative
+    models.
+  o G4ExcitationHandler: allow addition of new evaporation or FermiBreakUp
+    models after the initialisation of the handler.
+    Removed G4Exception when MF model is called, instead increase default
+    limit on excitation energy per nucleon to 100GeV.
+  o G4Evaporation: allow change of the channel factory after initialisation.
+  o G4EvaporationProbability: more detailed grid for probabilities.
+    Use same sampling algorithm as in the pre-compound model (do not
+    interpolate probability).
+  o G4NeutronRadCapture: added initialisation of G4PhotonEvaporation.
+  o G4DeexPrecoParameters, Evaporation: use default channel factory.
+  o G4NuclearLevelData, G4LevelManager: added method to access low-edge levels.
+  o G4KalbachCrossSection: more smooth inverse cross section for transitions
+    of high energy.
+  o Removed specific GEMCoulombBarrier classes per ion.
+  o Cleaned up code in CoulombBarrier and FermiFragment classes.
+  o Fixed Coverity defects.
+- models/particle_hp (hadr-hpp-V10-02-12)                                    (*)
+  o Fixed problem in deletion of models in multi-thread mode.
+  o Fixed warning message from gcc-6.1.
+- models/parton_string/diffraction (hadr-string-diff-V10-02-02)
+  o New tuning of FTF model parameters.
+  o Introduced smearing of delta-isobar mass; delta-isobars are now treated
+    as a kinetic track; imporved parameterisation of the quark exchange process
+    with excitation.
+    Na61/SHINE exp. data on Pi+, Pi-, K+, K- and protons in PP interactions at
+    20, 31, 40, 80 and 158 GeV/c are now described. Now reproducing the ratio
+    of <Strane Q>/<Normal Q> in PP interactions. Not describing kink in AA
+    interactions.
+  o Fixed bug in G4FTFModel for nucleus-nucleus interactions                 (*)
+    Also improvements in sampling of kinematical variables.
+  o Improved G4FTFAnnihilation; now creating Pi0, Eta and Eta_prime.         (*)
+- models/parton_string/hadronization (had-hadronization-V10-02-01)
+  o Improved di-quark fragmentation into baryons in Lund string fragmentation.
+    Improved description of NA49 and NA61/SHINE exp. data on p+p->p+X.
+    Improvements in method SetMinimalStringMass(), relevant for Pbar P
+    annihilation.
+- models/parton_string/management (hadr-partonstring-mgt-V10-02-00)
+  o Moved G4PomeronCrossSection class to 'qgsm' module.
+- models/parton_string/qgsm (hadr-qgsm-V10-02-02)
+  o Added G4PomeronCrossSection class from 'management' module.
+
+track                                            track-V10-02-01
+-----
+- Use G4Log in G4VelocityTable::Value() method.                              (*)
+
+visualization                                    vis-V10-02-01
+-------------
+- Fixed compilation warnings from gcc-6.1.                                   (*)
+- management (visman-V10-02-09):
+  o MT mode: moved flush to end of visualization thread; this is so that all
+    trajectories are flushed from the thread before switching back to master
+    thread. Also fixing picking in MT mode.
+- OpenGL (opengl-V10-02-04):
+  o Xm: Ensure all items get flushed to screen, even when 'eventsDrawInterval'
+    is set greater than 1.
+  o Fixed some inconsistencies in "/vis/ogl/set/eventsDrawInterval" and
+    "/vis/ogl/set/displayListLimit" commands.
+
+examples                                         examples-V10-02-05
+--------
+- Updated reference outputs.
+- advanced/hadrontherapy (hadrontherapy-V10-02-00)
+  o Added new modulator class.
+- advanced/human_phantom (human_phantom-V10-02-01)                           (*)
+  o Fixed compilation warnings on gcc-6.1.
+- basic/B3 (exampleB3-V10-02-01)
+  o Fixed initialization of the hits collections IDs in B3aEventAction.      (*)
+    Addressing problem report #1862.
+  o Removed redundant History files from B3a and B3b.
+- extended/electromagnetic/TestEm7 (testem7-V10-02-01)
+- extended/exoticphysics/channeling (channelingExample-V10-02-00)
+- extended/field/field03                fieldex03-V10-02-00                  (*)
+- extended/field/field04                fieldex04-V10-02-00                  (*)
+  o Fixed compilation warnings on gcc-6.1.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-02-04)
+  o Added survey of each nuclide in a given time window.
+    Print-out activity of each nuclide.
+
+tests                                            tests-V10-02-05
+-----
+- Updated reference outputs and tools.
+- test19 (test19-V10-02-01)
+  o Updated PBS submit scripts and cleanup to analysis scripts.
+- tests/test22 (test22-V10-02-01)
+  o Bug-fix in hA/test22_NA61 affecting proton spectra in NA61 comparisons.
+  o Removed unused file G4DecKineticTracks.cc and added G4DecayKineticTracks.cc
+    in order to force the decay of eta and eta_prime.
+- test23 (test23-V10-02-04)
+  o Updated PBS submit scripts.
+- test30 (test30-V10-02-01)
+  o Use GEM+evaporation with theBinary cascade.
+- tests/test36 (test36-V10-02-01)
+  o Fixed compilation warnings from gcc-6.1.
+- test47 (test47-V10-02-02)
+  o Updated PBS submit scripts.
+  o Added scripts to generate JSON specs for exp.data.
+  o Fixed ITEP-711 tables for p+Pb and p+U -> p+X a 119deg.
+- tests/test48 (test48-V10-02-00)
+- tests/test75 (test75-V10-02-00)
+  o Updated PBS submit scripts.

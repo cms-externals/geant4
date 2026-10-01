@@ -1,0 +1,611 @@
+
+                  Geant4 11.5-beta-01 Release Notes
+                  ---------------------------------
+
+                                                            26 June 2026
+
+                 Migration Notes & Main New Features
+                 -----------------------------------
+
+  o Parallelised overlap checks for placed volumes in G4GeomTestVolume using
+    the available tasking thread pool, or a temporary local pool in MT builds.
+  o Introduced new classes G4TouchableWalker and interface G4VTouchableVisitor,
+    allowing perusal of the full tree of touchables. Added new classes
+    G4VolumeTreeWalker and G4VVolumeTreeVisitor to visit each physical and
+    logical volume.
+  o In GDML, added support for importing/exporting G4DisplacedSolid entities.
+    Extended GDML schema with new element 'displacedSolid' and updated to
+    version 3.2.0.
+  o Use smart pointer and C++11 static semantics to implement G4Cache backing
+    store.
+  o Optimised computation of mass ratio for ions in G4VEnergyLossProcess.
+  o Updated G4UrbanMscModel with final optimisation of the step limit
+    algorithm, used in EM physics option3.    
+  o Added G4MesoscopicMoleculeCounter and added hooks for
+    G4MoleculeCounterManager into G4DNAEventScheduler to record snapshots.
+  o Added a new material "G4_BlackBody" in G4NistMaterialBuilder, needed for
+    simulation of Compton process on black body photons.
+  o Removed obsolete DNA option 1, 3, 5, 7 and all G4EmDNAPhysics_stationary*
+    constructors.
+  o In G4MTRunManager, added interface for initializing event seeds, enabling
+    flexible integration with external schedulers without requiring additional
+    code changes.
+  o In G4MaterialScanner, G4MatScanMessenger and G4MSSteppingAction,
+    calculate hadronic interaction length from hadron inelastic cross-sections
+    instead of relying on the empirical formula of G4Material.
+  o Added options for writing scan results to a file from material scanner.
+  o Introduced UI command "/run/undertakeOptimisation" to force geometry
+    optimization and added to G4RunMessenger.
+  o Added drawing methods for scorers; added options to refresh or overlay
+    new scoring mesh.
+  o In the method G4CascadeFinalStateAlgorithm::GenerateCosTheta() of
+    Bertini-like model (BERT), revert to the original algorithm for 4-or-higher
+    body generation of cos(theta), to fix an observed symmetric double bump
+    in the Feynman-x distribution; the update also repairs unphysical bumps
+    in certain spectra of secondary pions coming from h+A interactions and
+    does not induce any additional unphysical effects in the simulated spectra
+    of secondary pions, protons, and neutrons resulting from h+A interactions.
+    Note that the switch to roll back BERT as in Geant4 version 11.2 remains
+    available.
+  o Updated LEND model to GIDI+ 3.34.0-42 and pugixml v1.15.
+  o In hadronic de_excitation model, limit energy non-conservation to 0.5 MeV
+    in G4UnstableFragmentBreakUp.
+  o General modernization of code in g4tools externals.
+  o Added support for FPE handling on macOS with Apple Silicon.
+  o Applied clang-format to the entire code base.
+  o Updated header guards to style/format according to coding guidelines
+    in most modules.
+  o New versions of datasets: G4EMLOW-9.0.
+
+ ----------------------------------------------------------------------------
+
+                             Technical Notes
+                             --------------- 
+
+  o Tested platforms:
+    + Linux, gcc-16.1.0.
+      Tested on 64 bit architectures (Intel or AMD) with Alma Linux 9
+      (based on RedHat Linux Enterprise 9). Versions of Geant4 have also
+      been compiled successfully on other Linux distributions, Ubuntu,
+      Debian, Suse or other RedHat systems.
+    + MacOS 26.5, Apple LLVM/clang-21 (Apple Silicon), 64 bits.
+    + Windows/11 with Visual C++ 18.7 (Visual Studio 2026), 64 bits.
+
+  o More verified configurations:
+    + Linux, with gcc-11.5/12.1/13.3/14.2/15.2, clang-19/20/22.
+    + Linux, with Intel-icx 2026.1.
+    + MacOS 14.8/15.7, with Apple LLVM/clang-16/17.
+    + Windows/11 with Visual C++ 14.4 (Visual Studio 2022)
+
+  o External dependencies (optional):
+    + CLHEP-2.4.7.2, for external installation/use of the CLHEP library.
+    + VecGeom v2.1.0, for optional use of VecGeom primitives.
+    + PTL-3.0.1, for external installation/use of the PTL tasking library.
+
+  o New datasets:
+    + G4EMLOW-9.0.
+
+ Please refer to the Geant4 User Documentation:
+   https://cern.ch/geant4/support/user_documentation
+ for further information about using Geant4.
+
+ ----------------------------------------------------------------------------
+
+List of features and fixes included in this Beta release since 11.4.p02:
+
+  o Configuration:
+    -------------
+    + CMake:
+      o Added first setup for Doxygen-ation of toolkit code.
+      o Updated to datasets: G4EMLOW-9.0.
+
+  o Analysis:
+    --------
+    + Removed redundant G4TH*ToolsManager.hh, G4TP*ToolsManager.hh header files
+      with template specialization declarations; the P-files contained erroneous
+      header guards which hid an obsolete declaration in P2-file.
+    + Added headers required for used declarations.
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+
+  o Digits_Hits:
+    -----------
+    + Added draw() method for Probe. Added options to refresh or overlay
+      new scoring mesh; added options to write more than one color charts;
+      optimised the background black painting behind the texts in color chart;
+      added/modified drawing and related UI commands based on above changes.
+      Cleaned up the implementation of log-scale color map.
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+
+  o Events:
+    ------
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+
+  o Externals:
+    ---------
+    + g4tools:
+      o General modernization of classes in tools/lina (linear algebra):
+         removed unused classes, member functions; removed deprecated/duplicated
+         member functions, updated client code to use single form where needed;
+         refactored box/line/plane/vec/quat/mat into single forms; refactored
+         colorf to use composition; preliminary refactor of matrix classes.
+       o Modernised, simplified and optimised string-related functions.
+       o Maintenance fixes highlighted by implementing unit tests for string
+         related functionality.
+       o Removed obsolete 'rtausmef' RNG; C++ Standard Library provides
+         sufficient quality and distributions for use within tools itself.
+       o Removed unused 'carray' header; simplified 'text_valop' to allow
+         removal of 'valop' and 'valop2sg'.
+       o In tools/sg/group, added takeover_nodes() method to transfer nodes
+         from another group.
+       o In toolx/sg/text_freetype_marker, override char_height_touched()
+         to properly handle the field 'height'.
+       o Tidy unused/irrelevant/redundant code from within tools/sg plotting.
+       o Fixed compilation warnings for "missing braces around initializer",
+         observed with gcc-11.5. Addressing the problem report #2705.
+       o Fixed compilation warning for implicit type conversion on macOS/XCode.
+       o Applied clang-format to the entire code base.
+
+  o G3toG4:
+    ------
+    + Use standard Geant4 header guard without value for definition.
+    + Applied clang-format to the entire code base.
+    + Added headers required for used declarations.
+
+  o Geometry:
+    --------
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+    + Updated Doxygen documentation with grouping commands to organise
+      classes/functions documentation by category/subcategory.
+    + navigation:
+      o Parallelised overlap checks for placed volumes in G4GeomTestVolume
+        using the available tasking thread pool, or a temporary local pool in
+        MT builds. Temporary results are cached by G4GeomTestVolume and
+        reported in geometry traversal order. Parameterised and other
+        specialised physical volumes retain their existing serial overlap
+        checks.
+        Added task-local geometry and solids workspaces, deterministic random
+        seeds and surface sampling warm-up, including constituents of
+        G4MultiUnion, for safe concurrent overlap calculations.
+        Made UI commands for checking overlaps master-only commands to avoid
+        repeating the full overlap check on every worker in MT/tasking
+        applications.
+      o Introduced new classes G4TouchableWalker and interface
+        G4VTouchableVisitor, allowing perusal of the full tree of touchables,
+        i.e. all the trunk and leaf volumes of the geometry (descending every
+        copy of replicas and/or parameterised volumes).
+        A concrete example visitor class G4TouchableCollector identifies any
+        touchables that are instances of a particular logical or physical
+        volume.
+      o Added new classes G4VolumeTreeWalker and G4VVolumeTreeVisitor which
+        visit each physical and logical volume. In this case a replicated volume
+        (replica, parameterised volume) is visited only once. A concrete example
+        visitor class G4VolumeTreeReporter prints the volume tree, one line per
+        logical and physical volume.
+    + solids/CSG:
+      o In G4Tubs, G4CutTubs, G4Cons and G4Torus, fixed defects (DIVIDE_BY_ZERO)
+        reported by Coverity in ApproxSurfaceNormal().
+    + volumes:
+      o Refactored G4PVPlacement overlap checking to separate computation from
+        reporting without retaining results in the physical volume, enabling
+        concurrent checks with ordered diagnostic output.
+        Added optional task-local random streams for deterministic surface
+        sampling without changing the random stream used by serial overlap
+        checks.
+
+  o Global:
+    ------
+    + Added support for FPE handling on macOS with Apple Silicon.
+      In G4FPEDetection, refactored InvalidOperationDetection() and
+      TerminationSignalHandler() into a common implementation.
+    + Use smart pointer and C++11 static semantics to implement G4Cache
+      backing store.
+    + Enriched and grouped Doxygen documentation for core global management
+      classes. Provided basic Doxygen docstrings. In G4PhysicsVector, document
+      pre and post conditions on some functions.
+    + Use standard Geant4 header guard without value for definition.
+    + Added headers required for used declarations.
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+    + Changed date for release 11.5-beta.
+
+  o Graphics Representations, Intercoms, Interfaces:
+    -----------------------------------------------
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+
+  o Materials:
+    ---------
+    + G4NistMaterialBuilder: added a new material "G4_BlackBody", needed for
+      simulation of Compton process on black body photons.
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+
+  o Parameterisations:
+    -----------------
+    + Applied clang-format to the entire code base.
+    + GFlash:
+      o In GVFlashShowerParameterisation, added GetEffZoA() method.
+      o GFlashHomoShowerParameterisation, GFlashSamplingShowerParameterisation:
+        made SetMaterial() private; corrected Ec calculation.
+      o In GFlashShowerModel, added methods SetParameterisation(),
+        SetHitMaker(), SetParticleBounds() and GetPBound().
+        Use GetPBound() in GFlashShowerModelMessenger.
+      o Use standard Geant4 header guard without value for definition.
+
+  o Particles:
+    ---------
+    + Fix in G4IonTable::AddProcessManager() for G4MuonicAtom setup when
+      assigning the shared particle definition ID, keeping late-created
+      G4MuonicAtom instances complete for MT SetupShadowProcess() on
+      subsequent runs. Addressing problem report #2716.
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+
+  o Persistency:
+    -----------
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+    + GDML:
+      o Added support for importing/exporting G4DisplacedSolid entities.
+      o Extended GDML schema with new element 'displacedSolid'.
+        Updated GDML schema to version 3.2.0.
+
+  o Physics Lists:
+    -------------
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+    + Constructors:
+      o electromagnetic:
+        - Set 'ApplyCuts' to true for G4EmStandard_opt2.
+        - G4ChemMIDissociationChannels: new class to set dissociative decay
+          channels for multiple ionised water ions.
+        - G4ChemDissociationChannels_option1: updated function
+          ConstructDissociationChannels() to configure dissociation channels
+          for multiple ionisation processes.
+        - G4EmDNABuilder: added functions FindOrBuild*Ionisation() for setting
+          multiple ionisation for proton, alpha++ and carbon.
+        - Added verbose for PhyChem processes.
+        - G4EmDNAPhysics, G4EmDNAPhysics_option2, G4EmDNAPhysics_option4,
+          G4EmDNAPhysics_option6, G4EmDNAPhysics_option8, G4EmDNABuilder,
+          G4EmDNAPhysicsActivator: added deuteron to the list of DNA particles
+          using track structure Rudd model of ionisation at low-energy.
+        - In G4GeneralGammaProcess, fix to address reported Coverity defect
+          and minor code clean-up.
+        - Removed DNA option 1, 3, 5, 7 and all G4EmDNAPhysics_stationary*
+          constructors.
+        - G4EmDNAPhysics, G4EmDNAPhysics_option2, G4EmDNAPhysics_option4,
+          G4EmDNAPhysics_option6, G4EmDNAPhysics_option8, G4EmDNABuilder,
+          G4EmDNAPhysicsActivator: use new parameters for transition between
+          DNA and standard physics, which are defined inside G4EmParameters.
+        - G4EmDNABuilder: all energy limits with values are now taken from
+          EM parameters or from namespace for the class.
+        - Modified G4EmDNAPhysics_option4 and G4EmDNABuilder; DNA physics is
+          unchanged; standard models for electrons are deactivated below 10 MeV;
+          added comments and better indentation of the code.
+        - In G4EmDNAPhysics_option4, extended to 10 MeV.
+          Modified G4EmDNABuilder accordingly
+        - Requiring new data set G4EMLOW-9.0.
+      o factory:
+        - Removed DNA option 1, 3, 5, 7 and all G4EmDNAPhysics_stationary*
+          constructors.
+      o limiters:
+        - Removed G4UserSpecialCuts process from G4StepLimiterPhysics.
+        - Moved processes classes G4UserSpecialCuts, G4SpecialCuts,
+          G4MaxTimeCuts and G4MinEkineCuts to biasing/management module.
+    + Lists:
+      o Added dependency on /processes/biasing/management module.
+
+  o Electromagnetic Processes:
+    -------------------------
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+    + DNA:
+      o Updated G4DNADoubleIonisationModel, G4DNATripleIonisationModel and
+        G4DNAQuadrupleIonisationModel to enable the usage of stationary mode
+        through G4EmParameters.
+      o G4DNARuddIonisationDynamicModel: fixed max energy transfer.
+      o G4DNARuddIonisationDynamicModel, G4DNARuddIonisationExtendedModel: at
+        initialisation, changed the order of definition of type of charged
+        particle to enable deuteron ionisation in DNA.
+      o G4DNAIonisation: use EM parameters to define energy limits for a model.
+      o G4DNAIonisation, G4DNARuddIonisationDynamicModel and
+        G4DNARuddIonisationExtendedModel: use updated EM parameters.
+      o G4DNAElastic: use correct type of ions.
+      o Added verbose for PhyChem processes.
+      o Updated molecule counter dump templates and added counter output method.
+      o In G4DNARuddIonisationDynamicModel and G4DNARuddIonisationExtendedModel,
+        apply correction factor only on cross-section of Hydrogen; improved
+        initialisation of static data. Addressing problem report #2710.
+      o Fixed "out of bounds" access in Event Molecule Counter.
+      o In G4DNAEmfietzoglouExcitationModel, G4DNAEmfietzoglouIonisationModel
+        and G4DNAUeharaScreenedRutherfordElasticModel, modified for extension
+        of DNA option4 to 10 MeV.
+      o Added G4MesoscopicMoleculeCounter and added hooks for
+        G4MoleculeCounterManager into G4DNAEventScheduler to record snapshots.
+      o Fixed compilation warning on Intel/icx compiler for variable defined but
+        not used in G4_NO_VERBOSE mode in G4ITTransportation::AlongStepDoIt().
+      o Use standard Geant4 header guard without value for definition.
+      o Added headers required for used declarations.
+      o Requiring new data set G4EMLOW-9.0.
+    + Muons:
+      o G4EnergyLossForExtrapolator: in order to avoid data race in the MT mode,
+        implemented backward propagation only for materials used in geometry,
+        and ignore base material approach. Use FindIndex() in TrueStepLength
+        as per use in other functions.
+      o G4EnergyLossForExtrapolator, G4TablesForExtrapolator: technical
+        modifications according to changes in 'utils' module. No changes in
+        physics behavior.
+      o In G4TablesForExtrapolator, fixed reported Coverity defect on memory
+        leak at exit.
+      o In G4MuPairProductionModel, G4EnergyLossForExtrapolator, make static
+        initialisation safe for the MT mode.
+      o Fixed compilation warnings for implicit type conversions on macOS/XCode.
+    + Standard:
+      o Updated G4UrbanMscModel with final optimisation of the step limit
+        algorithm, used in EM physics option3.
+    + Utils:
+      o G4EmParameters, G4EmLowEParameters: added member functions to
+        enable/disable the usage of multiple ionisation for DNA physics.
+        Added corresponding command in G4EmLowEParametersMessenger.
+      o G4EmCalculator: fixed reported Coverity defect by adding a check
+        on energy.
+      o G4LossTableBuilder: in order to avoid data race in backward propagator,
+        added extra logical parameter to public methods; should not affect any
+        existing application. 
+      o G4EmDataRegistry, G4VMultipleScattering: added new methods for use in
+        parallel initialisation of EM physics.
+      o G4VEnergyLossProcess: optimised computation of mass ratio for ions.
+      o G4EmCalculator: fixed reported Coverity defect on computation of ion
+        dEdx.
+      o G4EmDataHandler: fixed destruction at exit.
+      o G4EmParameters, G4EmLowEParameters: added extra parameters and extended
+        information printout for energy transition between DNA and standard
+        models. Defined new parameters for e-, protons, and ions.
+      o G4EmLowEParameterMessenger: added UI commands for transition energies.
+      o G4EmSaturation, G4EmBiasingManager: use std::size_t.
+      o Fixed compilation warnings for implicit type conversions on macOS/XCode.
+    + Xrays:
+      o G4QuasiScintillation: skip generating real optical photons if quasi
+        optical photon is created, following the same logic used in
+        G4QuasiCerenkov.
+      o G4CerenkovQuasiTrackInfo, G4ScintillationQuasiTrackInfo: added Clone()
+        method. This method is used when cloning G4Track for sub-event.
+
+  o Generic Processes:
+    -----------------
+    + Applied clang-format to the entire code base.
+    + Biasing:
+      o Moved processes classes G4UserSpecialCuts, G4SpecialCuts, G4MaxTimeCuts
+        and G4MinEkineCuts from physics_lists/constructors/limiters module.
+
+  o Hadronic Processes:
+    ------------------
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+    + cross_sections
+      o In G4GammaNuclearXS, protected initialisation of the shared static
+        element data table with G4AutoLock.
+      o Fix to address potential division by zero reported by Coverity.
+    + management
+      o G4HadronicProcessStore: introduced GetInteractionLength() method.
+      o Added headers required for used declarations.
+    + models/cascade
+      o In G4CascadeFinalStateAlgorithm::GenerateCosTheta(), revert to the
+        original algorithm for 4-or-higher body generation of cos(theta), to
+        fix an observed symmetric double bump in the Feynman-x distribution;
+        the update also repairs unphysical bumps in certain spectra of
+        secondary pions coming from h+A interactions and does not induce any
+        additional unphysical effects in the simulated spectra of secondary
+        pions, protons, and neutrons resulting from h+A interactions.
+      o Fixed Bertini secondary creator model IDs in G4CascadeInterface,
+        tagging particles from precompound and evaporation stages with their
+        corresponding  submodel instead of always using 'model_BertiniCascade'.
+    + models/de_excitation
+      o G4UnstableFragmentBreakUp: reorganised class for sampling of decay of
+        unstable fragments, which do not have decay channels due to Coulomb
+        barrier. Updated model may be used for decay of fragments with high
+        excitation. Limit energy non-conservation to 0.5 MeV.
+        Removed parasitic printout, which is seen in the case of deuteron
+        target; removed also debug printout.
+      o G4Evaporation: updated usage of G4UnstableFragmentBreakUp.
+      o Fixed compilation warning on Intel/icx compiler for variable set but
+        not used in G4_NO_VERBOSE mode in G4LevelReader.
+    + models/inclxx
+      o In G4INCLKinematicsUtils, added protections in function momentumInCM()
+        to avoid potential square root of negative number leading to observed
+        FPE in system testing.
+      o Avoid unnecessary use of generic pow() in momentumInCM() functions.
+    + models/lend
+      o Refactored G4LEND to make GIDI+ an implementation detail.
+        Made all GIDI+ headers private to G4LEND so they are not exposed to
+        toolkit code or when installed. Hide use of GIDI+ types in G4GIDI
+        classes behind a Pimpl pattern so that clients are not exposed directly
+        to GIDI+. As G4GIDI provides the core interface(s) needed to GIDI+, no
+        further changes are needed. No changes to GIDI+ code, while G4LEND code
+        changes are pure interface changes.
+      o Updated model to GIDI+ 3.34.0-42 and pugixml v1.15.
+      o Add LUPI_HOST_DEVICE_INLINE macro and shared memory placement options
+        for GPU performance improvements.
+      o Fixed a bug in thermal upscatter models B and DBRC: angular distribution
+        was sampled at the wrong projectile energy.
+      o Fixed compilation warnings on gcc-16.1 and addressed reported Coverity
+        defects.
+    + models/parton_string
+      o G4FTFAnnihilation: protected the two- and three-string annihilation
+        kinematics against a floating-point exception caused by a small
+        negative roundoff in the squared decay momentum near threshold.
+        Fixes occasional FPE crashes detected on test64 with ftfp.in input
+        macro.
+      o Added headers required for used declarations.
+    + models/radioactive_decay
+      o Made internal method GetDecayTable() private.
+    + util
+      o G4ReactionProduct, G4ReactionProductVector: fixed reported Coverity
+        defect; added move operator; use std::size; use the same format for
+        all inline methods; removed unused header G4HadronicException.hh;
+        use 'default' keyword.
+      o G4DecayStrongResonances: simplified code and some clean-up.
+      o G4HadFinalState: use std::size_t; minor code formatting.
+
+  o Run:
+    ---
+    + Added public interface for event seed initialization: in G4MTRunManager,
+      added interface for initializing event seeds, enabling flexible
+      integration with external schedulers without requiring additional code
+      changes.
+    + Fix in G4MSSteppingAction, to remove average A and Z and add
+      integrated mass length (a.k.a. column density) instead.
+    + In G4MaterialScanner and G4MatScanMessenger, unify the length unit
+      to cm; added an option to ignore low-density materials.
+    + In G4MaterialScanner, G4MatScanMessenger and G4MSSteppingAction,
+      calculate hadronic interaction length from hadron inelastic
+      cross-sections instead of relying on the empirical formula of G4Material.
+    + Added options for writing messages to a file. In G4ExceptionHandler and
+      G4ExceptionHandlerMessenger, write specified or all warning messages to a
+      file rather than on display. In G4MaterialScanner and G4MatScanMessenger,
+      write scan results to a file rather than on display.
+      Added a UI command to alter the particle type and its momentum for
+      estimating the hadronic interaction length.
+      Use "const G4String&" as arguments in G4ExceptionHandler.
+    + Fixed compilation warning on macOS/XCode for implicit type conversion.
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+
+  o Track & Tracking:
+    ----------------
+    + In G4Track, G4VAuxiliaryTrackInformation is cloned when cloning G4Track
+      for sub-event. In G4VAuxiliaryTrackInformation, added virtual Clone()
+      method; this method must be implemented in the concrete class if
+      AuxiliaryTrackInformation is used in sub-event parallel mode.
+    + Added an overload of IncrementCurrentStepNumber() in G4Track, taking a
+      an argument to increment the current step number by more than one.
+    + Use standard Geant4 header guards without value for definition.
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+
+  o Visualization:
+    -------------
+    + Applied clang-format to the entire code base.
+    + Updated header guards to style/format according to coding guidelines.
+    + management:
+      o In G4VisManager, fixed End-of-run bug; test of 'isValidViewForRun' was
+        preventing printing of number of kept events when vis was disabled.
+        Moved to after test for ableness. Improved end of run printing.
+      o In G4VSceneHandler::GetMarkerSize(), fixed missing
+        "markerSizeType = screen" in the case of dots.
+    + OpenGL:
+      o Fixed shadowing compilation warning on Windows for 'pascal' symbol
+        in G4OpenGL header.
+      o Fixed bounds check compilation warnings on Alma9/gcc-15.
+    + OpenInventor:
+      o Use standard Geant4 header guards without value for definition.
+    + ToolsGS:
+      o In G4ToolsSGSceneHandler, added a "trash group" logic to handle
+        properly deletion of the graphics storage in MT mode; it fixes a
+        "crash at exit" when using textures.
+      o In G4ToolsSGViewer::DrawView(), use fpSceneHandler.EmptyTrash()
+        to remove no more used nodes deposited in the "trash" in
+        G4ToolsSceneHandler.
+      o In G4ToolsSGViewer destructor, proprely clear the SceneHandler nodes.
+    + Vtk:
+      o Added headers required for used declarations.
+
+  o Datasets:
+    ---------
+    + G4EMLOW-9.0:
+      o Corrected sigmadiff_cumulated_ionisation_e_cpa100_rel.dat:
+        section for 32 eV should be 32.2 eV.
+      o Added files for extended option4 up to 10 MeV:
+        sigma_excitation_e_emfietzoglou-x.dat,
+        sigma_ionisation_e_emfietzoglou-x.dat,
+        sigmadiff_ionisation_e_emfietzoglou-x.dat,
+        sigmadiff_cumulated_ionisation_e_emfietzoglou-x.dat.
+      o Removed old files: sigma_excitation_e_emfietzoglou.dat,
+        sigma_ionisation_e_emfietzoglou.dat, sigmadiff_ionisation_e_emfietzoglou.dat
+        and sigmadiff_cumulated_ionisation_e_emfietzoglou.dat
+
+  o Examples:
+    --------
+    + Updated reference outputs, macros, READMEs and scripts.
+      Reduced number of DNA physics constructors in extended examples.
+    + advanced/CaTS
+      o Updated CMake script to support proper compilation and linkage with the
+        latest Opticks version.
+      o Added MySensorIdentifier.hh and OpticksHitHandler.hh to provide
+        sensor'ID assignment and Opticks hit collection.
+      o Implemented a new SteppingAction to transfer optical photon information
+        (Cerenkov and scintillation) to Opticks and to register boundary
+        interactions as hits.
+      o Modified IArTPCSD, PhotonSD, and RadiatorSD to incorporate Opticks
+        generated hits into their sensitive detector workflows.
+      o Added simpleLArTPC_Opticks.gdml for testing geometry and validating
+        Opticks integration.
+      o Added a new example macro, electron.mac, which generates a single
+        electron for testing and validation.
+      o Performed code cleanup: removed unused and commented code; replaced int
+        with G4int and std::cout with G4cout in multiple files.
+      o Corrected indentation issues across the codebase.
+      o Use swap in OpticksHitHandler::GetHits() to prevent data races.
+    + advanced/dna/moleculardna
+      o Updated analysis macros for statistical analysis of errors and fixed
+        a bug regarding error calculation in ecoli.C.
+      o Fixed wrong gap: too long gaps can be identified sometime; base-pair
+        ids were assigned to the molecules in the voxel located outside of
+        defined chromosome geometry.
+    + basic/B5
+      o Fixed compilation warnings for implicit type conversion on macOS/XCode.
+    + extended/electromagnetic/TestEm3
+      o In main(), use 4 threads by default.
+      o In PhysicsList, define particle via constructor of EM, decay, hadronic
+        physics to avoid situation when an update in some constructors (like
+        extra DNA particle) needs to be propagated in the example by hand.
+      o In RunAction, added extra timer to print initialisation time in the
+        master thread.
+    + extended/geometry/volumeTreeVisitors
+      o New example demonstrating use of G4TouchableWalker, its associated
+        G4VTouchableVisitor interface and the concrete class
+        G4TouchableCollector. It uses the G4TouchableCollector concrete class
+        which collects a list of touchables which correspond to a logical or
+        physical volume.
+    + extended/medical/dna/chem4
+      o Fix to use std namespace for mathematical functions in Plot.cc.
+    + extended/medical/dna/chem6
+      o Modified PrimaryKiller in order to terminate transportation for ions
+        as well as electrons following energy range set through macro files.
+      o Added verbose for PhyChem processes.
+      o Fixed FTE failure in messenger.
+    + extended/medical/dna/microys
+      o Minor fix in TrackerSD commented lines.
+      o Reduced number of DNA physics constructors.
+    + extended/medical/dna/molcounters
+      o Added UI for counter examples.
+      o Added abstract base for molecule scorers.
+    + extended/medical/dna/spower
+      o Removed references to stationary constructors.
+    + extended/parameterisations/gflash/gflasha
+      o In ExGflashMessenger, limited max number of crystals per raw/col.
+      o In ExGflashDetectorConstruction, do not use SetMaterial() call from
+        GFlashHomoShowerParameterisation.
+      o Some code cleanup.
+    + extended/parameterisations/gflash/gflash1
+    + extended/parameterisations/gflash/gflash2
+    + extended/parameterisations/gflash/gflash3
+      o Corrected crystal copy numbering.
+      o Simplified processing; draw hits as circles.
+      o Pass Gflash classes by pointer.
+      o Removed delete GFlash classes in DetectorConstruction.
+      o Removed static G4ThreadLocal pointers to GFlash classes.
+      o In test.mac, test both gflash on and off cases.
+      o Applied clang-format to code and code cleanup
+    + extended/parameterisations/Par04
+      o Bump keras from 3.12.1 to 3.13.2.
+        Addresses security vulnerability tagged by GitHub's dependabot.
+    + extended/runAndEvent/RE03
+      o Updated macro files to draw various scoring meshes and probes.
+
+ ----------------------------------------------------------------------------
+ 

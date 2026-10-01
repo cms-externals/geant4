@@ -1,0 +1,283 @@
+
+                       geant4-11-02-ref-06
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o First full implementation of sub-event parallelism, with creation and
+   processing of sub-events in workers, and merging of results back into
+   events on the main thread.
+ o First implementation of parallel initialisation of geometry optimisation.
+ o Added new classes for automatic field construction from parameters.
+ o Disabled default GDML schema validation as XercesC does not yet support
+   https protocol.
+ o Improved/optimised implementation of GetCubicVolume() in Boolean solids.
+ o New G4OrePowellAtRestModel class, Orel & Powell orto positronium decay
+   model AtRest and G4SimpleoPsAtRestModel, a simple orto para positronium
+   chooser.
+ o Corrected calculation of Fresnel reflection/refraction in
+   G4OpBoundaryProcess, when material property TRANSMITTANCE is specified.
+ o Added three new variants of 'Shielding' physics list in G4PhysListFactory.
+ o Introduced neutron treatment of the Unresolved Resonance Region (URR)
+   via Particle Table (PT); relevant for precise simulations of nuclear
+   reactor criticality and shielding applications.
+ o Restored OpenGL as default backend for Qt6. Fixed open issues when using
+   Qt6 with supported drivers.
+ o New dataset: G4URRPT-1.0.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in patch release 11.2.2
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-02-18
+-----
+- Fix to do not export HDF5 version to Geant4Config.                         (*)
+- New dataset: G4URRPT-1.0.
+
+analysis                                         analysis-V11-02-01
+--------
+- Fix to do not delete G4Accumulable<T> default constructor, as it prevents  (*)
+  from using it in an array without an explicit initialization in the header.
+
+event                                            event-V11-02-04
+-----
+- Initial implementation of creation and processing of sub-events.
+
+geometry/magneticfield                           field-V11-02-03
+----------------------
+- Added new classes for automatic field construction from paremeters:
+  G4FieldBuilder[Messenger], G4FieldParameters[Messenger] and G4FieldSetup.
+
+geometry/management                              geommng-V11-02-03
+-------------------
+- Added new capability to run voxel optimisation in threads in MT mode.
+  Parallelises only over volumes. The user can call the method
+  RequestParallelOptimisation(optimise, verbose) from G4GeometryManager
+  to turn it on/off. Set 'verbose=true' to obtain statistics on the volumes
+  with biggest contribution to memory size and CPU time for voxelisation.
+  New method BuildOptimisationsParallel() can be called by G4WorkerRunManager
+  to initialize. New method ReportVoxelInfo() to write out for verification.
+  Checked with simple and complex/large geometries.
+
+geometry/navigation                              geomnav-V11-02-02
+-------------------
+- G4TransportationManager now notifies G4FieldManager about the global
+  field via its new function SetGlobalFieldManager(). This provides
+  the ability to access/revise the global field manager directly
+  from G4FieldManager without dependency on the navigation module.
+
+geometry/solids/Boolean                          geom-bool-V11-02-02
+-----------------------
+- In G4BooleanSolid, propagate parameter to all constituents in
+  SetCubVolStatistics() and SetCubVolEpsilon().
+- In G4UnionSolid and G4SubtractionSolid, limit calculations with construction
+  of temporary G4IntersectionSolid by 10 constituents for GetCubicVolume().
+
+global                                           global-V11-02-13
+------
+- Updated date and tag-ID for geant4-11-02-ref-06.
+
+graphics_reps                                    greps-V11-02-02
+-------------
+- G4VVisManager: added EventReadyForVis flag, used by G4SubEvtRunManager.
+
+interfaces                                       interfaces-V11-02-05
+----------
+- G4UIQt: fixed crash and bad rendering behaviour when using QOpenGLWidget
+  with Qt6.
+
+persistency/gdml                                 gdml-V11-02-04
+----------------
+- Disabled default GDML schema validation as XercesC currently               (*)
+  does support only 'http'.
+
+physics_lists
+-------------
+- constructors/electromagnetic  (phys-ctor-em-V11-02-07)
+  o Use EmParameters to control chemistry models in G4EmDNAChemistry_option3.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V11-02-00)
+  o G4HadronPhysicsQGSP_BERT_HP: use alternative NUDEX model of
+    gamma de-excitation.
+- lists (phys-lists-V11-02-00)
+  o G4PhysListFactory: added three new variants of 'Shielding' physics list, (*)
+    using the model G4LightIonQMDReaction: 'ShieldingLIQMD', 'ShieldingLIQMD_HP'
+    and 'ShieldingLIQMD_HPT'. Addressing problem report #2615.
+    Note that 'ShieldingLIQMD' and 'ShieldingLIQMD_HP' refer to the same
+    configuration, the latter is introduced only for consistency.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-02-12)
+  o Delete unused enum, as now adoptin EmParameters to control chemistry
+    models in G4EmDNAChemistry_option3.
+- electromagnetic/standard (emstand-V11-02-09)
+  o New G4OrePowellAtRestModel class, Orel & Powell orto positronium decay
+    model AtRest and G4SimpleoPsAtRestModel, simple orto para positronium
+    chooser.
+  o G4BetheHeitler5DModel: fixed computation of sinTheta sampling and added  (*)
+    checks on arguments of G4Exp in SampleSecondaries() method, to avoid FPE
+    problems in the case of -O3 optimisation on alma9.
+  o G4eplusAnnihilation: use more const class members; changed model ID
+    definition for produced tracks.
+- utils (emutils-V11-02-10)
+  o In G4EmParameters and G4EmParametersMessenger, added orto positronium
+    fraction flag.
+  o In G4EmParameters added protection to fix segmentation fault when data
+    is unavailable.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-02-06)
+  o G4BGGNucleonInelasticXS: fixed proton cross-section below 14 MeV
+    (problem was introduced in 11.2.ref03).
+- models/de_excitation (hadr-deex-V11-02-05)
+  o G4ExcitationHandle, G4NeutronRadCapture: corrected model ID for IC
+    electrons.
+  o G4GEMChannelVI, G4GEMProbabilityVI: updated interfaces and simplified
+    algorithm of computation of probability.
+  o G4VCoulombBarrier, G4CoulombBarrier, G4GEMCoulombBarrier,
+    G4FermiBreakUpUtil: code cleanup; removed unused headers and variables.
+- models/nudex (hadr-nudex-V11-02-03)
+  o Few corrections in G4NuDEXNeutronCaptureModel; Fixed access to the data.
+  o Fixed compilation warnings on macOS/XCode for implicit type conversion.
+  o Fix for compilation warning on G4NuDEXStatisticalNucleus source
+    on alma9 with LTO settings.
+- models/particle_hp (hadr-hpp-V11-02-07)
+  o Introduced neutron treatment of the Unresolved Resonance Region (URR)
+    via Particle Table (PT); relevant for precise simulations of nuclear
+    reactor criticality and shielding applications.
+    Read in particle table files in compressed format from new G4URRPT-1.0
+    data set and G4URRPTDATA environment variable.
+- models/radioactive_decay (radioactive_decay-V11-02-04)
+  o Renamed G4RadioactiveDecay to G4VRadioactiveDecay and G4Radioactivation
+    to G4RadioactiveDecay. The header for G4Radioactivation is preserved to
+    provide backwards compatibility.
+- util (hadr-util-V11-02-01)
+  o G4HadronicParameters: introduced Get/Set methods for flag controlling the
+    NuDEX gamma de-excitation module.
+
+processes/optical                                op-V11-02-00
+-----------------
+- G4OpBoundaryProcess: correctly calculate Fresnel reflection/refraction,    (*)
+  when material property TRANSMITTANCE is specified. The ratio of Fresnel
+  reflection/refraction now does not change when a non-zero transmission is
+  specified. Previously, if transmission of X% was specified, there would be
+  transmission of X% as expected, but the ratio of Fresnel refraction to
+  Fresnel reflection would be set to X%. Addressing problem report #2578.
+
+run                                              run-V11-02-08
+---
+- First full implementation of of sub-event parallelism, adding the creation
+  and processing of sub-events in workers, plus the merging of results back
+  into events on the main thread. Some additional work may be needed to
+  correctly retain a limited sample of events.
+  No impact of the core changes needed to support sub event parallelism in
+  any other mode (Seq, MT, Tasking) other than some counting issues with
+  retained events.
+- Added call in G4WorkerRunManager to use parallel initialisation of voxels.
+- In G4RunManager::ReinitializeGeometry(), added call to new function
+  G4FieldBuilder::Reinitialize().
+
+track                                            track-V11-02-03
+-----
+- Added optional copy of touchables when copy constructing a G4Track, to
+  support sub-event parallelism.
+
+visualization
+-------------
+- management (visman-V11-02-12)
+  o Updated visualisation manager to correctly merge/handle asynchronous event
+    merging (also resolving long standing issues with post processing).
+    Implemented 'EventReadyForVis', used by G4SubEvtRunManager; restructured
+    EndOfEvent functions to accommodate this and avoid code duplication; this
+    involved introducing: "Relinquishable", "EndOfEventKernel" and
+    "EndOfEventCleanup".
+  o Corrected the use of "KeepForPostProcessing/PostProcessingFinished".
+  o G4VisExecutive: restored OpenGL as default backend for Qt6.
+- OpenGL (opengl-V11-02-02)
+  o In G4OpenGLImmediateQtViewer and G4OpenGLStoredQtViewer, removed usage
+    of paintEvent() for Qt6, paintGL() should be sufficient.
+    For updateQWidget, use update() to trigger a repaint.
+    In Initialise() check validity of widget type, to avoid observed crash at
+    startup on macOS; do the same on the ClearView(), SetView().
+  o In G4OpenGLQtViewer: restored picking feature for Qt6 and implemented 2D
+    draw text in DrawText().
+- OpenInventor (openinventor-V11-02-01)
+  o G4OpenInventorQtViewer: with Qt6, reparent G4OpenInventorQtExaminerViewer
+    in its own QWidget, allowing to restore correct behaviour when opening
+    multiple viewers. Properly handle viewer destruction.
+    Have "addInTab" done in Initialise() method. Avoid to do an examiner
+    viewer "move/resize" in Initialise() method, as causing strange widget
+    rendering behaviour.
+  o In G4OpenInventorQtExaminerViewer, allow with Qt6 to map a dialog in case
+    being closed with the mouse. Have the title window reflecting the name of
+    the viewer. In MT mode, fixed behavior when issuing multiple "/run/beamOn"
+    commands within multiple viewers.
+
+data
+----
+- URRPT-1.0:
+  o New Particle Table Database, used for the treatment of low-energy
+    neutrons in the Unresolved Resonance Region (URR), at temperature
+    of 293.15 K, processed with both NJOY and CALENDF. As described in:
+    M. Zmeskal et al., Comp.Phys. arXiv:2404.16389.
+
+examples                                         examples-V11-02-06
+--------
+- Updated documentation and reference outputs.
+- Updated URL for schema validation in all GDML files to valid short
+  address.
+- Applied clang-format to basic and extended examples; addressed coding
+  style warnings.
+- advanced/ChargeExchangeMC (ChargeExchangeMC-V11-02-01)
+  o Disabled GDML schema validation.                                         (*)
+- advanced/dsbandrepair (dsbandrepair-V11-02-00)
+  o Use EmParameters to control chemistry time step model.
+- advanced/xray_SiliconPoreOptics (xraysiliconporeoptics-V11-02-00)
+  o Corrected GDML file.
+- extended/field/field01 (fieldex01-V11-02-00)
+- extended/field/field02 (fieldex02-V11-02-00)
+- extended/field/field03 (fieldex03-V11-02-00)
+  o Replaced FieldSetup and FieldMessenger classes with usage of new
+    field builder class G4FieldBuilder.
+  o Moved setting field value (ThreeVector) from FieldSetup (now removed)
+    in DetectorConstruction and its messenger and removed setting of
+    Z-value only.
+- extended/hadronic/Hadr01 (exhadr01-V11-02-00)
+  o Enable usage of the NUDEX library for QGSP_BERT_HP physics in main().
+- extended/medical/DICOM (DICOM-V11-02-00)
+  o Corrected symbols for Chlorine and Potassium elements in function        (*)
+    InitialisationOfMaterials().
+- extended/medical/dna/chem6 (chem6-V11-02-00)
+  o Use EmParameters to control chemistry models.
+- extended/parallel (exparallel-V11-02-00)
+  o Removed obsolete TopC example.
+- extended/parameterisations/Par04 (expar04-V11-02-01)
+  o Bump pymysql version according to                                        (*)
+    GitHub Dependabot PR#72 (https://github.com/Geant4/geant4/pull/72).
+  o Bump scikit-learn version according to                                   (*)
+    GitHub Dependabot PR#73 (https://github.com/Geant4/geant4/pull/73).
+
+tests                                            tests-V11-02-06
+-----
+- Updated reference outputs and tools.
+- tests/ctests_integration/test19 (test19-V11-02-02)
+  o Various updates in the post-analysis plotting macros.
+  o Updated scripts for producing JSON files for geant-val.
+  o Minor source code cleanup.
+- tests/ctests_integration/test23 (test23-V11-02-00)
+  o Various updates in the post-analysis plotting macros.
+  o Minor source code cleanup.
+- tests/ctests_integration/test37 (test37-V11-02-02)
+- tests/ctests_integration/test41 (test41-V11-02-02)
+- tests/ctests_integration/test44 (test44-V11-02-02)
+  o Updated script for Condor due to change of tests directory structure.
+- tests/ctests_integration/test47 (test47-V11-02-00)
+  o Updated post-analysis plotting script.
+  o Minor source code cleanup.
+- tests/ctests_integration/test48 (test48-V11-02-00)
+  o Minor update in main().
+- tests/ctests_integration/test400 (test400-V11-02-00)
+  o Initial implementation of a test for G4SubEvtRunManager.

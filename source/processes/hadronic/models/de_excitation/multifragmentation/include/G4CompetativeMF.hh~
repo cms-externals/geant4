@@ -1,0 +1,70 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+//---------------------------------------------------------------------------
+//
+// ClassName:   G4CompetativeMF
+//
+// Authors: N. Chalyi & V.Ivanchenko 
+//
+// Class description:
+//
+// Model of the nuclear multifragmentation. It considers decay with
+// emission of neutrons, protons, or light ions, and nuclear fission.
+//
+
+#ifndef G4COMPETATIVEMF_hh
+#define G4COMPETATIVEMF_hh
+
+#include "G4VMultiFragmentation.hh"
+#include "G4FragmentVector.hh"
+#include "G4Fragment.hh"
+#include "G4VEvaporationChannel.hh"
+#include <vector>
+
+class G4ExcitationHandler;
+
+class G4CompetativeMF : public G4VMultiFragmentation
+{
+public:
+  G4CompetativeMF(G4ExcitationHandler* handler);
+  ~G4CompetativeMF() override = default;
+    
+  G4FragmentVector* BreakItUp(const G4Fragment& theFragment) override;
+
+  G4CompetativeMF(const G4CompetativeMF& right) = delete;
+  G4CompetativeMF& operator=(const G4CompetativeMF& right) = delete;
+  G4bool operator==(const G4CompetitiveMF& right) = delete;
+  G4bool operator!=(const G4CompetitiveMF& right) = delete;
+
+private:
+
+  G4ExcitationHandler* fHandler;
+  std::size_t fNn;
+  std::vector<G4VEvaporationChannel*> fChannels;
+  std::vector<G4double> probabilities;
+};
+
+#endif

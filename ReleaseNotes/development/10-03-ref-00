@@ -1,0 +1,587 @@
+
+                       geant4-10-03-ref-00
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added Extent() virtual method to G4VSolid and derived solids, to
+   better factorise code for CalculateExtent(), and completed migration
+   of implementation to G4BoundingEnvelope.
+ o Fixed initialisation of de-excitation module per geometrical region.
+ o Added G4VMoleculeCounter in G4DNA and enabled using custom molecule counter.
+ o Reverted implementation to "stable" version for parton-string hadronic model,
+   corresponding to version included in releae 10.2.p02, with G4FTFModel and
+   residual nucleus excitation energy for diffraction as in release 10.1.
+ o New G4FastSimulationManagerHelper utility, used for adding
+   G4FastSimulationManagerProcess to a process manager.
+ o Create unique names with logical-volume pointer for G4MultiSensitiveDetector
+   and avoid to register target sensitive-detector implictly.
+ o Enabled auto-update widget for commands in Qt UI.
+ o Updated G4Py for release and its build scripts.
+ o Completed porting on MacOS Sierra (XCode 8.x) and clang-3.9.
+ o Updated data sets G4RadioactiveDecay-5.1, G4PhotonEvaporation-4.3,
+   G4ENSDFSTATE-2.1 and G4TENDL-1.3.
+ o Updated to CLHEP-2.3.4.3.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in release 10.2.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-02-37
+-----
+- Change default build type to Release when using single mode tools like
+  Make/Ninja.
+- Fix bug in Qt4/5 handling on Windows. Added expansion variable for Qt
+  dynamic loader setup and fixed export of Qt settings to GNUmake
+  configuration scripts.
+- Added FindDCMTK.cmake needed for extended/medical/DICOM example.
+- Correctly export USolids/VecGeom settings to GNUmake configuration scripts.(*)
+- Fixed optimization level in Release mode for Windows to be -Ox.
+- Always convert exported data paths to native CMake paths. Prevents parse
+  errors on Windows, where native paths are exported.
+- Updated to data sets G4RadioactiveDecay-5.1, G4PhotonEvaporation-4.3,
+  G4ENSDFSTATE-2.1 and G4TENDL-1.3.
+
+config                                           config-V10-02-07
+------
+- Added include path for analysis/accumulables sub-module.
+
+environments                                     envs-V10-02-02
+------------
+- G4Py: updated for release 10.3.
+- Modified CMake scripts for unit/integration tests with CTest.
+
+analysis                                         analysis-V10-02-25
+--------
+- Updated to g4tools 2.3.0.
+- Added prefix, postfix increment operators to G4Accumulable.
+- Added methods to tools/impi for passing ntuple data.
+- Fixed Coverity defects.
+
+digits_hits                                      digits_hits-V10-02-10
+-----------
+- Removed implicit addition to manager of sensitive-detector passed via
+  G4MultiSensistiveDetector proxy.
+  Addressing problem report #1908.
+
+event                                            event-V10-02-09
+-----
+- Set polarization to pre-assigned decay products in G4PrimaryTransformer.   (*)
+  Addressing problem report #1914.
+
+externals                                        externals-V10-02-11
+---------
+- Updated to CLHEP-2.3.4.3.
+  Fixed array initialisation in Evaluator static method function().
+
+geometry
+--------
+- magneticfield (field-V10-02-25)
+  o Added initialization of fAuxStepper in constructor of 
+    G4DoLoMcPriRK34, G4DormandPrince745 & G4DormandPrinceRK56.
+  o Fixed G4ClassicalRK4 header with protection against multiple inclusions. (*)
+  o Checked while-do loops against potential infinite loops.
+- management (geommng-V10-02-26):
+  o Added Extent() virtual method to G4VSolid and G4ReflectedSolid.
+  o Fixed use of iterator in G4LogicalVolume::ClearDaughters(); simplified   (*)
+    implementation.
+  o Added new functions SphereExtent(), TriangulatePolygon(), IsConvex(),
+    DistancePointSegment() and RemoveRedundantVertices() to G4GeomTools class.
+  o Modified G4LogicalCrystalVolume to use G4CrystalExtension.
+    Fixed header inclusions and make use of dynamic_cast instead of C-style
+    cast; code formatting.
+- navigation (geomnav-V10-02-21):                                            (*)
+  o Fixed recursion test for overlaps in G4GeomTestVolume to iterate on
+    all daughters.
+- solids/Boolean (geom-bool-V10-02-11)
+  o Implemented Extent() method for all constructs and use it in
+    CalculateExtent().
+- solids/CSG (geom-csg-V10-02-15):
+  o Re-implemented CalculateExtent() to make use of G4BoundingEnvelope and
+    removed no-longer used method CreateRotatedVertices() in G4Sphere, G4OTubs,
+    G4Torus, G4Orb, and related USolids wrappers.
+  o Use G4GeomTools::DiskExtent() for calculation of bounding box in Extent()
+    for G4Tubs, G4Cons and related USolids wrappers.
+  o Use G4RandFlat instead of RandFlat.                                      (*)
+  o Disabled check for intersection of cut planes in G4CutTubs constructor,  (*)
+    as too strict and not necessary. Addressing problem report #1887.
+  o Added optional debug flag G4BBOX_EXTENT in Extent() for most shapes
+    to compare extent calculation by simply using bounding-box.
+    Added consistency checks for extent computation in USolids wrappers.
+- solids/specific (geom-specific-V10-02-25)
+  o Re-implemented CalculateExtent() to make use of G4BoundingEnvelope and
+    removed no-longer used method CreateRotatedVertices() in G4Polyhedra,
+    G4EllipticalCone, G4Polycone, G4Paraboloid, G4ExtrudedSolid, G4Hype,
+    G4GenericPolycone, G4TessellatedSolid, G4TwistedTubs and related USolids
+    wrappers.
+  o Added caching of corners and implementation of GetCorner() in G4UPolycone
+    in order to assure correct translation.
+  o G4UPolyhedra extended wrapper to cache corners and start/end Phi
+    parameters, to assure correct treatment of angles.
+  o Added optional debug flag G4BBOX_EXTENT in Extent() for most solids
+    to compare extent calculation by simply using bounding-box.
+    Added consistency checks for extent computation in USolids wrappers.
+  o Fix in G4PolyPhiFace for potential unitialised data in Inside().
+  o Correction in G4EllipticalCone::DistanceToOut(p) to make it more accurate.
+  o Use G4RandFlat instead of RandFlat.                                      (*)
+
+global                                           global-V10-02-33
+------
+- Fixed compilation warning on MacOS Sierra in MT mode in function           (*)
+  G4Threading::G4GetPidId().
+- Updated version ID to 10.3.
+
+graphics_reps                                    greps-V10-02-10
+-------------
+- HepPolyhedron: changed default number of line segments per circle
+  (DEFAULT_NUMBER_OF_STEPS) to 72.
+- Fixed compilation warning on Linux with -O3 optimisation mode.
+
+interfaces                                       interfaces-V10-02-14
+----------
+- G4UIQt:
+  o Fixed bug in "/gui/defaultIcons" command.
+  o Fixed a bug on Qt5.7 with an extra whitespace.
+  o Removed (multiple) scene tree from a tab to put it in a single,
+    auto-update widget.
+  o Removed (multiple) viewer properties from a tab to put it in a
+    outside dialog.
+  o Removed (multiple) pick infos from a tab to put it in a outside dialog.
+  o Fixed bad signal/slot connection for the filter of the scene tree.
+  o Changed pick icon
+  o Renamed GetSceneTreeComponentsTBWidget() to GetSceneTreeWidget().
+  o Fixed a problem when issuing "/run/beamOn 1"; the parameter was not
+    taken in account in the icon toolbar.
+
+materials                                        materials-V10-02-20
+---------
+- Renamed G4CrystalMaterial to G4CrystalExtension.
+- Fixed Coverity defects.
+
+parameterisations/gflash                         gflash-V10-02-02
+------------------------
+- Fixed memory leak in GVFlashShowerParameterisation.                        (*)
+
+particles                                        particles-V10-02-30
+---------
+- Removed obsolete G4PDefSplitter class, replaced by G4PDefManager, concrete (*)
+  class with implementation. This addresses initialisation problems of static
+  data previously in template. Moved G4PDefData::initialize() to source.
+- Improved error message when potentially using a wrong version of the
+  ENSDFSTATE data-set.
+
+persistency/gdml                                 gdml-V10-02-09
+----------------
+- Fixed check for correctness of units for replicas in case of angular axis. (*)
+  Addressing problem report #1912.
+
+physics_lists
+-------------
+- constructors/decay (phys-ctor-decay-V10-02-07)
+  o G4RadioactiveDecayPhysics: enabled reading from new gamma evaporation
+    files, enabled Auger cascade, do not apply cuts.
+    Fixed initialisation when radioactive decay is registered before EM
+    physics or is the only physics constructor.
+- constructors/electromagnetic (phys-ctor-em-V10-02-38)
+  o G4EmModelActivator: added SS physics-list per region; fixed PAI model
+    activation (disabled PAI for ions).
+    Added initialisation of atomic deexcitation for radioactive-decay (also
+    for the cases when radioactive-decay is registered before EM physics or
+    is the only process).
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V10-02-04)
+  o G4EmExtraPhysics, G4EmMessenger: added rare high energy EM processes, 
+    disabled by default.
+  o Added README.
+- constructors/hadron_elastic (phys-ctor-helastic-V10-02-04)
+  o Added README.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V10-02-10)
+  o G4HadronPhysicsFTFP_BERT and _HP: changed the transition energy region
+    between FTFP and BERT model to be between [3, 12] GeV (instead of
+    [4, 5] GeV) for pions, kaons, protons and neutrons (for hyperons,
+    left as it has always been, i.e. [2, 6] GeV).
+  o Added README.
+- constructors/ions (phys-ctor-ions-V10-02-02)
+  o G4IonINCLXXPhysics: corrected transition regions between INCLXX and FTF,
+    now 3 GeV/nucleon.
+  o Added README.
+- constructors/limiters (phys-ctor-limiters-V10-02-08)
+  o Added G4FastSimulationPhysics to configure physics list for activating
+    fast simulation. It uses the G4FastSimulationHelper utility.
+  o Replaced remaining direct use of 'aParticleIterator' to now use          (*)
+    GetParticleIterator() method.
+- constructors/stopping (phys-ctor-stopping-V10-02-02)
+  o Added README.
+
+processes/biasing/generic                        proc-biasgen-V10-02-06
+-------------------------
+- Merged logic for DenyProcessPostStepDoIt() in G4BOptnForceFreeFlight and
+  in G4BiasingAppliedCase to be now handled in ApplyFinalStateBiasing() in
+  a more general manner.
+- Fixed Coverity defect in G4ParallelGeometriesLimiterProcess.
+
+processes/biasing/management                     proc-biasmng-V10-02-02
+----------------------------
+- Removed obsolete logic in G4BiasingAppliedCase.
+
+processes/electromagnetic/dna                    emdna-V10-02-36
+-----------------------------
+- Added G4VMoleculeCounter and enabled using custom molecule counter.
+  Pass location information to molecule counter
+- G4ITNavigator2: relocate voxelNavigator before every call to 
+  ComputeStep() snd ComputeSafety().
+- Updated displacers; changed electron thermalization distribution in
+  WaterDisplacer. OneStepTherm: two inner thermalization models can be
+  chosen as template argument.
+- G4VMolecularDissociationDisplacer: added missing initializer.
+- G4VMolecularDissociationDisplacer and G4DNAWaterDissociationDisplacer: 
+  displacement types can be thread shared.
+- Corrected charge in G4Electron_aq.
+- Renamed G4DNADamages to G4DNADamage.
+
+processes/electromagnetic/lowenergy              emlowen-V10-02-11
+-----------------------------------
+- Fixed memory leak in G4PenelopeBremsstrahlungFS.
+
+processes/electromagnetic/standard               emstand-V10-02-33
+----------------------------------
+- G4eeToTwoGammaModel: fixed polarisation of final gamma.
+- G4eplusAnnihilation: fixed polarisation of final gamma at rest.
+- G4MottCoefficients, G4ScreeningMottCrossSection and
+  G4eSingleCoulombScatteringModel: fix to use nuclear form-factor options
+  via G4EmParameters.
+
+processes/electromagnetic/utils                  emutils-V10-02-36
+-------------------------------
+- G4VAtomDeexcitation: fixed initialisation of de-excitation module per
+  geometrical region.
+- Fixed typo in G4EmParametersMessenger.
+
+processes/hadronic
+------------------
+- models/cascade (hadr-casc-V10-02-05)
+  o G4InuclCollider: fixed case of segmentation-fault in photonuclearOkay().
+    Addressing problem report #1883.
+- models/de_excitation (hadr-deex-V10-02-69)
+  o Added interface for correlated gamma emission simulation; added ability
+    to sample correlated gamma emission in G4PhotonEvaporation and
+    G4GammaTransition (not enabled by default).
+  o G4ExcitationHandler, G4NeutronRadCapture, G4PhotonEvaporation: use recent
+    interface to GetIon().
+  o G4LevelReader, G4NuclearLevelData, G4DeexPrecoParameters: enabled
+    possibility to read new data files for gamma emission.
+  o G4FermiBreakUpVI, G4FermiFragmentsPoolVI: simplified run time
+    applicability check
+  o G4DeexPrecoParameters: extended initialisation printout.
+- models/inclxx (hadr-inclxx-V10-02-05)
+  o Updated to INCL++ v5.3: better N-induced eta production cross-sections.
+    Modified INCLXXInterface.
+- models/lend (hadr-lend-V10-02-06)                                          (*)
+  o Improved memory consumption in multi-threaded runs.
+  o Fixed compilation warning in GCC with -O3 optimisation option.
+- models/lepto_nuclear (hadr-lepnuc-V10-02-03)
+  o G4MuonVDNuclearModel: fixed Coverity defect, reduced number of
+    bins for transfer energy from 1000 to 800.
+- models/particle_hp (hadr-hpp-V10-02-33)
+  o Changed default behavior to "DO_NOT_SET_PHP_AS_HP" mode; old behavior
+    can be set by setting environment flag "PHP_AS_HP"
+    Fixed problem of uninitialisation of cache in G4ParticleHPContAngularPar
+    happening for "DO_NOT_SET_PHP_AS_HP" mode; fixed case of infinite loop.
+    Fixed also problem of divide by zero error BuildByInterpolation().
+  o Fixed wrong residual in case of He3 projectile.
+    Addressing problem report #1906.
+  o Fixed problem of divide by zero error in G4ParticleHPVector::ThinOut().
+  o Reintroduced cache of cross-section in GetIsoCrossSection().             (*)
+  o Added protection with flag G4PHP_DO_NOT_ADJUST_FINAL_STATE to
+    G4ParticleHPInelasticBaseFS.
+- models/parton_string (hadr-prtn-V10-02-03)
+  o Reverted implementation to "stable" version, corresponding to version
+    included in releae 10.2.p02, but with G4FTFModel and residual nucleus
+    excitation energy for diffraction set to 40 MeV.
+    In G4VPartonStringModel, instead of having the string creation loop
+    (with max 20 attempts) and the string fragmentation loop (with max
+    100 attempts) separated, there is now one single loop for string
+    creation and fragmentation, with max 1000 attempts, and in the case
+    of failure a just-warning exception is thrown.
+    Also, increased the number of max attempts to fragment strings from 10
+    to 100 in G4ExcitedStringDecay.
+- models/qmd (hadr-qmd-V10-02-01)
+  o Set type of de-excitation channels to 'combined'.
+- models/radioactive_decay (radioactive_decay-V10-02-13)
+  o Fixed bug in G4RadioactiveDecay::LoadDecayTable(), to ignore IT decay
+    when no entries are found in the database; fixed case of segmentation-fault
+    due to attempted deletion of empty decay table.
+- stopping (hadr-stopping-V10-02-02)
+  o G4EmCaptureCascade: added c++11 keywords.
+- util (hadr-util-V10-02-01)                                                 (*)
+  o Fix in G4Nucleus::GetThermalNucleus() in branch on total energy 
+    calculation using relativistic energy at higher energies.
+    Addressing problem report #1911.
+
+processes/parameterisation                       param-V10-02-01
+--------------------------
+- New G4FastSimulationManagerHelper utility, used for adding
+  G4FastSimulationManagerProcess to a process manager.
+- Fixed Coverity defects.
+
+run                                              run-V10-02-36
+---
+- Create unique names with logical-volume pointer for G4MultiSensitiveDetector
+  and avoid to register target sensitive-detector implictly.
+  Addressing problem report #1908.
+- Removed #define for 'aParticleIterator' in G4VPhysicsConstructor header. 
+- Moved #define for 'theParticleIterator' to G4VUserPhysicsList source.
+
+tracking                                         tracking-V10-02-05
+--------
+- G4AdjointSteppingAction: removed unnecessary test on weight to avoid
+  floating-point exception issue.
+
+visualization                                    vis-V10-02-30
+-------------
+- Removed (multiple) scene tree/pick and viewer parameters from a tab to
+  put it in a single, auto-update widget
+- Fixed a bad signal/slot connection for the filter of the scene tree.
+- management (visman-V10-02-37):
+  o Changed default number of line segments per circle from 24 to 72.
+  o G4VisManager: fix for OpenGLXm; an extra refresh should come before
+    ShowView(). Should not affect other viewers.
+  o Fixed display at end of run in Qt/Extra refresh for auto-refresh viewers.
+    Fixed same problem in X and Xm.
+  o Fixed the GetColour() problem.
+  o Limited WARNING about up-Vector to first time only.
+- modeling (modeling-V10-02-17):
+  o Changed default number of line segments per circle from 24 to 72.
+  o G4ArrowModel: default lines per circle = 6.
+- FukuiRenderer (DAWN-V10-02-02):
+  o Fixed GetColour() problem.
+- HepRep (vis-HepRep-V10-02-04):
+  o Restored color to trajectories, avoid two different OpenGL version
+    in case of Qt+X.
+  o Fixed GetColour() problem.
+  o Fixed Coverity defects.
+- OpenGL (opengl-V10-02-26):
+  o Go back on the glCheckFramebufferStatus(); commented out this command.
+  o Fixed problem of gray/white/black screen when launching a new viewer.
+  o Fixed to colour problem with transparent volumes in DrawDisplayLists
+  o Restored color to trajectories, avoid two different OpenGL version
+    in case of Qt+X.
+- VRML (VRML-V10-02-03):
+  o Fixed GetColour() problem.
+- externals (visexternal-V10-02-03):
+  o Fixed compilation warning in gl2ps for gcc -O3.
+
+data sets:
+---------
+- G4RadioactiveDecay-5.1:
+  o Correction in Mn54 z25.a54.
+    Addressing problem report #1852.
+  o Corrections for some daughter levels of U235,TH232,PA233,U239.
+  o Added proton decay for excited levels of 13N for the simulation of
+    beta-plus proton delayed decay of 13O.
+  o Add neutron decay for excited levels of 16N and 17O in order to
+    simulate the beta-minus neutron delayed decay of 16C and 17N.
+- G4PhotonEvaporation-4.3:
+  o Reformatted z* files in 'correlated_gamma' directory.
+    Corrected few data in these files. Added explode files z*.a* from z* files.
+    Corrected few gamma intensities in z6.a12, z16.a33, z17.a42, z34.a76,
+    z38.a95, z38.a97, z41.a88, z56.a129 and z74.a187.
+    Corrected order of levels.
+- G4ENSDFSTATE-2.1:
+  o Set Spin of excited levels as in PhotonEvaporation Database.
+- G4TENDL-1.3:
+  o Added carbon(C12 and C13) data from ENDF/B-VII.1(Proton) and
+    TENDL-2014(Deuteron, Triton, He3 and Alpha) 
+  o Deleted F37 directories, "F37" is not defined in ParticleHPInelastic.
+  o Added remark for unsupported projectile-target combinations in README.
+    Fixed minor error in Proton/README and Triton/README
+  o Fixed the reference of ENDF/B-VII.1.
+
+examples                                         examples-V10-03-00
+--------
+- Updated documentation and reference outputs.
+- advanced/air_shower (air_shower-V10-02-03)
+  o Now using modular physics lists.
+  o Removed drawing of step points from visualisation macro.
+  o Explicit set of sensitive-detector to manager.
+  o Fixed compilation warning for unused variable in UltraDetectorConstruction.
+  o Updated build scripts.
+- advanced/brachytherapy (brachy-V10-02-02)
+  o Added comparison to reference data for the Flexisource.
+  o Added Flexisurce and TG186 reference source; added method to calculate
+    relative dose rate to compare to reference data.
+- advanced/ChargeExchangeMC (ChargeExchangeMC-V10-02-00)
+  o Removed icons.mac, now automatically loaded.
+- advanced/composite_calorimeter (ccal-V10-02-02)
+  o Fixed issues with a char* length.
+  o Removed icons.mac now automatically loaded.
+- advanced/gammaknife (gammaknife-V10-02-02)
+  o Modified macros for correct scorer rotation.
+- advanced/gammaray_telescope (gammaraytel-V10-02-02)
+  o Explicit set of sensitive-detector to manager.
+- advanced/hadrontherapy (hadrontherapy-V10-02-05)
+  o Fixed bug, addressing problem report #1879.
+  o Use GetParticleIterator() method in place of 'theParticleIterator'.      (*)
+  o Explicit set of sensitive-detector to manager.
+- advanced/human_phantom (human_phantom-V10-02-02)
+  o Explicit set of sensitive-detector to manager.
+- advanced/lAr_calorimeter (lAr_calorimeter-V10-02-00)
+  o Removed icons.mac, now automatically loaded.
+- advanced/microbeam (microbeam-V10-02-04)
+  o Use GetParticleIterator() method in place of 'theParticleIterator'.      (*)
+  o Fixed compilation warnings on clang compiler.
+- advanced/microelectronics (microelectronics-V10-02-03)
+  o Removed icons.mac, now automatically loaded.
+- advanced/radioprotection (radioprotection-V10-02-01)
+- advanced/underground_physics (DMX-V10-02-02)
+- advanced/xray_fluorescence (XrayFluo-V10-02-02)
+  o Explicit set of sensitive-detector to manager.
+- basic/B2 (exampleB2-V10-02-01)
+  o Explicit set of sensitive-detector to manager.
+  o Removed icons.mac, now automatically loaded.
+- basic/B3 (exampleB3-V10-02-04)
+  o Explicit set of sensitive-detector to manager.
+  o Removed obsolete B3b/exampleB3.cc.
+- basic/B4 (exampleB4-V10-02-04)
+  o Added c++11 features.
+  o Removed analysisManager->SetFirstHistoId(1); setting and added meaningful
+    names to histograms.
+  o Explicit set of sensitive-detector to manager.
+  o Removed icons.mac, now automatically loaded.
+- basic/B5 (exampleB5-V10-02-04)
+  o Added c++11 features and code improvements.
+  o Fixed a missing /gui/defaultIcons command in vis macro.
+- extended/biasing (exbiasing-V10-02-02)
+  o Added new examples GB05 and GB06.
+- extended/biasing/GB03 (GB03-V10-02-00)
+  o Explicit set of sensitive-detector to manager.
+- extended/biasing/GB05 (biasingGB05-V10-02-02)
+  o New example illustrating a technique that uses physics cross-sections to
+    determine the splitting [killing] rate in a shielding problem. Applied
+    here for neutrons.
+- extended/biasing/GB06 (biasingGB06-V10-02-01)
+  o New example demonstrating the use of parallel geometries in generic
+    biasing, on a classical shield problem, using geometry-based importance
+    biasing.
+- extended/biasing/ReverseMC01 (ReverseMC01-V10-02-03)
+  o Modification in RMC01AnalysisManager to loop over the list of tracks
+    reaching the external surface. Corrected computation of the mean and
+    error of energy deposition.
+  o Modified physics-list to make use of the processes 
+    G4AdjointForcedInteractionForGamma and G4eAdjointMultipleScattering. 
+  o Use GetParticleIterator() method in place of 'theParticleIterator'.      (*)
+- extended/electromagnetic/TestEm5 (testem5-V10-02-07)
+  o Corrected typo in Run.cc.
+- extended/electromagnetic/TestEm7 (testem7-V10-02-07)
+  o PhysicsList: removed local PhysListEmStandardSS and usage of
+    G4EmProcessOptions
+  o PhysListEmStandard: use G4EmParameters.
+  o DetectorConstruction, DetectorMessenger: fixed warnings for incorrect
+    calls to kernel, updated UI commands. Updated macro files accordingly.
+  o Renamed MaxTally constant in kMaxTally.
+- extended/electromagnetic/TestEm8 (testem8-V10-02-05)
+  o Explicit set of sensitive-detector to manager.
+- extended/electromagnetic/TestEm9 (testem9-V10-02-03)
+  o Applied coding guidelines.
+- extended/electromagnetic/TestEm10 (testem10-V10-02-03)
+  o DetectorConstruction, DetectorSimpleALICE: fixed run-time warning by
+    properly defining cuts per region.
+- extended/electromagnetic/TestEm16 (testem16-V10-02-04)
+  o Removed icons.mac, now automatically loaded.
+- extended/exoticphysics/channeling (channelingExample-V10-02-04)
+  o Added file descriptions for Doxygen documentation.
+- extended/exoticphysics/phonon (phononExample-V10-02-08)
+  o Explicit set of sensitive-detector to manager.
+- extended/exoticphysics/ucn (ExUCN-V10-02-02)
+  o Removed icons.mac, now automatically loaded.
+- extended/field/field01 (fieldex01-V10-02-05)
+- extended/field/field02 (fieldex02-V10-02-03)
+- extended/field/field03 (fieldex03-V10-02-04)
+  o Explicit set of sensitive-detector to manager.
+  o Removed icons.mac, now automatically loaded.
+- extended/field/field05 (fieldex05-V10-02-01)
+- extended/field/field06 (fieldex06-V10-02-02)
+  o Removed icons.mac, now automatically loaded.
+- extended/hadronic/Hadr00 (exhadr00-V10-02-00)
+  o Applied coding guidelines.
+- extended/hadronic/Hadr01 (exhadr01-V10-02-03)
+  o Updated PhysicsList and removed obsolete G4EmUserPhysics.
+  o Applied coding guidelines.
+- extended/hadronic/Hadr02 (exhadr02-V10-02-00)
+  o Applied coding guidelines.
+- extended/medical/DICOM (DICOM-V10-02-04)
+  o Added new DICOM reader based on DCMTK.
+  o Explicit set of sensitive-detector to manager.
+  o Applied coding guidelines.
+- extended/medical/dna (exdna-V10-02-00)
+  o Fixes in Doxygen documentation
+- extended/medical/dna/chem4 (chem4-V10-02-06)
+  o ScoreSpecies: fixed computation of standard error of the mean.
+  o ActInit: fixed initialization; removed H2O from counter.
+  o Added CanvasInTab::GetNCanvas().
+  o Updated primary generator: added verbose.
+  o DetConst: changed order of scorer declaration.
+  o Explicit set of sensitive-detector to manager.
+- extended/medical/dna/microyz (microyz-V10-02-01)
+  o Explicit set of sensitive-detector to manager.
+- extended/medical/dna/svalue (svalue-V10-02-06)
+  o Use GetParticleIterator() method in place of 'theParticleIterator'.      (*)
+- extended/medical/electronScattering2 (exampleES2-V10-02-01)
+  o Explicit set of sensitive-detector to manager.
+  o Use GetParticleIterator() method in place of 'theParticleIterator'.      (*)
+- extended/medical/GammaTherapy (gtherapy-V10-02-01)
+  o PhysicsList: fixed warnings; make use of G4EmParameters.
+  o DetectorConstruction, DetectorMessenger: do not change detector
+    between runs.
+  o Use GetParticleIterator() method in place of 'theParticleIterator'.      (*)
+- extended/parallel/TBB (tbbex-V10-02-03)
+  o Explicit set of sensitive-detector to manager.
+  o Removed icons.mac, now automatically loaded.
+- extended/parallel/ThreadsafeScorers (ThreadsafeScorers-V10-02-05)
+  o Explicit set of sensitive-detector to manager.
+  o Use GetParticleIterator() method in place of 'theParticleIterator'.      (*)
+- extended/optical/LXe (LXe-V10-02-03)
+  o Explicit set of sensitive-detector to manager.
+  o Removed icons.mac, now automatically loaded.
+- extended/optical/OpNovice (OpNovice-V10-02-01)
+  o Explicit set of sensitive-detector to manager.
+  o Use GetParticleIterator() method in place of 'theParticleIterator'.      (*)
+  o Added file descriptions for Doxygen documentation.
+- extended/optical/wls (WLS-V10-02-05)
+  o Replaced use of physics-vector by RegisterPhysics() in constructor
+    of WLSPhysicsList.
+  o Explicit set of sensitive-detector to manager.
+  o Removed icons.mac, now automatically loaded.
+- extended/parameterisations/Par01 (expar01-V10-02-03)
+  o Use new G4FastSimulationPhysics physics constructor to configure
+    the physics list for fast simulation. Suppressed Par01PhysicsList.
+  o Added file descriptions for Doxygen documentation.
+- extended/persistency/P03 (exampleP03-V10-02-00)
+  o Explicit set of sensitive-detector to manager.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-02-09)
+  o Fixed initialisation and MT settings.
+- extended/runAndEvent (exRunAndEvent-V10-02-01)
+  o Applied coding guidelines.
+- extended/runAndEvent/RE01 (exampleRE01-V10-02-02)
+- extended/runAndEvent/RE05 (exampleRE05-V10-02-01)
+- extended/runAndEvent/RE06 (exampleRE06-V10-02-00)
+  o Explicit set of sensitive-detector to manager.
+
+tests                                            tests-V10-03-00
+-----
+- Updated reference outputs and tools.
+- tests/test03 (test03-V10-02-09)
+  o Explicit set of sensitive-detector to manager.
+  o Removed icons.mac, now automatically loaded.
+- tests/test04 (test04-V10-02-10)
+  o Updated to use latest version of TENDL data.
+- tests/test08 (test08-V10-02-03)
+  o Added test for G4Accumulable prefix, postfix increment operators.
+- tests/test14 (test14-V10-02-02)
+  o Explicit set of sensitive-detector to manager.
+  o Use GetParticleIterator() method in place of 'theParticleIterator'.      (*)
+- tests/test38 (test38-V10-02-08)
+  o Major reqorking of build setup to support physics-list factories.
+- tests/test67 (test67-V10-02-01)
+  o Explicit set of sensitive-detector to manager.

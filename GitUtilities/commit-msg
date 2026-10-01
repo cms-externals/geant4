@@ -1,0 +1,61 @@
+#!/bin/bash
+#-----------------------------------------------------------------------
+# Geant4 commit-msg hook
+# Enforces policy of commit message that are:
+# - Not empty
+# - Not all-whitespace
+# - At least 8 characters on first line
+#   - Rationale is that the minimal neccessary info requires this number
+#     of characters.
+#   - "Fix typo" o.k.
+#   - "Fix" not o.k. (Fix what exactly?)
+#   - "Fix bug" not o.k. (What bug?)
+#
+#-----------------------------------------------------------------------
+die() {
+  echo 'commit-msg hook failure' 1>&2
+  echo '-----------------------' 1>&2
+  echo "$@" 1>&2
+  echo '' 1>&2
+  echo "See CONTRIBUTING.rst for information on Geant4's commit message policy" 1>&2
+  exit 1
+}
+
+#-----------------------------------------------------------------------
+# Message supplied in file, filename first arg to script
+#
+message=$(cat $1)
+
+#-----------------------------------------------------------------------
+# 1. Non-empty message
+test -n "$message" || \
+  die "Commit message is empty"
+
+#-----------------------------------------------------------------------
+# 2. Not just whitespace
+blankMessageRegex="^[[:space:]]+"
+if [[ "$message" =~ $blankMessageRegex ]] ; then
+  die "Commit message only contains whitespace"
+fi
+
+#-----------------------------------------------------------------------
+# 3. Minimal message
+# - Basic regex for two words in sentence, allowing standard tag-name
+minimalMessageRegex="^[[:alnum:]][[:graph:]]{1,50}[ ]+[[:graph:]]{2,}"
+if ! [[ "$message" =~ $minimalMessageRegex ]] ; then
+  die "Commit message does not have well-formed title of at least two words"
+fi
+
+# - Minimum length not including spaces should be as configured, or 7
+minimumMessageLength=$(git config geant4.mincommitmsglength)
+: ${minimumMessageLength:=7}
+
+strippedMessage="$(echo $message | tr -d '[:space:]')"
+actualMessageLength=${#strippedMessage}
+test $actualMessageLength -ge $minimumMessageLength || \
+  die "Commit message has two words but insufficient information
+  - Wrote $actualMessageLength non-whitespace characters
+  - Require at least $minimumMessageLength non-whitespace characters"
+
+
+exit 0

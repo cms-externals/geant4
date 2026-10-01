@@ -1,0 +1,559 @@
+
+                       geant4-10-07-ref-03
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added maps for faster search based on name in solids, regions and
+   volumes stores.
+ o Fixes in GDML writer for export of multi-union structures and assemblies.
+ o Additional code cleanup campaign in EM classes.
+ o General code clean-up in hadronic processes and models; removed obsolete
+   and deprecated classes; removed obsolete "rpg" model.
+ o Extended G4UIWin32 driver with new features.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.7.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-07-12
+-----
+- Fixed optional G4TENDL version to 1.3.2. Addressing problem report #2341.  (o)
+- Check for unparsed arguments in G4DeveloperAPI functions to
+  provide better validation against typos/etc in use.
+- Store PUBLIC/PRIVATE/INTERFACE module usage requirements explicitly.
+- Removed all references to Wt.
+- Removed settings of deprecated PHP_AS_HP environmental variable.
+
+config                                           config-V10-07-03
+------
+- Added comctl32.lib to UI32LIBS for WIN32-VC configuration.
+- Fixed name of internal PTL module library for DLL build in WIN32-VC        (o)
+  configuration.
+- binmake.gmk: removed include path to "rpg" hadronic model, now retired.
+
+analysis                                         analysis-V10-07-03
+--------
+- Fixed n-tuple indexing when FinishNtuple() is called in different order    (o)
+  than CreateNtuple(). Addressing problem report #2335.
+
+externals/g4tools                                g4tools-V10-07-01
+-----------------
+- Updated to g4tools 5.3.1:
+  o Added "Windowing" code needed for G4/vis/tools_sg.
+  o See History_tools for the complete list of modifications.
+
+externals/zlib                                   zlib-V10-07-00              (o)
+--------------
+- Use separate genexes in G4zlib include directories to prevent parsing issues.
+
+geometry/management                              geommng-V10-07-00
+-------------------
+- Added map for faster search based on name in G4SolidStore, G4RegionStore,
+  G4logicalVolumeStore and G4PhysicalVolumeStore. Pointers to elements are
+  stored in the map as buckets, grouping elements with same name.
+
+geometry/navigation                              geomnav-V10-07-02
+-------------------
+- G4Navigator: enabled use of alternative G4VoxelNavigation class.
+  Adds call to virtual method in ComputeStep(), LocateGlobalPointAndSetup()
+  for voxelised volumes. Controlled by ALTERNATIVE_VOXEL_NAV flag, turned on
+  by default.
+
+geometry/solids/specific                         geom-specific-V10-07-01     (o)
+------------------------
+- Fixed calculation of bounding box position in G4Voxelizer::BuildVoxelLimits(),
+  resolving cases of skipped components in G4MultiUnion structures.
+  Addressing problem report #2301.
+
+global                                           global-V10-07-07
+------
+- Zero terminate buffer in G4strstreambuf destructor before flushing.        (o)
+  Addressing problem report #2350.
+- G4ConvergenceTester: fixed potential thread contention likely
+  responsible for crashes in ThreadSafe-Scorers example, observed in
+  system testing. Some code cleanup.
+- Added accessor in G4PhysicsVector to allow user query for use or not of
+  Spline interpolation.
+- Modernised CMake script.
+- Updated date and tag-ID for geant4-10-07-ref-03.
+
+graphics_reps                                    greps-V10-07-03
+-------------
+- Added G4Colour::operator<(), useful for making a set or map based on
+  G4colour as a key.
+- Modernised CMake script.
+
+intercoms                                        intercoms-V10-07-03
+---------
+- Modernised CMake script.
+
+interfaces                                       interfaces-V10-07-07
+----------
+- Modified G4UIExecutive::SelectSessionByFile() to ensure that in Windows
+  the Win32 OpenGL driver is selected as the second choice by default.
+  Based on GitHub PR#20.
+- Extended G4UIWin32 driver with new features, based on contribution
+  proposed in GitHub PR#23.
+- G4UIQt::ReceiveG4cout/G4cerr: trap empty string with empty() instead of    (o)
+  using unary operator. Addressing problem report #2347.
+
+materials                                        materials-V10-07-02
+---------
+- G4MaterialPropertiesTable: removed deprecated optical material properties.
+- Modernised CMake script.
+
+persistency/ascii                                ascii-V10-07-00             (o)
+-----------------
+- Fixed definition of generic polyhedra in G4tgbVolume::FindOrConstructG4Solid()
+  for POLYHEDRA tag. Based on findings in GitHub PR#24.
+
+persistency/gdml                                 gdml-V10-07-04              (o)
+----------------
+- Removed hardcoded size 10000 in G4GDMLWrite causing the values in GDML
+  truncated. Adressing problem report #2336.
+- Fixed case of writing degenerated names (position, rotation and nodes) for
+  multiUnion and assembly entities. Addressing problem report #2342.
+- Fixed problem of not complete writing of assemblies to GDML file.
+  Addressing problem report #2343.
+
+physics_lists
+-------------
+- builders (phys-builders-V10-07-04)
+  o Replaced G4HadronCaptureProcess with G4NeutronCaptureProcess
+    and G4HadronFissionProcess with G4NeutronFissionProcess in builders.
+  o Replaced particle-specific hadronic inelastic processes (that have
+    been deleted) with G4HadronInelasticProcess.
+  o G4PrecoNeutronBuilder, G4PrecoProtonBuilder, G4INCLXXNeutronBuilder,
+    G4QGSBinaryKaonBuilder: replaced obsoleted cross-sections
+    (that have been deleted) with better ones.
+  o G4BinaryDeuteronBuilder, G4BinaryTritonBuilder, G4BinaryHe3Builder,
+    G4BinaryAlphaBuilder: removed unused header files.
+- constructors/electromagnetic (phys-ctor-em-V10-07-07)
+  o Updated G4EmLowEPPhysics physics model configuration
+    See https://arxiv.org/abs/2102.02721 for details.
+  o GeneralGammaProcess: reduced usage of protected variables.               (o)
+  o DNA PhysicsLists: use SeEmModel() with correct signature.
+  o G4OpticalPhysicsList: removed deprecated optical commands.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V10-07-00)
+  o G4EmExtraPhysics, G4BertiniElectroNuclearBuilder,
+    G4LENDBertiniGammaElectroNuclearBuilder: replaced G4PhotoNuclearProcess
+    (now deleted) with G4HadronInelasticProcess.
+- constructors/hadron_elastic (phys-ctor-helastic-V10-07-03)
+  o G4ChargeExchangePhysics: set explicitly the elastic cross-sections
+    according to the hadron type, given that the universal Gheisha
+    elastic cross-section has been now deleted.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V10-07-02)
+  o G4HadronPhysicsShielding: corrected parameters of the M variant.         (o)
+  o Removed unused header files, and replaced when needed
+    G4HadronCaptureProcess with G4NeutronCaptureProcess.
+- lists (phys-lists-V10-07-04)
+  o Replaced particle-specific hadronic inelastic processes
+    (that have been deleted) with G4HadronInelasticProcess in LBE.
+    Renamed G4HadronCaptureProcess as G4NeutronCaptureProcess.
+
+processes/electromagnetic/adjoint                emadjoint-V10-07-03
+---------------------------------
+- General code cleanup: use 'virtual' and 'override' methods consistently;
+  member variables start with f; shorten long names; removed unused variables;
+  make class variables local where appropriate; order declarations of class
+  variables; define class variables; removed unused functions; marked
+  copy/assignment operators as 'delete'; added ProcessDescriptions;
+  removed ChangeHistory from top of code; use CLHEP::twopi instead of
+  hardcoded value; removed more unused headers.
+- Free resources in destructors.
+
+processes/electromagnetic/dna                    emdna-V10-07-03
+-----------------------------
+- Unit tests organisation.
+
+processes/electromagnetic/highenergy             emhighenergy-V10-07-02
+------------------------------------
+- Code clenup: clean-up of interfaces; removed unused headers;
+  improved initialisation.
+
+processes/electromagnetic/lowenergy              emlowen-V10-07-10
+-----------------------------------
+- Improved management of array in G4PenelopeGammaConversionModel.
+- Replaced std::map with static arrays in the G4Penelope models for 
+  performance improvements
+- Removed obsolete PrintInfo() methods and self defined process SubType.
+- Fixed Coverity defects.
+
+processes/electromagnetic/muons                  emmuons-V10-07-02
+-------------------------------
+- G4MuPairProduction, G4MuBremsstrahlung, G4MuBremsstrahlungModel:
+  improved initialisation.
+
+processes/electromagnetic/standard               emstand-V10-07-02
+----------------------------------
+- Clean-up of gamma processes.
+
+processes/electromagnetic/utils                  emutils-V10-07-08
+-------------------------------
+- G4OpticalParameters, G4OpticalParametersMessenger: removed deprecated
+  optical commands and parameters. Replaced CreateDir() with new
+  G4UIdirectory().
+- G4VMultipleScattering: removed obsolete unused methods; reduced number of
+  operations at run time, use 'isIon' flag for scaling of energy limits for
+  all particles with mass >1 GeV.
+- G4VEmModel removed "virtual" keyword for ComputeDEDX() method.
+- General code cleanup; removed obsolete methods and members;
+  reorganized class members.
+- Removed obsolete G4EmProcessOptions class.
+
+processes/electromagnetic/xrays                  xrays-V10-07-01
+-------------------------------
+- G4Scintillation: removed deprecated optical commands.
+
+processes/hadronic
+------------------
+- Removed deprecated 'rpg' model.
+- cross_sections (hadr-cross-V10-07-08)
+  o G4NeutronInelasticXS, G4NeutronElasticXS, G4NeutronCaptureXS, 
+    G4ParticleInelasticXS, GammaNuclearXS : in the method BuildPhysicsTable(),
+    replaced loop over material-cut-couple with a direct loop over all
+    elements; partially move initialisation of local variables to headers.
+  o G4NeutronInelasticXS: in the method BuildPhysicsTable(), replaced
+    loop over material-cut-couple with a direct loop over materials
+    used in geometry.
+  o G4MuNeutrinoNucleusTotXsc: access and calculation of
+    fQEratio(Z,A) = XS_qe/XS_tot.
+  o Removed obsolete classes: G4IonsKoxCrossSection, G4IonsSihverCrossSection,
+    G4IonsShenCrossSection, G4TripathiCrossSection, G4TripathiLightCrossSection,
+    G4IonProtonCrossSection, G4GeneralSpaceNNCrossSection,
+    G4ProtonInelasticCrossSection G4NeutronInelasticCrossSection,
+    G4PiNuclearCrossSection, G4CrossSectionPairGG,
+    G4FastPathHadronicCrossSection, G4HadronCaptureDataSet,
+    G4HadronFissionDataSet, G4HadronElasticDataSet, G4HadronInelasticDataSet,
+    G4HadronCrossSections, G4IonsShenCrossSection, G4TripathiCrossSection,
+    G4TripathiLightCrossSection.
+- management (hadr-man-V10-07-03)
+  o G4HadronInelasticProcess: added a new method to return the particle
+    definition (useful in practice to distinguish between baryons and
+    antibaryons, or between hadrons and ions).
+  o G4HadronInelasticProcess: removed old and unused header file
+    corresponding to the Gheisha inelastic cross-section (that has been
+    deleted).
+  o Moved G4HadronInelasticProcess class to hadronic/mangement module.
+  o G4HadronicEPTestMessenger: removed deprecated commands.
+- models/coherent_elastic (hadr-cohe-V10-07-00)
+  o G4ChargeExchangeProcess: replaced Gheisha elastic cross-section
+    (that has been deleted) with G4ComponentGGHadronNucleusXsc.
+- models/de_excitation (hadr-deex-V10-07-01)                                 (o)
+  o G4PolarizationTransition: fixed sampling of angular correlations.
+    Addressing problem report #2344.
+- models/inclxx (hadr-inclxx-V10-07-00)
+  o Updated comment in G4INCLXXInterface header.
+- models/lepto_nuclear (hadr-lepnuc-V10-07-01)
+  o G4NeutrinoNucleusModel: calculation of fQEratioA(Z,A,Enu) depending of
+    QE ratios for nucleons. Added accessors for XS_qe/XS_tot(A), fQEratioA
+    class member.
+- models/management (hadr-modman-V10-07-00)
+  o Removed unused class G4VCrossSectionBase.
+- models/particle_hp (hadr-hpp-V10-07-03)
+  o G4ParticleHPElementData, G4ParticleHPBGGNucleonInelasticXS: removed
+    old and unused header files corresponding to Gheisha cross-sections
+    (that have been deleted). Code cleanup.
+  o G4ParticleHPManager: removed deprecated environmental variables.
+- models/qmd (hadr-qmd-V10-07-00)
+  o G4QMDReaction: replaced G4IonsShenCrossSection (that has been deleted)
+    with G4ComponentGGNuclNuclXsc. Replaced GetIsoCrossSection() with
+    GetElementCrossSection().
+- models/radioactive_decay (radioactive_decay-V10-07-01)
+  o G4RadioactiveDecayBaseMessenger, G4RadioactivationMessenger,
+    G4RadioactiveDecaymessenger: removed deprecated commands.
+- processes (hadr-proc-V10-07-03)
+  o Added G4HadronInelasticProcess class from hadronic/management module.
+  o Renamed G4HadronCaptureProcess as G4NeutronCaptureProcess, as it is
+    applied only for neutron projectile.
+  o Renamed G4HadronFissionProcess as G4NeutronFissionProcess, as it is
+    applied only for neutron projectile.
+  o Removed use of deleted header file G4HadronicDeprecate.
+  o G4HadronCaptureProcess: removed old and unused header file
+    corresponding to the Gheisha capture cross-section (that has been
+    deleted).
+  o G4HadronFissionProcess: replaced Gheisha fission cross-section
+    (that has been deleted) with G4ZeroXS (which is a zero cross-section
+    everywhere).
+  o G4HadronElasticProcess, G4NeutrinoElectronProcess,
+    G4ElNeutrinoNucleusProcess, G4MuNeutrinoNucleusProcess: removed
+    old and unused header file corresponding to the Gheisha elastic
+    cross-section (that has been deleted).
+  o Removed the following deprecated inelastic processes:
+    G4AlphaInelasticProcess, G4AntiAlphaInelasticProcess
+    G4AntiDeuteronInelasticProcess, G4DeuteronInelasticProcess,
+    G4AntiHe3InelasticProcess, G4He3InelasticProcess,
+    G4AntiLambdaInelasticProcess, G4LambdaInelasticProcess,
+    G4AntiNeutronInelasticProcess, G4NeutronInelasticProcess,
+    G4AntiOmegaMinusInelasticProcess, G4OmegaMinusInelasticProcess,
+    G4AntiProtonInelasticProcess, G4ProtonInelasticProcess,
+    G4AntiSigmaMinusInelasticProcess, G4SigmaMinusInelasticProcess,
+    G4AntiSigmaPlusInelasticProcess, G4SigmaPlusInelasticProcess,
+    G4AntiTritonInelasticProcess, G4TritonInelasticProcess,
+    G4AntiXiMinusInelasticProcess, G4XiMinusInelasticProcess, 
+    G4AntiXiZeroInelasticProcess, G4XiZeroInelasticProcess,
+    G4IonInelasticProcess, G4KaonMinusInelasticProcess,
+    G4KaonPlusInelasticProcess, G4KaonZeroLInelasticProcess,
+    G4KaonZeroSInelasticProcess, G4PionMinusInelasticProcess,
+    G4PionPlusInelasticProcess, G4PhotoCaptureProcess, G4PhotoFissionProcess,
+    G4PhotoNuclearProcess.
+- stopping (hadr-stopping-V10-07-03)
+  o Removed obsolete classes: G4AntiNeutronAnnihilationAtRest,
+    G4AntiSigmaPlusAbsorptionFritiof, G4SigmaMinusAbsorptionBertini,
+    G4AntiProtonAbsorptionFritiof, G4KaonMinusAbsorptionBertini,
+    G4PiMinusAbsorptionBertini.
+  o G4MuonicAtomDecay: fixed a new Coverity warning.
+- util (hadr-util-V10-07-00)
+  o Removed unused classes: G4LightMedia, G4IsoResult, G4GHEKinematicsVector,
+    G4HadronicDeprecate, G4HadReentrentException, G4HadSignalHandler,
+    DumpFrame.
+
+tracking                                         tracking-V10-07-06
+--------
+- G4SteppingVerbose, G4SteppingManager: added a switch to instantiate
+  G4SteppingVerboseWithUnits.
+
+visualization                                    vis-V10-07-02
+-------------
+- management (visman-V10-07-04):
+  o /vis/scene/add/volume (and /vis/drawVolume): exploit
+    G4PhysicalVolumesSearchScene to streamline geometry tree searches.
+    Avoid calculating extent of a temporary physical volume when not
+    necessary.
+    The above does introduce a change of behaviour for the case that a user
+    names the volume(s) requested, e.g., "/vis/drawVolume Shape1". The user
+    will not normally see any difference - but it does avoid extravagant
+    computation in some circumstances.
+  o G4VisCommandsSet, G4VisCommandsTouchable and G4VisCommandsViewer:
+    added comment of explanation where using G4PhysicalVolumesSearchScene.
+  o G4VisExecutive: removed deprecated Wt driver.
+- modeling (modeling-V10-07-03)
+  o G4PhysicalVolumesSearchScene: allow user to limit the depth of descent
+    during a geometry tree search.
+  o G4PhysicalVolumeModel: if opacity (alpha) == 0 (completely transparent),
+    treat same as pVisAttribs->IsVisible().
+- externals (visexternals-V10-07-00)
+  o gl2ps: allow use of non-APPLE OpenGL on APPLE.
+    To use this, build with macro GL2PS_USE_GL_GL_H.
+- OpenGL (opengl-V10-07-05)
+  o Implemented WindowProc() function in G4OpenGLWin32Viewer for the Win32
+    OpenGL driver (function that was commented out). It is now possible to
+    change the Zoom and the orientation using the mouse (like in the Qt driver).
+    Based on contribution in GitHub PR#20.
+  o Enable extended WIN32 window in G4OpenGLWin32Viewer.
+    Based on contribution in GitHub PR#23.
+  o G4OpenGLQtViewer::addNonPVSceneTreeElement(): special case for markers,
+    use Info() if non-empty name appearing in Qt's scene tree. This allows
+    the user to design markers, e.g., a list of points, and give them a name
+    that relates to the providence of the points, e.g., a particular material
+    or geometry component.
+  o Removed deprecated Wt driver.
+  o G4OpenGLStoredQtViewer: moved fViewId<0 check to top of constructor to
+    pick up errors in base class construction.
+
+examples                                         examples-V10-07-03
+--------
+- Updated documentation and reference outputs.
+- advanced/gammaray_telescope (gammaraytel-V10-07-00)
+  o GammaRayTelHadronPhysics : replaced G4HadronCaptureProcess with
+    G4NeutronCaptureProcess, and G4HadronFissionProcess with
+    G4NeutronFissionProcess.
+    Replaced stopping processes that have been deleted.
+    Replaced old pion inelastic cross-sections (that have been deleted)
+    with G4BGGPionInelasticXS.
+  o GammaRayTelHadronPhysics, GammaRayTelIonPhysics: replaced
+    G4PhotoNuclearProcess (that has been deleted) with G4HadronInelasticProcess.
+- advanced/gorad (gorad-V10-07-00)
+  o Fixed potential shadowing compilation warnings in GRInitialization.
+- advanced/HGCal_testbeam (exhgcaltb-V10-07-00)
+  o Removed use of obsolete RanecuEngine. Updated CMS EM physics.
+- advanced/microelectronics (microelectronics-V10-07-00)
+  o Updated PhysicsList to new EM settings.
+- advanced/STCyclotron (STCyclotron-V10-07-00)                               (o)
+  o Update README to recommend correct version of G4TENDL-1.3.2.
+    Addressing problem report #2341.
+- advanced/underground_physics (DMX-V10-07-05)
+  o In DMXParticleSource::ConfineSourceToVolume(), use existing
+    facility to faster find physical volme in store, rather than looping
+    through. Some code cleanup.
+  o DMXPhysicsList: replaced G4HadronCaptureProcess with
+    G4NeutronCaptureProcess. Replaced stopping processes that have been deleted.
+    Removed header files of old and unused pion inelastic cross-sections (that
+    have been deleted). Replaced particle-specific inelastic processes (that
+    have been deleted) with G4HadronInelasticProcess.
+  o Replace deprecated optical commands & parameters with new ones.
+- basic/B4 (exampleB4-V10-07-02)
+  o Removed macros/visTutor. A movies tutorial is now in extended example
+    visualization/movies. Remove visTutor menu in all gui.mac files.
+- extended/biasing/B03 (B03-V10-07-02)
+  o B03PhysicsList: replaced G4HadronCaptureProcess with
+    G4NeutronCaptureProcess, and G4HadronFissionProcess with
+    G4NeutronFissionProcess. Replaced old ion cross-sections (that have been
+    deleted) with better ones. Use G4HadronInelasticProcess for inelastic
+    processes (the particle-specific inelastic processes have been deleted).
+- extended/electromagnetic/TestEm1 (testem1-V10-07-02)
+  o Migrated main() to use G4RunManagerFactory and G4SteppingVerboseWithUnits.
+- extended/electromagnetic/TestEm2 (testem2-V10-07-06)
+  o Migrated to use G4SteppingVerboseWithUnits.
+  o Removed obsolete PhysList5DEmStandard. 5D model is a part of
+    Opt4 and other physics configurations.
+- extended/electromagnetic/TestEm5 (testem5-V10-07-03)
+  o Removed obsolete PhysListEm5DPhysics and PhysListEm19DPhysics,
+    as these models are now part of regular physics constructors.
+- extended/electromagnetic/TestEm7 (testem7-V10-07-01)
+  o Removed use of obsolete RanecuEngine. Updated PhysListEmPhysicsNR.
+- extended/electromagnetic/TestEm15 (testem12-V10-07-00)
+  o PhysicsList: removed PhysList5DStandard, as 5D model is now part of Opt4
+    EM physics in standard constructors.
+- extended/exoticphysics/channeling (channelingExample-V10-07-00)
+  o Removed local option4 physics configuration.
+- extended/hadronic/FissionFragment (exExtHadFissFrag-V10-07-00)             (o)
+  o Improved comments.
+- extended/hadronic/Hadr01 (exhadr01-V10-07-00)
+  o PhysicsList: removed unused header file.
+- extended/hadronic/Hadr02 (exhadr02-V10-07-02)
+  o CRMCNeutronBuilder, HIJINGNeutronBuilder, UrQMDNeutronBuilder: replaced
+    G4HadronCaptureProcess with G4NeutronCaptureProcess, and
+    G4HadronFissionProcess with G4NeutronFissionProcess.
+  o IonUrQMDPhysics: replaced old ion cross-sections (that have been
+    deleted) with G4ComponentGGNuclNuclXsc.
+  o Replaced particle-specific inelastic processes (that have been deleted)
+    with G4HadronInelasticProcess.
+- extended/hadronic/Hadr03 (exhadr03-V10-07-01)
+  o GammaNuclearPhysics, GammaNuclearPhysicsLEND: replaced G4PhotoNuclearProcess
+    (that has been deleted) with G4HadronInelasticProcess.
+- extended/hadronic/Hadr04 (exhadr04-V10-07-01)
+  o NeutronHPphysics: replaced G4HadronCaptureProcess with
+    G4NeutronCaptureProcess, and G4HadronFissionProcess with
+    G4NeutronFissionProcess. Replaced G4NeutronInelasticProcess (that has
+    been deleted) with G4HadronInelasticProcess.
+- extended/hadronic/Hadr06 (exhadr06-V10-07-07)
+  o TrackingAction: added TrackingMessenger with 2 commands
+  o GammaNuclearPhysics, GammaNuclearPhysicsLEND : replaced
+    G4PhotoNuclearProcess (that has been deleted) with
+    G4HadronInelasticProcess.
+  o DetectorConstruction: updated 'fWorldSize' for SetRadius().
+  o Migrated main() to G4RunManagerFactory and G4SteppingVerboseWithUnits.
+- extended/hadronic/Hadr07 (exhadr07-V10-07-05)
+  o GammaNuclearPhysics, GammaNuclearPhysicsLEND: replaced G4PhotoNuclearProcess
+    (that has been deleted) with G4HadronInelasticProcess.
+  o Migrated main() to G4RunManagerFactory and G4SteppingVerboseWithUnits.
+- extended/hadronic/Hadr08 (exhadr08-V10-07-02)
+  o BiasingOperation: replaced Gheisha inelastic cross-section (that
+    has been deleted) with better cross-sections. Replaced particle-specific
+    inelastic processes (that have been deleted) with G4HadronInelasticProcess.
+- extended/hadronic/Hadr09 (exhadr09-V10-07-00)
+  o HadronicGenerator: migrated per-particle inelastic processes (that have
+    been deleted) to G4HadronInelasticProcess.
+- extended/hadronic/NeutronSource (NeutronSource-V10-07-04)
+  o GammaNuclearPhysics, GammaNuclearPhysicsLEND: replaced G4PhotoNuclearProcess
+    (that has been deleted) with G4HadronInelasticProcess.
+- extended/medical/dna/microdosimetry (microdosimetry-V10-07-01)
+  o Updated PhysicsList to use updated SetEmModel() method.
+    Removed thread unsafe SetCuts() method; use SetEmModel(..) for
+    multiple scattering.
+- extended/medical/dna/splitting (splitting-V10-07-00)
+- extended/medical/fanoCavity (fano-V10-07-00)
+- extended/medical/fanoCavity2 (fano2-V10-07-00)
+  o Updated PhysicsList to recent EM settings.
+- extended/optical/LXe (LXe-V10-07-00)
+- extended/optical/OpNovice (OpNovice-V10-07-00)
+- extended/optical/OpNovice2 (OpNovice2-V10-07-00)
+  o Replaced deprecated optical commands and parameters with new ones.
+- extended/radioactivedecay/Activation (activation-V10-07-03)
+  o GammaNuclearPhysics, GammaNuclearPhysicsLEND: replaced
+    G4PhotoNuclearProcess (that has been deleted) with
+    G4HadronInelasticProcess.
+- extended/visualization/movies (exam-ext-vis-movies-V10-07-01)
+  o Remove obsolete buttons in gui.mac.
+
+tests                                            tests-V10-07-03
+-----
+- Updated reference outputs and tools.
+- tests/test04 (test04-V10-07-03)
+  o Use CMake provided TENDL data if G4PARTICLEHPDATA is set.                (o)
+  o Tst04PhysicsList: replaced G4HadronCaptureProcess with
+    G4NeutronCaptureProcess, and G4HadronFissionProcess with
+    G4NeutronFissionProcess. Replaced particle-specific inelastic hadronic
+    processes (that have been deleted) with G4HadronInelasticProcess.
+- tests/test11 (test11-V10-07-02)
+- tests/test13 (test13-V10-07-02)
+  o PhysicsList: replaced G4HadronCaptureProcess with
+    G4NeutronCaptureProcess, and G4HadronFissionProcess with
+    G4NeutronFissionProcess. Replaced particle-specific inelastic hadronic
+    processes (that have been deleted) with G4HadronInelasticProcess.
+- tests/test15 (test15-V10-07-01)
+  o Test15StackingAction: removed old and unused header file.
+- tests/test16 (test16-V10-07-03)
+  o Tst16PhysicsList: replaced stopping processes that have been deleted.
+    Replaced old nucleon inelastic cross-sections (that have been deleted)
+    with better ones. Replaced particle-specific inelastic hadronic
+    processes (that have been deleted) with G4HadronInelasticProcess.
+- tests/test18 (test18-V10-07-02)
+  o Tst18PhysicsList : replaced stopping processes that have been deleted.
+    Replaced particle-specific inelastic hadronic processes (that have been
+    deleted) with G4HadronInelasticProcess.
+- tests/test19 (test19-V10-07-01)
+  o Removed old main() depending on the Gheisha inelastic cross-section that
+    has now been removed.
+- tests/test22 (test22-V10-07-02)
+  o Removed unused file FTFtest1.icc.
+- tests/test23 (test23-V10-07-03)
+  o QGSPStrFragmLundProtonBuilder : removed unused header files.
+  o HadronPhysicsNuBeam: replaced G4HadronCaptureProcess with
+    G4NeutronCaptureProcess.
+  o QGSPStrFragmLundProtonBuilder: replaced G4ProtonInelasticProcess
+    (that has been deleted) with G4HadronInelasticProcess.
+  o ProcessWrapper, ExecProcessLevel, TstPrimaryGeneratorAction: replaced
+    old Gheisha inelastic cross-section (that has been deleted) with better
+    cross-sections.
+  o Removed commented reference to Gheisha cross-sections (that have been
+    deleted) in main().
+- tests/test25 (test25-V10-07-03)
+- tests/test27 (test27-V10-07-03)
+- tests/test28 (test28-V10-07-03)
+  o PhysicsList: replaced G4HadronCaptureProcess with
+    G4NeutronCaptureProcess. Replaced old G4IonShenCrossSection class
+    (that has been deleted) with G4ComponentGGNuclNuclXsc. Replaced
+    particle-specific inelastic hadronic processes (that have been deleted)
+    with G4HadronInelasticProcess.
+- tests/test33 (test33-V10-07-04)
+  o Tst33PhysicsList: replaced G4HadronCaptureProcess with
+    G4NeutronCaptureProcess. Replaced stopping processes that have been deleted.
+    Replaced old pion inelastic cross-sections (that have been deleted) with
+    G4BGGPionInelasticXS. Replaced particle-specific inelastic hadronic
+    processes (that have been deleted) with G4HadronInelasticProcess.
+- tests/test41 (test41-V10-07-02)
+  o PhysicsLists: updated to use recent G4VEmProcess SetEmModel() signature. 
+- tests/test45 (test45-V10-07-02)
+  o utils/StyleBase.C: removed obsolete models.
+- tests/test46 (test46-V10-07-04)
+  o CMSEmStandardPhysicsHcal: updated to use new SetModel() signature.
+  o CMSHadronPhysicsFTFP_BERT: removed unused header files. 
+- tests/test48 (test48-V10-07-03)
+  o Replaced stopping processes that have been deleted.
+  o Removed old and unused header file in main().
+  o Updated GNUmake script.
+- tests/test61 (test61-V10-07-03)
+  o Tst61PhysicsList : replaced G4HadronCaptureProcess with
+    G4NeutronCaptureProcess. Replaced old ion cross-sections (that have been
+    deleted) with G4ComponentGGNuclNuclXsc. Replaced particle-specific inelastic
+    hadronic processes (that have been deleted) with G4HadronInelasticProcess.
+- tests/test64 (test64-V10-07-01)
+  o Updated main() to use G4RunManagerFactory; added initialisation of 
+    processes and models in order to guarantee initialisation of FTF and
+    sub-models.
+- tests/test65 (test65-V10-07-02)
+  o Tst65PhysicsList: replaced G4HadronCaptureProcess with
+    G4NeutronCaptureProcess, and G4HadronFissionProcess with
+    G4NeutronFissionProcess. Replaced particle-specific inelastic hadronic
+    processes (that have been deleted) with G4HadronInelasticProcess.
+- tests/test75 (test75-V10-07-02)
+  o Tst75ExecProcessLevel: replaced G4PhotoNuclearProcess (that has
+    been eliminated) with G4HadronInelasticProcess.
+  o Removed old and unused header file in main().
+- tests/test78 (test78-V10-07-01)
+  o PhysicsList: removed not relevent setup of Integral option.

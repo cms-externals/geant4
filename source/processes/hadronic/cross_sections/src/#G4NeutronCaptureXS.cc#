@@ -1,0 +1,370 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+// -------------------------------------------------------------------
+//
+// GEANT4 Class file
+//
+//
+// File name:    G4NeutronCaptureXS
+//
+// Author  Ivantchenko, Geant4, 3-Aug-09
+//
+// Modifications:
+//  20.07.2026 - use inheritance from G4CrossSectionXS
+//
+
+#include "G4NeutronCaptureXS.hh"
+
+#include "G4AutoLock.hh"
+#include "G4DynamicParticle.hh"
+#include "G4Element.hh"
+#include "G4ElementTable.hh"
+#include "G4IsotopeList.hh"
+#include "G4Log.hh"
+#include "G4Material.hh"
+#include "G4PhysicsLogVector.hh"
+#include "G4SystemOfUnits.hh"
+#include "Randomize.hh"
+
+G4ElementData* G4NeutronCaptureXS::data = nullptr;
+G4ElementData* G4NeutronCaptureXS::dataR = nullptr;
+
+static std::once_flag applyOnce;
+
+namespace
+{
+G4Mutex nCaptureXSMutex = G4MUTEX_INITIALIZER;
+const G4int MAXZCAPTURE = 92;
+}
+
+G4NeutronCaptureXS::G4NeutronCaptureXS()
+  : G4CrossSectionXS(20*CLHEP::MeV, Default_Name())
+{
+  verboseLevel = 0;
+  if (verboseLevel > 0)
+  {
+    G4cout << "G4NeutronCaptureXS applicable for Z <= " << MAXZCAPTURE
+           << " and energy " << pElimit/CLHEP::eV << " eV - "
+           << pEmax/CLHEP::MeV << " MeV  pLogEmax=" << pLogElimit
+           << G4endl;
+  }
+  
+  if (nullptr == data)
+  {
+    G4AutoLock l(&nCaptureXSMutex);
+    if (nullptr == data)
+    {
+      data = new G4ElementData(MAXZCAPTURE + 1);
+      data->SetName("nCapture");
+      dataR = new G4ElementData(MAXZCAPTURE + 1);
+      dataR->SetName("nRCapture");
+    }
+  }
+}
+
+void G4NeutronCaptureXS::CrossSectionDescription(std::ostream& outFile) const
+{
+  outFile << "G4NeutronCaptureXS calculates the neutron capture cross sections\n"
+          << "on nuclei using data from the high precision neutron database.\n"
+          << "These data are simplified and smoothed over the resonance region\n"
+          << "in order to reduce CPU time. G4NeutronCaptureXS is set to zero\n"
+          << "above 20 MeV for all targets. For Z > 92 the cross section of\n"
+          << "Uranium is used.\n";
+}
+
+G4double G4NeutronCaptureXS::ElementCrossSection(G4double eKin, G4double logE, G4int ZZ)
+{
+  G4double xs = 0.0;
+  if (eKin >= pEmax)
+  {
+    return xs;
+  }
+  
+  G4int Z = std::min(ZZ, MAXZCAPTURE);
+  G4double ekin = eKin;
+  G4double loge = logE;
+  if (ekin < pElimit)
+  {
+    ekin = pElimit;
+    loge = pLogElimit;
+  }
+
+  // data above the resonance region for an element
+  auto pv = GetPhysicsVector(Z, data);
+  G4double e0 = pv->GetMinEnergy();
+  
+  // data from the resonance region may exist or not
+  auto pvR = dataR->GetElementData(Z);
+  if (nullptr != pvR && ekin < e0)
+  {
+    G4double e00 = pvR->GetMinEnergy();
+    xs = (ekin >= e00) ? pvR->LogVectorValue(ekin, loge)
+      : (*pvR)[0] * std::sqrt(e00 / ekin);
+  }
+  // data above the resonance region
+  else
+  {
+    xs = (ekin >= e0) ? pv->LogVectorValue(ekin, loge)
+      : (*pv)[0] * std::sqrt(e0 / ekin);
+  }
+
+#ifdef G4VERBOSE
+  if (verboseLevel > 1)
+  {
+    G4cout << "Ekin= " << ekin / CLHEP::MeV << " ElmXScap(b)= "
+           << xs / CLHEP::barn << G4endl;
+  }
+#endif
+  return xs;
+}
+
+
+G4double G4NeutronCaptureXS::IsoCrossSection(G4double eKin, G4double logE, G4int ZZ, G4int A)
+{
+  G4double xs = 0.0;
+  if (eKin > pEmax)
+  {
+    return xs;
+  }
+
+  G4int Z = std::min(ZZ, MAXZCAPTURE);
+  G4double ekin = eKin;
+  G4double loge = logE;
+  if (ekin < pElimit)
+  {
+    ekin = pElimit;
+    loge = pLogElimit;
+  }
+
+  G4bool done{false};
+  
+  // data above the resonance region for an element
+  auto pv = GetPhysicsVector(Z, data);
+  G4double e0 = pv->GetMinEnergy();
+
+  // data from the resonance region may exist or not
+  auto pvR = dataR->GetElementData(Z);
+  if (nullptr != pvR && ekin < e0)
+  {
+    // use isotope x-section if possible
+    if (dataR->GetNumberOfComponents(Z) > 0)
+    {
+      auto pviso = dataR->GetComponentDataByID(Z, A);
+      if (pviso != nullptr)
+      {
+        G4double e00 = pviso->GetMinEnergy();
+        xs = (ekin >= e00) ? pviso->LogVectorValue(ekin, loge)
+          : (*pviso)[0] * std::sqrt(e00 / ekin);
+        done = true;
+      }
+    }
+    // isotope data are not available or applicable
+    if (!done)
+    {
+      G4double e00 = pvR->GetMinEnergy();
+      xs = (ekin >= e00) ? pvR->LogVectorValue(ekin, loge)
+        : (*pvR)[0] * std::sqrt(e00 / ekin);
+    }
+  }
+  // data above the resonance region
+  else
+  {
+    // use isotope x-section if possible
+    if (data->GetNumberOfComponents(Z) > 0)
+    {
+      auto pviso = data->GetComponentDataByID(Z, A);
+      if (pviso != nullptr)
+      {
+        G4double e00 = pviso->GetMinEnergy();
+        xs = (ekin >= e00) ? pviso->LogVectorValue(ekin, loge)
+          : (*pviso)[0] * std::sqrt(e00 / ekin);
+        done = true;
+      }
+    }
+    // isotope data are not available or applicable
+    if (!done)
+    {
+      xs = (ekin >= e0) ? pv->LogVectorValue(ekin, loge)
+        : (*pv)[0] * std::sqrt(e0 / ekin);
+    }
+  }
+#ifdef G4VERBOSE
+  if (verboseLevel > 0)
+  {
+    G4cout << "G4NeutronCaptureXS::IsoXS: Ekin(MeV)= " << ekin / MeV
+           << "  xs(b)= " << xs / CLHEP::barn << "  Z= " << Z << "  A= " << A
+           << G4endl;
+  }
+#endif
+  return xs;
+}
+
+const G4Isotope* G4NeutronCaptureXS::SelectIsotope(const G4Element* anElement, G4double kinEnergy,
+                                                   G4double logE)
+{
+  G4int nIso = (G4int)anElement->GetNumberOfIsotopes();
+  const G4Isotope* iso = anElement->GetIsotope(0);
+
+  // G4cout << "SelectIsotope NIso= " << nIso << G4endl;
+  if (1 == nIso)
+  {
+    return iso;
+  }
+
+  // more than 1 isotope
+  G4int Z = anElement->GetZasInt();
+  if (nullptr == data->GetElementData(Z))
+  {
+    InitialiseOnFly(Z);
+  }
+
+  const G4double* abundVector = anElement->GetRelativeAbundanceVector();
+  G4double q = G4UniformRand();
+  G4double sum = 0.0;
+
+  // is there isotope wise cross section?
+  G4int j;
+  if (Z > MAXZCAPTURE || 0 == data->GetNumberOfComponents(Z))
+  {
+    for (j = 0; j < nIso; ++j)
+    {
+      sum += abundVector[j];
+      if (q <= sum)
+      {
+        iso = anElement->GetIsotope(j);
+        break;
+      }
+    }
+    return iso;
+  }
+  G4int nn = (G4int)temp.size();
+  if (nn < nIso)
+  {
+    temp.resize(nIso, 0.);
+  }
+
+  for (j = 0; j < nIso; ++j)
+  {
+    sum += abundVector[j] * IsoCrossSection(kinEnergy, logE, Z, anElement->GetIsotope(j)->GetN());
+    temp[j] = sum;
+  }
+  sum *= q;
+  for (j = 0; j < nIso; ++j)
+  {
+    if (temp[j] >= sum)
+    {
+      iso = anElement->GetIsotope(j);
+      break;
+    }
+  }
+  return iso;
+}
+
+void G4NeutronCaptureXS::BuildPhysicsTable(const G4ParticleDefinition& p)
+{
+  CommonInit(temp, p);
+
+  // it is possible re-initialisation for the second run
+  const G4ElementTable* table = G4Element::GetElementTable();
+
+  // initialise static tables only once
+  std::call_once(applyOnce, [this]() { isInitializer = true; });
+
+  if (isInitializer)
+  {
+    G4AutoLock l(&nCaptureXSMutex);
+    // Access to elements
+    for (auto const& elm : *table)
+    {
+      G4int Z = std::max(1, std::min(elm->GetZasInt(), MAXZCAPTURE));
+      if (nullptr == data->GetElementData(Z))
+      {
+        Initialise(Z);
+      }
+    }
+    l.unlock();
+  }
+}
+
+void G4NeutronCaptureXS::Initialise(G4int Z)
+{
+  if (Z > MAXZCAPTURE nullptr != data->GetElementData(Z))
+  {
+    return;
+  }
+
+  // upload element data
+  auto v = RetrieveVector(subDir, Z, 0, true);
+  data->InitialiseForElement(Z, v);
+
+  // upload element R-data
+  auto vr = RetrieveVector(subDirR, Z, 0, false);
+  dataR->InitialiseForElement(Z, vr);
+
+  // upload isotope data
+  G4bool noComp = true;
+  G4bool noCompR = true;
+  if (amin[Z] < amax[Z])
+  {
+    for (G4int A = amin[Z]; A <= amax[Z]; ++A)
+    {
+      auto v1 = RetrieveVector(subDir, Z, A, false);
+      if (nullptr != v1)
+      {
+        if (noComp)
+        {
+          G4int nmax = amax[Z] - A + 1;
+          data->InitialiseForComponent(Z, nmax);
+          noComp = false;
+        }
+        data->AddComponent(Z, A, v1);
+      }
+      if (nullptr != vr)
+      {
+        auto v2 = RetrieveVector(subDirR, Z, A, false);
+        if (nullptr != v2)
+        {
+          if (noCompR)
+          {
+            G4int nmax = amax[Z] - A + 1;
+            dataR->InitialiseForComponent(Z, nmax);
+            noCompR = false;
+          }
+          dataR->AddComponent(Z, A, v2);
+        }
+      }
+    }
+  }
+  // no components case
+  if (noComp)
+  {
+    data->InitialiseForComponent(Z, 0);
+  }
+  if (noCompR && nullptr != vr)
+  {
+    dataR->InitialiseForComponent(Z, 0);
+  }
+}

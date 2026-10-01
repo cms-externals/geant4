@@ -1,0 +1,533 @@
+
+                       geant4-11-04-ref-09
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Migrated G4tools headers/includes to use .hh extension for clarity and
+   discoverability.
+ o In G4LogicalVolume, refined the storage of key attributes which are
+   constant during simulation for specific volumes types, i.e. logical
+   volumes used only in placement and replicas physical volumes. Logical
+   volumes used by "varying" physical volumes (parameterised, divisions,
+   replicated slices) are marked as "mutable" and maintain a per-thread
+   instance of the attributes.
+ o Accelerated G4MultiUnion accurate DistanceToIn(p) safety with a component
+   bounding-box hierarchy. Accelerated faceted twisted solids queries.
+ o Sanity check and fixes in G4Tubs, G4Cons, G4CutTubs, G4Sphere and G4Torus,
+   as well as in G4Hype, G4Paraboloid, and G4EllipticalTube.
+ o Improved G4Para directional distance queries and G4Polycone/G4Polyhedra,
+   G4ExtrudedSolid and G4TessellatedSolid scaling.
+ o Refactored ScanAndSetCouple() in G4ProductionCutsTable to avoid re-visiting
+   shared logical volumes reachable via multiple paths in the volume hierarchy.
+ o Updated to GIDI+ 3.35.0-3. Added a thick-target Bremsstrahlung model.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.4.3
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-04-07
+-----
+- Suppress false-positive warnings from Intel/icx compiler for use of
+  __COMMON__ macro in G4CMakeRuless_cxx.cmake.
+- Honour dataset environment variables in geant4-config, if set.
+  Based on [GitHub PR #110](https://github.com/Geant4/geant4/pull/110)
+- Added build type for test coverage monitoring.
+  Currently only enabled for GNU/Clang compilers.
+
+doc                                              doc-V11-04-03
+---
+- Added SideEffect tags.
+- Added materials directory to Doxyfile.
+
+analysis                                         analysis-V11-04-07
+--------
+- Updated use of G4tools headers to use .hh extension.
+
+externals
+---------
+- g4tools (g4tools-V11-04-16)
+  o Migrated G4tools headers/includes to use .hh extension for clarity and
+    discoverability. Extension chosen for consistency with remainder of toolkit.
+  o Rationalised header and namespace ordering for clarity.
+
+geometry                                         geometry-V11-04-03
+--------
+- divisions (geomdiv-V11-04-01)
+  o In G4PVDivision and G4ReplicatedSlice, adapted to new scheme of providing
+    a separate, per-thread instances of a logical volume's solid, material,
+    mass and cuts-couple attributes. For the new split-class mechanism
+    (trigerred at runtime) these classes signal the need to use separate
+    per-thread state by calling G4LogicalVolume::MarkMaterialMutable().
+  o In G4ReplicatedSlice, enhanced parameter checks in the constructor;
+    CheckAndSetParameters() takes a non-const 'pLogical', so it can mark the
+    logical volume mutable.
+- magneticfield (field-V11-04-01)
+  o Preserve concrete stepper types in G4FieldSetup: construct type-specific
+    integration drivers for built-in field steppers instead of instantiating
+    their drivers with G4MagIntegratorStepper as the template parameter:
+    create G4IntegrationDriver<ConcreteStepper> for regular steppers; retain
+    type-specific FSAL driver construction; use polymorphic fallback for
+    user-provided steppers; support both magnetic and electromagnetic field
+    configurations; correct driver ownership during repeated field updates.
+- management (geommng-V11-04-11)
+  o In G4LogicalVolume, refined the storage of key attributes which are
+    constant during simulation for specific volumes types, i.e. logical
+    volumes used only in placement and replicas physical volumes.
+    The attributes are the solid, material, and cuts-couple pointers, and the
+    value of the mass; for these instances the 'master' value is always used
+    and a slot for "per-thread" values is NOT created.
+    Logical volumes used by "varying" physical volumes (parameterised,
+    divisions, replicated slices) are marked as "mutable" and maintain a
+    per-thread (split) instance of the attributes, as they can have
+    multiple values.
+  o Added a class, G4ParameterisationChecker, which checks for a parameterised
+    replica-family logical volume which is inconsistent with orthodox
+    expectations (e.g. a parameterisation keeps the same logical volume for
+    all daughter volumes). Marks these as "mutable" and provides (temporary)
+    work-around.
+  o Added a shared recursive polyhedron-cache mutex in G4VSolid to avoid lock
+    ordering deadlocks for nested solids. Documented cache lifetime constraints.
+  o Fixed GetPolyhedron() cache locking in G4UAdapter and G4ReflectedSolid;
+    delete the old reflected polyhedron when rebuilding.
+  o Fixed verbosity handling in G4GeometryManager and G4VoxelisationHelper   (o)
+    to print voxel statistics and the global timing report once through the
+    master after MT voxelisation, preserving explicit verbosity requests
+    without additional diagnostic printouts.
+  o Avoid duplicate tree search done in G4RunManagerKernel::CheckRegions() by
+    adding a Boolean return value to G4Region::SetWorld(). to indicate if the
+    volume is placed in the world or not.
+- navigation (geomnav-V11-04-09)
+  o Added a new class, G4GeometryMemoryAdvisor, to analyses a constructed
+    geometry and report how many distinct logical volumes are either
+    "mutable" (daughter of a G4PVParameterised, G4PVDivision, or a
+    G4ReplicatedSlice), and so carry per-thread attributes, versus "shared"
+    (everything else, sharing those fields across all threads with no
+    per-thread storage for them). The class also reports the per-thread
+    LV-side memory this geometry actually uses, and the amount saved.
+  o Extended G4LogicalVolumeUsageVisitor to count physical volume types.
+    Extended G4VTouchableVisitor and G4TouchableWalker to 'Regular' Structures.
+  o In G4VolumeTreeWalker, fixed undefined behaviour in dispatch with did not
+    correctly distinguish between the three independent sibling physical
+    volume subclasses.
+  o Added new checker class G4ParameterisationCheckVisitor, exercising every
+    parameterisation, including ones nested inside one or two replica levels.
+  o G4Navigator: fixed a bug in CreateTouchableHistory() when the current    (o)
+    location is outside the world volume.
+  o Added helper method CheckAndConfirmTouchable() in G4Navigator, which
+    undertakes a check of candidate touchable, corrects the location if it is
+    in another volumes and reports if position is outside the world volume.
+    Added auxiliary methods ReportOutsidePoint().
+  o In G4VoxelNavigation, added consistency checks in ComputeStep() and
+    ComputeSafety(), that internal data (VoxelStack) is up-to-date with the
+    current volume's voxel header (if not correct, fix it before proceeding);
+    ensure that daughter indices found in voxel data structures are within
+    bounds; a warning is issued when either problem occurs, with frequency
+    reducing; navigation proceeds, with a corrective action.
+- solids/Boolean (geom-bool-V11-04-07)
+  o Copy owned displaced operands independently in Boolean copy construction
+    and assignment, preventing clone destruction from invalidating the original.
+  o Fixed GetPolyhedron() cache races in G4BooleanSolid, G4MultiUnion,
+    G4DisplacedSolid and G4ScaledSolid using the shared recursive mutex,
+    allowing nested-solid access without lock ordering deadlocks.
+    Delete old displaced and scaled polyhedra when rebuilding their caches.
+  o Corrected union normals at hidden operand edges and distant Boolean entry
+    queries. Fixed cached interval offsets and progression in intersection
+    traversal, avoiding zero entry distances on iteration exhaustion.
+  o In G4SubtractionSolid, preserve operand A entries rounded outside its
+    surface when operand B is outside, preventing missed subtraction
+    intersections.
+  o Accelerated G4MultiUnion accurate DistanceToIn(p) safety with a component
+    bounding-box hierarchy: measured 47x/192x/54x gains for grid/chain or
+    rotated-grid layouts at 16,384 components; worst-case query complexity
+    remains O(N). Reused cached voxel candidates and reentrant thread-local
+    entry scratch, eliminating measured warmed-query allocations. At 16,384
+    components, local navigation gained 6-20x and longitudinal chain exits 12x,
+    with approximately linear measured chain-exit scaling (N^1.08 over
+    64-16,384 components). Cached bounds during voxelization, making
+    BoundingLimits/CalculateExtent O(1) afterwards; invalidate on AddNode and
+    rebuild on re-voxelization.
+    With updated G4Voxelizer for solids, G4MultiUnion retained memory at 16,384
+    components fell from 132.8 to 4.66 MB for overlapping chains and from 4.52
+    to 3.93 MB for separated grids; both measured approximately N^1.01 scaling
+    over 64-16,384 components. Coarsening can increase candidate counts for
+    dense or irregular layouts. Preserved accurate-safety mode during outside
+    SurfaceNormal() queries.
+- solids/CSG (geom-csg-V11-04-03)
+  o G4Tubs, G4Cons, G4CutTubs: account for angular tolerance in phi exits
+    and code refactoring. Corrected near-axis and corner ray intersections
+    and classification of nearly full phi spans. Corrected the inner-cone exit
+    side and normal validity in G4Cons, and oblique phi-face areas in G4CutTubs.
+  o G4Tubs: corrected grazing departures from tolerated phi surfaces and
+    distant cylinder entries when cancellation erases the discriminant. Accept
+    tolerated outward entries at the inner cylinder, avoiding potential missed
+    cut boundaries in subtraction exits.
+  o G4Cons: clamp tolerated outward departures before checking intersections
+    and retain shallow exits. Handle rounded outer-surface tangencies.
+    Fixed case of spurious entry on axial ray thorugh cone apex.
+    Stabilise distant tube/cone entries before evaluating radial roots.
+    Corrected tube exits through the axis and phi normals at the axis.
+  o G4Sphere: fixed negative distances in DistanceToOut() for cone-parallel
+    rays by rejecting backward and wrong-half-cone theta intersections.
+    Based on [GitHub PR #116](https://github.com/Geant4/geant4/pull/116).
+    Fixed DistanceToOut for a wide-phi (>pi) sphere starting on a
+    phi cut plane, which could report the outer-sphere distance for a ray
+    that immediately leaves the valid wedge.
+  o G4Torus: condition distant ray entries at the bounding box to avoid missed
+    intersections and inaccurate entry distances for thin tori.
+  o G4Box: little optimisation in DistanceToIn(p,v) and DistanceToOut(p,v).
+  o Reworked G4Para directional distance queries in its oblique box frame,
+    replacing repeated side-plane clipping with three slab intersections and
+    direct exit-face selection. Shared the exit traversal between normal and
+    no-normal queries to avoid duplicated code.
+  o Fixed DCLP thread-safety in G4CSGSolid::GetPolyhedron() by holding the
+    shared recursive mutex across cache checks, rebuilding and pointer
+    retrieval.
+  o G4UTrap: fixed the Right Angular Wedge constructor passing an
+    already-computed slope where VecGeom's UnplacedTrapezoid expects an
+    angle and applies its own tangent, shearing the wedge incorrectly.
+- solids/specific (geom-specific-V11-04-10)
+  o Improved G4Polycone/G4Polyhedra safety scaling with a compact RZ bounds
+    hierarchy, retaining direct scans for short profiles.
+    Localised horizontal-edge checks in Inside() to the relevant Z slabs.
+    Use linear lookup for short Z-slab tables and extend phi-face rejection
+    to short polyhedra normal queries, preserving near-tie comparisons.
+    Improved exit safety with local Z-ordered contour searches, retaining
+    the RZ bounds tree for long profiles.
+    Bypass azimuth selection in one-sided polyhedra Inside() and safety
+    queries, with conservative phi-face rejection for short profiles.
+    Fixed grazing cone intersections and cap rounding, retaining a common
+    solver for sensitive two-plane exits with and without normals.
+    Corrected polycone phi-cut exits and rotated full-phi polyhedra bounds.
+  o In G4Polyhedra, fixed SurfaceNormal() on slanted lateral facets; the
+    cos(halfPhi) foreshortening of the RZ-profile normal was applied to the
+    radial instead of the z component, tilting normals by a few degrees.
+    Fixed Inside() classification beyond finite RZ profile edges.
+  o Fixed G4Polycone entry safety on phi cuts and surface exits in two-plane
+    profiles. Corrected normal validity on concave radial boundaries.
+    Corrected grazing and distant-ray intersections in G4Polycone and
+    G4IntersectingCone. Retain tolerated entries at finite cylinder/cone
+    joins in the shared polycone intersection solver, including
+    G4GenericPolycone.
+  o In G4GenericPolycone, fixed cap-adjacent convex RZ classification and
+    consequent safety overestimates; retain indexed classification for long
+    profiles.
+  o In G4Hype, fixed DistanceToIn(p,v) accepting a root of the hyperbolic
+    surface far beyond halfLenZ when an endplate crossing was certified,
+    returning a distance shorter than the safety for distant rays.
+    Corrected the inner-surface normal test in DistanceToIn(p,v), which used
+    the outer stereo angle. Rays entering the material through the inner
+    hyperbolic surface could be rejected, returning 'kInfinity' for a crossing
+    that exists.
+  o Corrected the surface relation used by G4Paraboloid::DistanceToIn(p)
+    safety. The safety could exceed the true distance to the solid, so a step
+    of one safety could reach material.
+  o Corrected G4EllipticalTube zero-distance exit normals to use the original
+    ellipse coordinates in both outgoing and grazing lateral-surface branches.
+    Preserve small transverse components in near-axis rays.
+  o In G4ExtrudedSolid, accelerated polygon queries and exact entry with edge
+    rejection, cap shortcuts and convex Z-slab clipping, prioritising small
+    prisms. Measured gains: Inside 1.5-1.8x and exact entry/exit 2.2x/2.1x.
+    Improved scaling over the number of facets; large-mesh construction gained
+    9-15x over earlier native versions, with up to 55x less heap in the tested
+    toroidal mesh. Retain unambiguous vertex exits from non-convex right
+    prisms, avoiding missed tessellated intersections that returned a zero exit
+    distance. Corrected grazing exits starting just outside a non-convex prism.
+  o Fixed DCLP thread-safety in all GetPolyhedron() implementations by holding
+    the shared recursive mutex across cache checks, rebuilding and pointer
+    retrieval, replacing local polyhedron mutexes.
+  o Accelerated navigation in G4TessellatedSolid and G4QuadrangularFacet
+    queries using geometry caches and hierarchies, preserving finite-surface
+    safety and tolerance handling. Code cleanup.
+    Fixed missed voxel entries, copying/reopening and shared scratch handling.
+    Recorded speedups over original native navigation (geometric means):
+    tessellated Inside 2-74x, normals 3.9x, exit safety 9.4x and exact
+    entry/exit 1.2x/8.2x.
+  o Replaced dense G4Voxelizer masks for solids with bounded cell candidate
+    lists, coarsening the grid as needed for O(N) retained and temporary
+    storage. Added direct point lookup and preserved candidate exclusions
+    and diagnostics. Helps in improving memory scaling in G4MultiUnion
+    structures. Fixed false-positive compilation warnings for uninitialised
+    data on Linux.
+  o Removed a redundant vertex copy in G4GenericTrap assignment operator.
+  o Corrected twisted-faceted exit normals and directional intersections,
+    including certified high-twist vertical crossings and fixed
+    assignments to release old constituent surfaces before rebuilding.
+  o Accelerated G4TwistedTubs::Inside() with immutable cached bounds and
+    direct radial, phi and endcap classification, retaining the legacy path
+    for directly persisted objects; measured about 5.0x for Inside() and a
+    further 1.2x for directional exact distances and SurfaceNormal across
+    the benchmarked topologies. Code cleanup.
+  o Accelerated faceted solids (G4TwistedBox, Trap and Trd) Inside, safety,
+    SurfaceNormal and exact-distance queries with immutable untwisted-face
+    data, early candidate rejection, allocation-free storage and a certified
+    first-root solver with exact fallbacks. Measured about 7.0x for
+    DistanceToIn(p,v) and 12.0x for both DistanceToOut(p,v) variants.
+    Code cleanup.
+- volumes (geomvol-V11-04-02)
+  o G4PVParameterised, G4GeometryWorkspace: adapted for the new per-instance
+    runtime mutable/shared logical-volume split.
+  o In G4GeometryWorkspace, added a G4GeomSplitter-based manager for the extra
+    spliting. In InitialisePhysicalVolumes(), only call CloneReplicaSolid() if
+    the logical volume is mutable. 
+  o In G4PVReplica, added CheckNoDaughters() function to call before adding
+    it to mother. Made public CheckOnlyDaughter(). Removed unused code.
+
+global                                           global-V11-04-21
+------
+- Optimised G4JTPolynomialSolver work buffers with inline storage for
+  polynomials through degree eight and a generic heap fallback for higher
+  degrees, avoiding allocations in geometry navigation queries.
+- Updated date and tag-ID for geant4-11-04-ref-09.
+
+materials                                        materials-V11-04-06
+---------
+- G4UCNMaterialPropertiesTable: use integer loop indices to fully populate   (o)
+  micro-roughness tables, fixing uninitialised reads reported by Valgrind in
+  the ExUCN example. Corrected integral-probability lookup strides and use
+  delete[] for arrays.
+- Added Doxygen documentation, mostly autogenerated.
+
+particles                                        particles-V11-04-08
+---------
+- In G4IonTable, use lower_bound() instead of find() and restrict scans to   (o)
+  matching multimap keys to avoid skipping ion states. Fixes duplicate ion
+  registration and the resulting PART122 abort observed in several examples
+  and tests on macOS.
+
+physics_lists
+-------------
+- builders (phys-builders-V11-04-00)
+  o G4NeutronPHPBuilder: added an option to enable the NuDEX model.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V11-04-02)
+  o Restored G4HadronPhysicsQGSP_BERT_HP constructor to its Geant4 11.1
+    configuration.
+  o Added an option to use of the NuDEX model in G4HadronPhysicsFTFP_BERT_HP
+    G4HadronPhysicsQGSP_BERT_HP, G4HadronPhysicsINCLXX and
+    G4HadronPhysicsShielding via G4NeutronPHPBuilder.
+  o Renamed the current G4HadronPhysicsQGSP_BERT_HP physics constructor to
+    G4HadronPhysicsQGSP_BERT_HP_VI.
+- lists (phys-list-V11-04-02)
+  o Restored the QGSP_BERT_HP physics list to its Geant4 11.1 configuration.
+  o Renamed the current experimental physics QGSP_BERT_HP physics list to
+    QGSP_BERT_HP_VI with G4HadronPhysicsQGSP_BERT_HP_VI.
+  o Added QGSP_BERT_HP_VI to G4PhysListFactory.
+
+processes/cuts                                   proccuts-V11-04-05
+--------------
+- In G4VRangeToEnergyConverter, store the shared energy vector by value to   (o)
+  prevent converter destruction from invalidating it for surviving or new
+  converters. Removed unnecessary lock in FillEnergyVector() and documented
+  serial use of constructor and setters.
+- Refactored ScanAndSetCouple() in G4ProductionCutsTable to avoid re-visiting
+  shared logical volumes reachable via multiple paths in the volume hierarchy.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-04-14)
+  o G4DNARuddIonisationExtendedModel, G4DNARuddIonisationDynamicModel: fixed
+    Bragg peak position for deuteron.
+  o G4DNAMolecularReactionTable: added protection, checking (R1, R2), to avoid
+    adding double reactions.
+  o In G4DNABornIonisationModel, use Verbose() instead of WorkerVerbose().
+- standard (emstand-V11-04-05)
+  o G4CoulombScattering: provide correct printout at initialisation (do not
+    limit per particle type).
+  o G4eplusAnnihilation: added a new limitation for positronium that cannot be
+    formed in vaccum; the current limit is set to the density of the media
+    (1.e^-5 g/cm3).
+  o G4OrePowellAtRestModel, G4PolarizedOrePowellAtRestModel: minor change in
+    info printout to be uniform.
+- utils (emutils-V11-04-13)
+  o In G4EmTableUtil, added a new method IsForPrinting() allowing select the
+    list of particles for print of the process/model information in one place.
+    This list is extended to deuterons and some hadrons, for which hadronic
+    information is printed but EM information was not printed.
+  o G4VEmProcess, G4VEnergyLossProcess, G4VMultipleScattering and
+    G4TransportationWithMsc: use G4EmTableUtil::IsForPrinting() method to
+    identify particles, for which the default printout is needed; the method
+    G4EmParameters::IsForPrinting() is not used.
+  o G4EmParameters: simplified usage of the flag for printing EM parameters,
+    it is now only used for dumping of the EM parameters table of this class,
+    so atomic pattern is not needed; added warning to corresponding methods,
+    only 'verbose' is used in consumer classes.
+  o G4LossTableManager: added new methods RunNumber() and ThreadID(); internal
+    variable 'run' is now incremented in one place of the code both in the
+    master and worker threads; do not set flags into the class G4EmParameters.
+  o G4EmDataRegistry: use protection locks in several methods to avoid
+    potential data race in the case of non-standard use of the class; removed
+    obsolete private method.
+- xrays (xrays-V11-04-01)
+  o Revert exclusion of optical photons from G4Scintillation applicability   (o)
+    which was previously introduced. Addressing problem report #2750.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-04-06)
+  o Get rid of unnecessary static instance pointer in G4HadronXSDataTable.   (o)
+  o In G4NeutrinoElectronCCXsc, corrected calculation of neutrino-electron   (o)
+    energy threshold. Addressing problem report #2761.
+    Based on [GitHub PR #114](https://github.com/Geant4/geant4/pull/114).
+- models/cascade (hadr-casc-V11-04-04)
+  o G4ElementaryParticleCollider: added missing setVerboseLevel() override,
+    propagating verbosity to the final-state generator at set-time, as the
+    other colliders already do; removed the equivalent call from
+    generateSCMfinalState(). No change in results or in verbose output.
+- models/coherent_elastic (hadr-cohe-V11-04-02)
+  o In G4NeutrinoElectronNcModel, corrected typo in particle name            (o)
+    conditional. Addressing problem report #2760.
+    Based on [GitHub PR #113](https://github.com/Geant4/geant4/pull/113).
+- models/de_excitation (hadr-deex-V11-04-11)
+  o In G4FermiBreakUpAN, require an energetically open decay channel in      (o)
+    IsApplicable(), allowing evaporation to handle light fragments below the
+    Fermi break-up threshold; reject invalid nuclei and non-finite or negative
+    excitation energies.
+- models/lend (hadr-lend-V11-04-03)
+  o Updated to GIDI+ 3.35.0-3. Addressed many Coverity reported defects.
+    Added a thick-target Bremsstrahlung model (usage requires additional
+    data in the G4LENDDATA directory).
+- models/lepto_nuclear (hadr-lepnuc-V11-04-02)
+  o In G4NeutrinoElectronCcModel, corrected calculation of neutrino-electron (o)
+    energy threshold. Addresses problem report #2761.
+    Based on [GitHub PR #114](https://github.com/Geant4/geant4/pull/114).
+  o Fixed thread safety issue in G4MuonVDNuclearModel constructor, to        (o)
+    guarantee exactly-once initialisation of 'fElementData' with full ordering.
+- models/particle_hp (hadr-hpp-V11-04-08)
+  o In G4ParticleHPContAngularPar, fixed probability normalisation in        (o)
+    discrete/continuous emission sampling. Corrected the discrete/continuous
+    branch selection to compare the scaled random number directly, while
+    retaining scaling of the random number by the total probability for
+    subsequent energy sampling, which uses unnormalised cumulative
+    probabilities.
+  o Fix in G4ParticleHPProbabilityTablesStore to use canonical function-local
+    static singleton definition. Fixes thread-safety issue during physics
+    initialisation and final memory leak.
+  o Guard probability-table destructors against missing data and incomplete
+    initialisation, preventing null dereferences and out-of-bounds access
+    during cleanup at job closure.
+- util (hadr-util-V11-04-03)
+  o In G4HadFinalState, fixed condition for exception in GetSecondary().
+
+processes/optical                                op-V11-04-01
+-----------------
+- Fixed minimum primary energy check to use GetMinEnergy() in G4OpWLS/2.     (o)
+- In G4OpBoundaryProcess, refresh 'fDichroicVector' only when the current    (o)
+  optical surface differs from the one used on the previous call.
+  Addressing problem report #2676.
+
+run                                              run-V11-04-19
+---
+- Report parallel voxel statistics from the master after worker              (o)
+  synchronisation in MT and tasking modes, avoiding suppression by worker
+  initialisation filters.
+- In G4RunManagerKernel::CheckRegions(), use the Boolean return value from
+  G4Region::SetWorld() to avoid a redundant BelongsTo() tree search.
+  G4RunManagerKernel::CheckRegions() is now called only for master thread
+  within InitializePhysics() in a multithreaded application.
+
+tracking                                         tracking-V11-04-03
+--------
+- In G4SteppingManager, refine how SetInitialStep() obtains the physical volume 
+  and touchable from G4Navigator. Also protected the use of physical volume in
+  case it is null (for vertex) before the track is killed.
+  Improvements in G4Navigator ensure that, if the position was outside the 
+  world, the 'fCurrentVolume' pointer is null.
+
+visualization
+-------------
+- management (visman-V11-04-04)
+- OpenGL (opengl-V11-04-04)
+- OpenInventor (openinventor-V11-04-03)
+  o Updated use of G4tools headers to use .hh extension.
+- ToolsSG (vis_toolssg-V11-04-04)
+  o In G4ToolsSGQtGLESViewer and G4ToolsSGQtZBViewer: restrict FinishView()
+    to the widget's Qt thread, deferring painting from the visualization
+    sub-thread to the end-of-run refresh. Fixes potential /run/beamOn deadlock
+    observed on macOS when the GUI thread waits for the visualization
+    sub-thread to finish.
+  o Updated use of G4tools headers to use .hh extension.
+- Vtk (visVtk-V11-04-02)
+  o Fixed VTK deprecation warnings for VTK 9.7, still supporting VTK 9.5.    (o)
+
+examples                                         examples-V11-04-09
+--------
+- Updated documentation and reference outputs.
+- advanced/dna/dsbandrepair (dsbandrepair-V11-04-01)
+  o Adjusted to revision of split-class design in G4LogicalVolume.
+    As VoxelParameterisation reassigns the physical volume's logical volume,
+    DetectorConstruction needs to request, on the master thread, the (optional)
+    consistency pass to runs at geometry closure.
+    This discovers every logical volume bound by each parameterisation and
+    provides them per-thread storage before voxelisation or navigation, which
+    avoid a crash.
+- advanced/dna/moleculardna (molecularDNA-V11-04-08)
+  o Added neutrons to physics list.
+  o Added UI commands for PSF handling.
+  o New handling of PSF in CSV format, working in MT mode
+    Added PSF function, fixing the PSF in MT mode.
+    Added analysis macros to illustrate PSF usage.
+    Added ecoli_PSF.mac input macro.
+- advanced/exp_microdosimetry (exp_microdosimetry-V11-04-00)
+  o In DetectorConstruction, enlarged vacuum world to enclose 0.2 m GPS      (o)
+    sphere to allow position of primary particles to be contained in world
+    volume.
+- advanced/gorad (gorad-V11-04-00)
+  o In GRPrimGenActionMessenger, do not invoke G4Tokenizer () operator in    (o)
+    sequence in one line to avoid tokens unpredictably reordered.
+- advanced/stim_pixe_tomography (stim_pixe_tomography-V11-04-00)
+  o Corrected world volume dimensions to enclose rotated tomographic beam    (o)
+    positions.
+- basic/B1 (exampleB1-V11-04-00)
+  o Fixed typo and extra word.
+    Based in [GitHub PR #106] (https://github.com/Geant4/geant4/pull/106)
+- extended (exextended-V11-04-01)
+  o Fixed coding-guidelines violations.
+- extended/electromagnetic/TestEm2 (testem2-V11-04-01)
+  o In TestEm2.in, removed line with WorkerVerbose command.
+- extended/electromagnetic/TestEm3 (testem3-V11-04-03)
+  o In PrimaryGeneratorAction, fixed location of primary to stay within the  (o)
+    world volume boundaries.
+  o Run: improved summary printout on energy conservation avoiding precision
+    loss.
+- extended/electromagnetic/TestEm5 (testem5-V11-04-02)
+  o Run: improved summary printout on energy conservation avoiding precision
+    loss.
+- extended/geometry/volumeTreeVisitors (exGeomVolumeTreeVisitors-V11-04-01)
+  o Use and demonstrate G4LogicalVolumeUsageVisitor to answer how many logical
+    volumes are used in placements, in replicas and in parameterised volumes,
+    and what overlap is there. If a volume is used in a replica or parameterised
+    volume, show how it can be marked as 'mutable', i.e. additional properties
+    can vary depending on the current thread.
+- extended/hadronic/FissionFragment (exExtHadFissFrag-V11-04-00)
+  o FFDetectorConstruction: fixed overlaps between plates by avoiding
+    duplicate fuel plate placements at y = 0; it removes four coincident
+    overlaps and reduces the plate count to 308.
+  o Removed unnecessary threads setting control in main() and enabled MT.
+- extended/hadronic/Hadr02 (exhadr02-V11-04-01)
+  o Corrected position of primary particles, as outside the world volume.    (o)
+- extended/hadronic/ParticleFluence/Layer (exhadrParticleFluenceLayer-V11-04-00)
+  o Corrected the location of the primary particle after a geometry change.  (o)
+- extended/medical/dna/UHDR (UHDR-V11-04-01)
+  o Added "/UHDR/source/ion: command to support ion sources (Z, A,
+    optional Q, E*).
+  o Added "/UHDR/source/energyPerNucleon" command to set kinetic energy per
+    nucleon.
+- extended/medical/radiobiology (radiobiology-V11-04-00)
+  o Added an outer air world so that beams can originate outside the
+    voxelized scoring container.
+  o Added voxel-resolved primary and secondary dose distributions.
+  o Added voxel-resolved particle-entry counts for primary and secondary
+    tracks, including per-species output.
+  o Made geometry reinitialization and scorer array sizing safe between runs.
+  o Added short regression-test and analysis scripts.
+- extended/parameterisations/Par04 (expar04-V11-04-03)
+  o Bump keras from 3.13.1 to 3.15.0.                                        (o)
+    Addresses security vulnerability tagged by GitHub's dependabot.
+- extended/parallel/MPI (MPI-V11-04-00)
+  o Updated use of G4tools headers to use .hh extension.
+
+tests                                            tests-V11-04-09
+-----
+- Updated reference outputs and tools.

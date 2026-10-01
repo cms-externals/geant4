@@ -1,0 +1,30 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_wroot_itree
+#define tools_wroot_itree
+
+#include "../typedefs.hh"
+
+namespace tools
+{
+namespace wroot
+{
+class idir;
+
+class itree
+{
+  public:
+
+    virtual ~itree() {}
+
+  public:
+
+    virtual idir& dir() = 0;
+    virtual const idir& dir() const = 0;
+};
+
+}  // namespace wroot
+}  // namespace tools
+
+#endif

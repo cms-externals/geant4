@@ -1,0 +1,252 @@
+
+                       geant4-11-03-ref-03
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Optimised surface area and cubic volume calculation of several geometrical
+   primitives.
+ o New utility class G4VSIntegration, for integration of probability density
+   function and dynamically sampling of final state.
+ o New G4LowPAIH2O model for dE/dx in water for p and e-.
+ o Major update of GIDIplus interface in LEND hadronic model, with refactored
+   c++ code, including use of official GNDS formatted data. Added feature for
+   high-fidelity gamma cascades following reactions such as neutron capture
+   and inelastic scattering.
+ o Introduced Time Window tab in Qt UI, exploiting generic time windowing
+   recently introduced in visualisation.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.3.1
+(*)  Fixes included in patch release 11.3.2
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-03-00
+-----
+- Add ENVIRONMENT to any build step of geant4_add_test for consistency and to
+  allow easier propagation of additional build settings.
+
+analysis                                         analysis-V11-03-02
+--------
+- Removed false warnings about non-existing n-tuple and removed debug        (o)
+  messages when filling inactivated n-tuple.
+- Modernized g4tools macro-based for loops with range-based for.
+
+geometry/magneticfield                           field-V11-03-00
+----------------------
+- Added missing guard in G4TMagFieldEquation header and minor cleanup.       (o)
+  Fixes [GitHub PR #83](https://github.com/Geant4/geant4/pull/83).
+
+geometry/management                              geommng-V11-03-07
+-------------------
+- Applied clang-tidy to G4GeometryManager and some code cleanup.             (o)
+  Moved additional checks/warnings under verbosity level.
+- In G4GeometryManager, removed redundant declaration of method              (*)
+  ChooseSequentialOptimisation().
+- Additional readability clang-tidy fixes to code.
+- In G4VSolid::EstimateCubicVolume(..), initialise local variable to zero    (o)
+  to silence invalid false positive warnings reported in compilation of CMSSW.
+- G4VSolid: set seed in EvaluateCubicVolume() and EvaluateSurfaceArea() to
+  ensure reproducibility of the resulting value.
+
+geometry/solids/Boolean                          geom-bool-V11-03-01
+-----------------------
+- G4MultiUnion: fix in GetSurfaceArea() and some optimisation to use
+  G4QuickRand(). In GetLocalPoint(), GetLocalVector(), GetGlobalPoint()
+  and GetGlobalVector(), make direct usage of the transformation matrix
+  elements.
+
+geometry/solids/CSG                              geom-csg-V11-03-03
+-------------------
+- G4Orb: provide faster algorithm in GetPointOnSurface().
+- G4Para: speedup calculation of surface area in GetSurfaceArea() and
+  GetPointOnSurface().
+- G4Box, G4Para, G4Trd: code optimization in GetPointOnSurface().
+- G4Torus: implemented uniform sampling of random points on surface.
+- Hide all ENorm/ESide enums in anonymous namespaces to prevent ODR          (o)
+  warnings. Identified in ATLAS Athena code built against v11.3.0.
+
+geometry/solids/specific                         geom-specific-V11-03-04
+------------------------
+- G4Polyhedra, G4UPolyhedra: verify the validity of the delta phi to         (o)
+  restore proper visualization of HepPolyhedronPgon.
+- Use G4QuickRand() in G4PolyPhiFace, G4PolyconeSide, G4PolyhedraSide,
+  G4TwistedTubs, G4VCSGfaceted and G4VTwistedFaceted for sampling points on
+  surface.
+- G4EllipticalCone, G4EllipticalTube, G4Voxelizer: removed unnecessary headers.
+
+global                                           global-V11-03-08
+------
+- G4VSIntegration: added new utility class for integration of probability
+  density function and dynamically sampling of final state. This is useful
+  for the case when sampling tables  cannot be prepared and stored, instead
+  computations are performed for each case again and again. 
+- G4QuickRand: Added a possibility to set a seed.
+- In G4ThreadLocalSingleton, removed unprotected left-over debug inclusion   (o)
+  of G4BackTrace header. Addressing problem report #2649.
+- Updated date and tag-ID for geant4-11-03-ref-03.
+
+interfaces                                       interfaces-V11-03-03
+----------
+- G4UIQt: introduced Time Window tab. This exploits generic time windowing
+  recently introduced in visualisation.
+  Hit "Prepare", then "Go", with, say, 100 events.
+  Currently, it doesn't work with OGL in Qt6.
+  TSG works fine with both Qt5 and Qt6, except line width is not implemented.
+
+physics_lists
+-------------
+- lists (phys-list-V11-03-01)
+  o G4PhysListFactory: prevent fallback to default physics list when an
+    invalid name is provided. Now, if a user specifies an unknown physics
+    list, Geant4 will throw a fatal error instead of silently using FTFP_BERT.
+    This ensures that users are aware of incorrect configurations and helps
+    preventing unintended simulation results.
+
+processes/cuts                                   proccuts-V11-03-00
+--------------
+- In G4ProductionCutsTable::UpdateCoupleTable(), make sure that the         (o)
+  couple tables are updated if 'userEnergyCuts' vectors are set.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-03-04)
+  o G4DNARuddIonisationDynamicModel: minor fix for alpha particles.
+- standard (emstand-V11-03-04)
+  o Added G4LowPAIH2O model for dE/dx in water for p and e-.
+- utils (emutils-V11-03-02)
+  o G4EmParameters, G4EmParametersMessenger, G4EmUtility, G4LossTableBuilder,
+    G4VEnergyLossProcess: implemented new option to enable/disable fluctuation
+    of energy loss per G4Region.
+  o In G4VAtomDeexcitation, fix to allow PIXE simulation.                   (*)
+    Addressing problem report #2650.
+  o Minor cosmetic change in G4VEnergyLossProcess.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-03-01)
+  o G4NeutronInelasticXS, G4ParticleInelasticXS: enabled option for
+    initialisation of all Z values, removing possible lazy initialisation
+    if these cross-sections are used by any other model.
+  o G4NeutronElasticXS, G4NeutronCaptureXS: removed option to initialise all
+    data, as these cross-sections are not used by other hadronic model.
+    No locks are set any longer by these cross-section classes at run time.
+    For simple applications initialisation CPU time is increase by ~10%,
+    no effect on complex applications.
+- models/de_excitation (hadr-deex-V11-03-06)
+  o G4GEMChannelVI, G4EvaporationGEMFactoryVI, G4DeexPrecoParameters: new GEM
+    de-excitation model with 83 decay channels.
+  o G4VEmissionProbability: use the new utility class G4VSIntegration, allowing
+    to simplify code; not affecting results.
+  o G4StatMFMicroPartition: code cleanup, removed non-informative printout,
+    which may be repeated many times, instead stop MF model and return to
+    de-excitation handler.
+  o G4Evaporation: improved debug printout.
+- models/em_dissociation (hadr-emd-V11-03-00)
+  o G4EMDissociation: fixed reported Coverity defects.
+- models/lend (hadr-lend-V11-03-01)
+  o Major update of GIDIplus interface with refactored c++ code, including
+    use of official GNDS formatted data.
+  o Added feature for high-fidelity gamma cascades following reactions such
+    as neutron capture and inelastic scattering.
+- models/nudex (hadr-nudex-V11-03-00)
+  o Address maybe-unitialized warnings when building/linking with LTO,
+    identified by ATLAS.
+- models/particle_hp (hadr-hpp-V11-03-01)
+  o Fixed reported Coverity defects, mainly in handling of maps and finding
+    of isotopes.
+- models/pre_equilibrium (hadr-pre-V11-03-02)
+  o G4VPreCompoundFragment, G4PreCompoundFragment, G4HETCFragment: use the
+    new utility class G4VSIntegration, allowing to simplify code; not
+    affecting results.
+- util (hadr-util-V11-03-01)
+  o G4HadronicDeveloperParameters: added limitation of warning printout      (o)
+    on change of parameters (NA64 request).
+
+visualization
+-------------
+- management (visman-V11-03-05)
+  o Modernised macro-based loops with range-based for.
+  o Updated raw for loops with range-for where possible.
+- OpenInventor (openinventor-V11-03-02)
+  o G4OpenInventorViewer: implemented CompareForTransientsRedraw().
+    Take advantage of ProcessTransients(), which reconstructs that part of
+    the graphical database for transient objects, e.g., trajectories,
+    without reconstructing the "permanent" (run-duration) objects, e.g.,
+    the detector. In other words, something short of a complete "kernel
+    visit". For example, if the time window changes. Maximises the efficiency
+    of the recently implemented "generic" time windowing.
+- Qt3D (visQt3D-V11-03-02)
+  o G4Qt3DViewer: Implemented CompareForTransientsRedraw().
+- ToolsSG (vis_toolssg-V11-03-01)
+  o Modernised macro-based loops with range-based for.
+  o Updated raw for loops with range-for where possible.
+  o G4ToolsSGViewer: Implemented CompareForTransientsRedraw().
+
+examples                                         examples-V11-03-03
+--------
+- Updated documentation and reference outputs.
+- extended/biasing (exbiasing-V11-03-00)
+  o Applied basic clang-tidy fixes and clang-format to code.
+- extended/biasing/GB01 (GB01-V11-03-00)
+- extended/biasing/GB02 (GB02-V11-03-00)
+  o Propagate biasing on/off to detector construction to initialisation      (o)
+    of biasing classes only if biasing requested.
+  o Added vis.mac and enabled detector visualisation on startup.             (o)
+  o Removed unused WITH_GEANT4_UIVIS cmake option.                           (o)
+- extended/biasing/GB03 (GB03-V11-03-01)
+  o Added option -b (biasing on/off).                                        (o)
+  o Set default splitting probability to 0.2.                                (o)
+  o Instantiate G4GenericBiasingPhysics only if biasing is enabled.
+    Propagate biasing on/off to detector construction to initialisation
+    of biasing classes only if biasing requested.
+  o Removed unused WITH_GEANT4_UIVIS cmake option.                           (o)
+- extended/biasing/GB04 (GB04-V11-03-00)
+  o Propagate biasing on/off to detector construction to initialisation      (o)
+    of biasing classes only if biasing requested.
+  o Added vis.mac and enabled detector visualisation on startup.             (o)
+  o Removed unused WITH_GEANT4_UIVIS cmake option.                           (o)
+- extended/biasing/GB05 (GB05-V11-03-01)
+  o Propagate biasing on/off to detector construction to initialisation      (o)
+    of biasing classes only if biasing requested.
+  o Removed unused WITH_GEANT4_UIVIS cmake option.                           (o)
+  o Removed explicit call of base class constructor in GB05DetectorConstruction.
+- extended/biasing/GB06 (GB06-V11-03-01)
+  o Added check for null pointer to shared data; fixing detected crash       (o)
+    when biasing is off.
+  o Propagate biasing on/off to parallel world construction to               (o)
+    initialization of biasing classes only if biasing requested.
+  o Removed unused WITH_GEANT4_UIVIS cmake option.                           (o)
+- extended/biasing/GB07 (GB07-V11-03-01)
+  o Propagate biasing on/off to detector construction to initialisation      (o)
+    of biasing classes only if biasing requested.
+  o Removed unused WITH_GEANT4_UIVIS cmake option.                           (o)
+  o Removed explicit call of base class constructor in GB07DetectorConstruction.
+- extended/electromagnetic/TestEm4 (testem4-V11-03-00)
+- extended/electromagnetic/TestEm13 (testem13-V11-03-00)
+- extended/electromagnetic/TestEm14 (testem14-V11-03-00)
+- extended/electromagnetic/TestEm18 (testem18-V11-03-00)
+  o Added G4RayleighScattering in PhysicsList.
+- extended/geometry/vecGeomNavigation (VecGeomNavigation-V11-03-01)
+  o Use G4cout for VecGeom logger output.                                    (*)
+- extended/hadronic/FlukaCern (FlukaCern-V11-03-02)
+  o Ensure compatibility with FLUKA v4-5.0: make the link time resolution of (*)
+    COMMON blocks (declared as external structs in the C++ source) compatible
+    with the new FLUKA version.
+- extended/medical/dna/dnaphysics (dnaphysics-V11-03-02)
+  o Added elastic.in and plotElastic.C macros to show distribution of
+    scattering angles.
+- extended/medical/dna/radial (radial-V11-03-00)
+  o New example showing how to simulate radial dose profiles in liquid water
+    from incident ions using the Geant4-DNA physics processes and models.
+- extended/medical/dna/spower (spower-V11-03-00)
+  o Added scoring of secondary electrons.
+- extended/parallel/MPI (MPI-V11-03-00)
+  o Moved MPI from deprecated C++ interface to C interface (MPI 3+).
+    Based on [GitHub PR#81](https://github.com/Geant4/geant4/pull/81).
+
+tests                                            tests-V11-03-03
+-----
+- Updated reference outputs and tools.

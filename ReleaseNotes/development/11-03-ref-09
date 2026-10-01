@@ -1,0 +1,186 @@
+
+                       geant4-11-03-ref-09
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Split G4processes library into two G4processes_hadronic for the hadronic
+   part and G4processes_core for the remainder. Supporting creation of
+   categories that are just an interface to other categories.
+ o In G4Box, optimised normal calculation in DistanceToOut().
+ o Code revision in QSS field stepper and made QSS3 a choice in G4ChordFinder
+   and G4QSSMessenger.
+ o Added new class G4ExtendedPhysicsVector, a new data structure, which
+   includes partial cross-sections and methods for random selection of a
+   partial cross-section channel.
+ o Code refactoring and optimisations in G4OpBoundaryProcess.
+ 
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-03-08
+-----
+- Support creation of categories that are just an interface to other
+  categories. Needed to support splitting of libraries whilst retaining old
+  target names for backward link/build compatibility.
+
+config                                           config-V11-03-01
+------
+- Replaced linking to G4processes library with linking to the two components
+  it has been split into.
+
+geometry/divisions                               geomdiv-V11-03-01
+------------------
+- Reorganised and enriched comments in headers to follow Doxygen style.
+- Removed unused data in G4VDivisionParameterisation.
+
+geometry/magneticfield                           field-V11-03-07
+----------------------
+- Fixed bug in method compare_time_and_update() in QSS code, from conversion
+  of macro.
+- Made QSS3 a choice in G4ChordFinder and G4QSSMessenger.
+- Addressed Coverity issues (memory leak, initialisation) in G4QSStepper
+  and G4QSSubstepStruct.
+- In G4QSStepper, cleanup of constructors,
+- Applied clang-tidy fixes: basic, modernize-use-default-member-init,
+  readability-redundant-member-init, modernize-use-emplace,
+  readability-container-size-empty, readability-implicit-bool-conversion,
+  performance-unnecessary-value-param, readability-else-after-return,
+  modernize-return-braced-init-list.
+- Minor code cleanup and formatting.
+
+geometry/solids/Boolean                          geom-bool-V11-03-01
+-----------------------
+- Reorganised and enriched comments in headers to follow Doxygen style.
+- Removed declared but not implemented methods in G4MultiUnion and moved
+  inline implementations to .icc file.
+- Removed declared but not implemented method in G4ScaledSolid.
+
+geometry/solids/CSG                              geom-csg-V11-03-07
+-------------------
+- In G4Box, optimised normal calculation in DistanceToOut().
+- Reorganised and enriched comments in headers to follow Doxygen style.
+
+geometry/solids/specific                         geom-specific-V11-03-09
+------------------------
+- G4GenericTrap: improved estimation of safety distance by adopting
+  Lipschitz-based implementation.
+
+global                                           global-V11-03-23
+------
+- Added new class G4ExtendedPhysicsVector, a new data structure, which includes
+  partial cross-sections and methods for random selection of a partial
+  cross-section channel. The total cross-section is included via pointer
+  to G4PhysicsVector.
+- G4PhysicsVector, G4PhysicsFreeVector: added a new method CheckIndex() to
+  reduce code duplication; removed tabs from source and headers, extended
+  comments.
+- Updated date and tag-ID for geant4-11-03-ref-09.
+
+interfaces                                       interfaces-V11-03-09
+----------
+- In G4UIQt, fixed link and add "Action" guidance table in "Useful tips".
+  Some code tidy.
+
+parameterisations/channeling                     fastsimchanneling-V11-03-02
+----------------------------
+- Fixed compilation warnings on macOS/XCode for implicit type conversions
+  in G4VChannelingFastSimCrystalData.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-03-13)
+  o G4EmDNABuilder: use upper energy limits from G4EmParameters.
+
+processes                                        processes-V11-03-00
+---------
+- Split G4processes library into two G4processes_hadronic for the hadronic
+  part and G4processes_core for the remainder.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-03-17)
+  o Fixed the state update in AlongStepDoIt() of G4ChemReboundTransportation
+    to avoid setting incorrect molecule positions (leading tracks) when the
+    scavenger process is called.
+  o Fixed the IRT_syn model (Stepper) to ensure it does not use minTimeStep
+    (default = 1 ps) when DNA reactions do not yet share the same minTimeStep
+    (used to optimize the chemistry).
+  o Fixed the missed Equilibrium process in G4DNAMakeReaction for
+    particle-based models (SBS, IRT_syn).
+  o Deleted exception of no reactant (or reactions for the defined molecules)
+    that should return nullptr for no reaction data.
+  o Enabled atomic de-excitation in stationary regime for Rudd and Born models.
+- standard (emstand-V11-03-11)
+  o G4BraggModel: fixed two compound formula typos in MolecIsInZiegler1988
+    for methanol and chlorotrifluoromethane. Restored application of the
+    ChemicalFactor for these compounds.
+- utils (emutils-V11-03-13)
+  o G4EmParameters, G4EmLowEParameters: added DNA upper limits in energy.
+
+processes/hadronic
+------------------
+- models/de_excitation (hadr-deex-V11-03-20)
+  o G4FermiBreakUpVI: removed the limit on excitation energy from the condition
+    of the model applicability, the model become similar to G4FermiBreakUpAN
+    in this respect.
+  o G4DeexPrecoParameters: defined limits maxZ=9, maxA=17 instead of maxZ=3
+    maxA=5. Fermi BreakUp models will be used for light fragment de-excitation,
+    which happens in high energy ion collision with light targets.
+  o G4StatMF, G4StatMFMicroCanonical, G4Evaporation: fixed reported Coverity
+    defects.
+- models/particle_hp (hadr-hpp-V11-03-04)
+  o In G4FissionFragmentGenerator, G4FissionFragmentGenerator,
+    G4ParticleHPElementData, G4ParticleHPKallbachMannSyst,
+    G4ParticleHPThermalScattering and G4ParticleHPFinalState, fixed reported
+    Coverity defects.
+- util (hadr-util-V11-03-05)
+  o G4IsotopeList: added data on energy interval of neutron resonance regions
+    per element for Z=1-92.
+
+processes/optical                                op-V11-03-03
+-----------------
+- G4OpBoundaryProcess: refactored boundary handling at dielectric-dielectric
+  interfaces by replacing goto with a do-while loop to improve readability.
+  Extracted transmission logic into a new inline function DoTransmission() and
+  introduced constexpr helper IsBackpainted() to identify backpainted surfaces.
+- In G4OpMieHG, removed redundant acos/cos calls in angular sampling to
+  improve performance and readability.
+
+visualization
+-------------
+- Vtk (visVtk-V11-03-00)
+  o In G4VtkSceneHandler::ClearStore(), fix to clear both stores.
+
+examples                                         examples-V11-03-09
+--------
+- Updated documentation and reference outputs.
+- advanced/CaTS (CaTS-V11-03-00)
+  o RootIO, EventAction: Moved hit collections from EventAction to RootIO and
+    improved code readability
+  o In DetectorConstruction, introduced map of sensitive detectors with names
+    and refactored code for adding detectors.
+  o lArTPCSD, readPhotonHits: updated for renaming from Photondetector to
+    PhotonDetector and revised NumElectrons.
+- advanced/dna/moleculardna (molecularDNA-V11-03-13)
+  o Commented out system calls in all ROOT analysis macros.
+- extended/biasing/GB03 (GB03-V11-03-02)
+  o Added histograms and counters for particles penetrating the shield volume.
+  o Replaced GB03DetectorMessenger with GenericMessenger.
+- extended/medical/dna/chem6 (chem6-V11-03-02)
+  o Added UI commands to select physics constructor and output file name.
+  o Code Refactoring.
+- extended/medical/dna/dnadamage2 (dnadamage2-V11-03-02)
+  o Delete run-manager as last in main().
+- dna/UHDR (UHDR-V11-03-05)
+  o Added protection against null pointer in plotG_time.C.
+
+tests                                            tests-V11-03-09
+-----
+- Updated reference outputs and tools.
+- ctests_integration/test37 (test37-V11-03-01)
+- ctests_integration/test42 (test42-V11-03-02)
+  o Fixed analysis script.

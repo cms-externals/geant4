@@ -1,0 +1,274 @@
+
+                       geant4-11-03-ref-08
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o General code cleanup in g4tools external package, upgraded to v7.0.0.
+ o Applied clang-tidy fixes to geometry code.
+ o New UI commands to allow limiting the number of warning messages to be
+   printed out during a run.
+ o Major update in channeling fast-simulation classes with ability to
+   import custom geometry and new types of radiation virtual collimators.
+ o Refactored code in G4OpBoundaryProcess for readability and efficiency.
+ o Introduced new methods to know whether the high-energy hadronic inelastic
+   interaction is quasi-elastic or diffractive.
+ o Migrated examples documentation to Markdown.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-03-07
+-----
+- Added option to add shorten-64-to-32 warning to command line macOS build
+  flags to match Xcode.
+
+analysis                                         analysis-V11-03-05
+--------
+- Use current non-deprecated g4tools n-tuple columns interface in XML.
+- Fixed Coverity reported defect in G4VAnalysisManager::SetNtupleManager():
+  added protection against de-reference of potentially null field.
+
+externals/g4tools                                g4tools-V11-03-11
+-----------------
+- Updated tools to version 7.0.0.
+- Rationalised main headers by merging related functionality.
+- Removed unused classes, class member functions/data members.
+- Removed additional headers, free functions no longer used.
+- Removed unused functions and headers.
+- Removed no longer required cmem_alloc_copy() function.
+- Removed commented out blocks and never touched preprocessor blocks.
+- Added tools/sg/shade_model node to handle Gouraud shading.
+- Fixes to avoid cases of "ToolsSG-ZB too much zoom in" crash.
+
+geometry/biasing                                 geombias-V11-03-00
+----------------
+- Applied basic clang-tidy fixes.
+
+geometry/divisions                               geomdiv-V11-03-00
+------------------
+- Applied clang-tidy fixes: readability-braces-around-statements and
+  readability-else-after-return.
+
+geometry/magneticfield                           field-V11-03-04
+----------------------
+- Added default implementation to pure virtual functions previously introduced
+  for backwards compatibility.
+
+geometry/management                              geommng-V11-03-09
+-------------------
+- In G4BoundingEnvelope, simplified for loops ranges in TransformVertices(),
+  by applying clang-tidy 'modernize-loop-convert' check.
+
+geometry/solids/Boolean                          geom-bool-V11-03-00
+-----------------------
+- Applied clang-tidy fixes: basic, readability-braces-around-statements,
+  readability-else-after-return.
+
+geometry/solids/CSG                              geom-csg-V11-03-05
+-------------------
+- Applied clang-tidy fixes: readability-implicit-bool-conversion,
+  readability-braces-around-statements, readability-else-after-return.
+
+geometry/solids/specific                         geom-specific-V11-03-08
+------------------------
+- Applied clang-tidy fixes: basic, modernize-loop-convert,
+  modernize-use-default-member-init, readability-redundant-member-init,
+  readability-implicit-bool-conversion, readability-braces-around-statements,
+  readability-else-after-return.
+
+geometry/navigation                              geomnav-V11-03-02
+-------------------
+- Applied clang-tidy fixes: modernize-use-default-member-init,
+  readability-redundant-member-init, modernize-use-emplace,
+  readability-implicit-bool-conversion, readability-braces-around-statements,
+  modernize-return-braced-init-list.
+
+geometry/volumes                                 geomvol-V11-03-03
+----------------
+- Applied clang-tidy fixes: modernize-loop-convert.
+
+global                                           global-V11-03-21
+------
+- G4PhysicsModelCatalog: introduced FTF quasi-elastic and FTF diffraction.
+- Updated date and tag-ID for geant4-11-03-ref-08.
+
+interfaces                                       interfaces-V11-03-08
+----------
+- G4UIQt: in scene tree, simplified interaction for visibility of touchables.
+  Intercept the case of "help" with argument; write guidance to output window;
+  avoid undiagnosed crash with Qt6.
+
+materials                                        materials-V11-03-03
+---------
+- Fixed several typos in crystallographic formulae: corrected orthorhombic
+  interplanar angle cosine formula; corrected cubic interplanar angle cosine
+  formula; corrected orthorhombic branch of GetRecIntSp2() function; corrected
+  triclinic cell volume formula.
+
+parameterisations/channeling                     fastsimchanneling-V11-03-01
+----------------------------
+- Introduced reading from an input file of custom internal geometry of
+  a periodically bent crystal which also works, if necessary, with multiple
+  input files, each per logical volume of an oriented crystal.
+- Introduced various types of radiation virtual collimators in
+  G4BaierKatkov.
+- Deleted redundant code setting up the defaults of angular and low
+  energy cuts in G4ChannelingFastSimModel.
+- Polishing of the code according to guidelines.
+
+physics_lists
+-------------
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V11-03-02)
+  o G4Hadron_PhysicsQGS_BIC, G4Hadron_PhysicsQGSP_BIC_HP and
+    G4Hadron_PhysicsQGSP_BIC_AllHP: uniform instantiation of neutron and
+    proton physics; enable NuDEX via hadronic parameters for neutron capture
+    in QGSP_BIC_HP and QGSP_BIC_AllHP; code cleanup.
+  o G4HadronPhysicsQGSP_BERT_HP: minor code cleanup.
+
+processes/electromagnetic
+-------------------------
+- muons (emmuons-V11-03-02)
+  o Fixed compilation warnings for implicit type conversions on macOS/XCode
+    in G4MuPairProductionModel.
+- standard (emstand-V11-03-10)
+  o G4eplusAnnihilation: added positronium lifetime, which was forgotten.
+  o G4UrbanMscModel: simplification of the step limit algorithm for Opt3 (EMY)
+    configuration of EM physics, slightly improving CPU without degradation of
+    the accuracy.
+  o G4BetheBlochModel: fixed problem in dEdx for alpha particles introduced
+    previously.
+  o G4BraggIonGasModel, G4BetheBlochIonGasModel: fixed computation of dynamic
+    charge.
+- utils (emutils-V11-03-12)
+  o Fixed reported Coverity defect in G4EmCalculator.
+
+processes/hadronic
+------------------
+- management (hadr-man-V11-03-02)
+  o G4VHighEnergyGenerator: introduced Boolean methods to know whether the
+    high-energy hadronic inelastic interaction is quasi-elastic or diffractive.
+    Note that this can be used for both FTF and QGS hadronic string models.
+  o G4HadronicProcess: removed misleading exception.
+    Addressing problem report #2675.
+- models/abla (hadr-abla-V11-03-00)
+  o Added a new description for fission barriers based on
+    PRC 111, 064606 (2025).
+- models/de_excitation (hadr-deex-V11-03-18)
+  o General clean-up of the multifragmentation model: fixed equation solver;
+    made uniform headers and source; reduced number of new/delete operations.
+  o G4StatMF, G4FermiSplitter: fixed reported Coverity defects.
+- models/parton_string/diffraction (hadr-string-diff-V11-03-00)
+  o G4FTFModel, G4DiffractiveExcitation: introduced classification of
+    quasi-elastic and diffractive interactions among the inelastic interactions
+    of the FTF string model. In the G4FTFModel class, the Boolean flags
+    'fIsQuasiElasticInteraction' and 'fIsDiffractiveInteraction' - inherited
+    from the base class G4VHighEnergyGenerator - are used in the methods Init()
+    and ExciteParticipants(). In the class G4DiffractiveExcitation, an extra,
+    Boolean parameter is added to the method ExciteParticipants() to tag
+    diffractive interactions.
+- models/pre_equilibrium (hadr-pre-V11-03-07)
+  o G4PreCompoundModel: increased limit of the pre-compound loop from
+    100 to 300 to suppress rare warnings seen in validation benchmarks.
+- models/theo_high_energy (had-theo-HE-V11-03-00)
+  o G4TheoFSGenerator: introduced the ID model identification for FTF inelastic
+    hadronic interactions that are classified as quasi-elastic or diffractive.
+    Note that this classification is not available for the QGS string model.
+
+processes/optical                                op-V11-03-01
+-----------------
+- G4OpBoundaryProcess: refactored code for readability and efficiency.
+  Reuse local variables for trigonometric and exponential function results,
+  as well as other repeated expressions. Improved code readability by replacing
+  simple if-else clauses with ternary operators and made other minor
+  rearrangements. Replaced 'h_Planck*c_light' with a static function for
+  clarity and reuse.
+- G4OpWLS, G4OpWLS2: improved WLS photon energy sampling; enforce energy below
+  the primary photon's energy.
+
+run                                              run-V11-03-03
+---
+- Introducing UI commands to limit number of warning messages to be printed out.
+- Added some verbose level checks to G4TaskRunManager and G4SubEvtRunManager
+  to reduce printouts.
+
+visualization
+-------------
+- management (visman-V11-03-16)
+  o G4VViewer: changed Shift key modifier behavior to enable ZoomToCursor
+    while pressed.
+  o G4VisManager: in EndDraw() and EndDraw2D(), refresh view at end of drawing.
+  o G4VisExecutive: introduced nickname/alias TSGZB for appropriate driver by
+    priority.
+  o G4VisCommands: always print available drivers when using /vis/list.
+- ToolsSG (vis_toolssg-V11-03-09)
+  o G4ToolsSGViewer: in CreateSG(), for 3D scenes, have a tools::sg::shade_model
+    node set to "smooth" so TSG_GLES have the same rendering as in OGLI/OGLS.
+    Issuing Gouraud shading on surfaces by default.
+
+examples                                         examples-V11-03-08
+--------
+- Updated documentation and reference outputs.
+- advanced/dna/moleculardna (molecularDNA-V11-03-12)
+  o Restored the Maximum Time Step parameter in the chemistry.
+  o Merged the output files from different threads to a single file.
+  o Fixed memory leak in the PrimaryGeneratorAction for phase_space.
+- extended/analysis (analysisExample-V11-03-00)
+- extended/biasing (exbiasing-V11-03-01)
+- extended/electromagnetic (electromagnetic-V11-03-00)
+  o Migration of README pages to Markdown.
+  o Reviewed and fixed external links, references to code.
+- extended/electromagnetic/TestEm5 (testem5-V11-03-00)
+  o TrackingAction: fixed reflect condition for negative X beam.
+- extended/electromagnetic/TestEm7 (testem7-V11-03-00)
+  o DetectorConstruction: fixed SetWorldMaterial() to correctly act on the
+    world logical volume, rather than the absorber.
+- extended/errorpropagation (exErrorpropagation-V11-03-00)
+  o Migration of README pages to Markdown.
+- extended/eventgenerator (exEventGenerator-V11-03-00)
+- extended/exoticphysics (exExoticPhysics-V11-03-00)
+- extended/field (fieldex-V11-03-00)
+  o Migration of README pages to Markdown.
+  o Reviewed and fixed external links, references to code.
+- extended/geometry (exGeometry-V11-03-00)
+  o Migration of README pages to Markdown.
+- extended/hadronic (exHadronic-V11-03-00)
+  o Migration of README pages to Markdown.
+  o Reviewed and fixed external links, references to code.
+- extended/hadronic/NeutronSource (NeutronSource-V11-03-01)
+  o PhysicsList: removed temporary access to neutron capture model based
+    on model name; removed unnecesary commented lines; use EM Opt4
+    configuration for HP physics.
+- extended/medical (exMedical-V11-03-00)
+- extended/medical/dna (exdna-V11-03-03)
+- extended/medical/dna/dnadamage1 (dnadamage1-V11-03-00)
+  o Access DetectorConstruction via GetUserDetectorConstruction() from
+    G4RunManager.
+  o Use 'default' for trival destructors.
+- extended/optical (exOptical-V11-03-00)
+  o Migration of README pages to Markdown.
+  o Reviewed and fixed external links, references to code.
+- extended/parallel (exparallel-V11-03-01)
+  o Migration of README pages to Markdown.
+- extended/parameterisations (exParameterisations-V11-03-00)
+- extended/persistency exPersistency-V11-03-00)
+  o Migration of README pages to Markdown.
+  o Reviewed and fixed external links, references to code.
+- extended/physicslists (exPhysicsLists-V11-03-00)
+- extended/polarisation (exPolarisation-V11-03-00)
+- extended/radioactivedecay (exRadioactiveDecay-V11-03-00)
+  o Migration of README pages to Markdown.
+- extended/runAndEvent (exRunAndEvent-V11-03-00)
+- extended/visualization (exVisualization-V11-03-00)
+  o Migration of README pages to Markdown.
+  o Reviewed and fixed external links, references to code.
+
+tests                                            tests-V11-03-08
+-----
+- Updated reference outputs and tools.
+- ctests_integration/test19 (test19-V11-03-02)
+  o Fix overflow writing in TestNA61ProtonBeamHisto and TestNA61Histo.
+- ctests_integration/test23 (test23-V11-03-02)
+  o Fix overflow writing in Tst23NA61Histo.

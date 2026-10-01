@@ -1,0 +1,237 @@
+
+                       geant4-11-03-ref-05
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Extended UI command "/geometry/test/run" to support optional overlap check
+   mode to check for overlaps in the volume tree without duplication in
+   identical logical volumes.
+ o Reorganisation of initialisation and data destruction in
+   G4LivermorePhotoElectricModel.
+ o Added UI command to enable/disable 5D pair production model by muons.
+ o In G4Scintillation and G4Cerenkov, build the integral tables only for
+   materials that have non-empty material property tables.
+ o In G4OpenGLQtViewer, fixed the original pick feature, which was
+   inadvertently broken, to show pick info window.
+ o Updated zlib to version 1.3.1.
+ o Set default configuration to use Qt6 when selecting Qt support.
+   User must set GEANT4_USE_QT_QT5 to force find/use of Qt5.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-03-04
+-----
+- Set default configuration to use Qt6 when selecting Qt support.
+  User must set GEANT4_USE_QT_QT5 to force find/use of Qt5.
+
+config                                           config-V11-03-00
+------
+- Updated system scripts for Qt settings: set Qt6 as default.
+
+analysis                                         analysis-V11-03-03
+--------
+- New implementation of generic 'G4Analysis::GetHnType()' and 'IsProfile()'
+  functions, which do not rely on the histogram/profile name position in the
+  long type name provided via tools 's_class()'.
+
+externals/zlib                                   zlib-V11-03-01
+--------------
+- Updated zlib to version 1.3.1. Prior Geant4 patches are retained.
+
+geometry/navigation                              geomnav-V11-03-01
+-------------------
+- Extended UI command "/geometry/test/run" to support optional overlap check
+  mode: depending on the selected mode, it invokes either 'TestRecursiveOverlap'
+  (default) or 'TestOverlapInTree', allowing to check for overlaps in the
+  volume tree without duplication in identical logical volumes.
+- Reorganised and enriched comments in headers to follow Doxygen style.
+- Removed declared but not implemented methods in G4VoxelNavigation,
+  G4ParameterisedNavigation, G4VoxelSafety and G4PathFinder.
+
+geometry/volumes                                 geomvol-V11-03-01
+----------------
+- Reorganised and enriched comments in headers to follow Doxygen style.
+
+global                                           global-V11-03-14
+------
+- G4VSIntegration: fixed a bug in sampling of tail of the distribution.
+  Improved warning printout by addition of model name; added extra protections
+  for the case when probability density function has several peaks; added upper
+  limit on number of warnings.
+- Updated date and tag-ID for geant4-11-03-ref-05.
+
+interfaces                                       interfaces-V11-03-05
+----------
+- G4UIQt: improved pick info window size.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-03-04)
+  o G4GeneralGammaProcess: updated destructor according to modification in
+    electromagnetic/utils.
+  o G4EmDNABuilder: replaced G4DNABornIonisationModel by
+    G4DNABornIonisationModel1 for proton ionisation.
+  o G4EmDNAPhysics_option6: disabled "fast" flag in order to have comparisons
+    with Opt4 in the same set of general DNA parameters.
+  o G4EmDNAPhysics_stationary_X constructors: added deprecation warning, 
+    indicating that these constructors are now obsolete.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-03-12)
+  o Replaced the G4MoleculeCounter singleton with G4MoleculeCounterManager
+    for managing counters.
+  o Replaced shared_ptr with unique_ptr and raw for manager counters.
+  o G4DNARuddIonisationModel, G4DNABornIonisationModel1 and
+    G4DNABornIonisationModel2: fixed definition of the stationary code via
+    G4EmParameters.
+  o Fixed FPE on G4ChemReboundTransportation::calculateNextCoordinate().
+  o Fixed reported Coverity defects in moluecule counter code.
+- lowenergy (emlowen-V11-03-03)
+  o G4LivermorePhotoElectricModel: reorganisation of initialisation and data
+    destruction.
+  o In G4AtomicTransitionManager, G4UAtomicDeexcitation, use std::size_t and
+    few other cosmetic changes.
+- muons (emmuons-V11-03-00)
+  o G4RiGeMuPairProductionModel, G4RiGeAngularGenerator: fixes to the angular
+    distribution of electrons and positrons.
+  o G4MuPairProduction: enable RiGe model via G4EmParameters.
+- utils (emutils-V11-03-03)
+  o New base class G4VXRayModel. Adapted classes G4OpticalParameters,
+    G4OpticalParametersMessenger and G4LossTableManager to configure and use
+    G4VXRayModel.
+  o G4EmParametersMessenger: added UI command to enable/disable 5D pair
+    production model by muons.
+  o G4EmUtility, G4EmDataHandler, G4EmDataRegistry: removed minor memory leaks
+    and improved destruction at exit.
+- xrays (xrays-V11-03-00)
+  o In G4Scintillation, build the scintillation integral tables for materials
+    that have non-empty material property tables and added method
+    BuildInverseCdfTable().
+  o In G4Cerenkov, build the Cerenkov integral only for materials that have
+    non-empty material property tables.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-03-05)
+  o G4ChargeExchangeXS: added extra method for sampling of scattering angle;
+    updated parameterisation using new fit to data.
+  o Fixed minor memory leak in classes G4CrossSectionFactory,
+    G4CrossSectionFactoryRegistry, G4CrossSectionFactory,
+    G4ElectroNuclearCrossSection and G4ChipsAntiBaryonElasticXS. 
+- management (hadr-man-V11-03-00)
+  o G4HadronicProcess: removed warning for the case when K0 and anti-K0 are
+    transformed into KS or KL.
+- models/coherent_elastic (hadr-cohe-V11-03-03)
+  o G4ChargeExchange, G4HadronElastic: cleanup final state generation; use
+    the numerical limit for argument of the exponent to avoid precision loss;
+    in case of numerical problems force scattering angle to zero (do not
+    consider scattering backwards); use similar parameterisation and code for
+    both models. Fixed reported Coverity defect.
+- models/de_excitation (hadr-deex-V11-03-11)
+  o G4DeexPrecoUtility: new class, providing the same computation to avoid
+    code duplication. Use it in classes G4EvaporationProbability,
+    G4ProtonEvaporationProbability, G4DeuteronEvaporationProbability,
+    G4TritonEvaporationProbability, G4He3EvaporationProbability and
+    G4AlphaEvaporationProbability, simplifying code.
+  o G4DeexPrecoParameters: use conservative set of parameters.
+  o G4VEmissionProbability: updated parameters of integration of the
+    probability density function.
+  o G4CoulombBarrier: some code cleanup.
+  o G4VFermiFragmentAN, G4FermiBreakUpAN: fixed reported Coverity defects.
+- models/inclxx (hadr-inclxx-V11-03-01)
+  o Fixed URL to Root in comments.
+    Fixes [GitHub PR#87](https://github.com/Geant4/geant4/pull/87).
+- models/lend (hadr-lend-V11-03-02)
+  o Fixes aimed for high impact issues identified by Coverity.
+- models/pre_equilibrium (hadr-pre-V11-03-03)
+  o G4PreCompoundFragment, G4PreCompoundProton, G4PreCompoundDeuteron,
+    G4PreCompoundTriton, G4PreCompoundHe3, G4PreCompoundAlpha: use new
+    utility class G4DeexPrecoUtility.
+- util (hadr-util-V11-03-04)
+  o G4HadronicParameters: implemented pretty-print to ostream to allow users
+    to check values at runtime, a-la G4EmParameters (request from ATLAS).
+
+visualization
+-------------
+- management (visman-V11-03-10)
+  o Minor improvement to listing of histograms (if any).
+  o In G4VisManager::EndOfRun(), print list of histograms even with vis
+    disabled.
+  o In G4VViewer, initialise fTransientsNeedRedrawing to "false".
+    Previously, this was initialised "true", but it is up to the viewer
+    to decide if transients (trajectories) need redrawing.
+- OpenGL (opengl-V11-03-06)
+  o G4OpenGLQtViewer: fixed the original pick feature to show pick info window.
+  o Removed some commented out statements left over from the previous tag.
+  o G4OpenGLWin32Viewer: added SwitchToMasterThread() method to draw
+    trajectories at the end of run in MT mode.
+- ToolsSG (vis_toolssg-V11-03-04)
+  o In G4ToolsSGSceneHandler, respect line width in vis attributes and view
+    parameters.
+
+examples                                         examples-V11-03-05
+--------
+- Updated documentation and reference outputs.
+- advanced/dna/moleculardna (molecularDNA-V11-03-08)
+  o Fixed compilation warnings with CXX23 Standard enabled.
+- extended/hadronic/Hadr03 (exhadr03-V11-03-00)
+- extended/hadronic/Hadr04 (exhadr04-V11-03-00)
+- extended/hadronic/Hadr05 (exhadr05-V11-03-00)
+- extended/hadronic/Hadr06 (exhadr06-V11-03-00)
+- extended/hadronic/Hadr07 (exhadr07-V11-03-00)
+- extended/hadronic/NeutronSource (NeutronSource-V11-03-00)
+  o In main(), added SetUseNRESP71Model(true).
+- extended/medical/DICOM (DICOM-V11-03-00)
+  o Refactored DICOM examples into a single project; now build everything
+    together for ease of use and demonstration. Code/behaviour otherwise
+    is unchanged. Including two examples, DICOM1 (renamed from the original
+    DICOM) and DICOM2, with two libraries that implement capabilities
+    common to both applications: G4DicomCore, providing the core Geant4
+    application structure; G4DicomReader, optional utility library to read
+    DICOM files and RT structure in DICOM format, as well as RT plans.
+    Both applications can optionally use the DICOM Digital Head.
+- extended/medical/dna/chem4 (chem4-V11-03-01)
+  o Replaced shared_ptr with unique_ptr and raw for manager counters.
+- extended/medical/dna/chem5 (chem5-V11-03-02)
+  o Use the new G4MoleculeCounterManager to manage the G4MoleculeCounter.
+  o Replaced shared_ptr with unique_ptr and raw for manager counters.
+- extended/medical/dna/chem6 (chem6-V11-03-01)
+- extended/medical/dna/dnadamage2 (dnadamage2-V11-03-01)
+  o Replaced shared_ptr with unique_ptr and raw for manager counters.
+- extended/medical/dna/dnaphysics (dnaphysics-V11-03-03)
+  o Added UI command to record first step only; updated elastic.in macro
+    accordingly.
+- extended/medical/dna/molcounters (molcounters-V11-03-00)
+  o New example showing how to use the new molecule counter manager system
+    and how to write custom molecule counters. The custom (spatially-aware)
+    molecule counter used here is further described in:
+    Radiat. Phys. Chem. 212 (2023) 111194.
+- extended/medical/dna/range (range-V11-03-00)
+  o Added beta option8 physics list.
+- extended/medical/dna/scavenger (scavenger-V11-03-01)
+  o Replaced shared_ptr with unique_ptr and raw for manager counters.
+- extended/medical/dna/spower (spower-V11-03-01)
+  o PhysicsList: added all DNA Physics Lists and usage of G4EmParameters.
+- extended/medical/dna/UHDR (UHDR-V11-03-04)
+  o Use the new G4MoleculeCounterManager to manage the G4MoleculeCounter.
+  o Added pulse structure and interpulse feature.
+  o Fixed partially diffused-control reactions.
+  o Fixed crash due to typo in UHDR.in
+  o Removed dependence of PrimaryGeneratorAction/Physlist/ChemList/ActionIni 
+    classes on DetectorConstruction class.
+  o Updated macro files.
+- extended/radioactivedecay/Activation (activation-V11-03-00)
+  o In main(), added SetUseNRESP71Model(true).
+
+tests                                            tests-V11-03-05
+-----
+- Updated reference outputs and tools.
+- ctests_integration/test06 (test06-V11-03-00)
+  o Updated tests using code from zlib 1.3.1 release.
+- ctests_integration/test70 (test70-V11-03-01)
+  o Replaced shared_ptr with unique_ptr and raw for manager counters.

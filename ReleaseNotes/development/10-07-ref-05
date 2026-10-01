@@ -1,0 +1,445 @@
+
+                       geant4-10-07-ref-05
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Requiring C++17 as minimum standard to compile Geant4.
+   Allowing also compilation against C++23 with CMake 3.20 and newer.
+ o Bumped minimum CMake version to 3.12.
+ o Updated external PTL module to version v2.0.0.
+ o Removed deprecated classes: G4LPhysicsFreeVector, G4PhysicsLnVector
+   and G4PhysicsOrderedFreeVector.
+ o New class G4OpticalMaterialProperties, a store for optical material
+   properties and allow use of predefined optical material properties.
+ o Updated physics lists to use a uniform approach for verbosity.
+ o Added new IRT-syn model for DNA.
+ o Introducing quantum entanglement of e+ annihilation. Currently implemented
+   only in G4eplusAnnihilation and G4LivermorePolarizedComptonModel.
+ o Updated EM integral approach by introduction of a cross-section shape type.
+ o Removed obsolete classes G4RadioactiveDecay and G4RadioactiveDecaymessenger.
+ o Co-working with VecGeom v1.1.15.
+ o Updated data-set to G4EMLOW-7.16.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.7.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-07-23
+-----
+- Requiring C++17 as minimum standard to compile Geant4.
+  Allow compilation against C++23 with CMake 3.20 and newer.
+  Check for filesystem support in native or extension (GNU/Clang) libraries.
+- Clarified use of Freetype for both analysis and visualization.
+  Removed use of no longer required imported target shim for build.
+- Set GEANT4_BUILD_BUILTIN_BACKTRACE to ON to enable debug information on
+  segmentation faults in testing.
+- Qualify geant4_add_feature descriptions with "G4_" to distinguish them from
+  CMake property descriptions.
+- Added settings for enabling new TOOLSSG vis driver.
+  Four (mutually exclusive) options: TOOLSSG_X11_GLES, TOOLSSG_WINDOWS_GLES,
+  TOOLSSG_XT_GLES and TOOLSSG_QT_GLES.
+- Removed obsolete -stdlib flag for AppleClang.
+- Updated external PTL module to version v2.0.0.
+- Bumped minimum CMake version to 3.12.
+- Updated data-set to G4EMLOW-7.16.
+
+analysis                                         analysis-V10-07-05
+--------
+- Moved "fonts" directory and install logic to g4tools package in externals,
+  as prime interface to Freetype.
+
+event                                            event-V10-07-02
+-----
+- Use G4PhysicsFreeVector instead of deprecated G4PhysicsOrderedFreeVector in
+  G4AdjointPrimaryGenerator, G4SPSAngDistribution, G4SPSEneDistribution,
+  and G4SPSRandomGenerator.
+
+externals                                        externals-V10-07-04
+---------
+- CLHEP:
+  o Added units: minute, hour, day, year and millielectronvolt.
+    Added constants: Bohr_magneton and nuclear_magneton.
+  o Fixed trivial compilation warnings on gcc-11 in Random headers.          (o)
+- g4tools (g4tools-V10-07-05)
+  o Move fonts from analysis category to tools to assist cross-category use.
+  o Fixed compilation warnings on gcc-11.
+  o Renamed g4tools/include/tools/sg/gL_manager to GL_manager.
+- ptl (ptl-V10-07-05)
+  o Updated PTL to version v2.0.0 which replaced raw pointers to tasks with
+    shared_ptrs for memory management improvements.
+  o Removed PTL custom task allocator classes.
+  o Fixed warnings about TBB task scheduler init.
+  o Improved thread safety.
+  o Fixed some memory issues.
+  o Make PTL cmake options available in configuration, including:
+    PTL_USE_SANITIZER and PTL_USE_LOCKS.
+  o Use CMAKE_CXX_STANDARD in place of GEANT4_BUILD_CXXSTD in CMake
+    configuration. Also, updated minimum CMake version requirements.
+
+geometry/navigation                              geomnav-V10-07-04
+-------------------
+- G4Navigator: added missing implementation of SetVoxelNavigation().
+  Deleted experimental obsolete method RecheckDistanceToCurrentBoundary(),
+  also removed in G4SafetyHelper and G4PathFinder.
+  Cleaned up ComputeSafety().
+- G4VoxelNavigation: simplify code of 'check' mode tests to avoid 2nd code
+  path. Added comments about method arguments.
+- G4NavigationLogger: soften check of step vs distance (using tolerance).
+
+geometry/solids/CSG                              geom-csg-V10-07-02          (o)
+-------------------
+- Bux fix in G4Sphere::GetSurfaceArea().
+- G4Sphere: moved to source GetCubicVolume() implementation.
+  Revised implementation of GetPointOnSurface().
+
+geometry/solids/specific                         geom-specific-V10-07-05
+------------------------
+- Simplified implementation of CreatePolyhedron() in G4Polyhedra,
+  G4Polycone, G4GenericPolycone and related wrappers.
+- Fixed use of conversion factor in G4UPolyhedra wrapper for "generic"       (o)
+  polyhedra constructs.
+- Co-working with VecGeom v1.1.15.
+
+global                                           global-V10-07-14
+------
+- Removed deprecated classes: G4LPhysicsFreeVector, G4PhysicsLnVector
+  and G4PhysicsOrderedFreeVector.
+- New G4Filesystem header to support transparent use of C++ filesystem
+  whether it is in std:: or std::experimental namespaces.
+- G4ThreadLocalSingleton: added way to explicitly call Clear() for all
+  TLS singletons.
+- Reworked G4Backtrace to use fewer dynamic memory allocations when
+  printing backtrace in order to avoid overflowing the signal stack.
+- Updated date and tag-ID for geant4-10-07-ref-05.
+
+graphics_reps                                    greps-V10-07-05
+-------------
+- Reviewed HepPolyhedronPgon, HepPolyhedronPcon classes given by rz-contour.
+- HepPolyhedron: added TriangulatePolygon() and RotateContourAroundZ().
+- Fixed shadowing compilation warning in G4Colours reported with gcc-11.     (o)
+
+intercoms                                        intercoms-V10-07-05
+---------
+- Fixed shadowing compilation warning in G4UImanager reported with gcc-11.   (o)
+
+materials                                        materials-V10-07-10
+---------
+- G4ExtDEDXTable, G4IonStoppingData: corrected initialisation of Spline
+- G4NistMaterialBuilder: removed unused argument "isotopes" from all
+  methods where NIST materials are built.
+- G4NistManager: adopt modifications in method signatures of 
+  G4NistMaterialBuilder but keep own method signatures unchanged.
+- G4MaterialPropertiesTable: added 'createNewKey' to AddProperty();
+  merged .icc into .cc; removed deprecated methods; applied clang-format.
+- G4OpticalMaterialProperties: added missing include.
+- G4MaterialPropertyVector: use G4PhysicsFreeVector instead of
+  obsolete G4PhysicsOrderedFreeVector.
+- New class G4OpticalMaterialProperties, a store for optical material
+  properties.
+- G4MaterialPropertiesTable: new AddProperty() method to allow use of
+  predefined optical material properties.
+- G4IonStoppingData, G4ICRU90StoppingData, G4ExtDEDXTable,
+  G4VIonDEDXTable: substituted G4LPhysicsFreeVector by G4PhysicsFreeVector
+- G4Material, G4Element, G4Isotope, G4IonisParamElm,
+  G4IonisParamMat, G4NistMaterialBuilder, G4NistMessenger,
+  G4SandiaTable: minor clean-up.
+- Fixed shadowing compilation warning in G4Isotope reported with gcc-11.     (o)
+
+particles                                        particles-V10-07-01
+---------
+-  Fixed shadowing compilation warning in G4IonTable reported with gcc-11.   (o)
+
+persistency/gdml                                 gdml-V10-07-07
+----------------
+- G4GDMLReadSolids: updated optical surface properties to reflect            (o)
+  introduction of DAVIS interface. Addressing problem report #2371.
+- G4GDMLWriteMaterials: use G4PhysicsFreeVector instead of deprecated
+  G4PhysicsOrderedFreeVector.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-07-12)
+  o Updated all standard EM physics lists: removed local member "verbose" and
+    use uniform approach for verbosity via G4EmParameters; instantiate NIEL
+    process only if parameter MaxNIELEnergy is above zero; include gamma
+    linear polarization model to Opt0, Opt3, Opt4, SS, and Livermore physics
+    constructors if the parameter EnablePolarisation is "true";
+    G4EmLivermorePolarizedPhysics fully inheriting from G4EmLivermorePhysics.
+  o G4GammaGeneralProcess: updated interface in the Retrieve() method.
+  o G4EmDNAPhysics: updated configuration of standard physics for gamma and
+    positrons according to Opt3; updated particle list by addition of G4Alpha;
+    simplified ConstructProcess() method using G4PhysicsListHelper.
+- constructors/hadron_elastic (phys-ctor-helastic-V10-07-06)
+  o In all constructors, use verbosity level from G4HadronicParameters.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V10-07-05)
+  o In all constructors: printouts are controlled by verbosity level of
+    G4HadronicParameters class; 'verboseLevel' member in base class is 
+    not used; G4HadronicParameters singleton is initialized in all class
+    constructors; if the verbosity level is defined in a class constructor,
+    it is propagated to G4HadronicParameters (user may change this level
+    using UI command before physics is initialized); check versus nullptr
+    is added in several places.
+
+processes/cuts                                   proccuts-V10-07-01
+--------------
+- G4PhysicsTableHelper: updated interface to Retrieve() method.
+
+processes/electromagnetic                        em-V10-07-00
+-------------------------
+- Migrated CMake scripts to modular CMake API.
+- dna (emdna-V10-07-07)
+  o Added IRT-syn model.
+- highenergy (emhighenergy-V10-07-03)
+  o G4eeToHadrons: updated integral type.
+- lowenergy (emlowen-V10-07-15)
+  o G4LivermorePolarizedComptonModel: added quantum entanglement of e+
+    annihilation. If the photons have been "tagged" as "quantum-entangled",
+    for example by G4eplusAnnihilation for annihilation into 2 photons, they
+    are "analysed" if - and only if - both photons suffer Compton scattering.
+    Theoretical predictions from Pryce and Ward, Nature No 4065 (1947) p.435,
+    and Snyder et al, Physical Review 73 (1948) p.440. Experimental validation
+    in "Photon quantum entanglement in the MeV regime and its application in
+    PET imaging", D. Watts, J. Allison et al., Nature Communications
+    (2021)12:2646, https://doi.org/10.1038/s41467-021-22907-5.
+    Added data member 'fEntanglementModelIndex'.
+    The implementation of entanglement is described in extensive comments
+    in G4LivermorePolarizedComptonModel source.
+  o Migrate the Spline treatment for all physics vectors.
+- polarisation (empolar-V10-07-06)
+  o G4PolarizedAnnihilation, G4PolarizedCompton: updated use of the Spline flag.
+- standard (emstand-V10-07-13)
+  o G4eplusAnnihilation: introducing Quantum Entanglement. This is activated
+    by UI command "/process/em/QuantumEntanglement". For e+e- -> gamma gamma,
+    the gammas are "tagged" here and must be "analysed" in a Compton scattering
+    process - see, for example, G4LivermorePolarizedComptonModel. Otherwise
+    entanglement has no effect even if activated. Added data member
+    "fEntanglementModelIndex".
+  o G4PAIModelData, G4eplusTo2GammaOKVIModel: corrected initialisation of
+    physics vectors Spline.
+  o G4LindhardSorensenData: updated definition of Spline.
+  o G4CoulombScattering, G4eBremsstrahlung, G4eplusAnnihilation: updated set
+    of flags for Spline and the integral approach.
+  o G4BetheBlochModel: minor cleanup; more const variables.
+- utils (emutils-V10-07-20)
+  o G4VEmProcess, G4VEnergyLossProcess, G4EmTableType, G4EmBiasingManager,
+    G4LossTableManager: updated integral approach by introduction of a
+    cross-section shape type and different actions depending on the type; 
+    added cache for cross-section and range; removed unused methods; 
+    attempt to reduce number of "if" operators at run time; integral and
+    Spline flags are set to each process individually.
+  o G4VMultipleScattering: fixed problem observed by CMS for specific
+    physics list.
+  o G4EmCorrections, G4VEmProcess: updated use of the Spline flag.
+  o G4ionEffectiveCharge: fixed bug in computation of effective charge square.
+  o G4EmCorrections, G4LossTableBuilder: substitute use of deprecated
+    G4LPhysicsFreeVector by G4PhysicsFreeVector.
+  o G4VEmProcess, G4VEnergyLossProcess, G4EmDataHandler: updated method
+    RetrievePhysicsTable().
+  o G4TableType: added extra enumerator.
+  o Fixed shadowing compilation warning in G4EmCorrections on gcc-11.        (o)
+- xrays (xrays-V10-07-03)
+  o G4Scintillation: changed 'IsApplicable' to all particles except          (o)
+    optical-photon and short-lived. Addressing problem report #2372.
+
+processes/hadronic                               hadr-V10-07-02
+------------------
+- Migrated CMake scripts to modular CMake API.
+- cross_sections (hadr-cross-V10-07-12)
+  o G4HadronXSDataTable, G4ComponentSAIDTotalXS: updated creation and handling
+    of G4PhysicsVector.
+  o G4UPiNuclearCrossSection, G4ComponentSAIDTotalXS: substituted use of
+    deprecated G4LPhysicsFreeVector by G4PhysicsFreeVector.
+- management (hadr-man-V10-07-06)
+  o Fixed TLS usage in G4HadronicProcessStore.
+  o Fixed loops in G4HadronicProcessStore::Clean().
+- models/cascade (hadr-casc-V10-07-02)
+  o Fixed TLS usage in G4CascadeChannelTables and G4CascadeParameters.
+- models/coherent_elastic (hadr-cohe-V10-07-03)
+  o G4LEHadronProtonElastic, G4ChargeExchangeProcess: removed unused headers.
+- models/fission (hadr-fission-V10-07-01)
+  o G4LFission: removed unused headers.
+- models/im_r_matrix (had-im_r_V10-07-02)
+  o G4XnpElasticLowE, G4XNNElasticLowE, G4XnpTotalLowE: substituted use of
+    deprecated G4PhysicsLnVector with G4PhysicsLogVector; no functional changes.
+- models/lepto_nuclear (hadr-lepnuc-V10-07-04)
+  o Bug fixed in G4NeutrinoNucleusModel, updated calls for QE ratio of
+    muon/electron (anti-)neutrino.
+- models/particle_hp (hadr-hpp-V10-07-08)
+  o Fixed condition in G4ParticleHPInelasticCompFS:::CompositeApply().       (o)
+    Addressing problem report #2333.
+  o G4ParticleHPData, G4ParticleHPJENDLHEData: replaced use of deprecated
+    G4LPhysicsFreeVector with G4PhysicsFreeVector.
+  o Updated build scripts according to new dependencies.
+    Clean-up of old directories no longer present.
+- models/radioactive_decay (radioactive_decay-V10-07-07)
+  o Remove obsolete classes G4RadioactiveDecay and G4RadioactiveDecaymessenger.
+  o Updated build scripts and header includes. 
+
+processes/management                             procman-V10-07-02
+--------------------
+- Introducing classes for implementation of quantum entanglement:
+  G4EntanglementAuxInfo, G4VEntanglementClipBoard and
+  G4eplusAnnihilationEntanglementClipBoard.
+  Currently, entanglement is implemented only in G4eplusAnnihilation
+  and G4LivermorePolarizedComptonModel.
+
+processes/optical                                op-V10-07-02
+-----------------
+- G4OpBoundaryProcess: fixed initialisation of some local variables.
+  Addressing problem report #2364.
+- G4OpRayleigh, G4OpWLS, G4OpWLS2: use G4PhysicsFreeVector instead
+  of deprecated G4PhysicsOrderedFreeVector.
+
+run                                              run-V10-07-06
+---
+- Removed call to physicsList->TerminateWorker() in G4WorkerRunManager
+  as this appears to cause errors at termination.
+- G4VPhysicsConstructor: fixed initialisation of hadronic parameters
+  avoiding uncontrolled override of verbosityLevel.
+
+tasking                                          tasking-V10-07-04
+-------
+- Updated to PTL v2.0.0 with shared_ptr usage. Included some minor API
+  changes to direct async usage.
+- Fixes to TBB task-group usage.
+- Fix for G4FORCENUMBEROFTHREADS flag lookup.
+
+tracking                                         tracking-V10-07-10
+--------
+- Extended G4VSteppingVerboseWithUnits features.
+- Export protected static symbols in G4VSteppingVerbose for DLL builds
+  on Windows.
+
+visualization                                    vis-V10-07-05
+-------------
+- Removed unused XXX module.
+- management (visman-V10-07-07):
+  o G4VisManager: fixed cout destination for UI manager during deletion.
+  o Introducing /vis/scene/add/localAxes and /vis/touchable/localAxes commands.
+- modeling (modeling-V10-07-06):
+  o Improved G4VModel; make SetTransform() virtual.
+  o G4ArrowModel, G4AxesModel and G4TextModel: implement SetTransform().
+  o Take care to apply to original model. For example, if SetTransform() is
+    called more than once it must apply to the original.
+  o G4PhysicalVolumeModel: for the resultant of clipping, set the visualisation
+    attributes of the original.
+- ToolsGS (vis_toolsg-V10-07-02):
+  o Introducing ToolsSG (TSG) drivers based on externals/g4tools.
+  o Providing four new (mutually exclusive) vis drivers: TOOLSSG_X11_GLES,
+    TOOLSSG_WINDOWS_GLES, TOOLSSG_XT_GLES and TOOLSSG_QT_GLE.
+- OpenInventor (openinventor-V10-07-02):
+  o G4OpenInventorQtExaminerViewer: for tabbed viewer in UIQt, added a
+    Detach button to move the viewer to its own dedicated and resizable
+    window on the desktop. Added event handler for mouse wheel to fix the
+    non-intuitive behavior. Mouse-wheel-forward now zooms/dollys in.
+    Added viewer button to enable the "axis cross" (3d axes) feedback mechanism.
+  o G4OpenInventorViewer: upgraded the group node sensor to process camera
+    movements, thus eliminating the need for the camera sensor. The node
+    sensor receives all camera notifications and is immune to changes in the
+    camera type.
+  o Code cleanup of OpenInventorQt classes.
+
+data sets:
+---------
+- G4EMLOW-7.16:
+  o Added new cross sections for electron transportation in gold
+    within Geant4-DNA.
+  o Added directories Elastic/ Inelastic/ and Structure/ for microelec models.
+
+examples                                         examples-V10-07-05
+--------
+- Updated documentation and reference outputs.
+- Bump required CMake version range to 3.12...3.20.
+- advanced/amsEcal (amsEcal-V10-07-01)
+  o Migrated to use G4RunManagerFactory and G4SteppingVerboseWithUnits.
+- advanced/composite_calorimeter (ccal-V10-07-02)
+  o Migrated to multi-threading, using G4RunManagerFactory.
+  o Introduced the action initializer.
+  o Split the definition of the sensitive part of the detector
+    from the detector construction itself. A new method, sensitiveHandling(),
+    has been introduced in the base class CCalG4Able.
+  o Made the following three classes thread-local singletons: CCalSDList,
+    CCalSensAssign and CCalSensitiveDetectors.
+  o Multi-threaded use of the G4AnalysisManager in the run action with the
+    merging of histograms and ntuple of all working threads at the end of
+    the run.
+- advanced/hadrontherapy (hadrontherapy-V10-07-05)
+  o Removed unncessary G4AutoDelete of StepProcessMax in physics list.
+- advanced/STCyclotron (STCyclotron-V10-07-03)
+  o STCyclotronSensitiveTarget: remove deprecated include.
+- extended/electromagnetic/TestEm1 (testem1-V10-07-03)
+  o Additional migration to new G4SteppingVerbose.
+- extended/electromagnetic/TestEm3 (testem3-V10-07-01)
+- extended/electromagnetic/TestEm4 (testem4-V10-07-01)
+  o Migrated to G4RunManagerFactory and G4SteppingVerboseWithUnits.
+- extended/electromagnetic/TestEm5 (testem5-V10-07-04)
+- extended/electromagnetic/TestEm6 (testem6-V10-07-00)
+- extended/electromagnetic/TestEm7 (testem7-V10-07-02)
+  o Migrated to G4SteppingVerboseWithUnits.
+- extended/electromagnetic/TestEm11 (testem11-V10-07-02)
+- extended/electromagnetic/TestEm12 (testem12-V10-07-02)
+- extended/electromagnetic/TestEm13 (testem13-V10-07-00)
+- extended/electromagnetic/TestEm14 (testem14-V10-07-00)
+  o Migrated to G4RunManagerFactory and G4SteppingVerboseWithUnits.
+- extended/electromagnetic/TestEm15 (testem15-V10-07-01)
+  o Migrated to G4SteppingVerboseWithUnits.
+- extended/electromagnetic/TestEm16 (testem16-V10-07-00)
+  o Migrated to G4RunManagerFactory and G4SteppingVerboseWithUnits.
+- extended/electromagnetic/TestEm17 (testem17-V10-07-00)
+- extended/electromagnetic/TestEm18 (testem18-V10-07-00)
+  o Migrated to G4SteppingVerboseWithUnits.
+- extended/hadronic (exHadronic-V10-07-01)
+  o Updated scripts.
+- extended/hadronic/Hadr02 (exhadr02-V10-07-03)
+  o Migrated to newer CRMC, and more modern approach to physics lists.       (o)
+- extended/hadronic/Hadr10 (exhadr10-V10-07-00)
+  o New hadronic example aimed to exercise the decay of tau leptons,
+    as well as charmed and bottom hadrons.
+- extended/medical/electronScattering (electronScattering-V10-07-00)
+- extended/medical/fanoCavity (fano-V10-07-01)
+- extended/medical/fanoCavity2 (fano2-V10-07-01)
+  o Migrated to G4RunManagerFactory and G4SteppingVerboseWithUnits.
+- extended/optical/LXe (LXe-V10-07-01)
+  o Get some refractive indices from new G4OpticalMaterialParameters file.
+- extended/optical/OpNovice (OpNovice-V10-07-02)
+  o Fixed incorrect material property name.
+- extended/optical/wls (WLS-V10-07-01)
+  o WLSMaterials: use correct material property names.
+  o WLSPrimaryGeneratorAction: use G4PhysicsFreeVector instead of
+    deprecated G4PhysicsOrderedFreeVector.
+- extended/visualization/movies exam-ext-vis-movies-V10-07-02)
+  o Minor improvements to README files.
+
+tests                                            tests-V10-07-05
+-----
+- Updated reference outputs and tools.
+- Removed obsolete test201.
+- Bump required CMake version range to 3.12...3.20.
+- Udated CMake scripts to avoid installation of tests.
+- tests/test14 (test14-V10-07-02)
+  o Removed G4AutoDelete of G4GlobalMagFieldMessenger.
+- tests/test18 (test18-V10-07-04)
+  o Tst18PhysicsList: remove include of deprecated G4RadioactiveDecay header.
+- tests/test40 (test40-V10-07-02)
+  o  Removed G4AutoDelete of G4GlobalMagFieldMessenger.
+- tests/test44 (test44-V10-07-04)
+  o PhysicsList: updated hadronic configuration to be coherent with reference
+    physics lists.
+- tests/test53 (test53-V10-07-04)
+  o Run: added missing protection in EndOfRun() in case number of event is zero. 
+  o RunAction: avoid deletion or PrimaryGeneratorAction in destructor for
+    master, responsible for double-deletion.
+  o Removed G4AutoDelete of G4GlobalMagFieldMessenger.
+  o Removed deletion of fStepMaxProcess pointer.
+- tests/test54 (test54-V10-07-03)
+  o Removed G4AutoDelete of G4GlobalMagFieldMessenger.
+- tests/test56 (test56-V10-07-03)
+  o PhysicsList: avoid deletion of em physics-list in destructor.
+  o RunAction: avoid deletion or PrimaryGeneratorAction in destructor for
+    master, responsible for double-deletion.
+- tests/test300 (test300-V10-07-00)
+  o New test to exercise and report system and compiler support for C++17
+    and beyond.

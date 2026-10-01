@@ -1,0 +1,25 @@
+# requires clang-tidy version 13.0+
+---
+BasedOnStyle: InheritParentConfig 
+# Header sorting Priority in Examples is:
+# 1. Example headers (always expected to be in "")
+# 2. Geant4 headers in ""
+# 3. Geant4 headers in "" that don't start with 'G4'
+# 4. External/System headers in <> (not exhaustive)
+#    Note there is *no* way to distinguish *external headers in quotes* from
+#    example headers, but policy should be to use <> for externals
+# 
+# Note order of regexes is important as they are matched in order (so have to go 
+# specific-generic, hence why priorities are not in order!)
+IncludeCategories:
+  - Regex:           '"G4.*\.hh"'
+    Priority:        2
+  - Regex:           '"(Randomize|globals)\.hh"'
+    Priority:        2
+  - Regex:           '"[[:alnum:]\/\-_.]+"'
+    Priority:        1
+  - Regex:           '<[[:alnum:]\/.]+>'
+    Priority:        3
+  - Regex:           '<[a-z_]+>'
+    Priority:        3
+...

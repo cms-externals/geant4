@@ -1,0 +1,301 @@
+
+                       geant4-10-04-ref-03
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Improved G4AutoLock in non-MT mode.
+ o Removed unnecessary checks of process manager for generic ion and muonic
+   atom in G4SteppingManager.
+ o Correction in G4MagneticField toq no longer inherit from
+   G4ElectroMagneticField. Introduced Bulirsch-Stoer method of integration,
+   an alternative to Runge-Kutta based on the mid-point method.
+ o Use new parameter MscEnergyLimit() (default is 100 MeV) in EM physics
+   constructors, allowing to customise transition from low-energy multiple
+   scattering to high energy combination of multiple and single scattering.
+ o New lateral displacement algorithm in G4UrbanMscModel.
+ o New models: G4BetheHeitler5DModel (5D gamma conversion),
+   G4eplusTo2GammaOKVIModel and G4eplusTo3GammaOKVIModel.
+ o Extended strange pair production channels in Bertini Cascade.
+ o Extended upper limit of applicability (from 1 to 100 TeV) for the
+   diffuse-elastic processes.
+ o Updated to new version of CLHEP library 2.4.0.4.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.4.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-04-07
+-----
+- Allowing Windows MT builds to use DLLs for experimental testing, but issue
+  warning, as only static libraries are supported for MT builds.
+
+config                                           config-V10-04-04
+------
+- Darwing-clang.gmk: removed -pthread and -fPIC compilation options.         (o)
+- architecture.gmk: corrected default path for external expat and zlib.      (o)
+
+event                                            event-V10-04-05
+-----
+- Code cleanup in G4StackManager to remove branches for muonic atom settings.
+
+externals                                        externals-V10-04-04
+---------
+- clhep
+  o Updated to CLHEP-2.4.0.4: removed kludge for Windows previously introduced
+    in MinMaxRng header. enabled thread-local storage and atomics on Windows
+    and clang, as now all supported by c++11.
+- Corrected GNUmakefile on Windows.                                          (o)
+
+geometry
+--------
+- magneticfield (field-V10-04-03):
+  o Correction in G4MagneticField to no longer inherit from
+    G4ElectroMagneticField; this allowed a user to provide a full EM field,
+    but obtain the force only from the B-field when using the equation created
+    in the G4ChordFinder constructor.
+    It is no longer possible to use the equation of motion for a pure magnetic
+    field for the case of a mixed electromagnetic field. Instead the full chain
+    of classes for equation of full EM field, steppers and driver must be used
+    for the case of the 'full' EM field.
+  o Introduced Bulirsch-Stoer method of integration, an alternative to
+    Runge-Kutta based on the mid-point method. Separate driver derived from
+    G4VIntegrationDriver and implemented, using specialisation of
+    G4IntegrationDriver template class.
+  o Change in G4FieldManager::CreateChordFinder() to cope better with case
+    where field argument is null.
+- solids/Boolean (geom-bool-V10-04-00):                                      (o)
+  o Improved contruction of G4DiplacedSolid to combine transformations for
+    nested displaced types.
+- solids/specific (geom-specific-V10-04-07):
+  o Corrected conversion of input parameters to internal structure (used for (o)
+    caching for adoption in GDML persistency) in G4UPolycone and G4UPolyhedra
+    wrappers.
+
+global                                           global-V10-04-14
+------
+- Removed obsolete MT wrappers for random numbers, no longer necessary.
+  Simplified definition of G4Random types in Randomize.hh accordingly.
+- Full support for thread-local storage on clang (also MacOS clang) now
+  enabled; updated tls.hh definitions accordingly; removed use of the
+  G4USE_STD11 flag, now always enabled by default.
+- Use thread_local keyword on Windows, instead of __declspec(thread) in tls.hh.
+  Avoid exporting symbols for Windows DLLs in multi-threaded builds.
+- Removed no longer necessary windefs.hh header.
+- Updated G4cout_p and G4cerr_p to point to std::cout and std::cerr before
+  and after library load. G4cout before G4RunManager creation has been seen to
+  fail on Windows.
+- Improvement to G4AutoLock in non-MT mode + bug fix (void try_lock() ->
+  bool try_lock()) plus error handling within G4AutoLock if static mutex
+  is attempted to be used at application cleanup (previously handled in
+  G4Cache). Using atomics in G4Cache.
+- Define G4ThisThread, G4Promise, G4Future, and G4SharedFuture in G4Threading
+  the promises and futures are not currently used but will be used in future.
+- G4TypeMutex and G4RecursiveTypeMutex now accept an index, e.g.
+  G4AutoLock l(G4TypeMutex<G4SomeClass>(0)) and
+  G4AutoLock l(G4TypeMutex<G4SomeClass>(1))
+- G4DummyThread typedef std::thread::id as id instead of id_type.
+- Increased accuracy of G4Pow::A13 in the most critical [1/4,4] interval.
+- Minor code cleanup in G4UniformRandPool.
+- Added testRngMT unit test.
+
+persistency/gdml                                 gdml-V10-04-02              (o)
+----------------
+- Protect printout of progress in reading/writing by G4VERBOSE.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-04-00)
+  o G4EmStandardPhysics, G4EmStandardPhysics_option1/2/4, G4EmLowEPPhysics,
+    G4EmPenelopePhysics, G4EmLivermorePhysics, G4EmLivermorePolarizedPhysics,
+    G4EmStandardPhysicsGS: use new parameter MscEnergyLimit() (default is
+    100 MeV) allowing to customise transition from low-energy multiple
+    scattering to high energy combination of multiple and single scattering.
+  o G4EmModelActivator: fixed Opt4 and single scattering.                    (o)
+    Addressing problem report #2045.
+- constructors/factory (phys-ctor-fact-V10-04-02)
+  o Allow override of exclusion of G4RegisterPhysicsConstructors definitions
+    when using WIN32 by setting USING_STATIC_LIBS.
+
+processes/electromagnetic/highenergy             emhighenergy-V10-04-00
+------------------------------------
+- G4AnnihiToMuPair: added Coulomb correction to cross-section at threshold.
+
+processes/electromagnetic/polarisation           empolar-V10-04-02
+--------------------------------------
+- G4PolarizedAnnihilationModel: implemented sampling of final state at-rest.
+- Code cleanup; removed unused headers and methods.
+
+processes/electromagnetic/standard               emstand-V10-04-13
+----------------------------------
+- G4UrbanMscModel: new lateral displacement algorithm.
+- G4BetheHeitlerModel, G4BetheHeitler5DModel: new 5D model.
+- Added new models, G4eplusTo2GammaOKVIModel and G4eplusTo3GammaOKVIModel.
+- G4eplusAnnihilation: moved sampling of final state from AtRestDoIt() method
+  to SamplingSecondaries()
+- G4BetheBlochModel: fixed case of event non-reproducibility introduced in
+  previous tag.
+- Code cleanup in G4eeToTwoGammaModel, G4BetheHeitlerModel and
+  G4BetheHeitler5DModel.
+
+processes/electromagnetic/utils                  emutils-V10-04-07
+-------------------------------
+- G4EmParameters, G4EmParametersMessenger: added 5D gamma conversion model
+  parameters.
+- G4EmParameters, G4EmParametersMessenger: added MscEnergyLimit() and
+  corresponding UI command. Addressing problem report #2045.
+- G4VEmProcess: moved few private members to protected.
+
+processes/hadronic
+------------------
+- models/cascade (hadr-casc-V10-04-03)
+  o G4CascadeT11pizNChannel: extended strange pair production channels to
+    6,7,8 and 9 body final states.
+  o Fixed implementation of nuclear_rad_2par configurable key in
+    G4CascadeParamMessenger.
+- models/coherent_elastic (hadr-cohe-V10-04-01)
+  o Set to 100 TeV (instead of 1 TeV) the upper limit of applicability
+    for the model G4DiffuseElastic and G4DiffuseElasticV2 (the number of
+    equally-sized logarithmic energy bins has been increased from 200 to
+    250 to keep the same bin size, 0.04).
+    The model has been validated with experimental data up to 300 GeV,
+    but it should not give meaningless results well above this energy.
+- models/parton_string/diffraction (hadr-string-diff-V10-04-03)
+  o Turn to false switches for A-dep in nuclear destruction for baryon
+    projectile in G4FTFParameters. Uncommented checks for these switches
+    in the code.
+- models/radioactive_decay (radioactive_decay-V10-04-01)                     (o)
+  o Make sure last stable nuclide in decay chain is included as secondary
+    in G4RadioactiveDecay::AddDeexcitationSpectrumForBiasMode() and in
+    G4Radioactivation::AddDeexcitationSpectrumForBiasMode().
+    Addresses problem report #2024.
+
+tracking                                         tracking-V10-04-00
+--------
+- G4SteppingManager: remove unnecessary checks of process manager for
+  generic ion and muonic atom.
+
+visualization                                    vis-V10-04-03
+-------------
+- management (visman-V10-04-03):
+  o Improved some UI commands.
+- modeling (modeling-V10-04-02):                                             (o)
+  o Fixed bug in calculation of mass of parallel world, protecting for the case
+    of no material assigned. Addressing problem report #2039.
+- RayTracer (raytracer-V10-04-00):
+  o Use HyperStep of G4ParallelWorldProcess to draw volumes defined in a
+    parallel world.
+- Tree (vistree-V10-04-00):                                                  (o)
+  o Fixed bug in suppressed writing of repeated parameterised volumes.
+
+examples                                         examples-V10-04-03
+--------
+- Updated documentation and reference outputs.
+- advanced/amsEcal (amsEcal-V10-04-00)
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- advanced/composite_calorimeter (ccal-V10-04-04)
+  o No functional changes.
+- basic/B2 (exampleB2-V10-04-00)
+  o Modified default input macro exampleB2.in to reduce the output.
+- extended/electromagnetic/TestEm0 (testem0-V10-04-00)
+- extended/electromagnetic/TestEm1 (testem1-V10-04-00)
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- extended/electromagnetic/TestEm2 (testem2-V10-04-04)
+  o DetectorConstruction: improved method names, do not allow to clear
+    geometry between runs.
+  o StepMax: use thread safe instantiation, messenger merged with 
+    PhysicsListMessenger.
+  o Use MixMax default random number generator.
+  o PhysicsList: make Opt0 default, removed local instantiation of G4Decay.
+  o PhysListEm5DStandard: experimental PhysList with the new 5D gamma
+    conversion model.
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- extended/electromagnetic/TestEm3 (testem3-V10-04-05)
+  o DetectorConstruction: improved method names, do not allow to clear
+    geometry between runs.
+  o StepMax: use thread safe instantiation, messenger merged with 
+    PhysicsListMessenger.
+  o Use MixMax default random number generator.
+  o Removed radioactive.mac input macro,
+  o PhysicsList: make Opt0 default, removed local instantiation of G4Decay.
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- extended/electromagnetic/TestEm4 (testem4-V10-04-00)
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- extended/electromagnetic/TestEm5 (testem5-V10-04-02)
+  o PhysListEm5DStandard: experimental PhysList with the new 5D gamma
+    conversion model.
+  o StepMax: use thread safe instantiation, messenger merged with 
+    PhysicsListMessenger.
+  o Use MixMax default random number generator.
+  o Removed obsloete class PhysListEmStandardSSM.
+  o PhysicsList: make Opt4 default, removed local instantiation of G4Decay.
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- extended/electromagnetic/TestEm6 (testem6-V10-04-01)
+- extended/electromagnetic/TestEm7 (testem7-V10-04-00)
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- extended/electromagnetic/TestEm8 (testem8-V10-04-03)
+  o Fix for thread safety in PrimaryGeneratorAction.
+  o Disabled tracking cuts in input macro TestEm8.in.
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- extended/electromagnetic/TestEm9 (testem9-V10-04-00)
+- extended/electromagnetic/TestEm10 (testem10-V10-04-00)
+- extended/electromagnetic/TestEm11 (testem11-V10-04-00)
+- extended/electromagnetic/TestEm12 (testem12-V10-04-00)
+- extended/electromagnetic/TestEm13 (testem13-V10-04-01)
+- extended/electromagnetic/TestEm14 (testem14-V10-04-01)
+- extended/electromagnetic/TestEm15 (testem15-V10-04-00)
+- extended/electromagnetic/TestEm16 (testem16-V10-04-00)
+- extended/electromagnetic/TestEm17 (testem17-V10-04-00)
+- extended/electromagnetic/TestEm18 (testem18-V10-04-01)
+- extended/eventgenerator/exgps (exgps-V10-04-00)
+- extended/eventgenerator/particleGun (particleGunExample-V10-04-00)
+- extended/eventgenerator/userPrimaryGenerator (userPrimaryGenerator-V10-04-00)
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- extended/exoticphysics/monopole (monopole-V10-04-00)
+  o Changed G4MonopoleEquation to use G4MagneticField instead of
+    not use G4ElectroMagneticField, as equations of motion do not use electric
+    field.
+- extended/exoticphysics/phonon (phononExample-V10-04-00)
+  o Update references for caustic and timing.
+- extended/geometry/transforms (exTransforms-V10-04-00)
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- extended/hadronic/Hadr00 (exhadr00-V10-04-02)
+  o DetectorConstruction: cleanup geometry.
+  o Use FTFP_BERT as default physics-list.
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- extended/hadronic/Hadr01 (exhadr01-V10-04-02)
+  o Cleaned up geometry definition.
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- extended/hadronic/Hadr02 (exhadr02-V10-04-00)
+- extended/hadronic/Hadr03 (exhadr03-V10-04-01)
+- extended/hadronic/Hadr04 (exhadr04-V10-04-01)
+- extended/hadronic/Hadr06 (exhadr06-V10-04-00)
+- extended/hadronic/Hadr07 (exhadr07-V10-04-000
+- extended/hadronic/NeutronSource (NeutronSource-V10-04-00)
+- extended/medical/electronScattering (electronScattering-V10-04-00)
+- extended/medical/electronScattering2 (exampleES2-V10-04-01)
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.
+- extended/medical/fanoCavity (fano-V10-04-01)
+  o ActionInitialization: added printout of Run::EndOfRun().
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.  
+- extended/medical/fanoCavity2 (fano2-V10-04-00)
+- extended/medical/GammaTherapy (gtherapy-V10-04-00)
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.  
+- extended/optical/LXe (LXe-V10-04-00)                                       (o)
+  o Fixed header guard. Addressing problem report #2041.
+- extended/radioactivedecay/Activation (activation-V10-04-00)
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-04-00)
+- extended/radioactivedecay/rdecay02 (rdecay02-V10-04-00)
+  o Updated vis/UI setup. Removed no longer needed G4VIS/UI_USE.  
+- extended/runAndEvent/RE02 (exampleRE02-V10-04-00)                          (o)
+  o Modified to reduce verbosity in output.
+
+tests                                            tests-V10-04-03
+-----
+- Updated reference outputs and tools.
+- tests/test41 (test41-V10-04-00)
+- tests/test44 (test44-V10-04-00)
+  o Fixed analysis scripts.
+

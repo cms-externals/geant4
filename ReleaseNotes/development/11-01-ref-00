@@ -1,0 +1,460 @@
+
+                       geant4-11-01-ref-00
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Revised G4FieldManager to ensure that epsilon_min/_max parameters are
+   less than a 'maximum accepted' accuracy to ensure robust behaviour of the
+   integration.
+ o Introduced G4BorisScheme and G4BorisDriver, a 2nd order symplectic
+   integration method.
+ o In G4UrbanMscModel, removed computation and use of rangecut for step
+   limitation, providing some CPU speedup.
+ o Fixed EM stopping power parameterisation below lowest energy point.
+ o Extended nuclear elastic and inelastic physics to support light hypernuclei
+   and anti-hypernuclei projectiles. Implemented extension of the FTF model to
+   deal with the annihilation of light anti-hypernuclei.
+ o Introduced de-excitation of fragments with lambda inside; extended upper
+   limit of atomic de-excitation from Z=100 to Z=104.
+ o Implemented new process for tau-neutrino hadronic inelastic physics.
+ o Removed Geant4Py from toolkit build, support moved to upstream repository.
+ o Updated CLHEP minimum version to 2.4.6.0 and VecGeom to version 1.2.0.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.0.4
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-00-50
+-----
+- Support for Qt5  only enabled. Retaining the other support structures for
+  Qt6 to enable quick updates later.
+- Removed Geant4Py from toolkit build, pointing users to upstream repository
+  when setting GEANT4_USE_PYTHON in CMake configuration.
+- Keep file timestamps from unpacked data libraries in CMake 3.24 and newer.
+- Fix issue in Qt3D activation as reported on the USers Forum.
+- Set CLHEP minimum version to 2.4.6.0 and VecGeom 1.2.0.
+
+config                                           config-V11-00-12
+------
+- Corrected buffer size in liblist.c tool.
+- Silence ld warnings in Darwin setups.
+
+environments                                     envs-V11-00-01
+------------
+- Removed g4py and zmq builtin environments.
+  The source and support for these has moved to GitHub under:
+  o [Geant4Py](https://github.com/koichi-murakami/g4python)
+  o [ZMQ](https://github.com/koichi-murakami/zmq-geant4)
+
+analysis                                         analysis-V11-00-27
+--------
+- Implemented analysis manager list command "/analysis/ntuple/list".
+- Added a protection against nullptr in G4VAnalysisManager::GetNofNtuples()  (o)
+  Addressing problem report #2518.
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+- Fixed reported Coverity defects.
+
+digits_hits                                      digits_hits-V11-00-04
+-----------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+- utils (detutil-V11-00-06)
+  o Added support for ntuple merging in G4TScoreNtupleWriter; it can be
+    activated with G4TScoreNtupleWriter::SetNtupleMerging().
+
+error_propagation                                error-propagation-V11-00-02
+-----------------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+event                                            event-V11-00-07
+-----
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+externals                                        externals-V11-00-05
+---------
+- clhep (clhep-V11-00-08)
+  o Synchronised with CLHEP-2.4.6.2.
+  o Fixed inconsistencies in evaluator internal set of units.
+  o Add <cstdint> header where uint32_t and uint64_t are used.
+- g4tools (g4tools-V11-00-12)
+- ptl (ptl-V11-00-05)
+  o Fixed compilation warnings for implicit type conversions
+    on macOS/XCode 14.1.
+
+g3tog4                                           g3tog4-V11-00-04
+------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+geometry                                         geometry-V11-00-02
+--------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+- magneticfield (field-V11-00-05)
+  o Revised G4FieldManager to ensure that epsilon_min/_max parameters are
+    less than a 'maximum accepted' accuracy (now=0.02) to ensure robust
+    behaviour of the integration. Improved their modifiers, adding warnings
+    if min > max, with corrective behaviour, and a fatal exception in case
+    of values outside the accepted range.
+    To cope with needs of legacy applications or existing needs for
+    performance, the value of the 'ceiling' maximum accepted accuracy can be
+    modified using the new static method 
+       G4FieldManager::SetMaxAcceptedEpsilon(maxAccept, softFail)
+    but must remain under or equal to a final ceiling currently of
+    fMaxFinalEpsilon=0.03.
+  o Introduced G4BorisScheme and G4BorisDriver, a 2nd order symplectic
+    integration method, created as part of GSoC 2022.
+- navigation (geomnav-V11-00-09)
+  o Improved diagnostic message in G4MultiLevelLocator, now printing the
+    stored information on trial integration steps in one error case.
+    Refresh candidate intersection point when needed.
+
+global                                           global-V11-00-33
+------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+- Updated date and tag-ID for geant4-11-01-ref-00.
+
+graphics_reps                                    greps-V11-00-16
+-------------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+intercoms                                        intercoms-V11-00-06
+---------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+interfaces                                       interfaces-V11-00-10
+----------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+materials                                        materials-V11-00-19
+---------
+- G4NistMaterialBuilder: fixed bio-medical material descriptions for
+  G4_ADENINE, G4_GUANINE, G4_CYTOSINE, G4_THYMINE, G4_DEOXYRIBOSE, and
+  added G4_PHOSPHORIC_ACID.
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+parameterisations/gflash                         gflash-V11-00-03
+------------------------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+particles                                        particles-V11-00-15
+---------
+- G4Triton, G4AntiTriton: corrected the lifetime value for triton and        (o)
+  anti_triton: the half-life (12.32 years) was incorrectly used instead of
+  the mean lifetime (17.774 years) for triton, whereas the anti_triton was
+  incorrectly treated as stable.
+- G4HyperNucleiProperties: optimization improvement and minor clean-up.
+- Replaced reinterpret_cast with static_cast where possible.
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1
+  in G4IonTable.
+
+persistency                                      persistency-V11-00-03
+-----------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+physics_lists                                    physics-lists-V11-00-02
+-------------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+- constructors/decay (phys-ctor-decay-V11-00-03)
+  o Added calls to G4EmBuilder and G4PhysListUtil in order to prevent from
+    warnings on hyper-nuclei decays in the case of simplified custom Physics
+    List.
+- constructors/electromagnetic (phys-ctor-em-V11-00-35)
+  o G4EmBuilder: added G4Lamda, G4AntiLambda and G4PionZero to the minimal EM
+    particle list to avoid warnings issued due to new hypernuclei.
+    Added e- and mu- neutrino and anti-neutrino.
+  o In G4EmBuilder, added minimal list of EM standard particles to all DNA
+    physics variants, to allow enabling of radioactive decay; provides correct
+    printout of EM processes and models. Addressing problem report #2412.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V11-00-07)
+  o G4EmExtraPhysics: updated tau-neutrino nucleus processes.
+- constructors/hadron_elastic (phys-ctor-helastic-V11-00-03)
+  o G4HadronElasticPhysics: extended nuclear elastic for light hypernuclei
+    and anti-hypernuclei projectiles.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V11-00-02)
+  o G4HadronPhysicsFTFP_BERT, G4HadronPhysicsINCLXX: extension to inelastic
+    nuclear interactions of light hypernuclei (with either FTFP only or 
+    FTFP+INCLXX) and anti-hypernuclei (with only FTFP for all energies).
+    Notice that the QGSP string model cannot currently handle nuclear 
+    projectiles of any kind.
+
+processes/biasing                                procbiasing-V11-00-01
+-----------------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+processes/cuts                                   proccuts-V11-00-06
+--------------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+processes/electromagnetic                        em-V11-00-03
+-------------------------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+- dna (emdna-V11-00-39)
+  o G4DNARuddIonisationExtendedModel: fixed common work between DNA physics and
+    radioactive decay module; modification of the model scaling. Relation to
+    the carbon ion is used for any ion, which has no data; low-energy limit is
+    used now more correctly; all ions are stopped but not killed, as they may
+    have radioactive decay at rest.
+  o G4DNAUeharaScreenedRutherfordElasticModel: code cleanup; introduced 
+    low and high energy limit for the model; removed misleading G4Exception.
+  o Fixed reported Coverity defects.
+- lowenergy (emlowen-V11-00-16)
+  o G4MicroElecElasticModel, G4MicroElecInelasticModel: fixed Coverity report.
+- standard (emstand-V11-00-21)
+  o G4UrbanMscModel: removed computation and use of rangecut for step
+    limitation; this change affects only EM option3 physics making results
+    more close to option4 and providing some CPU speedup.
+  o Fixed stopping power parameterisation below lowest energy point; apply
+    unit factor to material vector and not to data inside each element vector.
+    Implemented data tables for materials and not material-cut-couples;
+    provided non-zero dEdx for ions with Z > 80.
+    Included debug printouts protected by verbosity.
+  o G4LindhardSorensenIonModel: fixed CorrectionAlongStep() computations
+    at low energy.
+- xrays (xrays-V11-00-07)
+  o G4VXTRenergyLoss: fixed bug in the angle range for fMaxThetaTR.
+
+processes/hadronic                               hadr-V11-00-02
+------------------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+- cross_sections (hadr-cross-V11-00-15)
+  o G4TauNeutrinoNucleusTotXsc: new cross-section for tau-neutrinos, based on
+    energy scaled nu_mu XS.
+- management (hadr-man-V11-00-08)
+  o G4HadronicProcessStore: extended Dump() method for hyper-triton and 
+    anti_hyper-triton.
+- models/binary_cascade (had-binary-V11-00-04)
+  o G4GeneratorPrecompoundInterface: in PropagateNuclNucl() method, in the
+    case of anti-nucleus projectile, convert also lambdas into anti-lambdas
+    after the de-excitation (which assumes a projectile nucleus).
+- models/cascade (hadr-casc-V11-00-05)
+  o G4NumIntTwoBodyAngDst: corrected incomplete initialization of a vector.  (o)
+    Addressing problem report #2515.
+  o G4TwoBodyAngularDist: corrected the charge exchange reaction of pion+    (o)
+    on neutron producing in the final state pion0 and proton.
+    Addressing problem report #2516.
+- models/de_excitation (hadr-deex-V11-00-21)
+  o G4ExcitationHandler: introduced de-excitation of fragments with lambda
+    inside. Added protections that prevents potential crashes and large energy
+    non-conservations in  case of hypernuclei and anti-hypernuclei projectiles. 
+    Added extra sanity check for negative value of lambda inside a fragment.
+    Note: there are still cases of off-shell masses and few GeV energy
+    non-conservations that need further investigation.
+  o G4AtomicTransition: extended upper limit of atomic de-excitation 
+    from Z=100 to Z=104.
+  o G4FermiCoulombBarrier: new class for Coulomb barrier according to
+    prescription. Updarted G4FermiDecayProbability and G4FermiFragment
+    accordingly.
+  o G4VCoulombBarrier, G4CoulombBarrier, G4GEMCoulombBarrier: code cleanup.
+- models/inclxx (hadr-inclxx-V11-00-08)
+  o G4INCLXXInterface: introduced a protection against unphysical nuclear
+    remnants (i.e. unbound systems) and, if this is the case, resample the
+    collision.
+- models/lepto_nuclear (hadr-lepnuc-V11-00-05)
+  o G4(A)NuTauMucleusNc(Cc)Models: new models for tau and anti-tau
+    neutrino-nucleus final states.
+- models/parton_string/diffraction (hadr-string-diff-V11-00-12)
+  o G4FTFModel: implemented extension of the model to deal with the
+    annihilation of light anti-hypernuclei.
+    In methods AdjustNucleonsAlgorithm_beforeSampling() and
+    ComputeNucleusProperties(), check if the residual is a single nucleon
+    (or lambda) or a pair of nucleons (or lambdas); also use the absolute
+    value of the nuclear residual charge, to take into account the case of
+    anti-nuclei projectiles.
+  o G4FTFAnnihilation: reorganization of Create2QuarkAntiQuarkStrings() and
+    Create3QuarkAntiQuarkStrings() methods, in order to better handle
+    unphysical configurations that need to be rejected.
+    The algorithm has been also optimised by changing the order of the
+    sampling: light-cone variables are sampled first, then transverse momenta.
+    The positions of quark and anti-quark in strings have been corrected: this
+    is expected to improve the kinematical properties of the produced hadrons.
+  o G4DiffractiveSplitableHadron: fixed rare large energy violations seen    (o)
+    with FTF when dealing with charm and bottom hadron nuclear interactions.
+- models/parton_string/management (hadr-partonstring-mgt-V11-00-03)
+  o G4VPartonStringModel: added debugging information on the number of lambdas
+    for residual projectile hypernuclei.
+- models/pre_equilibrium (hadr-pre-V11-00-02)
+  o G4PreCompoundModel: for case of a hyper-nucleus do not preform pre-compound
+    emission but only equilibrium emission.
+- models/radioactive_decay (radioactive_decay-V11-00-10)
+  o G4ECDecay, G4ITDecay: extended upper limit of atomic de-excitation 
+    from Z=100 to Z=104.
+  o G4RadioactiveDecay: added printout of the flag of atomic relaxation.
+- models/theo_high_energy (had-theo-HE-V11-00-02)
+  o G4TheoFSGenerator: simplified treatment for low-energy inelastic nuclear
+    reactions of light hypernuclei (because Bertini and Binary intra-nuclear 
+    cascade models are not applicable for these projectiles).
+    Note that for light anti-hypernuclei, FTF works fine down to zero 
+    kinetic energy.
+- processes (hadr-proc-V11-00-11)
+  o G4TauNeutrinoNucleusProcess: new process for tau-neutrino hadronic
+    inelastic physics. 
+
+processes/management                             procman-V11-00-06
+--------------------
+- G4VRestDiscreteProcess, G4VRestProcess, G4VRestContinuesDiscreteProcess:
+  added protection against arithmetic operations with DBL_MAX.
+  Addressing problem report #2452.
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+processes/optical                                op-V11-00-08
+-----------------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+processes/parameterisation                       param-V11-00-04
+--------------------------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+processes/transportation                         transport-V11-00-10
+------------------------
+- New class G4TransportationParameters to hold looper parameters & others.
+  This class has to be created in master to hold the values of all looper 
+  parameters for G4Transportation and derived classes.
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+readout                                          readout-V11-00-02
+-------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+run                                              run-V11-00-11
+---
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+track                                            track-V11-00-11
+-----
+- G4ParticleChangeForMSC: fixed crash in "/tracking/verbose 6".
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+tracking                                         tracking-V11-00-09
+--------
+- G4SteppingManager: removed G4Exception with JustWarning severity for the case
+  of no active at rest processes existing. Addressing problem report #2493.
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+
+visualization                                    vis-V11-00-04
+-------------
+- Fixed compilation warnings for implicit type conversions on macOS/XCode 14.1.
+- management (visman-V11-00-31):
+  o Introduced G4warn (temporarly the same as G4cout) as new output stream
+    for visualization code, and used in place of G4cerr.
+  o Changed G4cout to G4warn in those cases where `verbosity >= warnings`.
+  o Implemented G4VisManager::DrawGeometry(), drawing a geometry tree starting
+    at the specified physical volume.
+- modeling (modeling-V11-00-14):
+  o Introduced G4warn (temporarly the same as G4cout).
+- OpenGL (opengl-V11-00-21)
+  o In CMake script, reverted link support for Qt6 until code is ready.
+- OpenInventor (openinventor-V11-00-18)
+- Qt3D (visQt3D-V11-00-12)
+- RayTracer (raytracer-V11-00-06)
+- Tree (vistree-V11-00-02)
+  o Introduced G4warn (temporarly the same as G4cout).
+- Vtk (visVtk-V11-00-07)
+  o Replaced reinterpret_cast with static_cast where possible.
+
+examples                                         examples-V11-01-00
+--------
+- Updated documentation and reference outputs.
+- advanced/CaTS (CaTS-V11-00-02)
+  o Fixed compilation warnings on latest gcc compilers.
+- advanced/eFLASH_radiotherapy (eFLASH_radiotherapy-V11-00-00)
+  o New application simulating the beamline and energy spectra based on the
+    Triode Electron Gun Equipped ElectronFlash Manufactured by Sordina Iort
+    Technologies S.p.A. available at the Centro Pisano Flash Radiotherapy (CPFR)
+    at Pisa. The linac is able to provide low-energy electron flash beams and
+    is currently the first machine installed in Italy capable of reaching
+    FLASH dose-rate (MGy/s) and extremely high dose per pulse DPP).
+- advanced/eRosita (eRosita-V11-00-03)
+  o Migrated to use C++17 Standard. General code refactoring.
+  o Removed obsolete physics classes.
+  o Updated physics-list with Livermore and Penelope models.
+- advanced/gammaray_telescope (gammaraytel-V11-00-01)
+  o Migrated to use C++17 Standard. General code refactoring.
+- advanced/radioprotection (radioprotection-V11-00-02)
+  o Added diamondTelescope detector. Messengers modified accordingly.
+  o Added python scripts to analyze the spectra files and calculate
+    microdosimetric Quantities.
+- basic/B3 (exampleB3-V11-00-02)
+  o Activated merging of n-tuples with score n-tuple writer.
+  o Added commented setting in run2.mac.
+- basic/B4 (exampleB4-V11-00-02)
+  o Activated merging of n-tuples with score n-tuple writer in B4d.
+- extended/analysis (analysisExample-V11-00-04)
+  o Use G4Accummulables for RunAction summary data in AnaEx01 and AnaEx02
+    to get them merged in MT mode.
+  o Reordered runs in test macro (run the test run first to get meaningful
+    output at the end).
+- extended/common (excommon-V11-00-02)
+  o Applied new coding guidelines and added tests.
+- extended/electromagnetic/TestEm1 (testem1-V11-00-04)
+  o In PhysicsList::AddRadioactiveDecay(), enable atomic de-excitation.
+    Addressing problem report #2494.
+- extended/errorpropagation/errProp (exerrprop-V11-00-02)
+  o Moved original example in new sub-directory and renamed executable.
+- extended/eventgenerator/pythia/decayer6 (p6decayer-V11-00-02)
+  o Updated common directory.
+  o Fixed P6DExtDecayerPhysics compilation.
+- extended/exoticphysics/channeling (channelingExample-V11-00-01)
+  o Use single-scattering EM physics instead of Opt4 and disabled Coulomb
+    scattering.
+- extended/exoticphysics/ucn (ExUCN-V11-00-02)
+  o Corrected value of epsMax, to 0.001 in DetectorConstruction.
+    Also fixed epsMin to be dimensionless.
+- extended/field/field01 (fieldex01-V11-00-03)
+  o Added Boris integration method as an option.
+  o In main(), demonstrating how to use G4TransporationParameters to set
+    looper values for transportation.
+  o F01FieldSetup: show how to control Epsilon Min/Max.
+- extended/field/field04 (fieldex04-V11-00-03)
+- extended/field/field05 (fieldex05-V11-00-01)
+  o Corrected value of epsMax, to 0.001 n DetectorConstruction.
+    Also fixed epsMin to be dimensionless.
+- extended/g3tog4 (g3tog4Tests-V11-00-02)
+  o Updated common directory.
+- extended/hadronic/Hadr01 (exhadr01-V11-00-01)
+  o Added UI commands to enable b- and c- particle physics and hyper-nuclei
+    physics; added macro files to demonstrate this.
+- extended/hadronic/Hadr03 (exhadr03-V11-00-02)
+  o PhysicsList: use G4NuclideTable::SetMeanLifeThreshold(1ns);
+    use QBBC as the default configuration.
+  o In Run, added protection for the case when G4NeutronGeneralProcess is
+    used; in that case it is not currently possible to access cross-section
+    via G4HadronicProcessStore. Addressing problem report #2517.
+  o Use default MixMax engine in main().
+- extended/hadronic/Hadr09 (exhadr09-V11-00-01)
+  o Extended to exercise hypernuclei and anti-hypernuclei.
+- extended/medical/dna/dnaphysics (dnaphysics-V11-00-03)
+  o Added UI command to add different standard EM, DNA physics, and 
+    radioactive decay models.
+  o PhysicsList: added possibility to change DNA physics via UI commands.
+- extended/medical/dna/icsd (exicsd-V11-00-01)
+  o PhysicsList: make use of nitrogen material.
+  o Geometry: propose two geometries, nanodosimeter (N2) and dna (THF).
+- extended/medical/dna/moleculardna (molecularDNA-V11-00-11)
+  o Correction in ecoli.mac input macro.
+- extended/parallel/MPI (MPI-V11-00-03)
+  o Updated analysis classes for changes in analysis module.
+  o Fixed exMPI04 example failing in sequential mode when MPI n-tuple merging
+    is activated.
+- extended/parameterisations/Par04 (expar04-V11-00-05)
+  o Added updated version of the training code (PEP 8 style guide, formatting
+    with YAPF, annotation with types, code upgrade to TF2.9, logic for GPU
+    usage management).
+  o Added support of LibTorch for inference.
+- extended/radioactivedecay/rdecay01 (rdecay01-V11-00-05)
+  o PhysicsList: moved setup of options to the class constructor; use minimal
+    list of particles defined in G4EmBuilder; added extended comments to the
+    code; updated headers according to C++11.
+    Adjusted meanLifeTime and halfLifeTime.
+  o Use default MixMax engine in main().
+
+tests                                            tests-V11-01-00
+-----
+- Updated reference outputs and tools.
+- tests/test22 (test22-V11-00-02)
+  o Fixed normalization for channel-type of tests, using the inelastic
+    cross-section instead of the total cross-section.
+- tests/test69 (test69-V11-00-01)
+  o Migrated main() to use G4RunManagerFactory.
+  o In Tst69RunAction, Tst69INCLXXTallyAnalysis, updated Open() and Close()
+    methods. Removed obsolete analysis class.
