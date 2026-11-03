@@ -1,0 +1,29 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_sg_ifield_factory
+#define tools_sg_ifield_factory
+
+#include <string>
+
+namespace tools
+{
+namespace sg
+{
+class field;
+
+class ifield_factory
+{
+  public:
+
+    virtual ~ifield_factory() {}
+
+  public:
+
+    virtual field* create(const std::string&) const = 0;
+};
+
+}  // namespace sg
+}  // namespace tools
+
+#endif

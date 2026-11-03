@@ -1,0 +1,23 @@
+
+To generate Doxygen documentation for all examples:
+
+1) Check in Doxyfile_standalone the value of
+   STRIP_FROM_PATH variable and adjust it if needed
+   
+2) Download geant4.tag file from:
+   http://www-geant4.kek.jp/Reference/10.01/geant4.tag  
+   and update the version number in TAGFILES value 
+   in Doxyfile_standalone
+
+3) Generate global documentation:
+   doxygen >& doxygen.out
+   
+4) Generate per-example documentation
+   python3 ./generate_standalone.py
+      
+To extract coding guildelines violations from Doxygen output
+(requires using patched Doxygen):
+
+   cat doxygen*.out | grep "### Geant4 guidelines violation: data member" >> data_members_violations.txt
+   cat doxygen*.out | grep "### Geant4 guidelines violation: function member" >> function_members_violations.txt
+

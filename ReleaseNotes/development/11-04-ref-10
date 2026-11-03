@@ -1,0 +1,586 @@
+
+                       geant4-11-04-ref-10
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Keep G4cout and G4cerr file destinations independent in G4MTcoutDestination,
+   preserving the other stream's files when replacing or restoring a destination.
+   Preserve file redirection when buffering is requested.
+ o Added explicit field integration driver selection through G4FieldParameters
+   and dedicated UI command.
+ o In G4VoxelNavigation and G4VoxelSafety, use AffineTransform's
+   InverseTransformPoint() instead of calling Inverse() and then
+   TransformPoint(), avoiding extra work.
+ o In G4Transportation, offer the end-point isotropic safety to
+   G4PropagatorInField via a new method UpdateSafety(..), when transport and
+   propagator use the same navigator. This avoids recomputing the end-point
+   safety at every step when steps are short.
+ o Sanity fixes and optiminisations to CSG and specific solids.
+ o Added optional high-precision GDML export.
+ o In G4MaterialPropertiesTable, replaced linear property-name searches with
+   with binary searches over sorted index vectors, avoiding duplicate strings
+   and per-entry allocations.
+ o Build cross-section tables for multiple-scattering models on master thread
+   for G4TransportationWithMsc.
+ o Extension of INCLXX for in-flight antideuteron interactions.
+ o Corrected the acceptance-rejection algorithm for generating the polar
+   angle in Bertini Cascade.
+ o Fixed wrong sampling of target isotope in neutron capture reactions in
+   G4NeutronHPCaptureData.
+ o Removes obsolete "phonon" module and extended example, processes are now
+   integral part of the G4CMP package.
+ o Code review and sanity fixes to electromagnetic extended examples.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-04-09
+-----
+- Include optional dependency include paths and linker flags in build-tree and
+  installed geant4-config scripts, including Xerces-C for GDML support.
+  Keep GUI dependencies separate for --without-gui queries and order external
+  libraries after the Geant4 libraries that use them.
+  Correct Qt6 OpenGLWidgets flags and include VTK libraries and visualization
+  definitions, retaining macOS framework support.
+  Addressing problem report #2496.
+- Preserve resolved library paths, including versioned libraries, and select
+  Windows import libraries instead of DLLs, respecting configuration mappings.
+- Detect VecGeom exit-normal API support when configuring VecGeom wrappers,
+  retaining the existing minimum dependency version and older-adapter
+  compatibility.
+
+analysis                                         analysis-V11-04-09
+--------
+- In G4THnMessenger, define UI alias to the id of newly created histogram.
+  Alias name is the histogram name.
+- Fixed redundant n-tuple locking and analysis file error handling.
+  Use std::defer_lock in G4RootPNtupleManager::AddNtupleRow() and Merge()
+  to avoid unnecessary mutex acquisition and release before g4tools performs
+  its own locking. Addressing problem report #2789.
+  Return nullptr on Root and HDF5 file creation failures so callers correctly
+  detect failure instead of accepting invalid file tuples.
+  Release HDF5 resources on initialization failures, invalidate groups when
+  attribute writing fails, and propagate file/group close errors while
+  attempting all close operations.
+
+digits_hits/scorer                               detscorer-V11-04-00
+------------------
+- Calculate parameterised dose-scoring volumes on a cloned solid to preserve
+  navigation geometry. Fixes alternating-bin energy deposits with coupled
+  transportation and dose scoring. Addressing problem report #2447.
+
+error_propagation                                error_propagation-V11-04-02
+-----------------
+- Fixed sign of (lambda, zPerp) multiple-scattering correlation in
+  G4ErrorFreeTrajState. Addressing problem report #2767.
+  Based on [GitHub PR#117](https://github.com/Geant4/geant4/pull/117).
+
+event                                            event-V11-04-05
+-----
+- G4PrimaryTransformer: added SetCheckPrimaryMass()/GetCheckPrimaryMass() to
+  enable or disable the primary mass check while preserving its tolerance
+  and exception severity. The check remains enabled by default.
+  In G4EvManMessenger, added "/event/checkPrimaryMass" UI command, available
+  in PreInit and Idle states and broadcast it to workers. Mention the command
+  in the mass warning and correct the reported exception origin.
+  Addressing problem report #2666.
+- G4SingleParticleSource: moved the position, momentum direction and energy
+  getters out of line to keep access to the particle-property cache inside
+  the event library, avoiding separate cache instances across Windows DLL
+  boundaries. Addressing problem report #2508.
+
+externals
+---------
+- g4tools (g4tools-V11-04-17)
+  o Fixed HDF5 Boolean scalar serialization in toolx/hdf5/T_tools.hh by
+    converting through an int buffer, preserving the existing file datatype.
+    Prevents reading uninitialised bytes beyond histogram axis flags, reported
+    by Valgrind in AnaEx01 example, and overwriting adjacent bytes when
+    reading them.
+
+geometry
+--------
+- magneticfield (field-V11-04-04)
+  o Added explicit field integration driver selection: added a driver type
+    to G4FieldParameters and exposed it through the "/field/driverType" UI
+    command.
+  o Support explicit selection of the integration, FSAL, and interpolation
+    drivers while retaining the existing stepper-based choice as the default.
+    Validate driver and stepper compatibility in G4FieldSetup.
+  o Fixed out-of-bounds accesses in G4BogackiShampine45 and G4TsitourasRK45
+    DistChord() for six integration variables by sizing buffers for the full
+    state and preserving the initial time for the auxiliary step.
+    Addressing problem report #2790.
+  o Fixed header guard in G4MonopoleEq.
+- management (geommng-V11-04-21)
+  o In G4Region, added static CollectRegions() function to collect the
+    regions below a logical volume, visiting each logical volume once, and
+    SetWorldPhysical(). BelongsTo() keeps its early exit and now visits each
+    logical volume once.
+  o Added out-of-line HasSubInstance() checks to G4LogicalVolume and G4Region
+    to keep splitter static-data accesses within the geometry library, avoiding
+    dllimport template-instantiation errors in Windows DLL builds.
+  o In G4ParameterisationChecker, removed printing if no action is taken.
+  o In G4LogicalCrystalVolume, replaced old and obsolete G4LatticePhysical
+    name string with G4LogicalCrystalVolume in a verbose message.
+  o In G4UAdapter use VecGeom exit-normal output when available, including
+    the supporting-plane flag, avoiding a separate normal query.
+    Retain compatibility with older VecGeom versions and the ordinary
+    distance-only path. Evaluate the fallback exit normal at a non-negative
+    distance for wrong-side points.
+    Return the VecGeom exit normal also for non-supporting exit planes, keeping
+    'validNorm' tied to the supporting-plane flag. Requires VecGeom to provide
+    requested normals for all finite exits.
+- navigation (geomnav-V11-04-13)
+  o In G4PropagatorInField, added UpdateSafety(position, safety), which lets
+    a caller offer an isotropic safety computed at 'position' (e.g. at the end
+    point of a step). It replaces the remembered safety only if it is larger
+    at that point, so that following chords inside it can skip the navigator.
+  o In G4VoxelNavigation and G4VoxelSafety, use AffineTransform's
+    InverseTransformPoint() instead of calling Inverse() and then
+    TransformPoint(), avoiding extra work.
+  o In G4AuxiliaryNavServices, added a method CheckTransformedPoint(), which
+    checks if the new way of applying transformation using
+    InverseTransformPoint() provides the same results as the old way.. 
+  o Removed unused G4MultiNavigator data member 'fMinSafety', fixes a
+    compilation warning on Clang compiler.
+- solids/CSG (geom-csg-V11-04-13)
+  o G4Cons: stabilise the positive quadratic root in DistanceToIn(p,v),
+    avoiding spurious zero-length entries from cancellation at stave
+    boundaries.
+  o In G4Trap, cache a separate outward-entry rejection tolerance, offset from
+    Inside's inner surface threshold by the local roundoff allowance. Prevents
+    rounded departures from being accepted again as zero-distance entries;
+    retain classification, inward entries and ordinary exits. Copy the new
+    cache. Resolves a zero-step cycle detected in CMS geometry.
+  o In G4Trd, refactored DistanceToIn(p,v) and DistanceToOut(p,v,n).
+- solids/specific (geom-specific-V11-04-26)
+  o G4TriangularFacet: corrected Intersect() edge tolerances to use physical
+    distances, fixing false inside classifications and overlap reports for
+    thin tessellated facets. Use signed edge-distance tests near boundaries
+    to avoid barycentric cancellation, with a conservative barycentric filter
+    for ordinary crossings and no additional per-facet storage. Fixing issue
+    reported in [GitHub PR #125](https://github.com/Geant4/geant4/pull/125)
+  o G4Polycone: use supporting half-planes for convex RZ classification, fixing
+    false phi-face entries and zero safeties for descending-Z profiles.
+    Cache slope-adjusted radial tolerances for correct normal-distance
+    classification on steep inner and outer conical faces; precompute
+    interpolation slopes to avoid per-query division and retain finite-edge
+    checks at Z joins. Resolves few cases of zero-step cycle detected in ATLAS
+    geometry.
+  o G4PolyconeSide: reject spurious step-plane crossings at radial endpoints,
+    preserving inward grazing exits and genuine adjoining-face crossings.
+    Reject non-crossing exits at reentrant RZ joins using the adjoining face
+    normal, including axial rays through step/cone corners.
+    Cache corner flags and endpoint limits, and check the hit direction before
+    corner tests to keep ordinary face hits fast.
+    Resolves few cases of zero-step cycle detected in ATLAS geometry.
+  o G4PolyhedraSide: reject non-crossing exits at reentrant RZ joins when
+    the ray enters the adjoining face's half-space. Cache corner flags and
+    reuse edge-normal bisectors; preserve genuine corner crossings and grazing
+    contacts. Fixes cases detected in CMS geometry. 
+  o G4Polyhedra: classify supporting side faces from the RZ profile to
+    correctly report valid exit normals, including for convex prisms.
+  o G4GenericTrap: reject outward surface re-entry in DistanceToIn(p,v), while
+    preserving later intersections with concave ray profiles on twisted faces.
+  o G4Ellipsoid: combine entry rejection checks to reduce branching.
+    Measured approximately 15% lower exact-entry time.
+  o G4Hype: simplify exit-surface tracking and defer output-normal construction.
+    Measured approximately 7% lower exact-exit time without/with normals.
+  o G4Tet: simplify candidate-face collection and skip normal bookkeeping for
+    distance-only exit queries; measured approximately 30% lower exact-exit
+    time.
+  o G4EllipticalTube: reduced entry-rejection branching and reordered slab
+    calculations; measured approximately 34% lower exact-entry time.
+  o G4EllipticalCone: combined exit-cap branches and avoid redundant cap checks;
+    measured approximately 11% lower exact-exit time without normals and 6%
+    with normals.
+  o G4ExtrudedSolid: cache supporting edges for valid exit normals in concave
+    right prisms; retain facet-based validity for multisection extrusions.
+- volumes (geomvol-V11-04-03)
+  o Fixed compilation warning for implicit type conversions on macOS/XCode
+    in G4PVReplica. Minor code formatting.
+
+global                                           global-V11-04-23
+------
+- Keep G4cout and G4cerr file destinations independent in G4MTcoutDestination,
+  preserving the other stream's files when replacing or restoring a destination.
+  Preserve file redirection when buffering is requested.
+  Honour G4cerr transformer filters to prevent errors entering G4cout files.
+  Addressing problem reports #2720 and #2736.
+- Updated date and tag-ID for geant4-11-04-ref-10.
+
+intercoms                                        intercoms-V11-04-03
+---------
+- Enabled /control/cout/setCoutFile and setCerrFile in sequential mode, using
+  the specified filenames and independent stream destinations. Restore screen
+  output to the current UI session with **Screen**.
+  Updated command guidance; retained worker-only file redirection in MT mode.
+  Addressing problem reports #2720 and #2736.
+
+interfaces                                       interfaces-V11-04-06
+----------
+- In G4UIQt, improved HelpTree rebuild conditions in FillHelpTree() to prevent 
+  items for closing when submitting a command.
+
+materials                                        materials-V11-04-08
+---------
+- In G4MaterialPropertiesTable, replaced linear property-name searches with
+  binary searches over sorted index vectors, avoiding duplicate strings and
+  per-entry allocations while preserving property indices and custom keys.
+  Avoid temporary G4String construction in const char* lookups.
+- Removed G4LatticeLogical and G4LatticePhysical obsolete classes, now
+  integral part of the G4CMP package.
+
+particles                                        particles-V11-04-09
+---------
+- Removed three obsolete G4Phonon* particle types classes, now integral part
+  of the G4CMP package.
+
+persistency
+-----------
+- ascii (ascii-V11-04-01)
+  o Added support for G4CutTubs.
+    Based on [GitHub PR#115](https://github.com/Geant4/geant4/pull/115).
+- gdml (gdml-V11-04-02)
+  o Added optional high-precision GDML export through SetHighPrecisionExport()
+    and /persistency/gdml/export_high_precision. Uses 18 significant digits
+    for geometry attributes and material property matrices, preserving
+    the historical output precision when disabled (the default).
+  o Preserve G4DisplacedSolid in volume traversal and export it through the
+    dedicated writer. Fixes inverted rotations on GDML round trips for
+    displaced solids used directly in logical volumes.
+
+physics_lists
+-------------
+- builders (phys-builders-V11-04-01)
+  o Extension of INCLXX for in-flight antideuteron interaction:
+    in BuildINCLXX(), INCLXX handles the antideuteron (pdg == -1000010020).
+- constructors/electromagnetic (phys-ctor-em-V11-04-12)
+  o Added JustWarning G4Exception to G4EmDNAPhysics::ConstructProcesses()
+    to discourage use of to-be-deprecated option0 class.
+
+processes/biasing/generic                        proc-biasgen-V11-04-01
+-------------------------
+- Fixed G4BiasingProcessInterface to preserve the parallel-world biasing
+  operator across scoring-mesh boundaries, preventing importance biasing
+  from being disabled. Addressing problem report #2620.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-04-15)
+  o Fixed header guard in G4DNACPA100LogLogInterpolation.
+- utils (emutils-V11-04-18)
+  o Build cross-section tables for multiple-scattering models on master thread
+    for G4TransportationWithMsc.
+  o G4EmTableUtil now takes the G4EmModelManager as an argument, such that it
+    is callable from the G4TransportationWithMsc as well. The shared helper is
+    now used in both G4VMultipleScattering and G4TransportationWithMsc.
+  o G4EmBiasingManager: skip null secondary entries in both
+    directional-splitting overloads, preventing crashes with Livermore
+    Compton atomic relaxation. Addressing problem report #2746.
+  o In G4LossTableManager, skip registered energy-loss processes with no
+    particle during table construction and verbose diagnostics. Custom
+    tracking managers may leave ordinary processes registered but unprepared.
+  o In G4EmParametersMessenger, fixed typo in parameter name.
+    Addressing problem report #2775.
+  o In G4VEmProcess, fixed possible read out of boundary.
+    Addressing problem report #2770.
+- xrays (xrays-V11-04-02)
+  o In G4Scintillation and G4QuasiScintillation, fixed crash on empty integrals
+    and fatal error on missing constants for components that are skipped.
+    Added a warning when scintillation components are empty.
+    Addressing problem report #2768.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-04-07)
+  o Make low-energy limit configurable in G4ElectroNuclearCrossSection while
+    preserving the original default value as 'sLowEnergyLimitDefault'.
+- models/binary_cascade (had-binary-V11-04-04)
+  o G4BinaryCascade: retain the original projectile-rest-frame momentum of
+    each incoming nucleon and transfer it to its outgoing spectator product.
+    Reset the metadata on each Propagate() call and preserve spectator
+    identification also when the target nucleus is destroyed.
+    Added GetProjectileSpectatorMomentum() function.
+  o In G4BinaryLightIonReaction, restore the sampled Fermi momentum when a
+    neutron-only or single-nucleon projectile remnant is emitted as free
+    spectators, addressing an unphysical forward neutron energy peak seen
+    for light-ion beams around 135 MeV/nucleon. Use on-shell free-nucleon
+    energies and Lorentz boosts, retain transport field kicks, and preserve
+    the original momentum correlations without recentering the spectator
+    subset. Balance the other products against the restored spectators
+    before appending them, avoiding a subsequent global spectator rescaling.
+    In EnergyAndMomentumCorrector(), on iterative nonconvergence, fall back
+    to a bracketed scalar solve using the original centre-of-mass momenta.
+    Regenerate impossible final states up to 20 times, returning the
+    unchanged primary if the attempts are exhausted.
+  o Addressing long-standing problem report #1446.
+- models/cascade (hadr-casc-V11-04-05)
+  o Corrected the acceptance-rejection algorithm for generating the polar
+    angle by uniformly sampling cos(theta) in (-1,1) for the 4-or-more body
+    final states.
+- models/de_excitation (hadr-deex-V11-04-12)
+  o G4DeexPrecoParameters: changed the default FermiBreakUp model, from
+    G4FermiBreakUpVI to G4FermiBreakUpAN.
+- models/im_r_matrix (had-im_r-V11-04-00)
+  o Fixed header guard in G4VCrossSectionComposite.
+- models/inclxx (hadr-inclxx-V11-04-04)
+  o Extension of INCLXX for in-flight antideuteron interactions.
+- models/lend (hadr-lend-V11-04-04)
+  o Removed unused data member 'm_userNeutronIndex' and its constructor
+    initializers, fixing a compilation warning on Clang compiler.
+- models/particle_hp (hadr-hpp-V11-04-09)
+  o G4NeutronHPCaptureData: fixed wrong sampling of target isotope in neutron
+    capture reactions. Before, the target isotope was selected based on the
+    natural composition of the element, without taking into account the
+    neutron capture isotope cross-section.
+    This fix affects all HP-based physics lists (except QGSP_BERT_HP in
+    versions G4 11.2, 11.3 and 11.4, because this physics list used
+    G4NeutronHPCaptureXS to select correctly the target isotope).
+    Addressing problem report #2782.
+    Based on [GitHub PR#119](https://github.com/Geant4/geant4/pull/119).
+- util (hadr-util-V11-04-04)
+  o G4KineticTrack: added a const GetNucleon() accessor so Binary Cascade can
+    associate an outgoing projectile spectator with its original nucleon
+    and recover the sampled Fermi momentum. The accessor does not change
+    the existing tracking-momentum prescription.
+
+processes/solidstate                             solidstate-V11-04-00
+-----------------
+- Removes obsolete "phonon" module, processes now integral part of the
+  G4CMP package.
+
+processes/transportation                         transport-V11-04-01
+------------------------
+- In G4Transportation, offer the end-point isotropic safety to
+  G4PropagatorInField via UpdateSafety(..) when transport and propagator
+  use the same navigator. This avoids recomputing the end-point safety
+  at every step when steps are short (e.g. with small step limits in a field).
+
+run                                              run-V11-04-22
+---
+- In G4WorkerThread, guard logical-volume and region split-data reads against
+  worker array capacity in UpdateGeometryAndPhysicsVectorFromMaster(),
+  preventing out-of-bounds reads during geometry rebuilds in MT and Tasking
+  modes while preserving existing worker associations.
+  Corrected the region manager null check. Addressing problem report #2791.
+- In G4MTRunManager and G4TaskRunManager, replaced G4Exception with simple
+  notification to G4cout, for notifying changes of event modulo.
+- In G4RunManagerKernel::CheckRegions(), collect the regions of each world
+  in one pass over the volume tree, instead of one tree search per region.
+
+visualization
+-------------
+- management (visman-V11-04-05)
+  o Introduced additional "/vis/set/...Colour" commands to address a recent
+    user request. This gives the user more control over the colour of items
+    added to the scene with "/vis/scene/add/" commands.
+  o Additional implementations for: arrow, date, eventID, frame, and line.
+  o Implemented a generic class G4VisCommandSetAColour, to facilitate for all
+    the above, and make it easier for future extensions.
+- VRML (VRML-V11-04-00)
+  o Removed unused data member 'fSystem' in G4VRML2FileSceneHandler and its
+    constructor initializer, fixing a compilation warning on Clang compiler.
+
+examples                                         examples-V11-04-10
+--------
+- Updated documentation and reference outputs.
+- Applied clang-format to all examples code.
+- advanced/CaTS (CaTS-V11-04-03)
+  o Integration of Celeritas as an option to offload the transport of optical
+    photons.
+  o Added new class MakeCelerOptions  for user configuration of Celeritas.
+  o Hits produced by Celeritas are converted into G4Hits for further Geant4
+    processing, e.g. analysis and/or I/O.
+  o Added a simple, Root-based validation analysis binary.
+  o In RootIO source, use smart pointers for root file cleanup.
+  o Removed unnecessary code in main().
+- advanced/dna/moleculardna (molecularDNA-V11-04-10)
+  o Corrected World volume size in phage.mac.
+  o Corrected error estimation in analysis macros.
+- advanced/doiPET (doiPET-V11-04-00)
+  o In doiPETRun::FindInteractingCrystal(), use multimap::lower_bound()
+    instead of find() to start at the first interaction of a block; fixes
+    crash with recent libc++ on macOS.
+  o Clear per-block vectors when a block's deposit is zero.
+- advanced/eFLASH_radiotherapy (eFLASH_radiotherapy-V11-04-01)
+  o Added new geometry in Detector Construction.
+  o Added primitive scorer (multifunctional detector).
+  o Added messanger to activate/deactivate the calorimeter.
+  o Added new macro for sensitive detectors activation.
+- advanced/exp_microdosimetry (exp_microdosimetry-V11-04-01)
+  o Detector construction: added new geometry with array/matrix of silicon
+    microdosimeters.
+  o Sensitive detector: when the Silicon array is selected, each detector is
+    an independent sensitive detector with energy deposited scored (copyNo used
+    for identification).
+  o Detector messenger: added macro commands to set size, distance and number
+    of detector for Silicon array configuration.
+  o Water phantom set as default configuration in the macro file.
+- extended/biasing/B03 (B03-V11-04-00)
+  o Fixed importance sampling in MT mode by configuring the geometry sampler
+    and adding the importance process on both master and worker threads.
+  o Move importance-store initialization from main() to the parallel world's
+    ConstructSD() so each thread has a populated thread-local store.
+  o Addressing problem report #2522.
+- extended/electromagnetic/TestEm0 (testem0-V11-04-00)
+  o In RunAction, use the photon production cut for hadron Bremsstrahlung when
+    computing cross-sections and restricted stopping powers.
+  o In DetectorConstruction, calculate xenon gas density from its molar mass,
+    pressure and temperature using the ideal-gas law; document that the
+    high-pressure xenon material also uses the ideal-gas approximation.
+- extended/electromagnetic/TestEm1 (testem1-V11-04-00)
+  o In radioactive.mac, corrected sodium iodide material name.
+  o In TrackingAction, removed unused 'fPrimary' data member and associated
+    initialization after switching displacement calculations to the track's
+    actual vertex position.
+  o In PrimaryGeneratorAction, update the default front-face source position
+    after geometry size changes, preserving user-selected positions.
+  o In Run, report the projected-to-true range ratio as not applicable when
+    the true range is zero.
+- extended/electromagnetic/TestEm2 (testem2-V11-04-02)
+  o In Run, corrected interpolation of the 90% confinement radius, including
+    crossings in the first and last radial bins; avoid an out-of-bounds read.
+  o In DetectorConstruction, update dimensions and notify the run manager when
+    changing material, preserving bin sizes expressed in radiation lengths.
+  o In test.mac, replaced the obsolete UseSuperProcess command with
+    UseGeneralProcess.
+- extended/electromagnetic/TestEm3 (testem3-V11-04-05)
+  o In PrimaryGeneratorAction, refresh the default source position from the
+    constructed geometry, avoiding an out-of-world primary after
+    pre-initialization geometry changes in serial mode; preserve user-specified
+    gun positions.
+  o In SteppingAction and TrackingAction, apply statistical weights consistently
+    to energy flow and leakage, and use the pre-step weight for energy
+    deposition.
+  o In TrackingAction, score world-boundary leakage using weighted kinetic
+    energy only, including for escaping positrons.
+  o In Run, retain beam kinetic energy as the reference for the global
+    energy-balance residual; document expected nonzero residuals from rest-mass
+    conversion.
+  o In TrackingAction and SteppingAction, clarify that internal calorimeter
+    energy flow retains the positron annihilation contribution to reconstruct
+    deposited energy.
+  o Validated the build and escaping/contained positron cases in serial and MT
+    modes.
+- extended/electromagnetic/TestEm5 (testem5-V11-04-05)
+  o In DetectorConstruction, retain explicit world dimensions and notify the
+    run manager when changing solid dimensions.
+  o In PrimaryGeneratorAction, update the default source position after
+    geometry changes, preserving user-specified positions.
+  o In TrackingAction, EventAction and Run, include lateral world-boundary
+    leakage; score leakage using kinetic energy only, including for escaping
+    positrons. Retain beam kinetic energy as the energy-balance reference and
+    document expected nonzero residuals from rest-mass conversion. Accumulate
+    leakage per event before computing its uncertainty.
+    Normalize transmitted/reflected energy percentages to the primary energy,
+    with protection for zero energy.
+  o Fix in TrackingAction in order to have correct reflection counts.
+- extended/electromagnetic/TestEm6 (testem6-V11-04-00)
+  o In StepMax, honor the volume's G4UserLimits as well as the process step
+    limit, making /testem/tracking/stepMax effective for charged particles.
+- extended/electromagnetic/TestEm7 (testem7-V11-04-01)
+  o In SteppingAction, exclude energy deposited in the world from absorber
+    scoring.
+  o In DetectorConstruction, reject requests for unconstructed tallies after
+    initialization; update the material and mass of all existing tally volumes,
+    including tallies disabled for reporting.
+  o In G4ScreenedNuclearRecoil, use the element's isotope abundances when
+    available; invalidate cached cross-section and mean-free-path tables when
+    physics tables are rebuilt, avoiding a crash after selecting a newly
+    created material.
+  o In PhysListEmStandardNR, match the multiple-scattering activation thresholds
+    to the screened-recoil energy limit, accounting for light-ion total kinetic
+    energy and GenericIon proton-mass-scaled energy.
+- extended/electromagnetic/TestEm8 (testem8-V11-04-01)
+  o Keep beam metadata in worker-local Run objects and merge it into the master
+    run, avoiding concurrent writes to shared TestParameters.
+  o Open and notify geometry changes made between runs; use the current charged
+    step limit so that Idle-state updates take effect.
+  o Corrected the stepMax command spelling in the ALICE TPC and TRD macros.
+- extended/electromagnetic/TestEm9 (testem9-V11-04-01)
+  o Centre the vertex pads and size their mother from the actual pad count,
+    removing protrusions outside the mother volume.
+  o Assign distinct pad copy numbers and include the layer in vertex hit IDs.
+  o Preserve macro-defined acceptance parameters at run start; disable
+    acceptance by default and restore electron references after the muon run
+    in TestEm9.in.
+  o Weight deposited energy with the pre-step weight, as in G4PSEnergyDeposit.
+- extended/electromagnetic/TestEm10 (testem10-V11-04-00)
+  o Convert the 85/15 Xe/CO2 gas composition from mole to mass fractions.
+  o Account for histogram units when reporting the absorber mean energy and RMS.
+  o Restrict XTR model selection to PreInit and validate supported model names.
+  o Use the actual XTR region names when setting production cuts in the six
+    experimental-setup macros.
+  o Fix the dimensionless attenuation in the local XTR stack-interference
+    factor; plate and gas optical depths already include their thicknesses.
+- extended/electromagnetic/TestEm11 (testem11-V11-04-00)
+  o Initialize material and thickness defaults for every selectable absorber,
+    preventing invalid geometry when the absorber count is increased.
+  o Include zero-energy-deposit steps in primary and charged-secondary
+    step-size histograms.
+- extended/electromagnetic/TestEm12 (testem12-V11-04-01)
+  o Clear geometry stores and cached volume/solid pointers when reconstructing
+    the detector, preventing stale-pointer access after geometry
+    reinitialization.
+  o Open geometry and notify the run manager when scaling the sphere radii;
+    update the layer thickness as well.
+  o Include zero-energy-deposit steps in primary and charged-secondary
+    step-size histograms.
+- extended/electromagnetic/TestEm13 (testem13-V11-04-00)
+  o Apply material changes to the constructed logical volume as well as the
+    detector configuration before rebuilding physics tables.
+  o Compute the reference cross-section sum over all active EM processes,
+    including processes not sampled in the run.
+  o Disable Rayleigh scattering in the macros intended to isolate Compton
+    scattering, photoelectric absorption and pair conversion.
+- extended/electromagnetic/TestEm14 (testem14-V11-04-01)
+  o Apply material changes to the constructed logical volume before rebuilding
+    physics.
+  o Include every active EM process in the reference cross-section sum, even
+    when it was not sampled; do not estimate mean free path from an empty
+    sample.
+  o Disable Rayleigh scattering in the Compton and pair-conversion macros.
+- extended/electromagnetic/TestEm18 (testem18-V11-04-00)
+  o Reconstruct geometry after material and size changes so tracking and
+    physics calculations use the requested box and material.
+  o Finalise analysis files and clear run data on neutral-primary and empty-run
+    exit paths; skip stopping-power comparisons for charged geantinos and guard
+    zero-step samples and null step-defining processes; record zero-transfer
+    events in transfer minima and maxima.
+  o Account separately for positron/target-electron rest energy released in
+    primary annihilation, excluding it from primary kinetic-energy loss while
+    retaining physical secondary-energy records; updated histogram labels.
+- extended/eventgenerator/pythia/py8decayer (p8decayer-V11-04-00)
+  o Tested vs Pythia-8.3.18.
+- extended/exoticphysics (exExoticPhysics-V11-04-00)
+  o Removed obsolete 'phonon' example.
+- extended/geometry/vecGeomNavigation (VecGeomNavigation-V11-04-00)
+  o Use latest available version of VecGeom in CMake configuration.
+  o Stick to use Master branch for the G4VecGeomNav package.
+- extended/medical/dna (exdna-V11-04-01)
+  o Replaced G4EmDNAPhysics option2 with option4 as default (opt6 in 'spower').
+  o Removed usage of G4EmDNAPhysics (option0), replaced with option4.
+- extended/medical/dna/UHDR (UHDR-V11-04-02)
+  o Fixed coding-guidelines violations.
+- extended/parallel/MPI (MPI-V11-04-01)
+  o In G4MPImanager, beamOn thread function now has the pthread signature,
+    removing a function-type-mismatch cast warning.
+  o In exMPI02, exMPI03 and exMPI04, enlarged the world so that the beam
+    source at z = -125 cm is inside it.
+
+tests                                            tests-V11-04-10
+-----
+- Updated reference outputs and tools.
+- tests/ctests_integration/test69 (test69-V11-04-01)
+  o Extension of INCLXX for in-flight antideuteron interaction:
+    added new macros in test69: dbar_500MeV_Pb.in, dbar_10MeV_Pb.in.
+- tests/ctests_integration/test70 (test70-V11-04-01)
+  o Corrected G4MoleculeCounter time resolution to 0.1 ps.
+  o Clean the code and removed unused variables.
+- tests/ctests_integration/test73 (test73-V11-04-00)
+  o In xmacro.C, use snprintf instead of deprecated sprintf.

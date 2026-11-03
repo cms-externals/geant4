@@ -1,0 +1,90 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+// -------------------------------------------------------------------
+//
+// GEANT4 Class header file
+//
+//
+// File name:    G4NeutronCaptureXS
+//
+// Author  Ivantchenko, Geant4, 3-AUG-09
+//
+// Modifications:
+//  20.07.2026 - use inheritance from G4CrossSectionXS 
+//
+
+// Class Description:
+// This is a class for neutron radiative capture cross section based on
+// data files from G4PARTICLEXSDATA data set
+// Class Description - End
+
+#ifndef G4NEUTRONCAPTUREXS_HH
+#define G4NEUTRONCAPTUREXS_HH
+
+#include "G4CrossSectionXS.hh"
+
+#include <vector>
+
+class G4NeutronCaptureXS final : public G4CrossSectionXS
+{
+  public:
+
+    G4NeutronCaptureXS();
+
+    ~G4NeutronCaptureXS() override = default;
+
+    static const char* Default_Name() { return "G4NeutronCaptureXS"; }
+
+    const G4Isotope* SelectIsotope(const G4Element*, G4double ekin, G4double loge) final;
+
+    void BuildPhysicsTable(const G4ParticleDefinition&) final;
+
+    void CrossSectionDescription(std::ostream&) const final;
+
+    G4double ElementCrossSection(G4double ekin, G4double loge, G4int Z) final;
+
+    G4double IsoCrossSection(G4double ekin, G4double loge, G4int Z, G4int A) final;
+
+    G4NeutronCaptureXS& operator=(const G4NeutronCaptureXS& right) = delete;
+    G4NeutronCaptureXS(const G4NeutronCaptureXS&) = delete;
+
+  protected:
+
+    void Initialise(G4int Z) final;
+
+  private:
+
+    std::vector<G4double> temp;
+    G4String subDir{"/neutron/cap"};
+    G4String subDirR{"/neutron/Rcap"};
+
+    G4bool isInitializer{false};
+
+    static G4ElementData* data;
+    static G4ElementData* dataR;
+};
+
+#endif

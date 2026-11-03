@@ -1,0 +1,275 @@
+
+                       geant4-10-02-ref-03
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added ability to scale shapes' dimension in X, Y and Z.
+   Added possibility to import/export scaled shapes in GDML.
+ o Updated properties of particles according to PDG-2015.
+ o Fixed data-race in G4VDecayTable and use new API for G4VDecayChannel
+   in radioactive_decay. Resolving observed issues of event non-reproducibility.
+ o Updated data set G4RadioactiveDecay-4.4.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in release 10.2.p01
+(*)  Fixes included in release 10.2.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-02-08
+-----
+- Adding libXt to X11_LIBRARIES on all Unix platforms when using             (*)
+  Motif/Inventor. Addressing problem report #1828.
+- Updated to data set G4RadioactiveDecay-4.4.
+
+geometry
+--------
+- management (geommng-V10-02-00):
+  o Added G4ScaleTransform class for Cartesian scaling transformations.
+  o G4AffineTransform: added inline keywords and fixed formatting.           (*)
+  o In G4USolid, directly call GetEntityType() from wrapper classes for      (*)
+    CreatePolyhedron().
+- solids/Boolean (geom-bool-V10-02-01)
+  o Added new class G4ScaledSolid providing ability to scale dimensions of
+    a shape in X, Y or Z.
+- solids/CSG (geom-csg-V10-02-00)                                            (*)
+  o Added overloaded GetEntityType() method to USolids wrappers.
+- solids/specific (geom-specific-V10-02-06)
+  o Added 'const' qualifier for methods in G4ExtrudedSolid. Added CheckPolygon()
+    to remove collinear and coincident points from polygons.
+  o G4QuadrangularFacet: added exhaustive tests in constructor to catch
+    potential problems with a quadrangular facet: collinear vertices, non
+    planar surface, degenerate, concave or self intersecting quadrilateral.
+  o G4TriangularFacet: improved test in constructor to detect degenerate (too
+    small or too narrow) triangles.
+  o Fix in G4IntersectingCone for smaller precision constant in              (*)
+    LineHitsCone1() and LineHitsCone2(). Fixes issue observed in
+    G4GenericPolycone. Addressing problem report #1794.
+  o Added overloaded GetEntityType() method to USolids wrappers.             (*)
+
+global                                           global-V10-02-11
+------
+- Improved algorithm for G4RandomDirection.                                  (*)
+- Turn warnings to fatal exceptions in G4UnitsTable for non existing         (*)
+  units or categories in the table. Addressing problem report #1843.
+
+graphics_reps                                    greps-V10-02-00            (o*)
+-------------
+- Use "" instead of <> for internal header inclusion in
+  HepPolyhedronProcessor.h.
+
+materials                                        materials-V10-02-05
+---------
+- G4AtomicShells, G4SandiaTable: substituted asserts by G4Exception,
+  activated only if G4VERBOSE is set;
+- G4SandiaTable: cleanup of methods; removed unused methods, moved some
+  from public to private.
+
+particles                                        particles-V10-02-10
+---------
+- Fixed data-race in G4VDecayTable. Addressing problem report #1834.         (*)
+- Updated properties of particles according to PDG-2015.
+
+persistency/gdml                                 gdml-V10-02-04
+----------------
+- Added ability to import and export scaled shapes.
+  Extended GDML schema by adding "scaledSolid" tag supporting scaled shapes.
+  New GDML schema version 3.1.4 (files: gdml.xsd, gdml_solids.xsd).
+- G4GDMLWrite: increased max_chars in the transcode() calls.                 (*)
+  Addressing problem report #1847.
+- Added checks for correctness of imported units.                            (*)
+  Addressing problem report #1842.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-02-09)
+  o G4EmStandardPhysics_option3, option4: added process of e+e- pair creation
+    by e+ and e-; enabled lateral displacement for muons and hadrons.
+  o Updated G4EmDNAPhysics_option7 constructor.
+  o Added flag and command for whether or not to call InvokeSD() method
+    of G4OpBoundaryProcess.
+  o Fixed G4Exception message in G4OpticalPhysicsMessenger.
+  o Fixed Coverity defects.
+- lists (phys-lists-V10-02-03)
+  o FTFP_BERT_TRV: use GS multiple scattering with the most precise 
+    "error-free" stepping. This is done for the purpose of studying
+    the impact of multiple scattering on hadronic showers.
+
+processes/electromagnetic/dna                    emdna-V10-02-13
+-----------------------------
+- Updated fast computation of G4DNAScreenRutherfordElasticModel and
+  G4DNAUeharaScreenedRutherfordElasticModel.
+- Added possibility to extend applicability limit of
+  G4DNAUeharaScreenedRutherfordElasticModel.
+- Added nrj extensibility to SR and USR models.
+- Replaced usage of std::exp() by G4Exp().
+
+processes/electromagnetic/lowenergy              emlowen-V10-02-03           (*)
+-----------------------------------
+- Replaced usage of std::exp() by G4Exp().
+
+processes/electromagnetic/muons                  emmuons-V10-02-01
+-------------------------------
+- G4ePairProduction: new process e+e- pair production by e+-.
+- G4MuPairProduction, G4MuPairProductionModel: added c++11 keywords.
+
+processes/electromagnetic/polarisation           empolar-V10-02-02
+--------------------------------------
+- C++11 migrations: explicit, override, delete operators on function
+  declarations; remaining nullptr; write floats/doubles with '.
+
+processes/electromagnetic/standard               emstand-V10-02-13
+----------------------------------
+- G4UniversalFluctuation: fixed bug in Glandz part, Gaussian sampling.
+  The sampling is symmetrical around 'emean' now. Some code cleanup.
+- G4eSingleCoulombScatteringModel: fixed sampling of scattering angle.      (o*)
+  Addressing problem report #1823.
+- G4eSingleCoulombScatteringModel, G4ScreeningMottCrossSection: fixed        (*)
+  initialisation of classes allowing to use precomputed cross-sections.
+- G4GoudsmitSaundersonMscModel: fix to handle special case (when gun is on  (o*)
+  the boundary) in the step limitation.
+- G4alphaIonisation, G4hIonisation, G4ionIonisation: do not define
+  StepFunction in constructor.
+- G4ASTARStopping, G4PSTARStopping, G4NISTStoppingData, G4BraggModel: data
+  arrays become float, computation is left double.
+- G4BraggModel, G4BraggIonModel, G4BetheBlochModel: use float for local static
+  data; introduced C++11 keyword "delete".
+- G4UniversalFluctuations, G4BohrFluctuations,  G4IonFluctuations: added
+  c++11 keywords explicit, override, delete, final.
+
+processes/electromagnetic/utils                  emutils-V10-02-10
+-------------------------------
+- G4EmParameters, G4EmParametersMessenger: moved remaining parameters from
+  G4EmProcessOptions, which now becomes obsolete.
+- G4EmCalculator, G4LossTableBuilder, G4LossTableManager, G4VMscModel,
+  G4VEmModel, G4VEmProcess, G4VEnergyLossProcess: use only G4EmParameters
+  class interfaces for initialisation.
+- G4EmCalculator: added protection against zero cut value; use lowest        (*)
+  electron energy. Addressing problem report #1845.
+- G4NuclearFormfactorType: added new enumerator.
+
+processes/hadronic
+------------------
+- models/cascade (hadr-casc-V10-02-01)
+  o G4InuclCollider: re-instated getenv for photonuclearOkay() (withdraw
+    changes introduced in the previous tag).
+    This method causes significant performance degradation and the physics
+    needs to be improved before it can made default
+- models/de_excitation (hadr-deex-V10-02-09)
+  o G4PhotonEvaporation: fixed final energy in the case of X-level.          (*)
+  o G4ExcitationHandler: substituted usage of iterators by simple loop;      (*)
+    added exception for the case of infinite loop of evaporation.
+    Addressing problem report #1837.
+  o Added warning in G4ExcitationHandler for super excited fragments;
+    improved warning printout for the high energy excitation.
+  o G4LevelManager, G4NucLevel: substituted asserts by G4Exception.
+  o G4EvaporationChannel, G4EvaporationProbability: fixed kinematics
+    and added discrete excitation energy for the residual fragment
+    if the excitation is below maximum known level energy. 
+  o G4DeexParameters, G4NuclearLevelData: added new class for parameters. 
+  o G4NuclearLevelData: added extra methods allowing to access the maximum
+    level energy per isotope in level DB. Added method FindLevel() allowing
+    to find discrete level for any consumer model.
+  o G4EvaporationProbability: fixed bug in computation of probability 
+    density function; use new method FindLevel() in G4NuclearLevelData when
+    sampling kinetic energy of emitted particles; changed interface for
+    sampling method.
+  o G4EvaporationChannel: use new interface to the sampling of energy.
+- models/particle_hp (hadr-hpp-V10-02-08)                                    (*)
+  o Fixed Coverity defects.
+- models/pre_equilibrium (hadr-pre-V10-02-01)
+  o G4PreCompoundModel, G4PreCompoundParameters: changed non-equilibrium
+    condition to switch to de-excitation; this allows to perform
+     pre-equilibrium emission for light nuclei.
+- models/radioactive_decay (radioactive_decay-V10-02-04)
+  o New API for G4VDecayChannel class to avoid MT data-race.                 (*)
+    Fixes issues of observed event non-reproducibility in MT mode.
+  o Added production of gamma and electron spectra from de-excitation of
+    excited levels in the biased mode. Added new method in G4RadioactiveDecay,
+    AddDeexcitationSpectrumForBiasMode().
+- util (hadr-util-V10-02-01)                                                 (*)
+  o G4Nucleus: increased the max number of loops allowed in the method       (o)
+    GetBiasedThermalNucleus().
+  o Use new G4VDecayChannel API to avoid data-race in MT.
+
+processes/optical                                op-V10-02-01
+-----------------
+- Added flag for InvokeSD() method call in G4OpBoundaryProcess.
+
+tracking                                         tracking-V10-02-00          (*)
+--------
+- G4VTrajectory: added std::endl at end of ShowTrajectory().
+
+visualization
+-------------
+- management (visman-V10-02-06):
+  o Inhibited use of BeginRun, BeginEvent, EndEvent and EndRun
+    when vis is not enabled, for example after /vis/disable.
+    In particular this prevents the start of the vis thread in
+    multi-threading mode.
+  o G4VisCommandsSceneAdd: removed incorrect check on existing models in
+    command "/vis/scene/add/volume". It was preventing parallel worlds being
+    added individually.
+  o Fixed mistake in introductory vis manager message.
+- OpenInventor (openinventor-V10-02-00)
+  o G4OpenInventorXtExaminerViewer: designed new icons (XPM) for the
+    "Extended Pick Mode" and "Pick Reference Trajectory" buttons.
+  o Corrected delete statement in sortBookmarksCB() for                      (*)
+    G4OpenInventorXtExaminerViewer.
+  o Modified the mouse-over-trajectory output to make it more clear.
+  o Improved diagnostics for Bookmark file handling.
+  o New approach for determining distance along the reference path, using
+    element centers instead of bounding boxes. Solves problems with spurious
+    bounding box warnings and incorrect distance values.
+  o G4OpenInventorXtExtended & G4OpenInventorXtExtendedViewer: suppressed
+    some unwanted diagnostic output.
+  o Fixed Coverity defects.
+
+data sets:
+---------
+- New data set for radioactive-decay, G4RadioactiveDecay-4.4:
+  o Corrected packaging to be compressed. No changes to data.
+
+examples                                         examples-V10-02-03
+--------
+- Updated reference outputs.
+- advanced/air_shower (air_shower-V10-02-00)
+  o Replaced usage of std::log() by G4Log().
+- advanced/composite_calorimeter (ccal-V10-02-00)
+- advanced/microbeam (microbeam-V10-02-00)
+- advanced/nanobeam (nanobeam-V10-02-00)
+  o Replaced usage of std::exp() by G4Exp().
+- basic/B5 (exampleB5-V10-02-00)                                             (*)
+  o Fixed wrong determination of the copy number in replicas.
+- extended/electromagnetic/TestEm11 (testem11-V10-02-02)
+  o PrimaryGeneratorMessenger: restore command SetDefaultKinematic.
+    Updated all macros.
+- extended/medical/dna/range (range-V10-02-00)
+- extended/medical/dna/wvalue (wvalue-V10-02-00)
+  o Changed physics constructor selection.
+- extended/parameterisations/Par02 (expar02-V10-02-00)                       (*)
+  o Added magnetic field and corrected the way to create a G4FieldTrack
+    object in Par02FastSimModelTracker.
+- extended/persistency/gdml/G01 (G01-V10-02-00)
+  o Added test case for scaled solids: scaledTube.gdml.
+- extended/polarisation/Pol01 (expol01-V10-02-00)
+  o PhysicsList: move to use current method of ConstructParticle().
+- extended/runAndEvent/RE04 (exampleRE04-V10-02-00)
+  o Added command "/vis/drawVolume worlds" to vis.mac.
+
+tests                                            tests-V10-02-03
+-----
+- Updated reference outputs and tools.
+- tests/test03 (test03-V10-02-01)
+  o Changed from using QGSP_BERT_HP to FTFP_BERT.
+  o Reduced the number of bins in 3D histograms from 100 to 10 to reduce
+    memory consumption in MT tests.
+- tests/test14 (test14-V10-02-00)
+  o Removed obsolete PhysListEmStandard.
+- tests/test37 (test37-V10-02-00)
+  o Fixed production scripts.
+- tests/test44 (test44-V10-02-02)
+  o Removed Histo class; use built-in analysis tools.
+    Added Plot.C macro for the analysis. Fixed macro test44.in.

@@ -1,0 +1,84 @@
+# Category SurfaceChecker History
+
+See `CONTRIBUTING.rst` for details of **required** info/format for each entry,
+which **must** added in reverse chronological order (newest at the top).
+It must **not** be used as a substitute for writing good git commit messages!
+
+-------------------------------------------------------------------------------
+
+## 2022-04-04 Gabriele Cosmo (testSurfaceChecker-V11-00-00)
+- Added CMake build script.
+
+-------------------------------------------------------------------------------
+
+Old History:
+----------------------------------
+10.Apr 12
+- Add offset between boxes for Boolean testing
+- Add boolean tests to comprehensive list in testall.pl
+- Capture command-line argument(s) for limited tests in testall.pl
+
+5.Apr 12
+- Migrate to new G4Exception interface
+- Create output directories in testall.pl
+
+19.Dec 05
+- Code is now using GetPointOnSurface()
+- Added new elliptic solid EllipticalCone
+- Added Tet
+
+26.July 05 
+- Added support for segmented torus (fPhi,fPhiSegment)
+
+25.July 05
+- Sphere, Shell and other G4Sphere objects are now using the same 
+  code of SurfacePoint generation.
+- Added code for  
+    * small shells: Q2Shell Q3Shell Q4Shell Q5Shell Q6Shell Q7Shell Q8Shell
+    * special regular spheres: HalfSphere HollowSphere HalfHollowSphere
+
+4.July 05
+- Added Ellipsoid to the check
+
+1.July 05
+- SurfaceChecker supports now G4Sphere("aSphere",rmin,rmax,phi,dphi,theta,dtheta) without
+  restricting the parameters.
+- corrected error in the surface equation of the twisted tubs solid. (The edge of the hyperbolic
+  surface was not compatible with the implementation in G4TwistedTubs).
+
+31.May 05
+- change in singlesolid.kumac: 
+   added an argument in order to specifiy the name of 
+   the hbook file directly, e.g
+      PAW>>  exec singlesolid hbk/yourfile.hbk 
+- corrected a misleading information in extract.pl
+
+27.May 05
+- change in testall.pl: additionally executes at the end the paw macro single.kumac 
+                        the default number of events is set to 100000
+- added a paw macro single.kumac:  
+  analyses systematically all hbook files found in folder hbk ( hbk/run_cone_10000.hbk )
+  and produces two plots
+    - solid-full.ps  : comparing all solids in a full range    (1e-12 to 1e5 mm)
+    - solid-zoom.ps  : comparing all solids in a reduced range (1e-12 to 1e-8 mm)
+  Attention: only files respecting the naming rule run_solidname_nevents.hbk will be considered!
+- added a paw macro singlesolid.kumac:
+  Can be used to to the same analysis for one single file only. No naming rule for the bhook file.
+
+23.May 05
+- changed naming of general surface parameters (hbk only): now u,v insted of u,phi
+- Detector is directly selectable from macro file for the following solids:
+    Torus (360 deg only, test of outer surface)
+    Box (one side only)
+    Sphere (solid sphere, 360 deg)
+    Tube (solid tub, 360 deg)
+    Orb
+    Cone
+    TwistedTubs (test of hyperbolic surface ; all parameters free) 
+    TwistedBox (test of 0deg side)
+    TwistedTrd (test of 0deg side)
+    TwistedTrap  (regular case: equal endcaps, alpha=0, phi=0, theta=0 ; test of 0deg side)
+    TwistedTrap2 (equal endcaps ; test of 0deg side )
+    TwistedTrap3 (general case ; test of 0deg side )
+- Added testall.pl: a script to systematically test a list of solids with SurfaceChecker.
+  Produces hbook files in folder hbk, eg. for 500 events and G4Box file will be named hbk/run_box_500.hbk

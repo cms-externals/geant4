@@ -1,0 +1,159 @@
+
+                       geant4-11-02-ref-03
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Updated GDML schema to version 3.1.7.
+ o Updates to cross-section classes to rationalise initialisation of data
+   in MT mode.
+ o Fixes to allow compilation on Windows when using Qt6.
+ o Ported Vtk driver to compile and run on Windows.
+ o Updated dataset G4PARTICLEXS-4.1.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in patch release 11.2.2
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-02-06
+-----
+- Updated FindPythia6 module to account for lib64.                           (*)
+  Applies GitHub PR#63 (https://github.com/Geant4/geant4/pull/63).
+- Updated FindPythia8 module to reduce capability to only that required by   (*)
+  py8decayer example and emit error if used in project outside Geant4 or
+  py8decayer. Applies GitHub PR#68 (https://github.com/Geant4/geant4/pull/68). 
+- Fixed escaping of regex in geant4_module_check to satisfy latest Python3.  (*)
+- Updated dataset G4PARTICLEXS-4.1.
+
+externals/g4tools                                g4tools-V11-02-01
+-----------------
+- Fixed string assignments in 'window' and 'pixwin', to support either       (*)
+  UNICODE or UTF-16 encoding on Windows. Addressing problem report #2599.
+
+geometry/volumes                                 geomvol-V11-02-00
+------------------------
+- Use std::map instead of std::vector to define G4LogicalSkinSurfaceTable,   (*)
+  to speedup search of skin surfaces in large tables, as already done
+  previously for G4LogicalBorderSurface. Addressing problem report #2598.
+
+global                                           global-V11-02-04
+------
+- Updated date and tag-ID for geant4-11-02-ref-03.
+
+interfaces                                       interfaces-V11-02-03
+----------
+- Fixed string assignments in G4Win32 and G4UIWin32, to support either       (*)
+  UNICODE or UTF-16 encoding on Windows. Addressing problem report #2599.
+
+persistency/gdml                                 gdml-V11-02-02
+----------------
+- Use std::map instead of std::vector to iterate on logical-skin surfaces    (*)
+  in G4GDMLWriteStructure::GetSkinSurface().
+  Part of fix addressing problem report #2598.
+- Fix in schema module gdml_solids.xsd for tessellated solid semantics, to   (*)
+  correctly reference facet types. Fixes schema validation errors which may
+  occur on some custom XSD validation tools. Schema updated to GDML-3.1.7.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-02-02)
+  o Corrected verbose conditions for warning in IRT-syn model.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-02-05)
+  o G4HadronXSDataTable: make class a singleton for registration and
+    destruction of static objects with cross-section data, data are deleted
+    only at the end of run.
+  o G4BGGNucleonElasticXS, G4BGGNucleonInelasticXS, G4BGGPionElasticXS,
+    G4BGGPionInelasticXS, G4ComponentBarNucleonNucleusXsc, G4HadronNucleonXsc,
+    G4UPiNuclearCrossSection and G4CrossSectionDataSetRegistry: code clean-up;
+    removed 'isMaster' checks, removed mutex locks, removed unused variables
+    and applied code formatting.
+  o G4BGGNucleonElasticXS, G4BGGNucleonInelasticXS, G4NeutronInelasticXS,
+    G4ComponentBarNucleonNucleusXsc, G4ComponentGGNuclNuclXsc, G4PiData and
+    G4NucleonNuclearCrossSection: general clean-up of proton and neutron
+    cross-sections; removed unused methods, removed not needed mutex locks,
+    improved printouts, cross-sections outside data tables are equal to
+    low or high edge of a table (not zero).
+  o In G4NeutronInelasticXS::SelectIsotope(), fixed compilation warnings for
+    implicit type conversions detected with macOS/XCode.
+  o G4ComponentGGNuclNuclXsc: removed debug printout, added check of G4VERBOSE.
+  o G4BGGPionElasticXS, G4BGGNucleonInelasticXS, G4BGGNucleonElasticXS: added
+    check of G4VERBOSE compilation flag.
+
+visualization
+-------------
+- management (visman-V11-02-10)
+  o G4VisExecutive.icc: fixed use of static symbol 'fVerbosity' and replaced (*)
+    with call to dedicated static method, to avoid linkage problems on Windows.
+  o G4VViewer: fixed Coverity reported defect.
+- Qt3D (visQt3D-V11-02-00)
+  o Fixed compilation error on Windows for ambiguous string assignment in    (*)
+    G4Qt3DSceneHandler::CreateNewNode().
+- Vtk (visVtk-V11-02-02)
+  o Ported code to compile on Windows Visual-Studio: protected use of GNU    (*)
+    pragmas in code; removed explicit symbol export for G4VtkInteractorStyle
+    and vtkTensorGlyphColor types; consistently use system includes with angle
+    brackets <> for external Vtk package includes.
+  o Fixed compilation error on Ubuntu 22 & VTK 9.1.                          (*)
+
+data
+----
+- G4PARTICLEXS-4.1:
+  o Updated data for all isotopes, for neutron, protons and light ion
+    cross-sections. Fixed cross-sections for Argon, Promethium, Astatine,
+    Radon, Francium. Fixed low-energy cross-section; low-energy limits of
+    cross-sections per target are verified and updated based on neutron data.
+
+examples                                         examples-V11-02-03
+--------
+- Updated documentation and reference outputs.
+- extended/biasing (exbiasing-V11-02-00)
+  o Fixed URls in documentation.                                             (*)
+- extended/eventgenerator (exEventGenerator-V11-02-00)
+  o Updated CMake script to use new Pythia8 setup/build variables.           (*)
+- extended/eventgenerator/exgps (exgps-V11-02-00)
+  o Updated build script for CTests definitions.
+- extended/eventgenerator/particleGun (particleGunExample-V11-02-00)
+  o Updated README.
+- extended/eventgenerator/pythia/py8decayer (p8decayer-V11-02-01)
+  o Use new FindPythia8 module and imported target.                          (*)
+- extended/exoticphysics/phonon (phononExample-V11-02-00)
+  o Updated build script for CTests definitions.
+- extended/hadronic/Hadr03 (exhadr03-V11-02-01)
+  o PrimaryGeneratorAction: added tiny shift of position of the particle
+    gun from the world volume boundary; fixing a warning now detecting this.
+    Updated README.
+- extended/hadronic/Hadr04 (exhadr04-V11-02-00)
+  o Updated README.
+- extended/hadronic/Hadr05 (exhadr05-V11-02-00)
+  o PrimaryGeneratorAction: added tiny shift of position of the particle
+    gun from the world volume boundary; fixing a warning now detecting this.
+    Updated README.
+  o RadioactiveDecayPhysics: added Triton.
+  o Applied coding rules.
+- extended/hadronic/Hadr06 (exhadr06-V11-02-00)
+- extended/hadronic/Hadr07 (exhadr07-V11-02-00)
+  o RadioactiveDecayPhysics: added Triton.
+  o Applied coding rules.
+- extended/medical/dna/dnaphysics (dnaphysics-V11-02-01)
+  o Updated comments in headers.
+- extended/medical/dna/microprox (microprox-V11-02-00)
+- extended/medical/dna/svalue (svalue-V11-02-00)
+- extended/medical/dna/wvalue (wvalue-V11-02-00)
+  o Code cleanup.
+- extended/medical/fanoCavity (fano-V11-02-00)
+- extended/medical/fanoCavity2 (fano2-V11-02-00)
+  o Make PhysicsLists of the example to be coherent with physics_list library.
+- extended/parallel/MPI (MPI-V11-02-00)
+  o Updated build script for CTests definitions.
+- extended/parameterisations/Par04 (expar04-V11-02-00)
+  o Bump scipy version according to                                          (*)
+    GitHub Dependabot PR#66 (https://github.com/Geant4/geant4/pull/66).
+
+tests                                            tests-V11-02-03
+-----
+- Updated reference outputs and tools.

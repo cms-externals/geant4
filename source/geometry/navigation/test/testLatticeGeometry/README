@@ -1,0 +1,45 @@
+LatticeGeometry was created to check
+
+
+To create a custom geometry with three dimensional grid that has the following
+number of points in each dimension:
+
+  -nx num_x
+  -ny num_y
+  -nz num_z
+
+Typical first usage:
+  ./latGeom  -nx 100 -ny 100 -nz 100 --separate
+to provide information about memory use in task-parallel application
+
+  ./latGeom  -nx 100 -ny 100 -nz 100 --separate --profile
+to compare runtimes between sequential 
+
+  ./latGeom  -nx 100 -ny 100 -nz 100 --benchmark
+
+
+To use a single logical volume shared across all sphere placements at lattice points:
+  ./latGeom     -nx 100 -ny 100 -nz 100 --benchmark   --unique-lv
+  ./latGeom -u  -nx 100 -ny 100 -nz 100 --benchmark
+
+Details:
+========
+
+LatGeom has the following 
+
+    `-p`/`--profile`     default off, mirroring the existing
+
+    `-B`/`--benchmark` mode: run only the (real) voxelisation path runs.
+
+
+ * Control whether each lattice point uses a separate logical volume or not.
+     -e / --separate   each lattice point (sphere) has own logical volume 
+                       (on by default)
+     -u / --unique-lv  a single logical volume shared across all placements. 
+                       (flag to opt back into the previous behaviour)
+
+  * Test script `run-lattice-benchmark.sh` to test multiple runs
+    (serial vs tasking) across a series of N x N x N lattice sizes, using
+    `--benchmark` mode for clean isolated timing, printing each result as it
+    Caps at nx=ny=nz=400 (64M volumes)
+

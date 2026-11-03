@@ -1,0 +1,194 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+// -------------------------------------------------------------------
+//
+// GEANT4 Class file
+//
+//
+// File name:    G4CrossSectionXS
+//
+// Author  V. Ivanchenko 14.07.2026 
+//
+
+#include "G4CrossSectionXS.hh"
+
+#include "G4AutoLock.hh"
+#include "G4CrossSectionDataSetRegistry.hh"
+#include "G4DynamicParticle.hh"
+#include "G4Element.hh"
+#include "G4ElementTable.hh"
+#include "G4HadronicParameters.hh"
+#include "G4Material.hh"
+#include "G4PhysicsLogVector.hh"
+#include "G4Log.hh"
+
+#include <fstream>
+#include <sstream>
+
+G4String G4CrossSectionXS::fDataDirectory = "";
+
+namespace
+{
+G4Mutex nXSMutex = G4MUTEX_INITIALIZER;
+}
+
+G4CrossSectionXS::G4CrossSectionXS(G4double maxE, const G4String& nam)
+  : G4VCrossSectionDataSet(nam), pEmax(maxE), pElimit(1.e-5*CLHEP::eV), fName(nam)
+{
+  SetForAllAtomsAndEnergies(true);
+  pLogElimit = G4Log(pElimit);
+
+  if (fDataDirectory.empty())
+  {
+    G4AutoLock l(&nXSMutex);
+    if (fDataDirectory.empty())
+    {
+      std::ostringstream ost;
+      ost << G4HadronicParameters::Instance()->GetDirPARTICLEXS();
+      fDataDirectory = ost.str();
+    }
+    l.unlock();
+  }
+}
+
+G4bool G4CrossSectionXS::IsElementApplicable(const G4DynamicParticle*, G4int,
+                                             const G4Material*)
+{
+  return true;
+}
+
+G4bool G4CrossSectionXS::IsIsoApplicable(const G4DynamicParticle*, G4int, G4int,
+                                         const G4Element*, const G4Material*)
+{
+  return true;
+}
+
+G4double G4CrossSectionXS::GetElementCrossSection(const G4DynamicParticle* dp,
+                                                  G4int Z, const G4Material*)
+{
+  return ElementCrossSection(dp->GetKineticEnergy(), dp->GetLogKineticEnergy(), Z);
+}
+
+G4double
+G4CrossSectionXS::ComputeCrossSectionPerElement(G4double ekin, G4double loge,
+                                                const G4ParticleDefinition*,
+                                                const G4Element* elm,
+                                                const G4Material*)
+{
+  return ElementCrossSection(ekin, loge, elm->GetZasInt());
+}
+
+G4double G4CrossSectionXS::ComputeIsoCrossSection(G4double ekin, G4double loge,
+                                                  const G4ParticleDefinition*,
+                                                  G4int Z, G4int A,
+                                                  const G4Isotope*,
+                                                  const G4Element*,
+                                                  const G4Material*)
+{
+  return IsoCrossSection(ekin, loge, Z, A);
+}
+
+G4double G4CrossSectionXS::GetIsoCrossSection(const G4DynamicParticle* dp,
+                                              G4int Z, G4int A,
+                                              const G4Isotope*,
+                                              const G4Element*,
+                                              const G4Material*)
+{
+  return IsoCrossSection(dp->GetKineticEnergy(), dp->GetLogKineticEnergy(), Z, A);
+}
+
+void G4CrossSectionXS::InitialiseOnFly(G4int Z)
+{
+  G4AutoLock l(&nXSMutex);
+  Initialise(Z);
+  l.unlock();
+}
+
+void G4CrossSectionXS::CommonInit(std::vector<G4double>& tmp,
+                                  const G4ParticleDefinition& p)
+{
+  if (verboseLevel > 0)
+  {
+    G4cout << "BuildPhysicsTable for " << fName << " and " << p.GetParticleName() << G4endl;
+  }
+  // it is possible re-initialisation for the second run
+  const G4ElementTable* table = G4Element::GetElementTable();
+
+  // prepare isotope selection
+  std::size_t nIso = tmp.size();
+  for (auto const& elm : *table)
+  {
+    std::size_t n = elm->GetNumberOfIsotopes();
+    if (n > nIso)
+    {
+      nIso = n;
+    }
+  }
+  tmp.resize(nIso, 0.0);
+}
+
+
+G4PhysicsVector*
+G4CrossSectionXS::RetrieveVector(const G4String& subdir, G4int Z, G4int A, G4bool warn)
+{
+  std::ostringstream ost;
+  ost << fDataDirectory << subdir << Z;
+  if (0 < A)
+  {
+    ost << "_" << A;
+  }
+  G4PhysicsLogVector* v = nullptr;
+  std::ifstream filein(ost.str().c_str());
+  if (!filein.is_open())
+  {
+    if (warn)
+    {
+      G4ExceptionDescription ed;
+      ed << "Data file <" << ost.str().c_str() << "> for " << fName
+         << " is not opened!";
+      G4Exception("G4CrossSectionXS::RetrieveElementVector",
+                  "had014", FatalException, ed, "Check G4PARTICLEXSDATA");
+    }
+  }
+  else
+  {
+    if (verboseLevel > 1)
+    {
+      G4cout << "File " << ost.str() << " is opened by G4CrossSectionXS" << G4endl;
+    }
+    // retrieve data from DB
+    v = new G4PhysicsLogVector();
+    if (!v->Retrieve(filein, true))
+    {
+      G4ExceptionDescription ed;
+      ed << "Data file <" << ost.str().c_str() << "> for " << fName
+         << " is not retrieved!";
+      G4Exception("G4CrossSectionXS::RetrieveElementVector",
+                  "had015", FatalException, ed, "Check G4PARTICLEXSDATA");
+    }
+  }
+  return v;
+}

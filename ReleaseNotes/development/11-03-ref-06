@@ -1,0 +1,181 @@
+
+                       geant4-11-03-ref-06
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Updated implementation of QSS integration method to QSS version-2.
+ o New base class G4VXRayModel for models of X-ray processes.
+ o Make the TSG driver the "flagship" visualization driver.
+ o Introduction of the CaloDiT pre-trained model in Par04 example,
+   offering greater accuracy.
+ o Updated dataset G4EMLOW-8.7.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-03-06
+-----
+- Include external categories (G4zlib etc) in link resolution for unit test
+  executables.
+- Updated G4EMLOW dataset to version 8.7, G4EMLOW-8.7.
+
+externals/g4tools                                g4tools-V11-03-04
+-----------------
+- Updated to version 6.5.1.
+- Implemented windows_size and render_area_size methods; fixed setting of
+  mouse position in the wheel_rotation_event. Handle the shift and control
+  modifiers in the mouse_[down,up,move]_event and wheel_rotation_event.
+- In glarea, in mouseMoveEvent() for Qt5, corrected a bad cut/paste when
+  creating the mouse_move_event.
+- In *ntuple, fix in the initialise() method, to switch from "warning" to
+  "error" and return false if the name of a booking column is not found in
+  the file. Addressing problem report #2657.
+
+geometry/magneticfield                           field-V11-03-02
+-------------------
+- Updated implementation of QSS integration method to QSS version-2.
+
+geometry/volumes                                 geomvol-V11-03-01
+----------------
+- Fix to only delete the logical skin/border surfaces if the geometry is not
+  closed.
+
+global                                           global-V11-03-16
+------
+- In G4VSIntegration set verbose level to zero by default.
+- Updated date and tag-ID for geant4-11-03-ref-06.
+
+graphics_reps                                    greps-V11-03-01
+-------------
+- Use "// clang-format off/on" on selected source code.
+
+persistency/gdml                                 gdml-V11-03-00
+----------------
+- Fix to pre-pend '0x' string before the address when writing entities on
+  Windows platform. Addressing problem report #2322.
+
+physics_lists
+-------------
+- builders (phys-builders-V11-03-00)
+  o In G4HadronPHPBuilder, G4ParticleHPCapture and G4ParticleHPCaptureData are
+    substituted by G4NeutronRadCaptureHP and G4NeutronHPCaptureData. The first
+    allows using the full list of updated PhotonEvaporation data set, while for
+    the second it is only a change of the name, the data are the same.
+    Addressing problem report #2660.
+- constructors/electromagnetic (phys-ctor-em-V11-03-08)
+  o G4EmDNABuilder: for opt8 configuration, use the same configuration of
+    models for e- and protons as in opt2. Fixed upper limit of energy
+    increase/decrease processes, they should be the same as for ionisation and
+    excitation processes. Fixed enegy limits for excitation model for light
+    ions, for increase/decrease models, modification providing a correct
+    printout. Fixed upper energy limit for ionisation of hydrogen.
+  o In all DNA constructors the upper limit for DNA models for ions is set 
+    to 300 MeV instead of 400 MeV.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V11-03-01)
+  o In G4HadrocPhysicsQBBC, disabled General Neutron Process.
+    Addressing problem reports #2558 and #2559.
+
+processes/electromagnetic
+-------------------------
+- utils (emutils-V11-03-07)
+  o Updates to new class G4VXRayModel.
+
+processes/hadronic
+------------------
+- models/de_excitation (hadr-deex-V11-03-14)
+  o In G4PhotonEvaporation, G4VEmissionProbability, check life time of final
+    excitation level; special treatment ground and the next level.
+    Addressing problem report #2660.
+  o In G4DeexPrecoParameters, use the same set of parameters as in release
+    11.3.2.
+  o In G4EvaporationProbability, fixed computation of inverse cross-section.
+  o G4FermiBreakUpAN: minor fix for final state generation.
+    Delete primary fragment, if decay is successful.
+    Fixed case of infinite loop in the new Fermi-BreakUp model.
+  o G4ExcitationHandler: fixed initialisation of the new Fermi-BreakUp model.
+- models/particle_hp (hadr-hpp-V11-03-03)
+  o In G4ParticleHPInelastic, fixed AllHP physics for  initialisation of
+    neutrons and light ions. Addressing problem report #2591.
+- models/pre_equilibrium (hadr-pre-V11-03-04)
+  o G4PreCompoundFragment, G4PreCompoundNucleon, G4PreCompoundIon: updated
+    computation of inverse cross-section; added factor to cross-section.
+
+run                                              run-V11-03-01
+---
+- Fix in G4RunManager::ReinitializeGeometry(); the logical skin/border surfaces
+  (used for optical physics) contain pointers to logical/physical volumes that
+  are deleted when the geometry is reset. Resetting the geometry will also
+  clear these surface tables.
+
+visualization
+-------------
+- management (visman-V11-03-12)
+  o Make the TSG driver the "flagship" visualization driver.
+    In G4VisExecutive, make nickname/alias OGL synonymous with TSG and make
+    TSG the default for selection by build flags.
+  o G4ViewParameters: fixed typo to make "/vis/viewer/set/lightsMove cam"
+    behaving correctly for "/vis/viewer/set/lightsVector 0 0 1".
+    Addressing problem report #2460.
+- ToolsSG (vis_toolssg-V11-03-07)
+  o Allow accumulation of transients (trajectories) during multithreading.
+  o Trajectories are stored in the database during the run, and displayed at
+    end of run. All events are displayed at end of run.
+  o G4ToolsSGViewer: removed 'SwitchToVisSubThread' and 'SwitchToMasterThread'
+    as no action is needed on thread switching.
+    In mouse_move(), use the event.shift_modifier() method, to pass in pan mode.
+    Have GetWindowSize() and GetRenderAreaSize() methods to retrieve the actual
+    sizes of the "seen/visible window" and of the "render area" size; these may
+    return different sizes, for example with Qt/OpenGL on Mac and Windows.
+    In SetView(), use the new GetWindowSize(), GetRenderAreaSize() methods
+    to set the "marker scale" on G4ToolsSGSceneHandler.
+  o In G4ToolsSGSceneHandler, in GetOrCreateNode(), removed restriction on
+    multithreading. Handle the 'fMarkerScale' field.
+  o G4ToolsSGQtGLESViewer, G4ToolsSGQtZBViewer, G4ToolsSGOffscreenViewer:
+    suppressed SetView() method, as no more needed.
+
+data
+----
+- G4EMLOW-8.7:
+  o Updated MicroElec data: added new files and updated format of other files.
+
+examples                                         examples-V11-03-06
+--------
+- Updated documentation and reference outputs.
+- advanced/dna/moleculardna (molecularDNA-V11-03-09)
+  o Fixed updated reaction list for DNA reactions.
+- extended/electromagnetic/TestEm2 (testem2-V11-03-00)
+  o Fixed memory leak at exit in ActionInitialisation, DetectorConstruction
+    and RunAction. Instantiate the field messenger differently.
+- extended/eventgenerator/exgps (exgps-V11-03-00)
+  o In HistoManager, activated set n-tuple merging.
+  o Fixed python and analysis macros (tested with python 3.13.3).
+  o Moved plotHisto.C to macros. Removed plottest35.py and plotit.csh.
+  o Excluded not working tests (needed further investigation).
+  o Removed exgps_batch.in (identical with exgps.in).
+  o Copy all macros and run script into the build area in CMake script.
+- extended/eventgenerator/pythia/py8decayer (p8decayer-V11-03-00)
+  o Updated to Pythia-8.3.15.
+- extended/medical/dna/molcounters/basic (molcounter-basic-V11-03-02)
+  o Fixed compilation warning on Windows.
+- extended/medical/dna/spower (spower-V11-03-02)
+  o In lot.C, added selection of electrons by default.
+  o In spower.in, changed physics constructors.
+- extended/parameterisations/Par04 (expar04-V11-03-00)
+  o Introduction of the CaloDiT pre-trained model, offering greater accuracy.
+  o Updated VAE training with the new translation script and Condor scripts.
+
+tests                                            tests-V11-03-06
+-----
+- Updated reference outputs and tools.
+- ctests_integration/test37 (test37-V11-03-00)
+  o Unified names of EM physics and updated script for Condor due to
+    change of Condor software.
+- ctests_integration/test41 (test41-V11-03-01)
+  o Unified names of EM physics and updated script for Condor due to
+    change of Condor software. In Plot.C, fixed file names.
+- ctests_integration/test44 (test44-V11-03-00)
+  o In Plot.C, fixed scale in logarithmic plot
+.

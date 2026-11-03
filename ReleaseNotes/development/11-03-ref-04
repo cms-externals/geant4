@@ -1,0 +1,228 @@
+
+                       geant4-11-03-ref-04
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o New "@@" keyword to be used in UI commands taking a macro file name;
+   it allows to create a temporary macro file with the commands being
+   defined following it, until a "/control/endRecord" command is specified.
+ o New class G4DNABornIonisationModel, a new implementation of the Born model
+   using G4DNASamplingTable; new class G4DNASamplingTable allowing share
+   sampling data between threads; new class G4ChemReboundTransportation to
+   handle the rebound transportation of the molecule.
+ o New alternative hadronic de-excitation FermiBreakUp model G4FermiBreakUpAN
+   and support classes.
+ o Introducing RayTracerQt visualisation driver, controlled by the
+   GEANT4_USE_RAYTRACER_QT configuration flag.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in patch release 11.3.2
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-03-03
+-----
+- Added option GEANT4_USE_RAYTRACER_QT for RayTracerQt visualization driver.
+- Export CMAKE_EXPORT_COMPILE_COMMANDS setting from toolkit to the build of
+  any test done by geant4_add_test to assist use of clang-tidy and other
+  tooling.
+- Correction in generation of geant.[c]sh an geant4.bat on Windows.
+
+externals/g4tools                                g4tools-V11-03-00
+-----------------
+- Fixed compilation errors on Windows in glarea header, triggered when       (*)
+  enabling GL WIN32 support, as reported in problem report #2599.
+
+externals/zlib                                   zlib-V11-03-00
+--------------
+- Fix in zutil.h to comment out redundant block on macOS and allow for       (*)
+  porting on macOS-15.4 and clang-17.0.0.
+
+geometry/solids/CSG                              geom-csg-V11-03-04
+-------------------
+- G4Box: code restructuring in DistanceToOut() methods.
+
+global                                           global-V11-03-11
+------
+- Added Scintillation, Cherenkov, Transition Radiation and Synchrotron       (*)
+  Radiation processes to G4PhysicsModelCatalog::Initialize().
+- In G4VSIntegration, fixed reported Coverity defect.
+- Updated date and tag-ID for geant4-11-03-ref-04.
+
+intercoms                                        intercoms-V11-03-00
+---------
+- In G4UImanager and G4UIcontrolMessenger, introducing "@@" keyword that can
+  be placed in any UI command taking a macro file name. It creates a temporary
+  macro file with defined commands until the "/control/endRecord" command is
+  specified. The "@@" mechanism works recursively.
+  If a file name is enclosed in a pair of "@", that macro file is created.
+  The mechanism works for both interactive mode and batch mode. When used in
+  interactive mode with Qt GUI, one can use up-arrow, tab-key and clickable
+  menu in left-side bar to complement a command.
+
+interfaces                                       interfaces-V11-03-04
+----------
+- In G4UIQt, simplified and improved touchable dump, using QScrollArea
+  instead of QMessage.
+
+parameterisations/channeling                     fastsimchanneling-V11-03-00
+----------------------------
+- In G4VChannelingFastSimCrystalData::IonizationLosses(), fixed bug          (*)
+  in the electron ionization loss correction formula.
+  Issue was spotted by PVS-Studio static analysis.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-03-01)
+  o In G4EmDNABuilder, use new version of Born ionisation model.
+- constructors/hadron_elastic (phys-ctor-helastic-V11-03-00)
+  o In G4ChargeExchangePhysics, fixed usage of the messenger.
+- lists (phys-list-V11-03-03)
+  o In FTFP_BERT_ATL, use the default FTF tuning parameters, as for all      (*)
+    other reference physics lists. In order to enable the special FTF tune
+    for ATLAS, one can either use the following C++ call in user code:
+    G4FTFTunings::Instance()->SetTuneApplicabilityState( 4, 1 );
+    or the UI command (before run-initialisation):
+    "/process/had/models/ftf/selectTuneByIndex 4"
+  o In QBBC, added G4ChargeExchangePhysics.
+
+processes/decay                                  decay-V11-03-00
+---------------
+- Removed approximation in calculation of G4Decay path length.               (*)
+  Addressing problem report #2645.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-03-07)
+  o In G4DNARuddIonisationDynamicModel, disabled atomic deexcitation in
+    stationary mode, use G4VSItegration as a base class.
+  o G4DNABornIonisationModel, new implementation of the Born model using
+    G4DNASamplingTable class; use stationary and fast flags from EM parameters.
+  o In G4DNABornIonisationModel1, use stationary and fast flags from EM
+    parameters.
+  o G4DNASamplingTable, new class allowing share sampling data between threads.
+  o Updated IRT-syn model for high LET applications.
+  o Correction in the G4DNAScavengerProcess for IRT-syn model.
+  o Created G4ChemReboundTransportation to handle the rebound transportation
+    of the molecule.
+  o In G4PhysChemIO, removed G4Analysis class and G4analysismng module
+    dependency from 'utils' module.
+- lowenergy (emlowen-V11-03-02)
+  o In G4hIonEffChargeSquare, fixed reported Coverity defect.
+- standard (emstand-V11-03-06)
+  o In G4UrbanMscModel, minor code improvement, not affecting physics results.
+  o Fixed reported Coverity defects in G4LowPAIH2O.
+- utils (emutils-V11-03-03)
+  o Fix in G4EmTableType header to make self-consistent.                     (*)
+    Reported in [GitHub PR#85](https://github.com/Geant4/geant4/pull/85).
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-03-03)
+  o G4ChargeExchangeXS: fixed selection of reaction for compound materials;
+    added extra public and private methods. 
+  o G4ParticleInelasticXS: fixed reported Coverity defect.
+  o G4EMDissociationCrossSection: fixed several technical inaccuracies in the
+    code, addressing reported Coverity defects and to correctly use G4Pow.
+  o In G4EMDissociationSpectrum, added protection against beta=0, to fix
+    reported Coverity defect; correctly use G4Pow.
+- models/cascade (hadr-casc-V11-03-00)
+  o In G4CascadeFinalStateAlgorithm and G4NucleiModel, introduced the        (*)
+    possibility to enable behaviour as either in Geant4 version 11.3
+    (default) or as in 11.2, according to the value of Boolean flags
+    through the call G4HadronicParameters::SetBertiniAs11_2(true).
+    Also possible to configure the properties of nuclei of G4NucleiModel
+    through the call in G4HadronicParameters::SetBertiniNucleiModelAs11_2(true)
+    and the angular distribution of >= 4-body final-state emissions in
+    G4CascadeFinalStateAlgorithm, through the call in G4HadronicParameters:
+    SetBertiniAngularEmissionsAs11_2( true ).
+    Note that the default changes introduced in release 11.3 are to be
+    considered as a real improvement of the Bertini model, although some
+    degradation of thin-target data, in particular for the pion production
+    in HARP data, is observed. A retuning of the parameters of the model
+    will be likely necessary in the near future, based on these changes.
+- models/coherent_elastic (hadr-cohe-V11-03-01)
+  o G4ChargeExchange: fixed problem in kinematic computations, allowed recoil
+    nucleus to be in an excited state. Fixed issue in final state generation
+    for the case of unstable meson production omega(782) and f2(1270).
+- models/de_excitation (hadr-deex-V11-03-09)
+  o Added G4FermiBreakUpAN, new alternative FermiBreakUp model and support
+    classes, contributed by A. Novikov (Yandex and MIPT) through
+    [GitHub PR #84](https://github.com/Geant4/geant4/pull/84). The model is
+    based on: J.P. Bondorf et al., Physics Reports, 257(3):133-221.
+  o G4ExcitationHandler, G4DeexPrecoParameters: updated initialisation
+    to switch between different FermiBreakUp models.
+  o G4LevelReader: fix for reported Coverity defect.
+- models/em_dissociation (hadr-emd-V11-03-01)
+  o G4EMDissociation: again fix for reported Coverity defect.
+- models/particle_hp (hadr-hpp-V11-03-02)
+  o G4ParticleHPThermalScattering, G4ParticleHPThermalScatteringData,
+    G4ParticleHPJENDLHEData: fixed reported Coverity defects for unprotected
+    access to maps.
+- util (hadr-util-V11-03-03)
+  o Added accessor and modifier in G4HadronicDeveloperParameters for         (*)
+    selecting the Bertini model mode as Geant4 version 11.3 (default)
+    or 11.2.
+  o G4Nucleus: added move operators as suggested by Coverity, make copy
+    constructor and assignment operator default.
+
+visualization
+-------------
+- management (visman-V11-03-08)
+  o Added RayTracerQt in G4VisExecutive.
+  o G4VisCommandsViewer: in "/vis/viewer/select", removed subsequent refresh,
+    even for auto-refresh drivers. Refresh is not required after a select,
+    window systems keep the image.
+  o In G4VisCommandsTouchable, disabled "/vis/touchable/centre..." and
+    "/twinkle" in the case of large process times.
+  o Added UI command "/vis/scene/add/endOfRunMacro".
+    The macro is executed at end of run and when rebuild required.
+    WARNING: some vis commands in the macro cause recursion. Stick to simple
+    commmands, e.g., which invoke vis manager Draw() methods.
+- modeling (modeling-V11-03-08)
+  o In G4PhysicalVolumeModel, fixed typo in ModelType.
+- OpenGL (opengl-V11-03-03)
+  o In G4OpenGLQtViewer, commented out calls to TouchableSetVisibility/Colour;
+    no longer needed since the introduction of the new scene tree.
+    Commented out some debug printing to std::cout.
+  o Fixed compilation errors on Windows in G4OpenGLWin32Viewer, triggered    (*)
+    when enabling GL WIN32 support, as reported in problem report #2599.
+- RayTracer (raytracer-V11-03-01)
+  o Introducing RayTracerQt. Uses multithreading tracer, G4TheMTRayTracer.
+    With multithreading, image construction is quite fast.
+  o In G4RayTracerViewer, use G4Timer to estimate KernelVisitElapsedTimeSeconds.
+  o In G4VRTScanner (and inherited classes), removed misleading and un-used
+    methods GetGSName() and GetGSNickName().
+  o Introduced nicknames (long names still work): RT (for RayTracer),
+    RTX (for RayTracerX), RTQt (for RayTracerQt).
+  o Fix in G4RayTracerXViewer for use of MT.                                 (*)
+
+examples                                         examples-V11-03-04
+--------
+- Updated documentation and reference outputs.
+- advanced/dna/moleculardna (molecularDNA-V11-03-07)
+  o Updated new implementation of IRT-syn model.
+  o Deleted Max Time Step parameter.
+- extended/electromagnetic/TestEm15 (testem15-V11-03-00)
+  o Updated gamma.mac input macro to use emstandard_opt4.
+  o Removed gamma2mumu.mac input macro.
+- extended/medical/dna/chem5 (chem5-V11-03-00)
+  o Code clean up; added plot.py script for plotting the output data.
+- extended/medical/dna/UHDR (UHDR-V11-03-00)
+  o Updated pulseAction for larger pulse size.
+  o Temporarily use molecule counter for EventScheduler.
+  o Updated reaction table for scavengers.
+- extended/parallel (exparallel-V11-03-00)
+  o Retired obsolete TBB example. Functionality fully provided by tasking
+    run manager with TBB support with no user code changes required.
+- extended/parallel/MPI (MPI-V11-03-01)
+  o Modernised and simplified library and example build scripts to build
+    G4mpi library and examples of its use in one project.
+
+tests                                            tests-V11-03-04
+-----
+- Updated reference outputs and tools.
+- ctests_integration/test65 (test65-V11-03-00)
+  o Fixed failures in downloading of LEND data.

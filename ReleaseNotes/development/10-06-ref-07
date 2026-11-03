@@ -1,0 +1,186 @@
+
+                       geant4-10-06-ref-07
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Updated SI constants, based on May 2019 redefinition of SI units.
+ o Introducing new class for handling the numerical Differential Cross- 
+   Sections(DCS) for Coulomb scattering of e-/e+, and added new model,
+   G4eDPWACoulombScatteringModel, implementing single Coulomb scattering
+   for e-/e+.
+ o Introducing new utility class to access hadronic processes; using
+   this class it is possible to customise hadronic cross-sections per
+   particle type.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(+)  Fixes included in release 10.6.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-06-26
+-----
+- Provide new GEANT4_BUILD_PHP_AS_HP option to enable ParticleHP as
+  HP in physics processes. Replaces PHP_AS_HP environment variable.
+  Added PHP_AS_HP "feature" in Geant4Config.cmake/geant4-config to allow
+  clients to check availability.
+
+externals                                        externals-V10-06-04
+---------
+- CLHEP:
+  o Updated values in SystemOfUnits.h and PhysicalConstants.h for:
+    + e_SI, electron charge
+    + h_Planck, Planck constant
+    + Avogadro, Avogadro constant
+    + k_Boltzmann, Boltzmann constant
+    based on May 2019 redefinition of SI units. References:
+    https://en.wikipedia.org/wiki/2019_redefinition_of_the_SI_base_units
+    https://www.britannica.com/science/electron-charge. 
+  o Use 32-bit internal seeds types coherently in MixMaxRng.
+    Addressing CLHEP JIRA ticket #156.
+
+global                                           global-V10-06-17
+------
+- Updated e_SI value for electron charge in G4SIunits.h, based
+  on May 2019 redefinition of SI units.
+  Reference: https://www.britannica.com/science/electron-charge.
+- Updated date and tag-ID for geant4-10-06-ref-07.
+
+physics_lists/builders                           phys-builders-V10-06-08
+----------------------
+- G4HadronicBuilder: make two method private to avoid incorrect use, do not
+  use Bertini cascade for b-, c - particles and anti-hyperons (only FTFP model).
+
+physics_lists/constructors/decay                 phys-ctor-decay-V10-06-04
+--------------------------------
+- G4RadioactiveDecayPhysics: improved initialisation; added EM parameters
+  definition in the class constructor; if atomic de-excitation is not defined
+  add it in each thread but not change EM parameters in a thread; should
+  address several problems reported recently.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-06-15
+------------------------------------------
+- G4EmModelActivator: updated multiple-scattering and PAI configurations to
+  address problem reports #2052 and #2106.
+- G4EmStandardPhysicsSS: use the new G4eDPWACoulombScatteringModel for e-/e+
+  below 100 [MeV] (for testing this new model).
+- G4EmStandardPhysicsWVI: fixed typo.
+
+physics_lists/constructors/hadron_elastic        phys-ctor-helastic-V10-06-02
+-----------------------------------------
+- G4HadronElasticPhysics: use coherently with inelastic physics builder the
+  new utilities G4HadParticles and G4HadronicBuilder.
+  Instantiate anti-hyperons.
+
+physics_lists/constructors/hadron_inelastic      phys-ctor-hinelastic-V10-06-06
+-------------------------------------------
+- G4HadronInelasticQBBC: use utilities G4HadParticle and G4HadronicBuilder.
+- G4VHadronPhysics: removed obsolete methods and thread_local methods.
+
+physics_lists/util                               phys-util-V10-06-05
+------------------
+- G4HadParticles: subdivide for different methods hyperons and anti-hyperons.
+  Separated light anti-particles to the extra vector and added extra access
+  method.
+- G4HadProcesses: new utility class providing access to hadronic processes and
+  addition of a cross-section per particle type and hadronic process; using
+  this class it is possible to customise hadronic cross-sections.
+
+processes/electromagnetic/standard               emstand-V10-06-13
+----------------------------------
+- G4eDPWAElasticDCS: a new class that handles the numerical Differential Cross- 
+  Sections(DCS) for Coulomb scattering of e-/e+, computed by Dirac Partial Wave
+  Analysis(DPWA) using ELSEPA.
+- G4eDPWACoulombScatteringModel: new class that implements single Coulomb 
+  scattering model for e-/e+ based on the numerical DCS provided by the above 
+  G4eDPWAElasticDCS class.
+- G4UrbanMscModel: changed parameterisation of backscattering parameter
+  'doverra'; use Opt3 algorithm for Opt0.
+
+processes/electromagnetic/utils                  emutils-V10-06-08
+-------------------------------
+- G4EmParameters, G4EmExtraParameters: added new flag defining type of single
+  scattering model.
+- G4EmModelManager, G4VMscModel, G4VEmModel, G4VMultipleScattering: at
+  initialisation print extra line for all multiple-scattering models instead 
+  of the common printout, needed when  different models are applied for
+  regions. Minor code clean-up. Addressing problem report #2106.
+
+processes/hadronic
+------------------
+- models/coherent_elastic (hadr-cohe-V10-06-03)
+  o G4HadronElastic: added numerical protection against precision loss.
+    Addressing problem report #2253.
+- models/de_excitation (hadr-deex-V10-06-04)
+  o G4NuclearLevelData: more safe initialisation of data in MT mode, use     (+)
+    mutex locks only within each method, whithout calls to other methods.
+  o G4ExcitationHandler: call to G4NuclearLevelData to initialise data for   (+)
+    levels for all elements possibly involved in the geometry.
+- models/particle_hp (hadr-hpp-V10-06-09)
+  o G4FissionProductYieldDist: fixed thread competition in method
+    G4GetFission(), by placing an auto lock.
+    Addressing problem report #2234.
+  o Fix in constructor of G4ParticleHPChannel so that two fission fragment
+    models can be active at the same time, if Wendt model is active; turn off
+    standard fragment production model. Addressing problem report #2233.
+  o Use GEANT4_BUILD_PHP_AS_HP option to enable PHP_AS_HP,
+    Retiring use of PHP_AS_HP environment variable.
+- models/parton_string/qgsm (hadr-qgsm-V10-06-03)
+  o G4QGSParticipants: rolled back the change in the average transverse
+    momentum of partons in a hadron.
+- management (hadr-man-V10-06-06)
+  o G4HadronicProcessStore: extended default initialisation printout to
+    anti_lambda.
+
+run                                              run-V10-06-08
+---
+- Added dummy virtual methods Get/SetNumberOfThreads() in G4RunManager to
+  allow dispatching to inheriting MT/Tasking classes.
+
+tasking                                          tasking-V10-06-05
+-------
+- Added missing call to G4VScoreNtupleWriter in G4WorkerTaskRunManager.
+
+track                                            track-V10-06-04
+-----
+- Minor c++11 review; code formatting and cleanup.
+
+visualization
+-------------
+- externals (visexternals-V10-06-01)
+  o Fixed Coverity defect warning.
+- FukuiRenderer (DAWN-V10-06-02)
+  o G4DAWNFILEViewer: fixed Unbuntu 20 compiler warning about ignoring
+    system function return value.
+- VRML (VRML-V10-06-02)
+  o G4VRML1/2FileSceneHandler: fixed Unbuntu 20 compiler warning about
+    ignoring system function return value.
+
+examples                                         examples-V10-06-07
+--------
+- Updated documentation and reference outputs.
+- advanced/brachytherapy (brachy-V10-06-00)                                  (+)
+  o Added missing call to "/run/initialize" in VisualisationMacro.mac.
+- advanced/purging_magnet (purmag-V10-06-00)                                 (+)
+  o Fixed README.
+- basic (exbasic-V10-06-01)
+  o Migrated all basic examples to use G4RunManagerFactory, therefore
+    implicitly enabling tasking by default in MT builds.
+- extended/electromagnetic/TestEm5 (testem5-V10-06-01)
+  o TrackingAction: corrected weight for solid angle histograms
+    Updated berger.mac, berger/berger.C, hanson.mac and hanson/hanson.C
+    Added hanson/19um-wwols.ascii and 9um too
+    Based on proposal by Weronika Wolszczak (TU Delft University).
+- extended/hadronic/Hadr01 (exhadr01-V10-06-01)
+  o PhysicsList: make it coherent with current reference physics lists.
+  o RunAction: improved printouts.
+  o Switched from Al to W in hadr01.in macro.
+- extended/optical/OpNovice2 (OpNovice2-V10-06-04)
+  o Calculate reflection/transmission probabilities vs. angle; new macro
+    fresnel.mac.
+  o histos: added axis labels, id's; refer to them by id in some places.
+
+tests                                            tests-V10-06-07
+-----
+- Updated reference outputs and tools.

@@ -1,0 +1,178 @@
+
+                       geant4-10-06-ref-03
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o New class G4DriverReporter to print progress of field drivers.
+ o Introducing thermal model of positronium decay to two gammas.
+   In this model, the positronium acquires a mean kinetic energy on formation,
+   which contributes to a small non-collinearity of the gammas, detectable and
+   significant in PET.
+ o Cleanup destruction of physics processes at the end of job.
+ o Updated to new G4EMLOW-7.10 data set.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in release 10.6.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-06-08
+-----
+- Suppressed configuration warnings about icc libraries not existing         (*)
+  for Intel icc version 19.
+- Updated to dataset version G4EMLOW-7.10.
+
+event                                            event-V10-06-02
+-----
+- Fixed Coverity defect in G4GeneralParticleSourceMessenger.
+
+geometry/magneticfield                           field-V10-06-04
+----------------------
+- New class G4DriverReporter to print progress of drivers.
+- G4VIntegrationDriver and dependent driver classes: added new virtual
+  method StreamInfo(), used to implement operator<<() for G4VIntegrationDriver
+- G4MagInt_Driver: fixed max iterations & clarified that its method
+  ComputeNewStepSize() does not (yet) respect maximum reduction factor (0.1).
+  ( Done to enable comparisons with new G4IntegrationDriver<> implementation.)
+- G4OldMagIntDriver maintains all old behaviour of G4MagInt_Driver.
+
+geometry/navigation                              geomnav-V10-06-02
+-------------------
+- Reordered data members in G4Navigator, to reduce object size.
+
+global                                           global-V10-06-06
+------
+- Updated date and tag-ID for geant4-10-06-ref-03.
+
+graphics_reps                                    greps-V10-06-03
+-------------
+- Improved deprecation message for G4AttDefs::operator<<().
+
+parameterisations/gflash                         gflash-V10-06-00
+------------------------
+- GFlashSamplingShowerParameterisation: added X0eff calculation.
+- Delete local tuning data in destructor of GFlashXXXShowerParameterisation
+  classes.
+
+particles                                        particles-V10-06-05
+---------
+- G4DynamicParticle: added GetBeta() method.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-06-03
+------------------------------------------
+- G4EmStandardPhysics_option3: switch from UseDistanceToBoundary() to
+  UseSafetyPlus().
+
+processes/electromagnetic/standard               emstand-V10-06-05
+----------------------------------
+- Introducing thermal model of positronium decay to two gammas.
+  In this model, the positronium acquires a mean kinetic energy on formation,
+  which contributes to a small non-collinearity of the gammas, detectable and
+  significant in PET. To activate this model:
+  material->GetIonisation()->SetMeanEnergyPerIonPair(meanKE).
+  A mean kinetic energy of 5 eV produces a projected acollinearity of about
+  0.5 degrees FWHM, as reported in:
+  K.Shibuya et al., IFMBE Proceedings Vol. 14/3 1667 (2007).
+- G4UniversalFluctuation: changed 'nmaxCont' from 16 to 8 for speedup.
+- G4UrbanMscModel: removed cache and introduced data struct precomputed at
+  initialisation
+- G4eplusAnnihilation: fixed problem seen in the rare case, when initial
+  energy is null.
+- G4BetheHeitler5DModel: change "final" keyword by "override" for virtual
+  methods.
+
+processes/electromagnetic/utils                  emutils-V10-06-02
+-------------------------------
+- G4EmParameters, G4EmLowEParameters, G4EmLowEParametersMessenger: added
+  a new parameter - name of the sub-directory with data for Livermore models
+  with variants: "livermore" (default), "epics_2017".
+  Comes with new G4EMLOW-7.10 data set.
+- G4VEmProcess: removed old unused methods; DefinedMaterial() method is now
+  protected (needed for AtRest processes).
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-06-01)
+  o G4PhotoNuclearCrossSection: corrected threshold for gamma + p -> pi0 + p,
+    extended for use on 3H and 3He targets.
+- models/binary_cascade (had-binary-V10-06-00)
+  o G4BinaryCascade: fixed memory leak at exit.
+- models/de_excitation (hadr-deex-V10-06-01)
+  o G4DeexPrecoParameters: set default time limit to 1 microsecond           (*)
+    for isomer production (now, in all cases, isomers with half-life time
+    above 1 microsecond are produced, whereas before this happened
+    only when Radioactive Decay was activated, else only above 1000 sec).
+    Addressing problem report #2226.
+- models/management (hadr-modman-V10-06-00)
+  o G4HadronicInteractionRegistry: try to delete HP and PHP end of run
+  o G4HadronicInteraction: provide default implementation for all virtual
+    methods.
+  o G4VHighEnergyGenerator, G4VIntraNuclearTransportModel, G4VPreCompoundModel:
+    cleaned up: removed old commented lines, code format, C++11 keywords.
+- models/parton_string/diffraction (hadr-string-diff-V10-06-01)
+  o G4FTFModel, G4FTFParticipants: clean-up: removed unused methods,
+    delete operators, use of C++11 keywords.
+- models/parton_string/management (hadr-partonstring-mgt-V10-06-01)
+  o G4VParticipants, G4VPartonStringModel, G4VStringFragmentation,
+    G4StringModel: clean-up; removed unused methods, delete operators,
+    use of C++11 keywords.
+- models/parton_string/qgsm (hadr-string-qgsm-V10-06-01)
+  o G4QGSModel: clean-up; removed unused methods, delete operators, use of
+    C++11 keywords, moved inline implementation to source.
+- models/quasi_elastic (hadr-qelastic-V10-06-00)
+  o G4QuasiElRatios: fixed memory leak at exit.
+- models/theo_high_energy (hadr-theo-HE-V10-06-01)
+  o G4QuasiElasticChannel, G4TheoFSGenerator: clean-up; use of C++11 keywords
+    and loops, removed unused methods, formatting. 
+
+processes/management                             procman-V10-06-01
+--------------------
+- G4ProcessTable: enabled deletion of all processes except G4Transportation
+  at the end of run.
+
+processes/parameterisation                       param-V10-06-00
+--------------------------
+- G4FastSimulationHelper: merged ActivateFastSimulation() calls for mass
+  and parallel geometry cases.
+- G4FastSimulationManager, G4VFastSimulationModel: removed redefinition
+  of G4Envelope type.
+
+track                                            track-V10-06-03
+-----
+- G4Track: avoid using velocity table, use GetBeta() method from
+  G4DynamicParticle instead; expected minor speedup.
+
+tracking                                         tracking-V10-06-01
+--------
+- Minor c++11 revision; code cleanup and formatting.
+
+visualization                                    vis-V10-06-03
+-------------
+- management (visman-V10-06-02):
+  o Bug fix: rebuild graphics databases after "/vis/filtering/*/mode".
+  o Improved printing of available systems and models.
+- modeling (modeling-V10-06-01):
+  o Suppress warnings while filter not fully established.
+- OpenGL (OpenGL-V10-06-04):
+  o Fix bug in "/vis/ogl/export" when dot in name.
+
+data sets:
+---------
+- G4EMLOW-7.10:
+  o Added new cross-section files for protons (HT).
+  o Added EPICS2017 data for gamma conversion (ZL).
+
+examples                                         examples-V10-06-03
+--------
+- Updated documentation and reference outputs.
+- advanced/hadrontherapy (hadrontherapy-V10-06-00)
+  o Deleted many obsolete macro files.
+  o Code cleaup; removed Root script folder and other cosmetics.
+
+tests                                            tests-V10-06-03
+-----
+- Updated reference outputs and tools.
+- tests/test22 (test22-V10-06-00)
+  o Updated subdirectory 'PiPinclusive' and deleted subdirectory 'ChipsX'.

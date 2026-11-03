@@ -1,0 +1,334 @@
+
+                       geant4-10-07-ref-02
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added Boolean parameter for enabling Spline in PhysicsVector classes.
+ o New G4SteppingVerboseWithUnits class, an alternative to G4SteppingVerbose
+   with printout of proper units. Simplified way of defining a user-specific
+   stepping verbose, that is now common to all sequential, MT and tasking modes.
+ o First stage of general code cleanup in EM modules.
+ o Fixed problem in G4HadronHElasticPhysics of fully overlapping energy
+   transition; now using G4ChipsElasticModel only for Hydrogen element
+   above 10 MeV.
+ o In de-excitation, changed default half-life time threshold for isomer
+   production from 1 microsecond to 1 nanosecond, to avoid unphysical missing
+   energy cases. Might imply CPU degradation, to be verified.
+ o Moved g4tools module to externals.
+ o New data set: G4PARTICLEXS-3.1.1.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in release 10.7.p01
+(o)  Fixes included in release 10.7.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-07-07
+-----
+- Added G4tools target to CMake/GNUmake configuration following its
+  migration from analysis to externals categories.
+- Added geant4.bat prototype.
+- Hint to run geant4-config on Windows.
+- Updated to data set G4PARTICLEXS-3.1.1.                                    (*)
+
+config                                           config-V10-07-01
+------
+- Updated compiler/link flags for migration of g4tools to externals category.
+
+environments/g4py                                geant4py-V10-07-00
+-----------------
+- In TestEm0, use default EM physics in place of obsolete G4EmProcessOptions.
+
+analysis                                         analysis-V10-07-02
+--------
+- Fixed problem with merging n- tuples with columns of vector type           (*)
+- Moved g4tools to externals category.
+
+externals                                        externals-V10-07-01
+---------
+- Moved g4tools from analysis to externals category.
+
+geometry/solids/CSG                              geom-csg-V10-07-00          (*)
+-------------------
+- G4Trap, G4Para: removed spurious character in printout in StreamInfo().
+  Addressed problem report #2318.
+
+global                                           global-V10-07-02
+------
+- G4PhysicsFreeVector, G4LPhysicsFreeVector, G4PhysicsLogVector,
+  G4PhysicsLinearFreeVector, G4PhysicsOrderedFreeVector: in each constructor
+  added extra Boolean parameter for enabling Spline; needed for later removal
+  of the SetSpline() method, required for re-organisation of the code using
+  templates.
+- G4LPhysicsFreeVector, G4PhysicsOrderedFreeVector: moved implementation to
+  G4PhysicsFreeVector.
+- G4PhysicsFreeVector: added to all constructors control on continuous increase
+  energy in the energy vector.
+- G4PhysicsVector: extended warning printout.
+- Updated date and tag-ID for geant4-10-07-ref-02.
+
+intercoms                                        intercoms-V10-07-02
+---------
+- G4UImanager: set LastCommandOutputTreated=false only for master thread.
+  Avoids inadvertent "highlighting" in G4UIQt on worker threads.
+
+materials                                        materials-V10-07-00         (o)
+---------
+- G4DensityEffectData: fixed typo in Z=37 elementary material name.
+  Addressing problem report #2324.
+
+persistency/gdml                                 gdml-V10-07-01              (*)
+----------------
+- Fixed parsing of regions in G4GDMLParser::ImportRegions().
+  Allow for proper deletion of meta-data lists in destructor.
+  Based on GitHub PR#19.
+- Fixed reading of units for GenericTrap in G4GDMLReadSolids.
+  Addressing problem report #2317.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-07-04)
+  o G4EmBuilder: added geantinos to the minimal list of EM particles.        (o)
+  o G4EmDNAChemistry, _option1, _option2, _option3
+    added dissociation channel for electron-hole recombination.
+  o G4EmDNAChemistry_option3: changed pre-chemical model.
+  o G4EmLivermorePolarizedPhysics: removed unused header,
+- constructors/hadron_elastic (phys-ctor-helastic-V10-07-02)
+  o G4HadronHElasticPhysics : fixed problem of fully overlapping energy
+    transition between G4HadronElastic and G4ChipsElasticModel, using
+    now G4ChipsElasticModel only for Hydrogen element above 10 MeV.
+- lists (phys-lists-V10-07-01)                                               (o)
+  o Updated list of EM extension shorthands known to extensible factory to
+    match old factory.
+
+processes/electromagnetic/adjoint                emadjoint-V10-07-00
+---------------------------------
+- General code cleanup: applied clang-format style guidelines; applied C++11
+  codewords to method declarations (virtual, override, explicit); deleted unused
+  variables and methods; started naming class member variables with 'f'; use
+  'nullptr' instead of '0'; removed unused headers; use constexpr for numbers.
+
+processes/electromagnetic/dna                    emdna-V10-07-02
+-----------------------------
+- G4DNAElectronHoleRecombination: dissociation channel of electron-hole
+  recombination moved to G4EmDNAChemistry, _option1, _option2, _option3.
+- G4DNAWaterDissociationDisplacer: added the fragment displacement for
+  new dissociation channel.
+- Fixed dependency on g4tools, now moved to externals module.
+
+processes/electromagnetic/highenergy             emhighenergy-V10-07-01
+------------------------------------
+- G4hBremsstrahlungModel: added header.
+- G4hhIonisation: removed G4BohrFuluctuations.
+
+processes/electromagnetic/lowenergy              emlowen-V10-07-06
+-----------------------------------
+- General code cleanup: use G4 types; cleanup of headers and Penelope models.
+- Convert G4LPhysicsFreeVector into G4PhysicsFreeVector.
+- Removed obsolete unused classes G4BremsstrahlungCrossSectionHandler,
+  G4BremsstrahlungParameters, G4eBremsstrahlungSpectrum, G4hSRIM2000p,
+  G4PhotoElectricAngularGeneratorSimple, G4MicroElecInelastic_new,
+  G4LivermorePolarizedPhotoElectricModel and
+  G4LivermorePolarizedPhotoElectricGDModel.
+- G4MicroElecLOPhononModel: fixed Coverity warning; removed debug
+  printout; rename member of class.
+
+processes/electromagnetic/muons                  emmuons-V10-07-01
+-------------------------------
+- General code clean-up: use C++11 keywords, improved comments, format files.
+- G4EnergyLossForExtrapolator, G4ErrorEnergyLoss, G4TablesForExtrapolator:
+  provide thread-safe initialisation of internal tables; guarantee
+  initialisation only once; size of tables depend only on number of materials.
+- G4MuIonisation: removed obsolete G4BohrFluctuations class.
+
+processes/electromagnetic/polarisation           empolar-V10-07-00
+--------------------------------------
+- General code cleanup: name classes in logical manner; improved comments;
+  added ProcessDescription; ordered #includes and removed unused; disabled
+  copy and assignment operators with 'delete'; increased C++11 keyword usage,
+  especially override, explicit; renamed (most) class variables to start with
+  'f'; make SCRN arrays the correct size; use constexpr for numbers; applied
+  clang-format style; use G4ExceptionDescription; avoid implicit conversions
+  between G4StokesVector and G4ThreeVector.
+
+processes/electromagnetic/standard               emstand-V10-07-01
+----------------------------------
+- Removed obsolete classes G4BohrFluctuations and G4HeatedKleinNishinaCompton.
+
+processes/electromagnetic/utils                  emutils-V10-07-01           (*)
+-------------------------------
+- G4VEnergyLossProcess, G4VEmProcess, G4EmExtraParameters and
+  G4EmExtraParametersMessenger: improved printout.
+  Addressing problem report #2292.
+
+processes/electromagnetic/xrays                  xrays-V10-07-00
+-------------------------------
+- General code cleanup: removed commented out code; added ProcessDescription
+  and DumpInfo(); organized order of headers, removed and added as needed;
+  use constexpr for numbers; replaced G4PhysicsOrderedFreeVector with
+  G4PhysicsFreeVector.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-07-04)
+  o G4MuNeutrinoNucleusTotXsc: new arrays for XS_eq and XS_in, now XS_tot
+    is a sum of XS_qe and XS_in with A, Z and A-Z factors.
+- models/de_excitation (hadr-deex-V10-07-00)                                 (o)
+  o G4DeexPrecoParameters: changed half-life time threshold for isomer
+    production from 1 microsecond to 1 nanosecond.
+    The goal is to avoid unphysical missing energy cases as reported by
+    NA61/SHINE Collaboration. Might imply CPU degradation, to be verified.
+- models/radioactive_decay (radioactive_decay-V10-07-00)                     (o)
+  o G4RadioactiveDecayBase: set the weight of secondaries tracks to the
+    mother's weight value in the method G4RadioactiveDecayBase::DecayAnalog().
+    This bug, present since a long time, affects only simulations that use
+    Radioactive Decay in analogue mode with "external" biasing (e.g. generic
+    biasing, GPS generator with weights, etc.).
+    Corresponding fix was done also in the deprecated class G4RadioactiveDecay
+    in the method DecayIt().
+- stopping (hadr-stopping-V10-07-01)                                         (*)
+  o G4MuonicAtomDecay: fixed remaining Coverity warning, removed 
+    commented code.
+
+processes/transportation                         transport-V10-07-01
+------------------------
+- Enable setting of smooth curved trajectories to particle-change in
+  G4CoupledTransportation::AlongStepDoIt(), which was commented out by
+  mistake. Based on discussion in Geant4 Forum thread #4271.
+
+track                                            track-V10-07-00
+-----
+- Correction to G4Track::operator=() to copy also touchable-handles.
+  This fixes a crash originated when running importance sampling in the
+  G4EventManager when the track got assigned the origin touchable handler
+  from its own touchable handle; the touchable handler was sometimes not set.
+
+tracking                                         tracking-V10-07-03
+--------
+- Introducing G4SteppingVerboseWithUnits, an alternative to G4SteppingVerbose
+  with printout of proper units.
+- Simplified way of defining a user-specific stepping verbose, that
+  is now common to all sequential, MT and tasking modes.
+
+visualization
+-------------
+- management (visman-V10-07-02):
+  o Interrupt macro (vis.mac) if graphics system invalid/unavailable.
+    Issues "Batch is interrupted" and avoids long litany of further errors.
+
+data sets:
+---------
+- G4PARTICLEXS-3.1.1:                                                        (*)
+  o Fixed data for He3 and He4 for few light targets.
+
+examples                                         examples-V10-07-02
+--------
+- Updated documentation and reference outputs.
+- advanced/brachytherapy (brachy-V10-07-00)
+  o Code cleanup: use C++11 keywords and patterns.
+  o Removed BrachyMaterial class; materials implemented now using NIST
+    material manager.
+  o Removed SetCuts() from the local PhysicsList.
+- advanced/gammaray_telescope (gammaraytel-V10-07-00)
+  o Removed dependency on G4EmProcessOptions.
+  o Removed SetCuts() from the local PhysicsList.
+- advanced/hadrontherapy (hadrontherapy-V10-07-03)
+  o Removed dependency on G4EmProcessOptions.
+- advanced/iort_therapy (iort_therapy-V10-07-00)
+  o Removed dependency on G4EmProcessOptions.
+  o Removed SetCuts() from the local PhysicsList.
+  o Set cuts per region in ConstructProcess(). RegionStore is not available
+    when accessed from the constructor of the Physics List.
+- advanced/microbeam (microbeam-V10-07-01)
+  o Added initialisation of 'fDose3DDose' and 'fMapVoxels' in the
+    constructor of the RunAction class.
+  o Use explicit constructors and "override" instead of "virtual" in derived
+    classes. Use G4 types in DetectorConstruction.
+- advanced/radioprotection (radioprotection-V10-07-00)
+- advanced/xray_fluorescence (XRayFluo-V10-07-00)
+  o Removed dependency on G4EmProcessOptions.
+  o Removed SetCuts() from the local PhysicsList.
+- extended/electromagnetic/TestEm1 (testem1-V10-07-01)
+  o Fixed README.
+- extended/electromagnetic/TestEm2 (testem2-V10-07-03)
+  o SteppingVerbose: set precision via data member; modified process name.
+  o Use G4RunManagerFactory in main().
+  o Fixed README.
+- extended/electromagnetic/TestEm5 (testem5-V10-07-02)
+  o TrackingAction: fixed bug for histo of vertex position.
+  o Added macro subcut.mac.
+  o Use G4RunManagerFactory in main().
+- extended/electromagnetic/TestEm7 (testem7-V10-07-00)
+  o Fixed README.
+- extended/electromagnetic/TestEm9 (testem9-V10-07-01)
+  o PhysicsList: removed unused header.
+- extended/electromagnetic/TestEm11 (testem11-V10-07-01)
+- extended/electromagnetic/TestEm12 (testem12-V10-07-01)
+  o Fixed README.
+- extended/hadronic/Hadr06 (exhadr06-V10-07-04)
+  o PhysicsList: added new units for time.
+- extended/hadronic/Hadr07 (exhadr07-V10-07-03)
+- extended/hadronic/NeutronSource (NeutronSource-V10-07-03)
+  o TrackingAction, Run: print meanLife.
+  o PhysicsList: added new units for time.
+- extended/medical/dna/microprox (microprox-V10-07-00)
+- extended/medical/dna/microyz (microyz-V10-07-00)
+- extended/medical/dna/slowing (slowing-V10-07-00)
+  o PhysicsList: removed unused header.
+- extended/medical/dna/svalue (svalue-V10-07-00)
+  o PhysicsList: removed unused header. Radioactive decay is defined via
+    standard radioactive physics builder.
+  o Do not allow change of geometry between runs, only materials may be
+    changed.
+  o Removed all warning in test run.
+- extended/medical/electronScattering2 (exampleES2-V10-07-00)
+  o Removed warning.
+  o Cosmetic modifications in PhysicsList.
+  o Fixed README.
+- extended/parallel/ThreadsafeScorers (ThreadsafeScorers-V10-07-00)
+  o TSPhysicsList: removed obsolete header G4EmProcessOptions; removed
+    method SetCuts() to avoid data race, use the one from the base class; 
+    removed singleton pattern from this class as not needed. 
+- extended/persistency/gdml/G01 (G01-V10-07-01)                              (*)
+  o Fixed auxiliary.gdml sample to define proper Region tags.
+- extended/polarisation/Pol01 (expol01-V10-07-01)
+  o Cleanup of Physics List; use renamed polarized processes.
+- extended/runAndEvent/RE05 (exampleRE05-V10-07-00)
+- extended/runAndEvent/RE06 (exampleRE06-V10-07-00)
+  o Migration to the new SteppingVerbose.
+- extended/visualization/movies (exam-ext-vis-movies-V10-07-00)
+  o New example illustrating how to make a movie with /vis/viewer/save
+    and /vis/viewer/interpolate. It also includes the "visTutor" macros
+    from the old "novice" example, N03, subsequently moved to "basic" B4.
+    See README for further information.
+
+tests                                            tests-V10-07-02
+-----
+- Updated reference outputs and tools.
+- Support same CMake version range as core Geant4 in all tests.
+- tests/test24 (test24-V10-07-01)
+- tests/test31 (test31-V10-07-01)
+  o Removed local Physics List.
+- tests/test32 (test32-V10-07-01)
+  o Updated test macros to avoid same file names in the two Root tests.
+- tests/test36 (test36-V10-07-01)
+- tests/test41 (test41-V10-07-01)
+- tests/test44 (test44-V10-07-01)
+- tests/test46 (test46-V10-07-02)
+- tests/test50 (test50-V10-07-01)
+  o Removed local Physics List.
+- tests/test52 (test52-V10-07-01)
+  o Updated PhysicsList and use G4RunManagerFactory in main();
+    clean-up DetectorConstruction; added protections for division by zero;
+    make test work without AIDA; added macro test52.in and reference output.
+- tests/test53 (test53-V10-07-01)
+  o Removed local Physics List.
+- tests/test54 (test54-V10-07-01)
+- tests/test55 (test55-V10-07-01)
+- tests/test56 (test56-V10-07-01)
+  o Updated PhysicsList and use G4RunManagerFactory in main().
+- tests/test73 (test73-V10-07-01)
+  o Code clean-up: use recent version of the local Physics List;
+    use G4RunManagerFactory in main(); removed unused or commented code.

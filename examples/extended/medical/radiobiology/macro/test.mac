@@ -1,0 +1,67 @@
+################################################################################
+# Short regression-test macro.
+#
+# The macro exercises the example-specific UI commands while keeping the run
+# sufficiently short for automated testing.
+################################################################################
+
+/control/verbose 0
+/tracking/verbose 0
+/run/verbose 0
+/event/verbose 0
+/random/setSeeds 12345 67890
+
+/Physics/addPhysics HADRONTHERAPY_1
+/run/numberOfThreads 2
+
+/detectorGeom/setWorldBoxSizes 8 8 8 cm
+/detectorGeom/setMat G4_WATER
+/detectorGeom/setBoxSizes 4 4 4 cm
+/voxels/setVoxelSizes 2 40 40 mm
+
+/beamFluence/reset
+/beamFluence/verbose 0
+/beamFluence/calculate true
+/beamFluence/fileName testBeamFluence.out
+/beamFluence/print
+
+/dose/reset
+/dose/verbose 0
+/dose/calculate true
+/dose/fileName testDose.out
+/dose/print
+
+/LET/reset
+/LET/verbose 0
+/LET/calculate true
+/LET/fileName testLET.out
+/LET/print
+
+/rbe/reset
+/rbe/verbose 0
+/rbe/loadLemTable data/rbe/lem1.csv
+/rbe/cellLine U87
+/rbe/calculate true
+/rbe/print
+
+/run/initialize
+
+/gps/particle proton
+/gps/pos/type Point
+/gps/pos/centre -3 0 0 cm
+/gps/direction 1 0 0
+/gps/ene/type Mono
+/gps/ene/mono 58 MeV
+
+# Complete a first run with 2 mm slices.
+/run/beamOn 1
+
+# Exercise geometry and scorer-array reinitialization between runs.
+/voxels/setVoxelSizes 1 40 40 mm
+/voxels/update
+/beamFluence/reset
+/dose/reset
+/LET/reset
+/rbe/reset
+
+/run/beamOn 10
