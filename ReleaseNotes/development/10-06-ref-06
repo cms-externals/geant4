@@ -1,0 +1,223 @@
+
+                       geant4-10-06-ref-06
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Introducing new tasking system, based on PTL (Parallel Tasking Library),
+   dedicated run manager (G4TaskRunManager) and factory (G4RunManagerFactory),
+   enabling use of tasks for the event loop. The tasking system is fully
+   compatible with Intel TBB, which can be selected if GEANT4_USE_TBB=ON is
+   specified when configuring CMake. The default behavior is to submit the
+   tasks to an internal thread-pool and task-queue. A comprehensive description
+   of the system and options provided can be found in the README document
+   located within the new source/tasking module.
+ o Enabled "check-mode" for G4PropagatorInField and G4VIntersectionLocator.
+   Enable use of whiteboard for logging/debugging in G4MultiLevelLocator, if
+   "check-mode" in navigation is being activated through UI command.
+ o G4CrossSectionElastic, G4CrossSectionInelastic: fix for ions and anti-ions,
+   where the max energy of applicability of the (elastic and inelastic) cross-
+   sections must scale with the absolute baryonic number.
+ o Improved treatment of antibaryon interactions in QGS.
+ o Updated to data-set G4EMLOW-7.12.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(+)  Fixes included in release 10.6.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-06-25
+-----
+- Added support for building PTL external module and introduced
+  GEANT4_USE_TBB option, enabling use of TBB as possible alternative
+  to builtin PTL tasking.
+- Set GEANT4_USE_NEW_CMAKE to be ON by default, to use new build organization
+  as the primary system. Retain GEANT4_BUILDTREE_INCLUDE_DIRS in new CMake
+  system to support clients that may not yet support CMake target usage
+  requirements.
+- Fixed bug in setting of AUTOMOC.
+- Handle install of G4clhep{-static} independently of main modules
+  due it being built outside the category system.
+- Updated to data-set G4EMLOW-7.12.
+
+config                                           config-V10-06-06
+------
+- Added setup for building and configuring new externals/ptl
+  and tasking modules. External installation of PTL can be enabled
+  by defining the installation through the environment variable PTL_BASE_DIR.
+- Added -pthread to all builds in Linux targets.
+
+analysis                                         analysis-V10-06-03
+--------
+- Fix to add a null-pointer check to ntupleDescription->fNtuple in
+  G4RootPNtupleManager::Merge().
+
+externals                                        externals-V10-06-02
+---------
+- Added new module "ptl" (Parallel Tasking Library), implementing a
+  lightweight C++11 multi-threading tasking system featuring thread-pool,
+  task-groups, and lock-free task queue.
+
+geometry/magneticfield                           field-V10-06-05
+----------------------
+- Implemented move constructor and operator for G4FieldTrack.
+
+geometry/navigation                              geomnav-V10-06-05
+-------------------
+- Enabled "check-mode" for G4PropagatorInField and G4VIntersectionLocator.
+  Enable use of whiteboard for logging/debugging in G4MultiLevelLocator, if
+  "check-mode" in navigation is being activated through UI command.
+- Fixed Coverity defects in G4LocatorChangeRecord and some code cleanup.
+
+global                                           global-V10-06-15
+------
+- Updated date and tag-ID for geant4-10-06-ref-06.
+
+interfaces                                       interfaces-V10-06-05
+----------
+- Fixed deprecation warnings being triggered when using Qt-5.15.
+
+physics_lists/constructors/decay                 phys-ctor-decay-V10-06-03
+--------------------------------
+- G4RadioactiveDecayPhysics: updated initialisation to be coherent with
+  recent updates in initialisation of atomic de-excitation.
+
+physics_lists/constructors/electromagnetic       phys-ctor-em-V10-06-12
+------------------------------------------
+- G4EmBuilder: fix for non-reproducibility in the MT mode when radioactive
+  decay is enabled. Added flag for allowing choice of multiple-scattering
+  model.
+- G4EmStandardPhysics_option3: restore the same configuration of EM models
+  as in release 10.6.p02.
+- G4EmModelActivator: use same options for physics per region as used in EM
+  constructors recently updated.
+- Use C++11 features in several constructors.
+
+processes/electromagnetic/dna                    emdna-V10-06-08
+-----------------------------
+- Fixed bug in IRT, adding a protection for crashes induced by empty
+  reaction set.
+- Fixed Coverity warning.
+
+processes/electromagnetic/lowenergy              emlowen-V10-06-06
+-----------------------------------
+- Added missing method InitialiseForElement() in G4LivermoreGammaConversionModel
+  and G4LivermoreGammaConversion5DModel.
+- Fixed Coverity warning.
+
+processes/electromagnetic/utils                  emutils-V10-06-07
+-------------------------------
+- G4EmParameters, G4EmExtraParameters: fix affecting CPU in Shielding,
+  to apply FillStepFunction() method in each thread.
+- G4VEnergyLossProcess: fixed warning printout.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-06-06)
+  o G4CrossSectionElastic, G4CrossSectionInelastic: fix for ions and         (+)
+    anti-ions, where the max energy of applicability of the (elastic and
+    inelastic) cross-sections must scale with the absolute baryonic number;
+    however, the cross-sections objects are often shared between the different
+    types of ions (d, t, He3, alpha, and genericIon), therefore we scale by a
+    large value (256, safely larger than the number of nucleons of the
+    heaviest nuclides).
+  o G4HadronNucleonXsc: fixed typo in heavy meson cross-section identified by
+    Coverity; improved code formatting.
+- models/parton_string/hadronization (had-hadronization-V10-06-02)
+  o Improved treatment of antibaryon interactions in QGS.
+    In G4QGSMFragmentation, corrected the treatment of low mass diquark-
+    antidiquark strings. In addition to this, introduced the Mt distribution
+    of produced hadrons.
+    In G4VLongitudinalStringDecay, introduced in method SetMinimalStringMass()
+    a check that the strings are of allowed type: quark-antiquark, diquark-
+    antidiquark, quark-diquark and antiquark-antidiquark. Introduced also for
+    diquark-antidiquark strings a special algorithm (already present for the
+    other types of allowed strings) for treating low-mass strings with masses
+    below known hadrons.
+- models/parton_string/qgsm (hadr-qgsm-V10-06-02)
+  o Improved treatment of antibaryon interactions in QGS.
+    In G4QGSParticipants, the average transverse momentum of partons in a
+    hadron is set to zero (according to the study of transverse momentum
+    distributions of hadrons produced in hadronic interactions, in particular
+    the study of Xf - Pt correlations presented by the NA49 Collaboration).
+    In G4QuarkExchange, the reggeon exchanges are now treated as annihilation
+    and creation of quark-antiquark pairs (to reflect in inelastic processes
+    the non-vacuum reggeon exchanges present in antiparticle-particle elastic
+    scattering amplitudes).
+- models/qmd (hadr-qmd-V10-06-00)
+  o G4QMDReaction: added code in ApplyYourself() to get cross-section when
+    projectile is pion. Replaced data member G4PiNuclearCrossSection with
+    G4BGGPionElasticXS and G4BGGPionInelasticXS.
+    In G4QMDGroundStateNucleus constructor, move check for p or n projectile
+    earlier in code so baryon number can be conserved.
+    Addressing problem report #2236.
+
+processes/cuts                                   procuts-V10-06-00
+--------------
+- Revision for use of c++11 constructs. Code cleanup and formatting.
+
+processes/management                             procman-V10-06-03
+--------------------
+- Fixed Coverity warning for uninitialised data in G4VProcess.
+
+run                                              run-V10-06-07
+---
+- Modified G4MTRunManager to enable inheritance for new G4TaskRunManager.
+- G4MTRunManager, G4RunManager: fixes for windows, to avoid inline static
+  methods and use export flag G4RUN_DLL for static data.
+
+tasking                                          tasking-V10-06-04
+-------
+- New module implementing a new Geant4 run manager, G4TaskRunManager, enabling
+  use of the PTL tasking system for the event loop. The tasking system is fully
+  compatible with Intel TBB, which can be selected if GEANT4_USE_TBB=ON is
+  specified when configuring CMake. The default behavior, however, is to submit
+  the tasks to an internal thread-pool and task-queue.
+  A comprehensive description of the system and options provided can be found
+  in the README document located within this module.
+
+tracking                                         tracking-V10-06-02
+--------
+- Fixed minor Coverity defect for uninitialised data in G4SteppingManager.
+
+visualization                                    vis-V10-06-04
+-------------
+- management (visman-V10-06-06)
+  o /vis/scene/add/*Field: corrected guidance (red->green->blue).
+- OpenGL (opengl-V10-06-07)
+  o Fixed deprecation warnings being triggered when using Qt-5.15.
+
+data sets:
+---------
+- G4EMLOW-7.12:
+  o Added a new numerical DCS set for e-/e+ elastic scattering obtained by
+    numerical Dirac Partial Wave Analysis (DPWA).
+    More information can be found in the 'dpwa/Readme.txt' file.
+
+examples                                         examples-V10-06-06
+--------
+- Updated documentation and reference outputs.
+- basic/B5 (exampleB5-V10-06-00)
+  o Migrated main() to use new G4RunManagerFactory.
+    The new G4TaskRunManager is exercised by default in MT builds.
+- extended/hadronic/Hadr03 (exhadr03-V10-06-02)
+  o HistoManager, SteppingAction: added plot of e-.
+- extended/hadronic/Hadr06 (exhadr06-V10-06-01)
+  o HistoManager, TrackingAction: plot particle energy at creation.
+- extended/parallel/TBB (tbbex-V10-06-00)
+  o Updated to use new tasking system which is fully compatible with TBB.
+- extended/parallel/ThreadsafeScorers (ThreadsafeScorers-V10-06-02)
+  o Updated to use new tasking system; forcing use of G4TaskRunManager.
+  o Added example of user code leveraging tasking in TSRunAction; it leverages
+    tasks on the master thread at the end of the run to generate some strings
+    of output via a nested hierarchy of tasks and uses the features of the
+    G4TaskGroup to combine the strings in the order that they were submitted
+    to the task-group (thus producing the same output result as the serial
+    version).
+- extended/radioactivedecay/Activation (activation-V10-06-01)
+  o In Run, corrected a protection on maximum number of histograms.
+
+tests                                            tests-V10-06-06
+-----
+- Updated reference outputs and tools.

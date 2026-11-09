@@ -1,0 +1,53 @@
+#include "G4CompetativeMF.hh"
+#include "G4HadronicException.hh"
+#include "G4ExcitationHandler.hh"
+#include "G4Evaporation.hh"
+#include "G4EvaporationChannel.hh"
+#include "Randomize.hh"
+
+G4CompetativeMF::G4CompetativeMF(G4ExcitationHandler* handler)
+  : fHandler(handler)
+{    
+  fNn = fHandler->GetEvaporation()->GetNumberOfChannels();
+  fChannels.resize(fNn);
+  for (std::size_t i = 0; i < fNn; ++i) {
+    fChannels[i] = fHandler->GetEvaporation()->GetChannel(i);
+  }
+  probabilities.resize(fNn, 0.0);
+}
+
+G4FragmentVector* G4CompetativeMF::BreakItUp(const G4Fragment& theFragment)
+{   
+  G4Fragment* frag = new G4Fragment(theFragment);
+  G4Fragment* emittedFrag = nullptr;
+  G4FragmentVector* theResult = nullptr;
+    
+  // Calculate cumulative probabilities for all channels
+  G4double totalProbability = 0.0;
+  for (std::size_t i = 1; i < fNn; ++i) {
+    totalProbability += fChannels[i]->GetEmissionProbability(frag);
+    probabilities[i]=totalProbability;
+  }
+    
+  G4double randomValue = G4UniformRand()*totalProbability;
+  G4int selectedChannel = 1;
+    
+  for (std::size_t i = 1; i < fNn; ++i) {
+    if (randomValue <= probabilities[i]) {
+      selectedChannel = i;
+      break;
+    }
+  }
+    
+  // Calculate process in selected channel
+  auto selectedCh = fChannels[selectedChannel];
+  emittedFrag = selectedCh->EmittedFragment(frag);
+
+  if (emittedFrag != nullptr) {
+    theResult = new G4FragmentVector();
+    theResult->push_back(emittedFrag);
+    theResult->push_back(frag);
+  }
+
+  return theResult;
+}

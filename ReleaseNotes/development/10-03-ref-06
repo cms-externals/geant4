@@ -1,0 +1,169 @@
+
+                       geant4-10-03-ref-06
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Removed support for modulefile generation; expected that software stack
+   managers will generate a modulefile file according to their requirements.
+ o Enabled adapter for VecGeom shapes in G4U* geometry wrappers.
+   USolids API is deprecated and no longer supported.
+ o Added ability to export limited number of levels in the geometry hierarchy
+   when exporting GDML files.
+ o Completely disabled correlated gamma in de-excitation.
+ o Updated to data set G4EMLOW-6.54.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(*)  Fixes included in release 10.3.p02
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-03-23
+-----
+- Removed support for modulefile generation, as not used and generated files
+  not compatible with relocatability. It's expected that software stack
+  managers will generate a modulefile file according to their requirements.
+- Corrected exporting of external packages paths from VecGeom.               (*)
+- Updated to data set G4EMLOW-6.54.
+
+geometry
+--------
+- management (geommng-V10-03-18):
+  o Corrections and improvements to G4UAdapter.
+- solids/CSG (geom-csg-V10-03-26):
+  o Enabled adapter for VecGeom shapes in G4U* wrappers for: box, trap, trd,
+    tubs cons and orb. From now on, wrappers depends directly on VecGeom
+    shapes implementation. USolids API is deprecated and no longer supported.
+  o G4Trd: allow Dx and Dy parameters be equal to zero where appropriate.
+- solids/specific (geom-specific-V10-03-08)
+  o Enabled adapter for VecGeom shapes in G4U* wrappers for: paraboloid,
+    polyhedra, polycone and GenericTrap. From now on, wrappers depends
+    directly on VecGeom shapes implementation. USolids API is deprecated
+    and no longer supported.
+
+global                                           global-V10-03-08
+------
+- Corrected TLS setup in tls.hh for gcc compiler.                            (*)
+
+persistency/gdml                                 gdml-V10-03-03
+----------------
+- Added ability to export limited number of levels in the geometry hierarchy,
+  by specifying this through the G4GDMLParser::SetMaxExportLevel(G4int) method.
+- Added general optical surface properties block to GDML schema (version 3.1.5).
+  Addressing problem report #1947
+
+processes/electromagnetic/dna                    emdna-V10-03-20
+-----------------------------
+- Corrected Windows issues with path of diff. CS data file.
+
+processes/electromagnetic/lowenergy              emlowen-V10-03-10
+-----------------------------------
+- Fixed resetting of pointer to nullptr in G4LivermorePhotoElectricModel.
+  Addressing problem report #1980.
+- Fixed Coverity defect in G4BoldyshevTripletModel.
+
+processes/electromagnetic/standard               emstand-V10-03-22
+----------------------------------
+- G4eCoulombScatteringModel, G4WentzelVIModel, G4hCoulombScatteringModel:
+  fixed problem of computation of cross-section, introduced in recent tags.
+- Fix for rare division by zero in G4UniversalFluctuation2017.
+- Fixed Coverity defect in G4WentzelOKandVIxSection.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-03-08)
+  o Fixed Coverity defects in G4NeutronElectronElXsc and
+    G4ComponentGGHadronNucleusXsc.
+- models/abrasion (had-abrasion-V10-03-01)
+  o G4WilsonAbrasionModel: fixed case of crash at initialisation.
+- models/binary_cascade (had-binary-V10-03-04)
+  o Fixed memory leak introduced in previous tag.
+- models/coherent_elastic (hadr-cohe-V10-03-05)
+  o Fixed intialisation of data in G4NuclNuclDiffuseElastic constructor
+    responsible for cases of zero scattering angle and no elastically
+    scattered target particle. Addressing problem report #1979.
+  o Fixed Coverity defect in G4NeutronElectronElModel.
+- models/de_excitation (hadr-deex-V10-03-40)
+  o G4WilsonAblationModel: fixed case of crash at initialisation.
+  o G4DeexPrecoParameters: disabled parameter change in G4_Idle state,       (*)
+    now only allowed in G4_PreInit state. Disabled correlated gamma.
+  o G4ExcitationHandler: added protection from incomplete initialisation
+    when external evaporation instance is defined; improved debug printout.
+  o G4GammaTransition: temporary workaround to avoid very long computations,
+    by skipping polarization if initial state has angular momentum 2J > 6.
+    Do not sample nuclear polarization if initial state has momentum 2J > 12.
+  o G4PhotonEvaporation, G4ExcitationHandler: extended local debug printout
+  o G4PolarizationTransition: fix to avoid integer overflow in the argument
+    of sqrt(), and caching to speed up the calculations.
+    Use G4double, and std::sqrt().
+- models/lend (hadr-lend-V10-03-05)                                          (*)
+  o Fixed Coverity defects.
+- models/pre_equilibrium (hadr-pre-V10-03-01)
+  o G4PreCompoundModel::ApplyYourself(): pass creator model and time.
+- models/radioactive_decay (radioactive_decay-V10-03-11)
+  o Removed all cached variables and delete instance of photonEvaporation
+    in G4RadioactiveDecay destructor.
+- models/theo_high_energy (had-theo-HE-V10-03-02)
+  o Fixed memory leak introduced in previous tag.
+- models/util (hadr-mod-util-V10-03-07)
+  o G4Fragment: added non-const method NuclearPolarization() allowing to
+    get non-const pointer to the G4NuclearPolarization object; removed
+    G4Fragment printout by pointer; improved printout.
+  o G4LegendrePolynomial: apply caching to speed up calculations.
+- util (hadr-util-V10-03-04)
+  o G4NuclearPolarization: improved printout.
+
+processes/solidstate/channeling                  channeling-V10-03-01
+-------------------------------
+- Fixed Coverity defects.
+
+data sets:
+---------
+- G4EMLOW-6.54:
+  o Updated ecpssr shell cross-section proton and alpha files.
+
+examples                                         examples-V10-03-06
+--------
+- Updated documentation and reference outputs.
+- advanced/hadrontherapy (hadrontherapy-V10-03-10)
+  o Removed local obsolete ion-ion physics-list. Cleanup of physics-list
+    and local data.
+- basic/B4 (exampleB4-V10-03-01)
+  o Added analysis scripts plotHisto.C and plotNtuple.C.
+- extended/electromagnetic/TestEm0 (testem0-V10-03-00)
+  o RunAction: updated max energy for CSDARange table.
+- extended/exoticphysics/dmparticle (dmparticle-V10-03-04)
+  o Run: fixed typo in printout.
+- extended/exoticphysics/monopole (monopole-V10-03-00)
+  o Migrated to multi-threading and g4tools for analysis.
+- extended/medical/DICOM (DICOM-V10-03-01)                                   (*)
+  o Corrected element definitions for Potassium and Phosphorus in
+    DetectorConstruction.
+- extended/medical/dna/chem2 (chem2-V10-03-00)
+  o Modified time steps.
+- extended/medical/dna/dnaphysics (dnaphysics-V10-03-04)
+  o Added flag for Capture.
+  o Added visualisation to input macro dnaphysics.in.
+- extended/persistency/gdml/G02 (G02-V10-03-01)
+  o Added commented block in G02DetectorConstruction to show how to limit
+    the number of levels in the geometry hierarchy to be exported.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-03-08)
+  o Fixed format of data file UserRadData_z98.a238.
+- extended/radioactivedecay/rdecay02 (rdecay02-V10-03-00)                    (*)
+  o Updated README, adding a note stating that all histograms but one are
+    turned off by default, and describing how to turn them back on.
+    Addressing problem report #1936.
+
+tests                                            tests-V10-03-06
+-----
+- Updated reference outputs and tools.
+- tests/test04 (test04-V10-03-03)
+  o Switch back the version of G4TENDL in use from 1.4 to 1.3.
+- tests/test23 (test23-V10-03-02)
+  o Fixed compilation warnings on gcc-7.1.
+- tests/test47 (test47-V10-03-00)
+  o Fixed compilation warnings on gcc-7.1.
+  o Minor cleanup in CMake script.
+- tests/test55 (test55-V10-03-01)
+  o Fixed thread-safety issues in DetectorConstruction. Code cleanup.

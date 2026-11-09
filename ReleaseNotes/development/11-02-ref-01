@@ -1,0 +1,265 @@
+
+                       geant4-11-02-ref-01
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added protection in G4VPrimaryGenerator::SetParticlePosition() to avoid
+   and warn for attempts to place vertex position outside or on surface of
+   the world volume.
+ o Correctly report number of threads from G4TaskRunManager.
+ o Fixed production of fake excited isomeres in hadronic de-excitation.
+ o Improved identification of scene tree models in visualisation.
+   Now suppressing the scene tree if the number of touchables exceeds
+   10000 (equivalent to about 20 MB)
+
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.2.1
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-02-02
+-----
+- Added compiler flags for GCC only to help detect/debug LTO-related problems
+  when building with CMAKE_INTERPROCEDURAL_OPTIMIZATION.
+- Added -F flag on macOS with a framework build of Qt.                       (o)
+  Addressing problem report #2589.
+- Fixed detection of SoQt/Xt packages, by manually checking versions of      (o)
+  found packages. Geant4 only requires a minimum version.
+
+event                                            event-V11-02-00
+-----
+- Added protection in G4VPrimaryGenerator::SetParticlePosition() to avoid
+  and warn for attempts to place vertex position outside or on surface of
+  the world volume.
+- Updated "/gun/position" UI command guidance in G4ParticleGunMessenger.
+  Removed unnecessary setting of gun position to (0, 0, 0).
+
+geometry/solids/Boolean                          geom-bool-V11-02-00
+-----------------------
+- Added extra method to process solid and not perform external operations
+  via G4Polyhedron. Successive Boolean mesh operations with floating point
+  are invariably going to be unstable. Providing a method which takes a solid
+  and returns the G4Polyhedron allows the external processor to use
+  significantly more precise types and strategies to avoid ambiguity and
+  then finally convert to double at the very last step.
+
+geometry/solids/CSG                              geom-csg-V11-02-01
+-------------------
+- Use GetThetaCosPhi() and GetThetaSinPhi() in wrapper method GetVertices()  (o)
+  of G4UTrap. This overcomes the problem with trapezoid arised in CMSSW after
+  migration to VecGeom 1.2.6.
+- Fixed typo in wrapper method G4UTrap::SetAllParameters(), setter used in   (o)
+  parameterisation of shape dimensions.
+
+global                                           global-V11-02-02
+------
+- G4StateManager, G4VStateDependent: added notifying methods when an event
+  or a run is deleted to avoid a state-dependent class from accessing to an
+  obsolete event/run object.
+- G4PhysicsModelCatalog: added ID for the Light-Ion QMD model.               (o)
+- Updated date and tag-ID for geant4-11-02-ref-01.
+
+graphics_reps                                    greps-V11-02-00
+-------------
+- G4SceneTreeItem: added G4String field 'FurtherInfo' and access functions.
+
+interfaces                                       interfaces-V11-02-01
+----------
+- Improved identification of scene tree models: use full description,
+  including embedded blanks.
+- In G4UIQt, now all models are treated alike. Load tooltip with "further
+  information", if any; informs user if scene tree is suppressed because
+  of too many touchables.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V11-02-00)
+  o G4EmStandardPhysicsWVI: return back ATIMA model for ionisation and
+    fluctuations of ions in order to make comparisons with other models.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-02-00)
+  o G4DNABornAngle: fixed numerical problem; added protection for cosTheta;  (o)
+    use relativistic formula for maximum energy transfer to delta-electrons.
+- lowenergy (emlowen-V11-02-00)
+  o G4MicroElecInelasticModel_new: fixed Coverity report for memory leak at  (o)
+    exit. Minor code cleanup.
+  o G4MicroElecLOPhononModel: minor code cleanup.
+- standard (emstand-V11-02-01)
+  o G4IonICRU73Data: fix for the case when target material has an element
+    with Z>92; improved debug printouts. In the Lindhard-Sorensen model to
+    compute dEdx the first try is to take it from ICRU73 or ICRU90 data,
+    if this class returns zero, then dEdx is computed from G4GenericIon 
+    and effective charge. Addressing problem report #2586.
+  o G4IonFluctuations: fixed ion fluctuations at high energy.
+    Addressing problem report #2580.
+- utils (emutils-V11-02-00)
+  o G4VEmProcess, G4VEnergyLossProcess: minor CPU optimisation with          (o)
+    reduction of number of calls for log() of kinetic energy.
+- xrays (xrays-V11-02-01)
+  o G4GaussXTRadiator, G4VXTRenergyLoss: flexible summation in               (o)
+    SpectralXTRdEdx; clean-up in GetStackFactor() based on std::complex methods.
+  o In G4Scintillation::sample_time(), refactored the scintillation time     (o)
+    sampling.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-02-00)
+  o G4KokoulinMuonNuclearXS: use faster interface to G4PhysicsVector.        (o)
+  o G4ElectroNuclearCrossSection: added low-energy limit of 100 MeV for      (o)
+    cross-section.
+- management (hadr-man-V11-02-00)
+  o G4HadronicProcess: explicitly define cross-section type per particle     (o)
+    type, this might provide some CPU speedup.
+- models/cascade (hadr-casc-V11-02-01)
+  o Use G4UniformRand() instead of G4InuclSpecialFunctions::inuclRndm()
+    wrapper (now removed from class G4InuclSpecialFunctions) in the code.
+  o In G4CascadeFinalStateAlgorithm::GenerateCosTheta(), for 4-body and
+    higher-body generation of cosTheta, use direct sampling of exp(1-cosTheta)
+    instead of previously used rejection method on sinTheta*exp(-sinTheta).
+    This removes the reflection about cosTheta=0 that caused a symmetric
+    double bump in the Feynman-x distribution.
+- models/de_excitation (hadr-deex-V11-02-02)
+  o G4FermiBreakUpVI, G4FermiFragmentsPoolVI: fix in production of fake      (o)
+    excited isomeres, by moving the check on lifetime limit to the Initialise()
+    method of the model, allowing to change this limit in an application;
+    do not consider decay chains with no final state.
+    Addressing problem report #2584.
+  o G4PhotonEvaporation: use abs() in all computations for 'JP', as it can
+    be negative due to parity. Addressing problem report #2587.
+  o G4VEmissionProbability: renamed local variable to avoid possible
+    shadowing.
+  o G4StatMFChannel: replaced use of C-arrays with std::vector, clearing     (o)
+    compilation warnings on gcc compiler when LTO settings are enabled.
+  o G4ExcitationHandler: improved debug printout.
+- models/lend (hadr-lend-V11-02-01)
+  o Fixed compilation error on latest Windows VC++ compiler 17.8.3 for use   (o)
+    of std::isfinite(). Addressing problem report #2582.
+  o Fixed compilation warnings on gcc compiler when LTO settings are         (o)
+    enabled.
+- models/particle_hp (hadr-hpp-V11-02-01)
+  o G4ParticleHPFissionFS, G4ParticleHPFFFissionFS: added extra protections  (o)
+    against cases when fission data are not available for some isotopes.
+    Addressing problem #2590.
+  o G4ParticleHPFSFissionFS, G4ParticleHPFissionBaseFS: replaced use of      (o)
+    C-arrays with std::vector, clearing compilation warnings on gcc
+    compiler when LTO settings are enabled.
+- models/qmd (hadr-qmd-V11-02-00)
+  o Fixed model ID (model_LightIonQMDModel) in G4LightIonQMDReaction.        (o)
+- models/radioactive_decay (radioactive_decay-V11-02-00)
+  o G4Radioactivation: added DBL_EPSILON check on transition energy for      (o)
+    metastables to prevent creation of zero energy levels which have no
+    decay products.
+
+run                                              run-V11-02-00
+---
+- Correctly report number of threads from G4TaskRunManager.                  (o)
+
+tracking                                         tracking-V11-02-00
+--------
+- G4TrackingMessenger: fixed Coverity report for memory leak at exit, by     (o)
+  moving static thread-local variable to become class member, as
+  G4TrackingManager and its messenger are thread-local by nature.
+
+visualization
+-------------
+- management (visman-V11-02-05)
+  o Rationalisation, simplification and code tidying.
+  o Improved identification of scene tree models: use full description,
+    including embedded blanks.
+  o G4VViewer: check validity of arguments in SceneTreeScene constructor.
+    Pre-calculate quantities in SceneTreeScene constructor; pre-calculate
+    the number of touchables; if more than 10000, suppress them in the
+    scene tree and add some information about it to the model item so that
+    it pops up as a tooltip in the GUI.
+    More logical order of some functions.
+  o G4VSceneHandler: specify the G4PhysicalVolumeModel for construction
+    of scene tree. Simplified loop over models, added some printing.
+    Print number of touchables by depth (if verbosity >= confirmations).
+    Print problematic volumes (if verbosity >= confirmations).
+  o Limit the number of scene tree items. For complex geometries, the scene
+    tree can take up a lot of space, and, anyway, not easy to navigate.
+    Now suppressing the scene tree if the number of touchables exceeds
+    10000 (equivalent to about 20 MB).
+  o G4VisCommandsViewer: use GetSceneTree() rather than AccessSceneTree()
+    when not necessary.
+  o In G4VisExecutive, trap use of run-time visualization driver choice,
+    and (if using run-time choice) insist the UI session is instantiated
+    *before* G4VisExecutive.
+    Keep argc, argv and user-specified system, if specified, for delayed use.
+    Moved informational (G4warn) from G4VisManager.
+  o Delay determination of the run-time-chosen default driver.
+    The run-time-chosen default driver is not actually used until the first
+    use of "/vis/open" or "/vis/sceneHandler/create" without driver parameter,
+    so we delay to this point. This catches the situation when the user
+    instantiates the UI session *after* instantiating the vis manager.
+  o G4VisManager: make GetDefaultGraphicsSystemName() virtual and non const.
+    The code for choosing a default driver *has to be* in user space, i.e.,
+    in G4VisExecutive, so that it has access to use flags.
+    Modified the informational (G4warn) in PrintAvailableGraphicsSystems()
+    to give advice and point to further information to be given after
+    "/vis/open".
+- modeling (modeling-V11-02-01)
+  o G4PhysicalVolumeModel: added data field 'TotalTouchables' and access
+    functions.
+  o G4TextModel: use single quote (') to delineate actual text in description.
+- OpenGL (opengl-V11-02-00)
+- OpenInventor (openinventor-V11-02-00)
+  o Make headers of implementation detail classes private.
+- ToolsSG (vis_toolssg-V11-02-00)
+  o Make Freetype a private dependency in CMake script.
+
+examples                                         examples-V11-02-01
+--------
+- Updated documentation and reference outputs.
+- advanced/eFLASH_radiotherapy (eFLASH_radiotherapy-V11-02-00)
+  o Added FlashPhysicsListMessenger class to allow changing the physics lists
+    by macro commands (opt3,opt4,penelope and livermore).
+- basic/B2 (exampleB2-V11-02-00)
+  o Updated PrimaryGeneratorAction::GeneratePrimaries() in B2a and B2b       (o)
+    examples to avoid nonsense placing of the initial position on the world
+    boundary. Updated READMEs.
+- extended/electromagnetic/TestEm1 (testem1-V11-02-00)
+- extended/electromagnetic/TestEm5 (testem5-V11-02-00)
+  o Updated initial gun position in PrimaryGeneratorAction to not lay on     (o)
+    the world volume surface.
+- extended/electromagnetic/TestEm7 (testem7-V11-02-00)
+  o Fixed compilation error on latest Windows VC++ compiler 17.8.3 for use   (o)
+    of std::isfinite() and std::isnan() in c2_function.hh.
+    Addressing problem report #2582.
+- extended/electromagnetic/TestEm11 (testem11-V11-02-00)
+  o Updated initial gun position in PrimaryGeneratorAction to not lay on     (o)
+    the world volume surface.
+- extended/electromagnetic/TestEm16 (testem16-V11-02-00)
+  o Updated READMEs to document all macros.                                  (o)
+- extended/eventgenerator/pythia/py8decayer (p8decayer-V11-02-00)
+  o Updated to Pythia8.3.10 for testing.
+  o Added Py8DecayerEngine to override Pythia8 native engine with the default
+    one from Geant4 (CLHEP), to properly run in the MT/Tasking mode.
+  o Updated main() to use MT mode; some code cleanup.
+  o Updated READMEs.
+- extended/medical/dna/neuron (neuron-V11-02-00)
+  o Cleanup to reduce number of Valgrind warnings; applied coding style      (o)
+    recommendations; removed commented lines, removed unused methods;
+    substituted C-arrays with vectors; improved algorithm of reading of
+    data file.
+- extended/radioactivedecay/rdecay01 (rdecay01-V11-02-00)
+  o Added time windowed biasing to rdecay01.in macro.
+- extended/visualization/standalone (exam-ext-vis-standalone-V11-02-00)
+  o A smarter way of getting extent of geometry that ignores invisible
+    volumes. Thus, if the world is marked invisible, it ignores it.
+  o In DrawGeometryVisAction: use G4PhysicalVolumeModel to determine extent.
+
+tests                                            tests-V11-02-01
+-----
+- Updated reference outputs and tools.
+- tests/test30 (test30-V11-02-00)
+  o Added "gamma_nuc" option for testing of gamma-nuclear interaction at
+    low energies.
+- tests/test54 (test54-V11-02-00)                                            (o)
+  o PrimaryGeneratorAction: avoid placing initial vertex position
+    on world boundary.
+  o Corrected input macro test54.in.

@@ -1,0 +1,455 @@
+
+                       geant4-10-07-ref-00
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Implemented writing ntuples in multiple files of the same output type.
+ o Added new classes and models for micro-dosimetry simulation.
+ o Enabled charm and bottom hadronic physics, now available in nearly all
+   physics lists, in particular those of interest for HEP.
+ o New process for applying coalescence to the secondaries produced by string
+   model to form deuterons and antideuterons from, respectively, proton-neutron
+   and antiproton-antineutron pairs with close momenta; useful in particular
+   for Cosmic Ray applications.
+ o New profiling settings for TiMemory which allow per-{run,event,track,step}
+   profiling when GEANT4_USE_TIMEMORY is enabled.
+ o Migrated most examples to make use of G4RunManagerFactory.
+ o CLHEP-2.4.4.0 is the required version for builds with external CLHEP.
+ o VecGeom-1.1.8 is the required version for optional build with VecGeom.
+ o New data sets: G4ENSDFSTATE-2.3, G4PhotonEvaporation-5.7,
+   G4RadioactiveDecay-5.6.
+
+---------- Reference-tag 'Release Notes' -----------
+
+(+)  Fixes included in release 10.6.p03
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-06-46
+-----
+- Made Qt3D driver optional based on find of required Qt5 modules.
+- Added GEANT4_BUILD_BUILTIN_BACKTRACE option to enable automatic
+  use of G4BackTrace signal handling in G4RunManager.
+- Updated find package scripts for TiMemory.
+- Moved GEANT4_USE_SYSTEM_PTL option to advanced section.
+- Removed obsolete Geant4MacroDefineModule and G4DeveloperAPI_OLD modules.
+- Removed GEANT4_USE_NEW_CMAKE option to complete migration to new system.
+- Remove pre-CMake3 functionality from G4InstallData module.
+- Use STRINGS cache property for enum options and CMAKE_BUILD_TYPE to
+  give easier interface in (G)UIs.
+- Set CLHEP minimum required version to 2.4.4.0.
+- Set VecGeom-1.1.8 as minimum required version for optional build with VecGeom.
+- Updated to data sets G4ENSDFSTATE-2.3, G4PhotonEvaporation-5.7 and
+  G4RadioactiveDecay-5.6.
+
+environments/g4py                                geant4py-V10-06-04
+-----------------
+- Modified use of Boost 1.73 binding and placeholder functionality, resulting
+  in Boost.Python spamming pragma messages about deprecation of this.
+  Addressing GitHub PR#315. Added BOOST_BIND_GLOBAL_PLACEHOLDERS as a private
+  compile definition to geant4py targets to suppress these.
+- Made CMAKE_INSTALL_PYTHONDIR a user-configurable cache variable.
+  RPATH issue is addressed by use of CMAKE_SKIP_INSTALL_RPATH variable
+  by client. Addressing problem report #2283.
+
+analysis                                         analysis-V10-06-11
+--------
+- Implemented writing ntuples in multiple files of the same output type.
+  New G4VAnalysisManager function SetNtupleFileName(..) and UI commands:
+    /analysis/ntuple/setFileName id fileName
+    /analysis/ntuple/setFileNameToAll fileName
+- Finalised implementation of extra write of histograms. Polished
+  G4GenericAnalysisManager::WriteH1() and added functions for other Hn types.
+- Changes to allow overriding Root classes in g4mpi/analysis.
+- Removed redundant variable in G4RootNtupleFileManager::Reset().
+- Fixed the memory leak reported by Valgrind in deleting files.
+- Fixed text typos in printout. Problem report #2285 and GitHub PR#15.
+
+digits_hits
+-----------
+- detector (detscorer-V10-06-02)
+  o G4VScoreHistFiller and G4TScoreHistFiller: adding 2D and 3D histogram and
+    1P and 2P profile graph options.
+  o Fixed text typos in printout. Problem report #2285 and GitHub PR#15.
+- utils (detutils-V10-06-10)
+  o Added Mutex lock to G4ScoringProbe::SetMaterial() to avoid race condition.
+
+event                                            event-V10-06-09
+-----
+- Fixed CMake scripts to ensure G4_USESMARTSTACK pre-processor symbol
+  is properly propagated.
+- Added support for event profiler with TiMemory.
+- Fixed text typos in printout. Addressing problem report #2285.
+
+externals                                        externals-V10-06-05
+---------
+- CLHEP:
+  o Synchronised with CLHEP-2.4.4.0:
+  o Removed obsolete #pragma interface/implementation in Vector classes.
+  o Get rid of switch statement in operator()/operator[] of Hep3Vector
+    Replaced dx/dy/dz with operator[] in Hep3Vector.
+    Replaced private dx/dy/dz with public x()/y()/z() in Hep3Vector.
+  o Added missing includes in Vector and Random classes for translation
+    unit encapsulation.
+- ptl:
+  o Fix to install PTL DLL/archive into appropriate platform dependent
+    locations. Addressing problem report #2286.
+- zlib:
+  o Cleanup of CMake script.
+
+geometry/magneticfield                           field-V10-06-09
+----------------------
+- Fix to enable G4TDormandPrince45 to be used with G4InterpolationDriver.
+  This fix was needed because G4Interpolation driver creates additional
+  copies of the stepper class.  Due to this it must obtain the equation
+  with the type of the templated stepper.
+  For a stepper to be used with 'G4InterpolationDriver', it must implement
+  the method GetSpecificEquation(). Templated steppers must ensure that the
+  return type is the specific equation type of the template.
+  This method was added to G4DormandPrince745 and G4TDormandPrince745.
+
+geometry/management                              geommng-V10-06-06
+-------------------
+- Fix in the calculation of normal in G4UAdapter::DistanceToOut().
+
+geometry/solids/CSG                              geom-csg-V10-06-05
+-------------------
+- G4Sphere: optimised implementation of InitializeThetaTrigonometry(),
+  replacing call to std::tan() with pre-calculated quantities.
+  Addressing problem report #2289.
+
+geometry/solids/specific                         geom-specific-V10-06-10
+------------------------
+- G4Polycone: Revised GetPointOnSurface(); added protected auxiliary method
+  SetSurfaceElements(); removed GetPointOnCone(), GetPointOnTubs(),
+  GetPointOnCut() and GetPointOnRing().
+- G4GenericPolycone: revised GetPointOnSurface(); added protected auxiliary
+  method SetSurfaceElements().
+- G4Polyhedra: revised GetPointOnSurface(); added protected auxiliary method
+  SetSurfaceElements(); removed GetPointOnPlane() and GetPointOnTriangle().
+
+global                                           global-V10-06-27
+------
+- Added new G4Profiler header; implemented new profiling routines for TiMemory
+  which allow per-{run,event,track,step} configuration w.r.t. when to profile,
+  what to collect in the profiler, and how to label the entries.
+  Also, includes user-profiling config and macros. Use of TIMEMORY_AUTO_TIMER
+  is now deprecated.
+- Removed condition restricting to __x86_64__ architectures for macOS
+  configuration in tls.hh.
+- Updated date and tag-ID for release 10.7.
+
+graphics_reps                                    greps-V10-06-06
+-------------
+- Fixed graphical representation for G4Hype shape.
+  Addressing problem report #2295.
+
+intercoms                                        intercoms-V10-06-06
+---------
+- Added G4ProfilerMessenger class.
+
+interfaces                                       interfaces-V10-06-11
+----------
+- G4UIQt: send G4cout/G4cerr also to std::cout/cerr if in master thread,
+  as workaround to the problem of loss of output in the case of a crash or
+  G4Exception.
+- Fixed text typos in printout. Addressing problem report #2285.
+
+materials                                        materials-V10-06-12
+---------
+- Added G4MicroElecMaterialStructure, G4MicroElecSiStructure classes for
+  micro-dosimetry simulation.
+- G4OpticalSurface: added protection against access to optical LUT out of
+  array bounds. Addressing problem report #2287.
+- Fixed text typos in printout. Addressing problem report #2285.
+
+persistency/gdml                                 gdml-V10-06-05
+----------------
+- Added new method SetOutputFileOverwrite(G4bool) to the G4GDMLParser, 
+  allowing to set the flag to enable overwriting of the output GDML file.
+  Addressing problem report #2288.
+
+physics_lists
+-------------
+- constructors/electromagnetic (phys-ctor-em-V10-06-20)
+  o G4GammaGeneralProcess: improved printouts and made some methods protected.
+- constructors/gamma_lepto_nuclear (phys-ctor-glnuclear-V10-06-04)
+  o G4EmExtraPhysics, G4EmMessenger: added a flag to enable G4GammaNuclearXS
+    cross-section and possibility to use general process for electron and 
+    positron; fixed several UI commands.
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V10-06-18)
+  o G4HadronPhysicsFTFP_BERT, G4HadronPhysicsQGSP_BERT, G4HadronInelasticQBBC:
+    enabled charm and bottom hadronic physics - now available in nearly all
+    physics lists, in particular those of interest for HEP; the main
+    exception is QGSP_BIC and its derived physics lists, which are
+    typically used for low-energy applications.
+  o G4HadronPhysicsINCLXX: use inheritance from the base class
+    G4HadronPhysicsFTFP_BERT; removed duplicated code; code clean-up.
+    List of models and applicability intervals are the same; implemented
+    b-, c- particle physics and cross-section factor.
+  o Updated README.
+- constructors/ions (phys-ctor-ions-V10-06-02)
+  o Updated README.
+- lists (phys-lists-V10-06-02)
+  o LBE: added G4ShortLivedConstructor, to prevent issues, e.g. when rho0
+    is produced by the decay of eta_prime.
+
+processes/electromagnetic/dna                    emdna-V10-06-12
+-----------------------------
+- Fixed thread contention on mutable data in G4DNAMolecularMaterial.
+  Some code cleanup.
+
+processes/electromagnetic/highenergy             emhighenergy-V10-06-02
+------------------------------------
+- G4hPairProductionModel, G4hBremsstrahlungModel, G4hPairProduction, 
+  G4hBremsstrahlung: added definition of the energy threshold for creation
+  of a vertex when energy transfer is above the threshold (CMS request).
+
+processes/electromagnetic/lowenergy              emlowen-V10-06-13
+-----------------------------------
+- Added new classes for micro-dosimetry simulation: G4MicroElecElasticModel_new,
+  G4MicroElecInelasticModel_new, G4MicroElecInelastic_new,
+  G4MicroElecLOPhononModel, G4MicroElecLOPhononModel.
+- Added new class G4MicroElecSurface, a new boundary process for e-.
+  The code is updated compared to the original: instead of name comparisons
+  pointers are compared; condition on surface is defined by kCarTolerance;
+  initialisation is done in the new BuildPhysicsTable(..) method instead of
+  Initialise(); no dependence on G4Electron; changed process type and
+  sub-types from optical to electromagnetic.
+- Removed obsolete G4MuElec* classes.
+- Fixed Coverity defects and material list in G4PenelopeRayleighModelMI.
+
+processes/electromagnetic/muons                  emmuons-V10-06-03
+-------------------------------
+- G4ModifiedMephi: new angular generator for muon/hadron Bremsstrahlung.
+- G4MuPairProductionModel, G4MuBremmstrahlungModel: updated sampling of final
+  state using G4ModifiedMephi; implemented check on energy transfer and if
+  beyond the threshold, kill primary particle and add it to the list of
+  secondary particles.
+- G4MuPairProduction, G4MuBremmstrahlung: added definition of the energy
+  threshold for creation of a vertex, when energy transfer is above the
+  threshold (CMS request).
+
+processes/electromagnetic/standard               emstand-V10-06-19
+----------------------------------
+- G4UrbanMscModel: restored parameterisation of step limit to variant as
+  in tag "emstand-V10-06-13".
+- G4SauterGavrilaAngularDistribution, G4DeltaAngle: code clean-up.
+- G4eplusTo3GammaOKVIModel, G4LindhardSorensenIonModel: fixed Coverity reports.
+
+processes/electromagnetic/utils                  emutils-V10-06-15
+-------------------------------
+- G4LossTableManager: make clean interface for electron and positron
+  general process.
+- G4VEmAngularDistribution: added flag of polarisation and corrected
+  order of initialisation.
+- G4VEmModel: define flag of polarisation for an angular generator.
+- G4EmProcessSubType: added fSurfaceReflection.
+- Fixed text typos in printout. Problem report #2285 and GitHub PR#15.
+
+processes/hadronic
+------------------
+- Fixed text typos in printout. Problem report #2285 and GitHub PR#15.
+- cross_sections (hadr-cross-V10-06-17)
+  o G4EMDissociationCrossSection: fixes to avoid numerical crashes for ions
+    at low energies (now setting to zero the cross-section for ion kinetic
+    energies below 2 MeV) and to avoid to create unphysical clusters of
+    neutrons (now forbidding to remove one proton from any hydrogen ions).
+    Addressing problem report #2254.
+  o G4ParticleInelasticXS: removed debug printout.
+- management (hadr-man-V10-06-10)
+  o G4HadronicProcessStore: fixed Coverity report in Print() method.
+- models/abla (hadr-abla-V10-06-00)
+  o Fixed reported Coverity defects.
+- models/em_dissociation (hadr-emd-V10-06-00)
+  o G4EMDissociation: fix Lorentz kinematics, responsible for causing
+    energy-momentum violations. Switched off too frequent warning messages
+    by G4Fragment. Addressing problem report #2254.
+- models/particle_hp (hadr-hpp-V10-06-12)
+  o G4ParticleHPInelastic, G4ParticleHPInelasticData: improved error message (+)
+    in the case that both G4PARTICLEHPDATA and the related particle-specific
+    environmental variable (e.g. G4PROTONHPDATA) are not defined.
+    The recommandation is to define only G4PARTICLEHPDATA.
+- models/parton_string/management (hadr-partonstring-mgt-V10-06-03)
+  o Cleanup of CMake build script.
+- models/theo_high_energy (had-theo-HE-V10-06-04)
+  o G4CRCoalescence: new class for applying coalescence to the secondaries
+    produced by string model to form deuterons and antideuterons from,
+    respectively, proton-neutron and antiproton-antineutron pairs with close
+    momenta; useful in particular for Cosmic Ray applications.
+  o G4TheoFSGenerator: in method ApplyYourself(), apply G4CRCoalescence
+    to the candidate secondaries produced by the string model, if the
+    corresponding switch is enabled (by default it is disabled).
+- models/util (hadr-mod-util-V10-06-02)
+  o G4Fragment: introduced an optional parameter to switch off some warnings.
+    By default, nothing is changed (i.e. the warnings are printed out as
+    usual); only for electromagnetic dissociation, the parameter is set to
+    switch off otherwise too frequent warning messages.
+    Addressing problem report #2254.
+- util (hadr-util-V10-06-08)
+  o G4HadronicParameters, G4HadronicParametersMessenger: added Boolean switch
+    that allows to apply the Cosmic Ray (CR) coalescence algorithm to the
+    secondaries produced by a string model. This can be useful in particular
+    for Cosmic Ray applications. By default it is disabled.
+
+processes/optical                                op-V10-06-07
+-----------------
+- Fixed reading of Davis LUT data out of bounds.
+  Addressing problem report #2287.
+
+run                                              run-V10-06-19
+---
+- Added G4Profiler support for TiMemory; removed TIMEMORY_AUTO_TIMER.
+- Fixed text typos in printout. Addressing problem report #2285.
+
+tasking                                          tasking-V10-06-13
+-------
+- G4RunManagerFactory: simplified logic of choosing type from function
+  inputs or environment. Provide new "SerialOnly"... entries for
+  G4RunManagerType to allow for users to force use of a specific (but
+  available) type.
+- G4TaskRunManager: not resetting the run ID counter for the run initialization
+  except for the first run.
+- Added G4Profiler support for TiMemory; removed TIMEMORY_AUTO_TIMER.
+
+visualization                                    vis-V10-06-12
+-------------
+- Fixed text typos in printout. Problem report #2285 and GitHub PR#15.
+- OpenGL (opengl-V10-06-13)
+- Qt3D (visQt3D-V10-06-02)
+  o Cleanup of Cmake build script.
+
+data sets:
+---------
+- G4ENSDFSTATE-2.3:
+  o Corrected GD158 data to be compliant with new PhotonEvaporation database.
+- G4PhotonEvaporation-5.7
+  o Updated file z66.a161 (Dy161) for the decay of Tb161.
+  o New file for z64.a158 (Gd158).
+  o Updated and corrected file z64.156 (Gd156).
+- G4RadioactiveDecay-5.6
+  o Updated file z82.a211 (Pb211) according to DDEP plus adding of
+    firstForbidden tag. 
+  o Slight update of z83.a211 (Bi211) and z84.a211 (Po211) according to DDEP.
+  o Correction of file z2.a8; addressing problem report #2243.
+  o Update of file z63.a158 (EU158 beta- decay to Gd158).
+  o Removed empty lines in files z3.a8, z7.a16, z10.a18.
+
+examples                                         examples-V10-07-00
+--------
+- Updated documentation and reference outputs.
+- Migrated most examples to use G4RunManagerFactory.
+- Cleanup of CMake build scripts.
+- advanced/air_shower (air_shower-V10-06-04)
+  o Output results histograms to file. Added macro file to plot histograms.
+  o Create material properties using std::vectors.
+- advanced/gammaray_telescope (gammaraytel-V10-06-03)
+  o Added option to use G4EmStandard_Option4 with BetheHeitler5D model
+    by using macro file physics_polarized_new.mac to select the EM physics
+    processes and models. 
+  o Added new macro gammaray_polarized.in. 
+- advanced/gorad (gorad-V10-06-06)
+  o Fixed compilation warning in GRGeomBiasMessenger.
+- advanced/hadrontherapy (hadrontherapy-V10-06-07)
+  o Minor changes in macro files.
+- advanced/HGCal_testbeam (exhgcaltb-V10-06-00)
+  o New example based on the Geant4 standalone application developed
+    by Thorben Quast for the CMS High Granularity Calorimeter (HGCal) studies:
+    https://github.com/ThorbenQuast/HGCal_TB_Geant4.
+    The example demonstrates a test beam setup used in HEP experiments, and
+    as a base for the validation studies and comparison with experiment data.
+    Details on the High Granularity Calorimeter (HGCal) can be found
+    in the Technical Design Report:
+    https://cds.cern.ch/record/2293646/files/CMS-TDR-019.pdf.
+- advanced/ICRP110_HumanPhantoms (ICRP110Phantoms-V10-06-01)
+  o New example modelling the ICRP110 reference computational human phantoms
+    and calculating the dose in individual voxels and entire organs.
+    The human male phantom is created from a whole-body clinical CT image.
+- advanced/radioprotection (radioprotection-V10-06-02)
+  o Added new parameter to DetectorConstruction constructor; added instance
+    of DetectorManager in main().
+  o DetectorConstruction: defined private methods to construct a specific type
+    of detector ("Silicon", "Diamond", and "MicroDiamond"); added detectorType
+    private string to store the name of the one in use; rewrote Construct() so
+    that it calls the specific method of the selected detector type; moved the
+    previous diamond detector geometry to ConstructDiamondDetector() and added
+    new possible geometries (silicon and microdiamond).
+  o DetectorMessenger: created file in order to switch detector type.
+  o New macro geometry.mac, to select a specific detector at runtime (by
+    default, all options are commented out).
+    Added a line in vis.mac to execute geometry.mac before launching the GUI
+    (at which point it wouldn't be possible to change the geometry anymore).
+    Added a line in run.mac to execute geometry.mac.
+- advanced/STCyclotron (STCyclotron-V10-06-02)
+  o Update READme to recommended env variable G4PARTCILEHPDATA.              (+)
+- advanced/underground_physics (DMX-V10-06-04)
+  o Build material property tables using std::vectors.
+- basic/B4 (exampleB4-V10-06-04)
+  o  Updated B4Analysis header with commented lines for using new generic
+     analysis manager
+  o Added commented command "ignoreThreadsExcept 0" setting in run2.mac.
+- basic/B5 (exampleB5-V10-06-02)
+  o Replaced use of G4Analysis::ManagerInstance() with new generic analysis
+    manager. Storing ntuple in a separate file.
+- extended/electromagnetic/TestEm5 testem5-V10-06-04)
+  o StackingAction: log histograms, revert to previous version. 
+  o Cleanup of pixe.mac and pixe.C.
+  o Removed obsolete fluo.mac macro.
+- extended/electromagnetic/TestEm14 (testem14-V10-06-02)
+  o Added comment in atomicDeexcitation.mac macro.
+- extended/electromagnetic/TestEm18 (testem18-V10-06-00)
+  o Cleanup of macros.
+- extended/exoticphysics/saxs (saxs-V10-06-02)
+  o New example implementing the typical setup of a Small Angle X-ray 
+    Scattering (SAXS) experiment. It is meant to illustrate the usage of
+    molecular interference (MI) of Rayleigh (coherent) scattering of photons
+    inside the matter, which is implemented in the G4PenelopeRayleighModelMI
+    model.
+- extended/hadronic/Hadr09 (exhadr09-V10-06-00)
+  o New example showing how to use Geant4 as a generator for simulating
+    inelastic hadron-nuclear interactions.
+- extended/medical/DICOM2 (DICOM2-V10-06-01)
+  o Fixed compiler warning on Windows.
+- extended/optical/LXe (LXe-V10-06-03)
+  o Applied clang-format style and updated macros.
+  o Renamed ProcessHits_constStep() to ProcessHits_boundary().
+  o Removed unused #includes and empty methods.
+- extended/optical/OpNovice (OpNovice-V10-06-01)
+  o Print out process statistics at end of run.
+    Added EventAction and Run classes for this.
+  o Updated macros, especially to run more particles. Updated gui.mac.
+  o Remove use of G4Timer.
+  o Use default random number generator.
+  o Applied clang-format style.
+- extended/optical/OpNovice2 (OpNovice2-V10-06-07)
+  o Print histogram statistics at end of run.
+  o Removed use of G4Timer; don't set number of threads in main().
+  o Updated macro verbosity, ignore threads except 0.
+  o Applied clang-format style.
+- extended/optical/wls (WLS-V10-06-02)
+  o Large cleaning including clang-format style guidelines.
+  o Added counters to record run and event statistics. Update macros.
+  o Added remaining material properties using new interface with std::vectors.
+- extended/parallel/MPI (MPI-V10-06-00)
+  o Updated analysis classes for the design changes in analysis module.
+- extended/parallel/ThreadsafeScorers (ThreadsafeScorers-V10-06-03)
+  o Replaced TIMEMORY_AUTO_TIMER usage with G4USER_SCOPED_PROFILE usage.
+- extended/parallel/TopC (exTopC-V10-06-00)
+  o Fixed README.html. Addressing problem report #2284.
+- extended/parameterisations/Par03 (expar03-V10-06-02)
+  o Added missing README for Doxygen. Fixed section numbering in README
+- extended/persistency/gdml/G01 (G01-V10-06-02)
+  o Added a line (commented out) indicating how to overwrite output files.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-06-04)
+  o Added comment in atomicDeexcitation.mac macro.
+
+tests                                            tests-V10-07-00
+-----
+- Updated reference outputs and tools.
+- tests/test03 (test03-V10-06-00)
+  o Updated CMake build scripts to make test buildable standalone.
+- tests/test32 (test32-V10-06-01)
+  o Added setting file names to n-tuples.
+  o Added test for new G4GenericAnalysisManager function for writing a
+    histogram in an extra file (disabled Hdf5 causing error).

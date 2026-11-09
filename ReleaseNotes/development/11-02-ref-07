@@ -1,0 +1,513 @@
+
+                       geant4-11-02-ref-07
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Added support for accumulable collections in analysis module.
+ o Improved use of Mutex lock in G4EventManager for sub-event level parallelism.
+ o Temporarily disabled default parallel optimisation in G4GeometryManager,
+   to allow for further testing and refinements to implementation.
+ o New processes G4DynamicParticleIonisation, G4DynamicParticleMSC and
+   G4DynamicParticleFluctuation, which perform computations on the fly using
+   only G4DynamicParticle data.
+ o New class G4PolarizedOrePowellAtRestModel for polarized Orel & Powell
+   orto positronium decay model at rest.
+ o Introduced new classes G4UnknownParticle and G4ChargedUnknownParticle,
+   part of ATLAS and LHCb request to assign automatically ionisation and
+   multiple scattering processes to charged primary particles with valid PDG
+   code but not known to Geant4.
+ o New class G4XSectionXS, to compute inverse cross-section using G4PARTICLEXS
+   cross-sections for neutrons and light ions.
+ o Added "HPT" extension to support adding G4ThermalNeutrons to extensible
+   physlist factory.
+ o In visualization, fixes for Qt5 and Qt6 to avoid a crash in case of
+   "/run/beamOn" is called in vis.mac at startup.
+ o Fixed many Coverity defects reported after tool upgrade.
+ o Synchronised internal PTL tasking library with version PTL-3.0.0.
+ o New dataset: G4CHANNELINGDATA-1.0 and G4EMLOW-8.6.1.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V11-02-21
+-----
+- Simplified CMake/CTest functions and settings: moved geant4_add_test function
+  to dedicated module, retiring "UseGeant4_internal" file; reduced oversetting
+  of Geant4_DIR variable for use by tests.
+- New datasets: G4CHANNELINGDATA-1.0 and G4EMLOW-8.6.1.
+
+analysis                                         analysis-V11-02-03
+--------
+- Added support for accumulable collections.
+  New classes: G4AccArray, G4AccMap, G4AccUnorderedMap, G4AccVector.
+- Renamed class G4Accumulable<T> in G4AccValue<T>, and added a using for the
+  old name for backward compatibility.
+- In G4AccumulableManager, replaced RegisterAccumulable() with Register() and
+  deprecated the function with the old name.
+- Added G4AccType enumeration for available accumulable types.
+- Added functions for printing with G4PrintOption argument to all accumulable
+  types and G4AccumulableManager (Note - this will require to update user
+  classes which implement the Print() function without or with different
+  arguments)
+- Added G4Accumulables::VerboseLevel and its setter/getter
+  in G4AccumulableManager.
+- Applyed clang-tidy checks to code (use of override, redundant data
+  initialisation, use of emplace-back).
+
+digits_hits
+-----------
+- detector (det-V11-02-00)
+- digits (detdigits-V11-02-00)
+- hits (dethits-V11-02-00)
+  o Fixed reported Coverity defects, use consistently 'const G4String&' to
+    avoid implicit copy.
+  o Fixed class description in headers.
+- scorer (detscorer-V11-02-00)
+  o Fixed reported Coverity defects, use "const G4String&" as argument in
+    a consistent way across all classes.
+- utils (detutil-V11-02-01)
+  o Fixed reported Coverity defects, use consistently 'const G4String&' to
+    avoid implicit copy.
+  o Fixed class description in headers. Use G4 types.
+
+error_propagation                                error-propagation-V11-02-00
+-----------------
+- Fixed reported Coverity defect in G4ErrorFreeTrajState for use of
+  const G4String& and std::move().
+
+event                                            event-V11-02-07
+-----
+- Improved use of Mutex lock in G4EventManager for sub-event level parallelism.
+- G4PrimaryTransformer: adapted and extended after introduction of the new
+  class G4ChargedUnknownParticle (part of ATLAS and LHCb request to assign
+  automatically ionisation and multiple scattering processes to charged
+  primary particles with valid PDG code but not known to Geant4).
+- Fixed reported Coverity defects: in G4GeneralParticleSourceMessenger for
+  use of 'const auto&' and use of 'const G4String&'; in G4StackManager for
+  copy/paste error in printout.
+
+externals
+---------
+- g4tools (g4tools-V11-02-02)
+  o Updated to g4tools-6.3.1. Fixed reported Coverity defects for use of
+    const references and std::move().
+- ptl (ptl-V11-02-01)
+  o Synchronised with version PTL-3.0.0. Retaining patches for Geant4
+    source layout in configuration.
+
+geometry/biasing                                 geombias-V11-02-01
+----------------
+- Fixed reported Coverity defect in G4WeightWindowStore, to use std::move()
+  for avoiding implicit copy.
+
+geometry/management                              geommng-V11-02-06
+-------------------
+- G4GeometryManager: temporarily disable default parallel optimisation.
+  Fixed spelling for method OptimiseInParallel(..) and other internal methods
+  and flags. Removed unnecessary static qualifier for some methods and ordered
+  methods declarations in header.
+- Access G4GeometryManager singleton through its GetInstance() in stores.
+
+geometry/solids/Boolean                          geom-bool-V11-02-03
+-----------------------
+- G4MultiUnion::GetCubicVolume(): used EstimateCubicVolume().
+- G4BooleanSolid::SetCubVolStatistics(), G4BooleanSolid::SetCubVolEpsilon():
+  added check for G4MultiUnion to avoid memory corruption.
+
+goemetry/solids/specific                         geom-specific-V11-02-07
+------------------------
+- Removed internal cached state of G4TwistedTubs and G4VTwistedFaceted.
+  Addressing problem report #2619.
+- G4ExtrudedSolid: fixed defects reported by Coverity.
+- Fixed reported Coverity defect; in G4Voxelizer, use std::move() instead of
+  plain vector copy in methods BuildReduceVoxels(..), BuildReduceVoxels2(..),
+  BuildBoundaries() and CreateMiniVoxels(..).
+
+geometry/volumes                                 geomvol-V11-02-03
+----------------
+- Access G4GeometryManager singleton through its GetInstance() in
+  G4AssemblyStore.
+
+global                                           global-V11-02-17
+------
+- Updated G4TBBTaskGroup for changes to underlying PTL-3.0.0 API.
+- Addressed Coverity reported defects for use of std:move() to avoid copies;
+  fixed potential division-by-zero in G4SimplexDownhill
+- Applied fixes from clang-tidy.
+- Updated date and tag-ID for geant4-11-02-ref-07.
+
+graphics_reps                                    greps-V11-02-04
+-------------
+- In G4VVisManager, provide all base class interfaces in Sequential and MT
+  modes, with an empty implementation modelling the Sequential case.
+- Fixed reported Coverity defects in BooleanProcessor andHepPolyhedronProcessor.
+
+intercoms                                        intercoms-V11-02-07
+---------
+- In G4UImanager::ApplyCommand(), fix to replace "isMaster()" with
+  "G4Threading::IsMasterThread()", to properly control highlighting of echoed
+  commands in the Qt GUI in Serial mode.
+- Fixed reported Coverity defects, use consistently 'const G4String&' to
+  avoid implicit copy.
+
+interfaces                                       interfaces-V11-02-07
+----------
+- In G4UIWin32, fix in ConvertNewLines() to fix treatment of first character
+  in G4cout output.
+- Fixed reported Coverity defects, use consistently 'const G4String&' to
+  avoid implicit copy.
+
+materials                                        materials-V11-02-02
+---------
+- Fixed reported Coverity defects in G4Material, G4NistElementBuilder,
+  G4IonisParamMat and G4LatticePhysical.
+
+parameterisations/channeling                     fastsimchanneling-V11-02-00
+----------------------------
+- Fixed reported Coverity defect in G4VChannelingFastSimCrystalData.
+
+particles                                        particles-V11-02-00
+---------
+- Added new class, G4ChargedUnknownParticle, similar to G4UnknownParticle for
+  charged unknown particles. Part of ATLAS and LHCb request to assign
+  automatically ionisation and multiple scattering processes to charged
+  primary particles with valid PDG code but not known to Geant4.
+
+persistency/ascii                                ascii-V11-02-00
+-----------------
+- Fixed reported Coverity defects for use of const G4String& and std::move().
+
+persistency/mctruth                              mctruth-V11-02-00
+-------------------
+- Use G4String type consistently throughout the code, fixing reported Coverity
+  defects.
+
+physics_lists
+-------------
+- constructors/decay (phys-ctor-decay-V11-02-00)
+  o G4UnknownDecayPhysics: extended to newly introduced
+    G4ChargedUnknownParticle.
+- constructors/electromagnetic  (phys-ctor-em-V11-02-08)
+  o New constructor G4ChargedUnknownParticle, to be used on top on any
+    reference physics list, to assign ionisation and multiple scattering
+    (as well as transportation) processes to charged primary particles with
+    valid PDG code but not known to Geant4.
+- constructors/hadron_elastic (phys-ctor-helastic-V11-02-00)
+  o Added self registration of G4ThermalNeutrons with the constructor factory.
+- constructors/limiters (phys-ctor-limiters-V11-02-00)
+  o Fixed reported Coverity defect in G4FastSimulationPhysics and in
+    G4GenericBiasingPhysics, to use 'const G4String&' and std::move().
+- lists (phys-lists-V11-02-00)
+  o Added "HPT" extension to support adding G4ThermalNeutrons to extensible
+    physlist factory.
+  o Changed how base phylist matching is done in G4PhysListRegistry in order
+    to support "_HP" lists and new "_HPT" extension; requires match to be
+    exact or the remaining part start with "_" or "+".
+  o G4PhysListRegistry: fixed compilation on XCode for implicit type conversion.
+    Minor code cleanup (use of nullptr, G4bool, std::size_t, singleton instance
+    initialisation). Initialise the instance only the first time it gets
+    created.
+
+processes/biasing                                procbiasing-V11-02-00
+-----------------
+- Fixed reported Coverity defects, to use 'const G4String&' for avoiding
+  implicit copies.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-02-15)
+  o Fixed condition for node insertion in G4KDTree.
+  o Fixed reported Coverity defects for use of std::move(), const auto&
+    and const iterators.
+  o Fixed reported Coverity defects in G4LEPTSElossDistr and G4LEPTSDistribution
+    for explicit null dereferenced pointer and out-of-bounds reads; minor code
+    cleanup.
+- electromagnetic/highenergy (emhighenergy-V11-02-00)
+  o Added new processes G4DynamicParticleIonisation, G4DynamicParticleMSC and
+    G4DynamicParticleFluctuation, which perform computations on the fly using
+    only G4DynamicParticle data (G4ParticleDefinition is not used).
+- electromagnetic/lowenergy (emlowen-V11-02-03)
+  o G4MicroElecCapture: fixed Coverity warning about division by zero via
+    modification of the formula to compute MFP and added an upper limit
+    500 eV for this process.
+  o G4FluoData, G4hIonEffChargeSquare, G4MicroElecInelasticModel_new: fixed
+    reported Coverity defecs.
+  o Fixed reported Coverity defects for use of std::move().
+- electromagnetic/standard (emstand-V11-02-14)
+  o G4BetheHeitlerModel: include optional possibility to use EPICS2017
+    cross-section.
+  o New class G4PolarizedOrePowellAtRestModel for polarized Orel & Powell
+    orto positronium decay model at rest.
+  o Removed G4SimplePsAtRestModel class, as other solution is adopted for
+    positron annihilation AtRest.
+  o G4eplusAnnihilation: updated configuration of models AtRest, the
+    choice of 2-gamma, 3-gamma final states is implemented in one place.
+  o G4BetheHeitler5DModel: added extra protection against division by zero.
+  o Fixed reported Coverity defects in G4BraggModel, G4GSMottCorrection,
+    G4GSPWACorrections, G4SBBremTable, G4WentzelVIModel, G4WentzelVIRelModel
+    and G4eplusAnnihilation.
+- utils (emutils-V11-02-13)
+  o G4EmElementXS: new helper class to cross-section data.
+  o G4EmParameters, G4EmParametersMessenger: added Ore-Powell models to
+    the list of models for positron annihilation at rest.
+  o G4EmParameters, G4EmParametersMessenger: added Boolean flag 'UseEPICS2017'.
+  o G4EmProcessSubType: added sub-types for dynamic EM processes
+    (G4ParticleDefinition is not used, all computations on the fly).
+  o Fixed reported Coverity defects.
+- electromagnetic/xrays (xrays-V11-02-03)
+  o Fixed reported Coverity defect in G4VXTRenergyLoss.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-02-12)
+  o G4ParticleInelasticXS: perform initialisation of data only for given ion,
+    not for all 5 ions.
+  o G4ParticleInelasticXS, G4NeutronElasticXS: access to G4PARTICLEXSDATA
+    in class constructor; optimized usage of mutex lock; do not use
+    'isInitializer' flag anymore.
+  o G4GammaNuclearXS: Use CHIPS parameterisation for Zr and W at all energies,
+    for Cr and Y above 25 MeV and for Sn and Gd above 16 MeV.
+    The default transition energy 130-150 MeV remains for all other targets.
+    Addressing problem report #2609
+  o G4GammaNuclearXS, G4PhotoNuclearCrossSection, G4ParticleInelasticXS,
+    G4NeutronInelasticXS: allow to reuse static data when several instances
+    of cross-section classes are used.
+  o Fixed reported Coverity defect in G4EMDissociationCrossSection and in
+    CHIPS inelastic cross-sections.
+- models/abla (hadr-abla-V11-02-05)
+  o Fixed reported Coverity defects for uninitialised data in G4VarNtp.
+- models/binary_cascade (had-binary-V11-02-01)
+  o Fixed reported Coverity defects for use of std::move() in G4BinaryCascade.
+    Minor code optimisation (use of nullptr, use of const iterators and
+    pre-increment).
+- models/cascade (hadr-casc-V11-02-04)
+  o Fixed reported Coverity defect in G4NucleiModel for use of std::move()
+    and unitialised data.
+- models/coherent_elastic (hadr-cohe-V11-02-01)
+  o In G4ChargeExchange, do not allow unphysical final state.
+    Addressing problem report #2618.
+- models/de_excitation (hadr-deex-V11-02-12)
+  o New class G4XSectionXS, to compute inverse cross-section using G4PARTICLEXS
+    cross-sections for neutrons and light ions.
+  o G4Evaporation, G4EvaporationProbability, G4CompetitiveFission, G4XSectionXS:
+    provide initialisation of G4XSectionXS class also in the case of unit tests,
+    when general initialisation is not performed; minor code clean-up.
+    Results are not changed for the default configuration.
+  o G4DeexPrecoParameters, G4DeexParametersMessenger: added UI command to
+    define inverse cross-section type.
+  o G4EvaporationProbability, G4VEmissionProbability: added use of G4XSectionXS
+    as an alternative option.
+  o G4EvaporationProbability, G4EvaporationChannel, G4VEmissionProbability: do
+    not apply Coulomb barrier for computation of minimum energy of emitted
+    fragments if OPTxs=1 - use isotope cross-section instead; fixed minor
+    memory leak at exit; define OPTxs parameter only in class constructor.
+  o G4DeexPrecoParameters: enable read and use of electron conversion data
+    by default. For pre-compound model, use XS option 1 instead of 3; changed
+    interval of applicability Eex/A = (0.1 - 3) MeV instead of (0.1 - 30) MeV
+    (outside this interval de-excitation module is used).
+  o G4CompetitiveFission: added normalisation factor if G4XSectionXS is used.
+  o G4EvaporationChannel, G4EvaporationProbability: improved implementation of
+     methods ComputeInverseXSection(..) and ComputeProbability(..).
+  o G4CoulombBarrier: changed 'theRho' parameter from 0.6 to 0.4.
+  o Fixed reported Coverity defects in G4VEmissionProbability, G4StatMF and
+    G4PolarizationTransition.
+  o G4ShellCorrection, G4CookShellCorrections: code clean-up.
+- models/fission (hadr-fission-V11-02-01)
+- models/im_r_matrix (had-im_r-V11-02-01)
+  o Fixed reported Coverity defects for use of std::move().
+- models/lend (hadr-lend-V11-02-05)
+  o Fixed reported Coverity defects for pointless expression condition
+    in ptwXY_div_ptwXY() operator, and dead code statement in
+    MCGIDI_angularEnergy_parsePointwiseFromTOM() and
+    in MCGIDI_energyAngular_linear_parseFromTOM().
+- models/nudex (hadr-nudex-V11-02-04)
+  o Fixed reported Coverity defects for unitialised data in G4NuDEXPSF and
+    in G4NuDEXStatisticalNucleus; fixed restoring of ostream format.
+- models/particle_hp (hadr-hpp-V11-02-12)
+  o G4ParticleHPMessenger: removed recently introduced UI command for
+    selecting the type of PT table (choice between  "calendf"  and  "njoy" )
+    for the URR treatment; replaced with a C++ interface in G4HadronicParameters
+    that allows the selection to be made at initialization time.
+  o G4ParticleHPInelastic: fixed missed call to RegisterInelasticFinalStates()
+    of G4ParticleHPManager in method BuildPhysicsTable of G4ParticleHPInelastic.
+  o G4ParticleHPProbabilityTablesStore, G4ParticleHPIsoProbabilityTable_NJOY,
+    G4ParticleHPIsoProbabilityTable_CALENDF: fixed access to the compressed
+    dataset G4URRPTDATA.
+  o Fixed reported Coverity defects for use of std::move() and const G4String&.
+    Use const qualifier for methods where possible.
+- models/parton_string/diffraction (hadr-string-diff-V11-02-00)
+  o G4FTFParameters: fixed typo, renamed method SetElastis() as SetElastic().
+- models/parton_string/hadronization (had-hadronization-V11-02-01)
+  o Fixed reported Coverity defect in G4NucleiModel for redundant assignment
+    in G4LundStringFragmentation::Sample4Momentum().
+- models/pre_equilibrium (hadr-pre-V11-02-02)
+  o G4PreCompoundFragment: completed implementation of usage of XS
+    cross-sections.
+  o G4VPreCompoundFragment, G4PreCompoundFragment: added a new option to use
+    G4XSectionXS cross-section class.
+  o G4PreCompoundFragment, G4VPreCompoundFragment: removed shadowing and minor
+    memory leak at exit; moved initialisation to constructors; define OPTxs
+    parameter only in class constructor.
+- models/qmd (hadr-qmd-V11-02-02)
+  o Fixed reported Coverity defects for use of std::move() and
+    const std::string&.
+- models/radioactive_decay (radioactive_decay-V11-02-05)
+  o Fixed reported Coverity defects for use of std::move().
+- util (hadr-util-V11-02-03)
+  o G4HadronicParameters: introduced Getter/Setter for selecting the PT table
+    type (a choice between  "calendf"  and  "njoy") for the URR treatment of
+    low-energy neutrons; the choice must be done at initialization time,
+    therefore it cannot be made via UI command in ParticleHP.
+  o Fixed reported Coverity defects for use of std::move() and const G4String&;
+    in G4HadronicDeveloperParameters use const G4String& and const_iterator.
+
+processes/management                             procman-V11-02-00
+--------------------
+- G4ParticleTypes: added G4ChargedUnknownParticle class; part of ATLAS and LHCb
+  request to assign automatically ionisation and multiple scattering processes
+  to charged primary particles with valid PDG code but not known to Geant4.
+
+processes/optical                                op-V11-02-01
+-----------------
+- G4OpWLS2: change SetProcessSubType() from fOpWLS to fOpWLS2.
+
+processes/solidstate/channeling                  channeling-V11-02-00
+-------------------------------
+- Fixed reported Coverity defects in G4ChannelingOptrChangeCrossSection and
+  G4ChannelingOptrMultiParticleChangeCrossSection.
+
+readout                                          readout-V11-02-00
+-------
+- Fixed reported Coverity defects, use consistently 'const G4String&' to
+  avoid implicit copy.
+
+run                                              run-V11-02-15
+---
+- Set number of random numbers generated as the seeds of workers for
+  sub-event level parallelism.
+- Access G4GeometryManager singleton through its GetInstance() call
+  in G4RunManagerKernel and G4WorkerRunManager.
+- Added XrayReflection (fGammaReflection) to G4PhysicsListHelper.
+- Fixed reported Coverity defects: in G4MSSteppingAction for restoring original
+  stream format state; in G4RunManager and others, for use of std::move() and
+  restructured conditionals. Also fixes in G4Task/SubEvtRunManager.
+- Cleanup in G4SubEvtRunManager when to delete events of previous run.
+- Updated G4TaskRunManager for changes to underlying PTL-3.0.0 API.
+  No changes to behaviour expected.
+
+visualization
+-------------
+- management (visman-V11-02-21)
+  o G4VisManager: protected Begin/EndOfRun() against invalid view (includes
+    check on existence of a scene). Some tidying and streamlining.
+    Introduced local Booleans 'isValidViewForRun' and 'isFakeRun'.
+    Introduced PrintAvailableVerbosity(). In GetVerbosityValue(), print
+    verbosity options on unknown or empty argument.
+    Call PostProcessingFinished() for _every_ event in EndOfEventCleanup.
+    Fixed "accumulate" bug in Serial mode, and other small improvements.
+    Improved printing of colours in PrintAvailableColours() and advise on use.
+    Rationalised code and tyding.
+  o G4VisCommands: in "/vis/list", added printing of verbosity options.
+    In "/vis/verbose", changed default value to empty string.
+  o G4VisCommandsSceneAdd: date and time are updated for every event displayed.
+  o G4VisExecutive: removed duplicate instantiation of TOOLSSG_OFFSCREEN.
+  o G4VViewer: added virtual ReadyToDraw(), helps avoiding a crash on macOS
+    if doing "/run/beamOn" in vis.mac at startup.
+  o G4VSceneHandler: in DrawEvent(), DrawEndOfRunModels(), check if viewer is
+    ReadyToDraw() at begin of method.
+  o Removed use of G4MULTITHREADED symbol where not required, using runtime
+    checks as far as possible.
+  o Fixed reported Coverity defects.
+- modeling (modeling-V11-02-02)
+- gMocren (gMocren-V11-02-00)
+  o Fixed reported Coverity defects.
+- OpenGL (opengl-V11-02-06)
+  o G4OpenGLQtViewer: resolve the timing issues around switching to the vis
+    sub-thread with the use of G4CONDITIONWAITLAMBDA.
+  o Fixed small memory leak in G4OpenGLQtViewer::DrawText().
+  o Fix in G4OpenGLImmediateQtViewer for Qt6 for producing animation when
+    issuing "/vis/viewer/interpolate viewfiles/movie-1"
+  o Fixes for Qt5 and Qt6 to avoid a crash in case of "/run/beamOn" is called
+    in vis.mac at startup.
+  o Use runtime checks for MT mode where possible.
+- Qt3D (visQt3D-V11-02-03)
+  o G4Qt3DViewer: fixed timing issues around switching to the vis sub-thread
+    with the use of G4CONDITIONWAITLAMBDA.
+  o In G4Qt3DViewer, implemented resizeEvent() method to avoid a bad aspect
+    ratio at viewer creation. Fixes for Qt5 and Qt6 to avoid a crash in case
+    of "/run/beamOn" is called in vis.mac at startup.
+- ToolsSG (vis_toolssg-V11-02-02)
+  o Use runtime checks for MT mode where possible.
+- Vtk (visVtk-V11-02-05)
+  o G4VtkQtViewer: fixed timing issues around switching to the vis sub-thread
+    with the use of G4CONDITIONWAITLAMBDA.
+  o G4VtkQtViewer: in DoneWithVisSubThread(), SwitchToMasterThread() protect
+    against a possible null qGLW->context(); fixing crash in case of doing
+    "/run/beamOn" in vis.mac at startup.
+
+data
+----
+- G4CHANNELINGDATA-1.0:
+  o New data set for the simulation of channeling trajectories. Includes
+    the properties of the crystal lattice of a certain material and in a
+    certain crystallographic direction (along either crystal planes or axes). 
+    References:
+    A. A. Samarskii and A. V. Gulin, Numerical Methods (Nauka, Moscow, 1989).
+    G. I. Marchuk, Methods of Numerical Mathematics (Springer-Verlag, 1975).
+    V. N. Baier, V. M. Katkov, and V. M. Strakhovenko, Electromagnetic
+    Processes at High Energies in Oriented Single Crystals (W.Scientific, 1998).
+- G4EMLOW-8.6.1:
+  o Fixed Si data file in XRayReflection_data.
+
+examples                                         examples-V11-02-07
+--------
+- Updated documentation and reference outputs.
+- advanced/eFLASH_radiotherapy (eFLASH_radiotherapy-V11-02-01)
+  o Removed unused includes of G4Accumulable[Manager].hh from FlashRunAction.
+- advanced/fastAerosol (fastAerosol-V11-02-00)
+- advanced/hadrontherapy (hadrontherapy-V11-02-02)
+  o Updated for changes in accumulables: use new Register() method with
+    shorter name.
+- advanced/STCyclotron (STCyclotron-V11-02-00)
+  o Removed unused include of G4AccumulableManager from STCyclotronRunAction.
+- basic (exbasic-V11-02-02)
+  o Simplified and modernized CMake scripts for all basic examples.
+- basic/B1 (exampleB1-V11-02-00)
+- basic/B3 (exampleB3-V11-02-00)
+- extended/analysis (analysisExample-V11-02-00)
+  o Updated for changes in accumulables: use new Register() method with
+    shorter name.
+- extended/biasing/GB06 (GB06-V11-02-00)
+  o Avoid call to static volumes store in DetectorConstruction class.
+- extended/medical/dna/moleculardna (molecularDNA-V11-02-02)
+  o Modification of TimeStepModel interface.
+  o Use the physico-chemistry builder.
+  o Fixed bug in DNAGeometryMessenger.
+- extended/medical/radiobiology (radiobiology-V11-02-00)
+  o Updated for changes in accumulables: use new Register() method with
+    shorter name.
+- extended/polarisation/Pol01 (expol01-V11-02-00)
+  o Updated for changes in accumulables: G4VAccumulable::Print() requires
+    'G4PrintOptions options' argument; use new Register() method with shorter
+    name.
+- extended/visualization/vtk (exam-ext-vis-vtk-V11-02-00)
+  o Updated for changes in accumulables: use new Register() method with
+    shorter name.
+
+tests                                            tests-V11-02-07
+-----
+- Updated reference outputs and tools.
+- ctests_integration/test08 (test08-V11-02-00)
+  o Extended for covering new accumulable features.
+- ctests_integration/test18 (test18-V11-02-00)
+  o In Tst18EventAction, changed G4Exception severity from FatalException
+    to JustWarning, because it is a rare but allowed situation when radioactive
+    decay happens out of the time window.
+- ctests_integration/test27 (test27-V11-02-00)
+  o Updated to use G4RunManagerFactory and default Tasking mode.
+- ctests_integration/test400 (test400-V11-02-01)
+  o Updated for changes in accumulables: use new Register() method with
+    shorter name.

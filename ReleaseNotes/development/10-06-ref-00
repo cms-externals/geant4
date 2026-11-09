@@ -1,0 +1,621 @@
+
+                       geant4-10-06-ref-00
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o Updated CMake scripts to use target_XXX usage requirements and migrated
+   use of all external packages to use and refind exported targets, with shim
+   scripts.
+ o Fixed several cases of implicit type conversions.
+ o Reduced memory leaks at destruction of physics processes.
+ o Added simplified parameterisation variant in G4NucleiProperties with not
+   too high mass value, to allow decaying fragments produced by some hadronic
+   models and consisting of only neutrons or protons.
+ o Introducing leading particle biasing.
+ o Added possibility to use sensitive detector from parallel world.
+ o Added flag in G4[Coupled]Transportation codes to optionally silence
+   warning about looping tracks.
+ o Reduced size of data structure and time for initialisation by a factor 2
+   times in coherent elastic hadronic model.
+ o Replaced Chips hadron-nucleon (total and elastic) cross-sections with
+   the Barashenkov-Glauber-Gribov (BGG) cross-sections for ordinary (i.e.
+   non-heavy) hadrons.
+ o Implemented fragmentation functions of heavy (charm and bottom) quarks
+   and diquarks for the QGS string fragmentation.
+ o Added radioactive decay mode with emission of Triton.
+ o Updated to data-sets G4PhotonEvaporation-5.5 and G4RadioactiveDecay-5.4.
+
+---------- Reference-tag 'Release Notes' -----------
+
+
+Summarised, the list of changes is the following:
+
+cmake                                            cmake-V10-05-29
+-----
+- Using target_XXX usage requirements to transport header paths and links.
+  Removed requirement to use complete include_directories chain in Module
+  sources.cmake files. Retain exported "Geant4_INCLUDE_DIR{S}" variables in
+  case clients use Root dictionary generation (which does not understand
+  usage requirements of targets until latest versions). Removed remaining
+  -D flags set via add_definitions, moving to target_compile_definitions.
+- Namespace exported targets with "Geant4::" to enforce use of targets and
+  prevent accidental linkage via "-lG4name" expansion.
+- Migrate use of all external packages to use and refind exported targets,
+  with shim scripts to support CMake versions from 3.8 at build/use time.
+- Store build-time locations of used external packages in an optionally
+  installable CMake script for reuse, if present, by Geant4Config.cmake 
+  in refinding packages.
+- Require MSVC 19.20 (Visual Studio 2019) or newer as minimum required
+  version to build Geant4 on Windows. Needed to support use full C++17
+  Standard. Default C++ Standard with MSVC is now C++17.
+- Removed old genwindef method of generating DLL symbol exports, as
+  minimum cmake version of 3.8 fully supports direct generation via target
+  properties.
+- Removed GEANT4_FORCE_QT4 option, deprecating Qt4 support. Retain fallback
+  to finding Qt4, emitting a CMake warning that use of Qt4 is deprecated.
+- Disabled configuration for Wt UI/Vis driver, as no longer supported.
+- Updated scripts to support the TiMemory find_package COMPONENTS and the
+  INTERFACE library generation.
+- Updated to data-sets G4PhotonEvaporation-5.5 and G4RadioactiveDecay-5.4.
+
+config                                           config-V10-05-08
+------
+- interactivity.gmk: added -DQT_NO_DEPRECATED_WARNINGS to Qt compilation
+  settings, to silence warnings from Qt for use of deprecated features.
+
+analysis                                         analysis-V10-05-13
+--------
+- Updated to g4tools 5.0.5:
+  o Fixed compilation warning from gl2ps showing up on gcc-9.2.
+  o sg/plotter: added functions set_encoding() and set_encoding_none() which
+    allow to disable (unwanted) Paw specific encoding.
+  o Fixed Coverity warnings.
+  See History_tools for the complete list of modifications.
+- In G4PlotManager: disabled Paw encoding; this fixes a problem with
+  unwanted axis labels in Greek.
+- Fixed cases of implicit type conversions from size_t to G4int.
+- Link directly to FreeType and HDF5 imported targets.
+
+digits_hits                                      digits_hits-V10-05-07
+-----------
+- Fixed implicit type conversions from size_t to G4int in digits and hits
+  classes (collections, vectors, maps).
+- Pass G4String by const reference in digits and hist collections base classes.
+
+event                                            event-V10-05-08
+-----
+- Fixed implicit type conversions from size_t to G4int in G4TrackStack
+  and G4TrajectoryContainer. Fixed typos and some code cleanup.
+- Make -DG4_USESMARTSTACK a public compile definition of G4event
+  to propagate it directly to CMake clients.
+
+externals                                        externals-V10-05-05
+---------
+- CLHEP: Fixed warnings for cases of implicit type conversions in
+  Rand*Ziggurat classes.
+
+geometry/magneticfield                           field-V10-05-17
+----------------------
+- Added method and attribute to G4VIntegrationDriver DoesReIntegrate()
+  to inform whether the driver recomputes segment when AccurateAdvance()
+  is called.
+
+geometry/management                              geommng-V10-05-15
+-------------------
+- G4LogicalVolume: Added method ChangeDaughtersType() to change the
+  volume type for CharacterisedDaughters(). It enables the user to turn
+  over responsibility for navigation in that volume to an external navigator.
+  This is for use when one or more daughter volumes are created as an
+  existing physical volume type (typically G4PVPlacement). It can also be used
+  to enable to create a (logical) volume which containts a mixture of existing
+  Geant4 physical volume types and user-created 'external' physical volume
+  type (with type code 'kExternal'): Geant4 types must be created first, and
+  then ChangeDaughtersType() must be called to change the mother's attribute
+  to 'kExternal'.
+  Note: only one type of sub-navigator will be called to find a track's
+  intersection (or the location of a point) in all daughters of one mother
+  volume. The sub-navigator chosen will correspond to the volume type assigned.
+- Fixed cases of implicit type conversions from size_t to G4int.
+  
+geometry/navigation                              geomnav-V10-05-19
+-------------------
+- G4TransportationManager: enable worker threads to clone G4Navigator if needed.
+  Keep first navigator created; by convention that will be the navigator object
+  of the master thread (or the only thread). Other (worker) threads will clone
+  the first navigator, if it has an external sub-navigator registered. This
+  ensures that they clone the ability to navigate in 'external' volume
+  descriptions.
+- G4VExternalNavigation: added new method for relocation within volume.
+  G4Navigator will call it in LocateGlobalPointWithinVolume().
+- G4MultiLevelLocator: avoid re-estimating endpoint if driver does not
+  re-integrate when AccurateAdvance() is called.
+- Added methods to G4PropagatorInField to get/set a parameter that controls
+  after how many integration substeps (in one physics step) the increase of
+  the chord distance is trigerred.
+- G4PhantomParameterisation: reverted precision checks as in version 10.2.p02.
+  Addressing problem report #2192.
+- Fixed cases of implicit type conversions from size_t to G4int.
+
+geometry/solids/Boolean                          geom-bool-V10-05-04
+-----------------------
+- Fixed cases of implicit type conversions from size_t to G4int.
+
+geometry/solids/specific                         geom-specific-V10-05-21
+------------------------
+- G4TesselatedSolid: fixed case of potentially uninitialized array.
+
+geometry/volumes                                 geomvol-V10-05-10
+----------------
+- Fixed cases of implicit type conversions from size_t to G4int.
+
+global                                           global-V10-05-26
+------
+- G4SimplexDownhill: fixed minor Coverity defect.
+- Fixed implicit type conversions in G4String internal methods.
+- Updated settings for TiMemory.
+- Use move semantics in G4ConsumeParameters, eliminating warning about
+  unnecessary copy for some compilers.
+- Updated date and tag-ID for geant4-10-06-ref-00 and release 10.6.
+
+graphics_reps                                    greps-V10-05-06
+-------------
+- HepPolyhedron: Added move constructor and move assignment operator.
+- BooleanProcessor::createPolyhedron(): Use return std::move().
+
+intercoms                                        intercoms-V10-05-09
+---------
+- Fixed cases of implicit type conversions from size_t to G4int.
+
+interfaces                                       interfaces-V10-05-07
+----------
+- Fixed compilation warnings for use of deprecated features reported when
+  using Qt versions greater than 5.13.
+- Only use imported targets for X11, Xm and Wt.
+- Removed inclusion of QT_USE_FILE from CMake scripts. All usage is now
+  through the qtX_ macros and imported targets.
+- Added TiMemory support; G4UIExective will grab argc, argv and customize
+  the output directory for TiMemory.
+
+materials                                        materials-V10-05-11
+---------
+- G4UCNMicroRoughnessHelper: corrected out-of-date URL for thesis and
+  paper reference.
+- Fixed cases of implicit type conversions from size_t to G4int.
+
+parameterisations/gflash                         gflash-V10-05-01
+------------------------
+- Added possibility to use sensitive detector from parallel world.
+
+particles                                        particles-V10-05-10
+---------
+- G4NucleiProperties: added simplified parameterisation variant with not too
+  high mass value, to allow decaying fragments produced by some hadronic models
+  and consisting of only neutrons or protons; also light ion masses computation
+  is more thread safe after change of the order of mass computation.
+
+persistency/gdml                                 gdml-V10-05-09
+----------------
+- G4GDMLRead: fix to avoid double-definition of system units.
+
+physics_lists/constructors/gamma_lepto_nuclear   phys-ctor-glnuclear-V10-05-03
+----------------------------------------------
+- G4EmExtraPhysics: simplified and clean-up model creation; do not use extra
+  builder classes; used std::getenv; use transition from the cascade to string
+  model 3 - 6 GeV, according to values in G4HadronicParameters class (before
+  there were 3 - 3.5 GeV transition); reducing memory leak at destruction.
+- G4BertiniElectroNuclearBuilder: use std::getenv() for thread safety.
+
+physics_lists/constructors/hadron_inelastic      phys-ctor-hinelastic-V10-05-03
+-------------------------------------------
+- Updated README.
+
+physics_lists/constructors/limiters              phys-ctor-limiters-V10-05-00
+-----------------------------------
+- Fixed cases of implicit type conversions from size_t to G4int.
+
+processes/biasing                                procbiasing-V10-05-01
+-----------------
+- Fixed cases of implicit type conversions from size_t to G4int.
+- generic (proc-biasgen-V10-05-00)
+  o Introducing leading particle biasing.
+  o G4BOptnChangeCrossSection: added argument to SetBiasedCrossSection()
+    method, as option to update the interaction length when setting a new
+    cross-section value.
+
+processes/cuts                                      procuts-V10-05-02
+--------------
+- Fixed cases of implicit type conversions from size_t to G4int.
+
+processes/decay                                     decay-V10-05-01
+---------------
+- G4Decay: extended printout for G4Exception DECAY101 and DECAY102.
+
+processes/electromagnetic/dna                    emdna-V10-05-11
+-----------------------------
+- Fixed case of division by zero of diffusionCoefficient in 
+  G4DNABrownianTransportation::AlongStepGetPhysicalInteractionLength()
+  for the case of static molecules.
+- Fixed cases of implicit type conversions from size_t to G4int.
+
+processes/electromagnetic/highenergy             emhighenergy-V10-05-06
+------------------------------------
+- G4GammaConversionToMuons: proper initialisation of the 5D model cuts size.
+
+processes/electromagnetic/lowenergy              emlowen-V10-05-02
+-----------------------------------
+- Use std::getenv() for thread safety.
+
+processes/electromagnetic/standard               emstand-V10-05-26
+----------------------------------
+- G4UrbanMscModel: fixed problem introduced previously and affecting Opt3
+  EM physics.
+- G4ESTARStopping, G4GSMottCorrection, G4GSPWACorrections,
+  G4GoudsmitSaundersonTable, G4SBBremTable, G4SeltzerBergerModel: minor
+  cleanup; use of std::getenv() and use of G4Element::GetZasInt().
+- G4SeltzerBergerModel, G4ICRU49NuclearStoppingModel: safer initialisation
+  in MT mode.
+
+processes/electromagnetic/xrays                  xrays-V10-05-02
+-------------------------------
+- G4SynchrotronRadiation, G4VTransitionRadiation: fixed de-registration.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V10-05-31)
+  o G4HadronNucleonXsc: set protection against division by zero by
+    introducing a minimum energy cutoff (100 keV), below which the
+    cross-section is considered constant.
+  o Use std::getenv() for thread safety.
+  o Remove "using namespace std" and "using namespace CLHEP" from
+    G4NeutronElectronElXsc header.
+- management (hadr-man-V10-05-07)
+  o G4HadronicProcess: in the method CheckResult(), a short-lived secondary
+    particle is allowed to have a dynamic mass which differs from the PDG mass
+    by less than three times the particle's width.
+- models/binary_cascade (had-binary-V10-05-01)
+  o G4GeneratorPrecompoundInterface: minor fix.
+- models/cascade (hadr-casc-V10-05-02)
+  o G4LightTargetCollider: fixed crash when gamma energy below deuteron
+    disintegration threshold and improved exception handling.
+- models/coherent_elastic (hadr-cohe-V10-05-10)
+  o G4ElasticHadrNucleusHE: reduced size of data structure and time for
+    initialisation by a factor 2 times; general code clean-up; addition
+    of protections.
+  o Removed "using namespace std" and "using namespace CLHEP" from
+    G4NeutronElectronElModel header.
+  o G4HadronElastic: changed warning printout for resampling, warning
+    protected by G4VERBOSE. Added limit on number of warning printouts.
+    Addressing problem report #2204.
+  o G4HadronElastic: fix for Coverity warning for unused method.
+- models/de_excitation (hadr-deex-V10-05-21)
+  o G4PhotonEvaporation: access G4NuclearPolarizationStore only if correlated
+    gamma decay is enabled.
+  o G4ExcitationHandler: fixed problem seen in medical test of fragmentation;
+    provide full de-excitation of excited light fragments.
+  o G4PhotonEvaporation: fixed gamma de-excitation when initial excitation
+    energy is between ground and 1st levels.
+  o G4NuclearLevelData, G4LevelManager, G4GEMChannel, G4GEMProbability,
+    G4GEMProbabilityVI, G4EvaporationChannel, G4EvaporationProbability:
+    use consistently pairing correction from G4NuclearLevelData and
+    verbosity level for debugging.
+  o G4FermiBreakUpVI: use consistently verbosity from de-excitation
+     module; simplified decay kinematics.
+  o G4VEmissionProbability, G4Evaporation, G4UnstableFragmentBreakUp:
+    consistently use decay channels in all components of the de-excitation
+    module.
+  o G4CompetitiveFission, G4FissionBarrier, G4FissionParameters: added
+    numerical protections; cleanup C++11 keywords; move headers to
+    source code.
+- models/lepto_nuclear (hadr-lepnuc-V10-05-05)
+  o G4NuMuNucleusCcModel: implemented off-shell kinematics; fixes in
+    ApplyYourself(), SampleLVkr() and CoherenPion(); new method
+    RecoilDeexcitation() to de-excite recoin nucleus.
+  o G4NuMuNucleusCcModel, G4NuMuNucleusNcModel, G4NeutrinoNucleusModel,
+    G4NeutrinoElectronCcModel: implemented s-channel in nu-e-cc model.
+  o Removed "using namespace std" and "using namespace CLHEP" statements
+    from headers.
+  o Fixes for Coverity warnings and cleanup.
+- models/management (hadr-modman-V10-05-02)
+  o G4VHighEnergyGenerator: use inheritance from G4HadronicInteraction;
+    reducing memory leak at exit.
+- models/particle_hp (hadr-hpp-V10-05-09)
+  o Fixes for crashes detected only when using QGSP_BIC_AllHP physics-list:
+    in method G4ParticleHPContAngularPar::Sample(), set protection against
+    unphysical interpolation result; in the method
+    G4ParticleHPKallbachMannSyst::A(), added the possibility of tritium and
+    He3 projectiles, taking in this case (arbitrarily) an intermediate value
+    between the two already considered cases, proton-neutron-deuteron and alpha.
+- models/parton_string/diffraction (hadr-string-diff-V10-05-10)
+  o G4FTFParameters: diffraction minimal mass is now correctly set in GeV
+    (instead of MeV), for hadron projectiles different from pions, kaons,
+    nucleons and anti-nucleons, in the method InitForInteraction().
+    In GetMinMass(), fixed a bug in the computation of the quark type (which
+    affects the estimated minimal string mass produced in diffraction); added
+    also protections to make sure that the quark type is always one of the
+    five considered (u, d, s, c, b).
+    Absolute (rather than signed) charge for antibaryon is now correctly
+    taken in the method InitForInteraction().
+    Fixed creation/destruction/use of Glauber-Gribov cross-section and
+    fixed a memory leak. Added protection for possible division by zero due
+    to zero elastic x-section.
+    Replaced Chips hadron-nucleon (total and elastic) cross-sections with
+    the Barashenkov-Glauber-Gribov (BGG) cross-sections for ordinary (i.e.
+    non-heavy) hadrons (for heavy hadrons, only BGG cross-section are
+    available and used).
+    Set parameters of a string kink in the constructor (instead of setting
+    it at each interaction, causing memory leaks). Notice that string kinks
+    are currently switched off, so this fix does not affect any physics result.
+  o G4ElasticHNScattering: added a few protections to avoid rare cases of
+    floating point exceptions.
+- models/parton_string/hadronization (had-hadronization-V10-05-04)
+  o Correction in the Lund string fragmentation regarding the search for
+    final-state in the last string decay (fixes recently observed bad hadronic
+    showers and slow CPU performance). Some code cleanup.
+  o Switch off the probability of charm and bottom hadron production in both
+    Lund and QGS string fragmentations (temporary protection, to be removed
+    after release 10.6).
+  o Implemented fragmentation functions of heavy (charm and bottom) quarks
+    and diquarks for the QGS string fragmentation, based on a review of the
+    available theoretical papers.
+  o G4LundStringFragmentation, G4QGSMFragmentation: in SplitEandP(), added a
+    check that a string can be converted to an existing hadron (else a null
+    momentum is returned).
+  o The same set of mixing meson parameters (for both scalar and vector
+    mesons), as defined in the base class G4VLongitudinalStringDecay, are
+    now used on both FTF and QGS.
+  o G4VLongitudinalStringDecay: added forgotten initialization of c-cbar and
+    b-bbar pair production for kinks or gluons. 
+  o G4ExcitedStringDecay: added protection in the sampling of resonance masses
+    against values below threshold.
+- models/parton_string/management (hadr-partonstring-mgt-V10-05-02)
+  o G4VPartonStringModel: re-sample the string formation in the case that
+    the (either target or projectile) nuclear residual is an unphysical
+    combination of nucleons (i.e. more than three protons with no neutron,
+    or more than one neutron with no proton).
+    Fixed bug (use of "=" instead of "==" in if-statement, found by Coverity)
+    in the Scatter() method.
+  o Deleted unused classes G4EventGenerator, G4InteractionCode, G4VertexCode. 
+- models/parton_string/qgsm (hadr-qgsm-V10-05-02)
+  o G4Reggeons: added extension for charmed and bottom hadrons following ideas
+    in Glauber-Gribov heavy hadron - nucleon cross-sections.
+  o Deleted unused classes G4VAnnihilationCrossSection, G4QGSMParameters,
+    G4AnnihilationCrossSection, G4GammaAnnCrossSection, G4ASCCrossSection.
+- models/radioactive_decay (radioactive_decay-V10-05-09)
+  o Added passing of type of sub-models to secondary particles generated in
+    G4RadioctiveDecay and G4RadioctiveDecayBase.
+  o Added radioactive decay mode with emission of Triton, in G4RadioctiveDecay,
+    G4RadioctiveDecayBase, and G4Radioactivation.
+- models/util (hadr-mod-util-V10-05-04)
+  o G4GeneralPhaseSpaceDecay: corrected message when throwing an exception
+    due to center-of-mass energy below threshold.
+- stopping (hadr-stopping-V10-05-02)
+  o Fixed Coverity defect in G4MuonMinusAtomicCapture.
+
+processes/management                             procman-V10-05-05
+--------------------
+- Made G4ProcessTable a thread-local singleton.
+- Fixed cases of implicit type conversions from size_t to G4int.
+- Some code cleanup in G4ProcessManager.
+
+processes/parameterisation                       param-V10-05-00
+--------------------------
+- Register G4FastSimulationManagerProcess with highest ordering in
+  G4FastSimulationManagerHelper to ensure it is the only process invoked
+  for a given step (ExclusivelyForced) and no other StronglyForced processes
+  will be considered.
+
+processes/transportation                         transport-V10-05-02
+------------------------
+- In G4Transportation and G4CoupledTransportation, avoid calling user field
+  manager's ConfigureForTrack() method, except if particle is charged, or
+  forces from magnetic moment or gravity are enabled.
+  Introduced a new common 'flag' in G4[Coupled]Transportation codes
+  to enable gravity fields. The static method EnableGravity() in
+  G4Transportation must be called if the application uses gravity fields:
+- Added flag in G4[Coupled]Transportation codes to optionally silence warning
+  about looping tracks.
+
+readout                                          readout-V10-05-01
+-------
+- Fixed cases of implicit type conversions from size_t to G4int.
+
+run                                              run-V10-05-10
+---
+- Made G4PhysicsListHelper a thread local singleton
+- Fixed cases of implicit type conversions from size_t to G4int.
+- Fixed typo in G4PhysicsListHelper.
+- Updated scripts for TiMemory. Removed InitializeTiMemory() from G4RunManager.
+
+track                                            track-V10-05-01
+-----
+- Fixed implicit type conversions from size_t to G4int.
+
+tracking                                         tracking-V10-05-02
+--------
+- Fixed implicit type conversions from size_t to G4int.
+
+visualization                                    vis-V10-05-26
+-------------
+- modeling (modeling-V10-05-11):
+  o Fixed cases of implicit type conversions from size_t to G4int.
+- externals/gl2ps (visexternalgl2ps-V10-05-03):
+  o Only link to imported targets for OpenGL; explicitly link to global
+    modules to use/propagate usage requirements.
+- OpenGL (OpenGL-V10-05-18):
+  o Extended glFlush scaling to all circumstances.
+  o Refine DisplayListLimit command guidance and output.
+  o Only link to imported targets for Motif and X11
+    Removed inclusion of QT_USE_FILE from CMake scripts.
+    All usage is now through the qtX_ macros and imported targets
+    Only use Wt through imported targets.
+  o Fixed compilation warnings for use of deprecated features reported when
+    using Qt versions greater than 5.13.
+- OpenInventor (openinventor-V10-05-07):
+  o Removed inclusion of QT_USE_FILE from CMake scripts.
+    All usage is now through the qtX_ macros and imported targets.
+- RayTracer (raytracer-V10-05-01):
+  o Fixed cases of implicit type conversions from size_t to G4int.
+  o Link to X11 imported targets when building X11 driver.
+
+environments                                     envs-V10-05-00
+------------
+- G4Py:
+  o Updated interfaces for release 10.6.
+  o g4pym boost_python library name can be specified in cmake.
+    Addressing problem report #2059.
+
+data sets:
+---------
+- G4PhotonEvaporation-5.5:
+  o Fixed z85.a217 file (217At).
+- G4RadioactiveDecay-5.4:
+  o Updated z2.a8, z3.a8, and z4.a8 and add z4.a9 for 9Li and 8He decays. 
+  o Corrected capture data for I-1125.
+  o Updated Er-169(z68.a169) according to DDEP.
+  o Added firstForbidden flags to Tb-161 (z65.a161).
+  o Added M-shell and N-shell capture to Sc-44 (z21.a44).
+
+examples                                         examples-V10-06-00
+--------
+- Updated documentation and reference outputs.
+- advanced/air_shower (air_shower-V10-05-01)
+  o Minor code cleanup.
+- advanced/composite_calorimeter (ccal-V10-05-01)
+  o Fixed cases of type conversions from size_t to G4int in CCaloSD.
+  o Some code cleanup.
+- advanced/hadrontherapy (hadrontherapy-V10-05-02)
+  o Removed "using namespace std" statement from header files
+    and make use of endl consistent with g4cout or std::cout.
+- advanced/human_phantom (human_phantom-V10-05-01)
+  o Fix in geometry of the MIRD phantom.
+- advanced/nanobeam (nanobeam-V10-05-01)
+- advanced/purging_magnet (purmag-V10-05-00)
+  o Removed "using namespace std" statement from header files.
+- advanced/STCyclotron (STCyclotron-V10-05-01)
+  o New example modelling a solid target of a cyclotron to study the
+    production of the radioisotope of interest for proton irradiation.
+- advanced/underground_physics (DMX-V10-05-03)
+  o DMXPhysicsList: clean-up both EM, hadronic and radioactive decay
+- basic/B1 (exampleB1-V10-05-00)
+- basic/B2 (exampleB2-V10-05-00)
+- basic/B3 (exampleB3-V10-05-02)
+- basic/B4 (exampleB4-V10-05-04)
+  o Use default MixMax random engine.
+- basic/B5 (exampleB5-V10-05-01)
+  o Fixed cases of type conversions from size_t to G4int in B5HodoscopeSD.
+- extended/analysis/AnaEx03 (AnaEx03-V10-05-00)
+- extended/analysis/B1Con (B1Con-V10-05-00)
+  o Fixed Doxygen documentation.
+- extended/biasing/GB07 (biasingGB07-V10-05-00)
+  o New example illustrating how to use the leading particle biasing option.
+- extended/biasing/ReverseMC01 (ReverseMC01-V10-05-01)
+  o Fixed cases of type conversions from size_t to G4int.
+- extended/electromagnetic/TestEm2 (testem2-V10-05-01)
+  o Applied coding guidelines. Fixed Doxygen documentation.
+- extended/electromagnetic/TestEm3 (testem3-V10-05-00)
+  o Fixed Doxygen documentation.
+- extended/electromagnetic/TestEm7 (testem7-V10-05-01)
+  o Fixed compilation on Windows for unused exception object
+    in G4NativeScreenedCoulombCrossSection::LoadData().
+  o Fixed Doxygen documentation.
+- extended/electromagnetic/TestEm13 (testem13-V10-05-01)
+- extended/electromagnetic/TestEm14 (testem14-V10-05-01)
+  o Fixed Doxygen documentation.
+- extended/electromagnetic/TestEm15 (testem15-V10-05-01)
+  o SteppingAction, PhysList5DStandard: added G4GammaConversionToMuons process.
+- extended/electromagnetic/TestEm16 (testem16-V10-05-02)
+  o Fixed Doxygen documentation.
+- extended/electromagnetic/TestEm17 (testem17-V10-05-02)
+  o HistoManager: fixed histo title and index; fixed macro files.
+- extended/electromagnetic/TestEm18 (testem18-V10-05-00)
+  o Fixed Doxygen documentation.
+- extended/exoticphysics/ucn (ExUCN-V10-05-00)
+  o Enabled use of Gravity in physics list.
+- extended/exoticphysics/monopole (monopole-V10-05-02)
+- extended/field/field01 (fieldex01-V10-05-00)
+  o Fixed Doxygen documentation.
+- extended/field/field04 (fieldex04-V10-05-00)
+  o Removed useless double-definition of copy-ctr for F04StepMax and deleted.
+- extended/field/field06 (fieldex06-V10-05-01)
+  o Adjusted to changes in G4Transportation (need to inform of use of gravity)
+    and corrected creation of G4ChordFinder.
+- extended/hadronic (exHadronic-V10-05-01)
+- extended/hadronic/Hadr08 (exHadr08-V10-05-01)
+  o New example showing how to use the "generic biasing" feature for setting
+    different hadronic physics models according to detector regions.
+- extended/medical/DICOM (DICOM-V10-05-03)
+  o Correct DicomHandler singleton for use on Windows.
+  o Fixed cases of implicit type conversions from size_t to G4int.
+  o Some minor code cleanup.
+- extended/medical/DICOM2 (DICOM2-V10-05-04)
+  o Use updated DicomHandler singleton to fix crash on Windows.
+  o Fixed cases of implicit type conversions from size_t to G4int.
+  o Fixed Doxygen documentation.
+- extended/medical/dna (exdna-V10-05-03)
+  o Updated README for newly added examples
+- extended/medical/dnadamage1 (dnadamage1-V10-05-02)
+  o Added check for no products reactions.
+- extended/medical/dna/icsd (exicsd-V10-05-01)
+  o Reduced event statistics in icsd.mac input macro, in order to
+    reduce run-time in testing.
+- extended/medical/dna/mfp (mfp-V10-05-00)
+- extended/medical/dna/microprox (microprox-V10-05-01)
+- extended/medical/dna/neuron (neuron-V10-05-00)
+- extended/medical/dna/slowing (slowing-V10-05-00)
+- extended/medical/dna/splitting (splitting-V10-05-00)
+- extended/medical/dna/spower (spower-V10-05-00)
+- extended/medical/dna/svalue (svalue-V10-05-00)
+  o Fixed Doxygen documentation.
+- extended/medical/electroscattering (electroscattering-V10-05-00)
+  o Fixed compilation warning on Windows for unused out_of_range
+    exception object in Run::Merge().
+- extended/optical/LXe (LXe-V10-05-05)
+- extended/optical/OpNovice2 (OpNovice2-V10-05-02)
+- extended/parallel/TopC/ParN02 (ParN02-V10-05-00)
+  o Formatted documentation.
+- extended/parallel/ThreadsafeScorers (ThreadsafeScorers-V10-05-00)
+  o Fixed compilation warning on Windows for calling TIMEMORY_AUTO_TIMER
+    with no arguments in TSPrimaryGeneratorAction::GeneratePrimaries().
+- extended/parameterisations (exParameterisations-V10-05-01)
+  o Formatted documentation.
+- extended/parameterisations/gflash (exgflash-V10-05-02)
+  o Extend GFlash examples set by moving existing 'gflash' example to gflash1.
+  o Added example gflash2 with envelope in parallel world.
+  o Added example gflash3 with SD in parallel world.
+  o Added example gflasha with histogramming of shower profiles.
+    Allows comparing shower profiles from fast simulation with full simulation.
+- extended/parameterisations/Par02 (expar02-V10-05-00)
+- extended/persistency/gdml/G01 (G01-V10-05-06)
+- extended/persistency/gdml/G02 (G02-V10-05-00)
+- extended/persistency/gdml/G03 (G03-V10-05-00)
+- extended/persistency/gdml/G04 (G04-V10-05-00)
+- extended/persistency/P01 (exampleP01-V10-05-01)
+- extended/persistency/P02 (exampleP02-V10-05-00)
+- extended/physicslists/extensibleFactory (extFactory-V10-05-00)
+- extended/physicslists/factory (factory-V10-05-00)
+- extended/physicslists/genericPL (genericPL-V10-05-01)
+  o Fixed Doxygen documentation.
+- extended/radioactivedecay/rdecay01 (rdecay01-V10-05-06)
+  o Formatted documentation.
+
+tests                                            tests-V10-06-00
+-----
+- Updated reference outputs and tools.
+- tests/test03 (test03-V10-05-02)
+  o Append file name with Rw/CRw/Cw extension only with Root and MT mode;
+    this fixes a failure in Hdf5 read test.
+  o Fixed cases of implicit type conversions from size_t to G4int.
+- tests/test08 (test08-V10-05-00)
+  o Fixed SetPassed() method.
+- tests/test33 (test33-V10-05-01)
+  o Tst33PhysicsList: added explicit header files for Chips cross sections,
+    to avoid compilation errors.
+- tests/test46 (test46-V10-05-04)
+  o Fixed visualization.
+- tests/test70 (test70-V10-05-01)
+  o Remove "using namespace std" and "using namespace CLHEP" statements
+    from header files.
+  o Removed use of obsolete G4UI/VIS_USE macros.
+- tests/test201 (test201-V10-05-00)
+  o Removed obsolete G4UI/VIS_USE macros.

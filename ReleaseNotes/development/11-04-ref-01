@@ -1,0 +1,221 @@
+
+                       geant4-11-04-ref-01
+                       ===================
+
+Major development/fixes included since the last development tag are:
+
+ o General modernization of code in g4tools externals.
+ o Introduced UI command "/run/undertakeOptimisation" to force geometry
+   optimization and added to G4RunMessenger.
+ o Updated header guards to style/format according to coding guidelines
+   in most modules.
+ 
+---------- Reference-tag 'Release Notes' -----------
+
+(o)  Fixes included in patch release 11.4.1
+
+Summarised, the list of changes is the following:
+
+analysis                                         analysis-V11-04-01
+--------
+- Removed redundant G4TH*ToolsManager.hh, G4TP*ToolsManager.hh header files
+  with template specialization declarations; the P-files contained erroneous
+  header guards which hid an obsolete declaration in P2-file.
+- Updated header guards to style/format according to coding guidelines.
+
+digits_hits                                      digits_hits-V11-04-00
+-----------
+error_propagation                                error-propagation-V11-04-00
+-----------------
+event                                            event-V11-04-00
+-----
+- Updated header guards to style/format according to coding guidelines.
+
+externals
+---------
+- g4tools (g4tools-V11-04-02)
+  o General modernization of classes in tools/lina (linear algebra):
+    removed unused classes, member functions; removed deprecated/duplicated
+    member functions, updated client code to use single form where needed;
+    refactored box/line/plane/vec/quat/mat into single forms; refactored
+    colorf to use composition; preliminary refactor of matrix classes.
+  o Modernised, simplified and optimised string-related functions.
+  o Maintenance fixes highlighted by implementing unit tests for string
+    related functionality.
+
+geometry                                         geometry-V11-04-00
+--------
+- Updated header guards to style/format according to coding guidelines.
+
+global                                           global-V11-04-02
+------
+- G4VSIntegration: fixed reported Coverity defect.                          (o)
+- Updated header guards to style/format according to coding guidelines.
+- Updated date and tag-ID for geant4-11-04-ref-01.
+
+graphics_reps                                    greps-V11-04-00
+-------------
+intercoms                                        intercoms-V11-04-00
+---------
+- Updated header guards to style/format according to coding guidelines.
+
+interfaces                                       interfaces-V11-04-00
+----------
+- G4UIQt: Reimplemented the command search feature for the Help tree.       (o)
+  Addressing problem report #2683.
+- Updated header guards to style/format according to coding guidelines.
+
+materials                                        materials-V11-04-00
+---------
+parameterisations                                gpara-V11-04-00
+-----------------
+- Updated header guards to style/format according to coding guidelines.
+
+particles                                        particles-V11-04-01
+---------
+- Fixed energy conservation in G4MuonDecayChannel.                          (o)
+  Addressing problem report #2678.
+- Updated header guards to style/format according to coding guidelines.
+
+persistency                                      persistency-V11-04-00
+-----------
+- Updated header guards to style/format according to coding guidelines.
+
+physics_lists                                    physics-lists-V11-04-00
+-------------
+- Updated header guards to style/format according to coding guidelines.
+- constructors/electromagnetic (phys-ctor-em-V11-04-03)
+  o G4ChemMIDissociationChannels: new class to set dissociative decay
+    channels for multiple ionised water ions.
+  o G4ChemDissociationChannels_option1: updated ConstructDissociationChannels()
+    to configure dissociation channels for multiple ionisation processes.
+  o G4EmDNABuilder: added functions FindOrBuild*Ionisation() for setting
+    multiple ionisation for proton, alpha++ and carbon.
+  o Added verbose for PhyChem processes.
+  o In G4GeneralGammaProcess, fix to address reported Coverity defect and
+    minor code clean-up.
+- constructors/hadron_elastic (phys-ctor-helastic-V11-04-00)
+  o G4ChargeExchangePhysics, G4ChargeExchangemessenger: added two different (o)
+    biasing factors for pions and kaons (request by NA64).
+- constructors/hadron_inelastic (phys-ctor-hinelastic-V11-04-01)
+  o In G4HadronInelasticQBBC, return back cross-section                     (o)
+    G4ParticleInelasticXS for protons as it was in release 11.3.
+  o Fixed segmentation fault occurring on Linux/gcc15/Debug/CXX23, caused   (o)
+    by in-scope destruction of G4NeutronPHPBuilder instance used by
+    G4NeutronBuilder in G4HadronPhysicsShielding.
+- lists (phys-list-V11-04-00)
+  o G4PhysListFactory: trivial fix for reported Coverity defect.            (o)
+
+processes                                        processes-V11-04-00
+---------
+- Updated header guards to style/format according to coding guidelines;
+  currently escluded modules: abla, inclxx, lend.
+
+processes/electromagnetic
+-------------------------
+- dna (emdna-V11-04-01)
+  o Updated G4DNADoubleIonisationModel, G4DNATripleIonisationModel and
+    G4DNAQuadrupleIonisationModel to enable the usage of stationary mode
+    through G4EmParameters.
+  o Added verbose for PhyChem processes.
+- lowenergy (emlowen-V11-04-00)
+  o G4LivermorePolarizedComptonModel: improved/corrected references to      (o)
+    quantum entanglement papers.
+- utils (emutils-V11-04-01)
+  o G4EmParameters, G4EmLowEParameters: added member functions to
+    enable/disable the usage of multiple ionisation for DNA physics.
+    Added corresponding command in G4EmLowEParametersMessenger.
+  o G4EmCalculator: fixed reported Coverity defect by adding a check on energy.
+
+processes/hadronic
+------------------
+- cross_sections (hadr-cross-V11-04-02)
+  o G4ChargeExchangeXS: added two different biasing factors for pions and   (o)
+    kaons (requested by NA64). Removed debug printout and fixed reported
+    Coverity defect.
+- models/binary_cascade (had-binary-V11-04-00)
+  o G4GeneratorPrecompoundInterface: added G4HadronicException header.      (o)
+- models/cascade (hadr-casc-V11-04-00)
+  o Directly use std::cbrt(double) in G4InuclSpecialFunctions, as now       (o)
+    standard and available in <cmath>, replacing old ad-hoc implementation.
+    Minor code formatting.
+- models/coherent_elastic (hadr-cohe-V11-04-01)
+  o G4ChargeExchange: fixed bug in sampling of scattering angle for kaons.  (o)
+  o G4ChargeExchange, G4HadronElastic, G4LMsdGenerator: minor optimisation. (o)
+- models/de_excitation (hadr-deex-V11-04-00)
+  o G4UnstableFragmentBreakUp: reorganised class for sampling of decay of
+    unstable fragments, which do no have decay channels due to Coulomb barrier.
+    Updated model may be used for decay of fragments with high excitation. 
+  o G4Evaporation: updated usage of G4UnstableFragmentBreakUp.
+- models/inclxx (hadr-inclxx-V11-04-00)
+  o Fixed reported Coverity defects for use of std::move() in G4INCLCascade (o)
+    and G4INCLNbarAtrestEntryChannel. Use G4 types consistently.
+- models/particle_hp (hadr-hpp-V11-04-00)
+  o G4ParticleHPNBodyPhaseSpace, G4ParticleHPInelasticCompFS: added         (o)
+    G4HadronicException header.
+- models/parton_string/management (hadr-partonstring-mgt-V11-04-00)
+  o G4VSplitableHadron: added G4HadronicException header.                   (o)
+- models/parton_string/qgsm (hadr-qgsm-V11-04-00)
+  o G4GammaParticipants, G4QGSParticipants, G4QGSMSplitableHadron: added    (o)
+    G4HadronicException header.
+- models/theo_high_energy (had-theo-HE-V11-04-00)
+  o G4TheoFSGenerator: added G4HadronicException header.                    (o)
+- stopping (hadr-stopping-V11-04-00)
+  o G4HadronStoppingProcess, G4MuonicAtomDecay: added G4HadronicException   (o)
+    header.
+- util (hadr-util-V11-04-01)
+  o G4ReactionProduct, G4ReactionProductVector: fixed reported Coverity defect;
+    added move operator; use std::size; use the same format for all inline
+    methods; removed unused header G4HadronicException.hh; use 'default'
+    keyword.
+  o G4DecayStrongResonances: simplified code and some clean-up.
+  o G4HadFinalState: use std::size_t; minor code formatting.
+
+readout                                          readout-V11-04-00
+-------
+- Updated header guards to style/format according to coding guidelines.
+
+run                                              run-V11-04-02
+---
+- Introduced UI command "/run/undertakeOptimisation" to force geometry      (o)
+  optimization and added to G4RunMessenger.
+- Re-enable automatic instantiation of G4MaterialScanner in G4RunManager.   (o)
+- Updated header guards to style/format according to coding guidelines.
+
+track                                            track-V11-04-00
+-----
+tracking                                         tracking-V11-04-00
+--------
+- Updated header guards to style/format according to coding guidelines.
+
+visualization                                    vis-V11-04-00
+-------------
+- Updated header guards to style/format according to coding guidelines.
+- management (visman-V11-04-01)
+  o G4VisManager: improved end of run printing.
+  o Added clang-format protection for carefully crafted code in G4VisManager,
+    G4VSceneHandler, G4ViewParameters.
+- OpenGL (opengl-V11-04-00)
+  o In G4OpenGLQtViewer, fix in G4wheelEvent() for Qt version < 5.14.       (o)
+    Addressing problem report #2688. 
+- ToolsSG (vis_toolssg-V11-04-00)
+  o G4ToolsSGSceneHandler: in AddPrimitive(..), fixed position of daughter  (o)
+    of cloud-represented volumes. Addressing problem report #2691.
+
+examples                                         examples-V11-04-01
+--------
+- Updated documentation and reference outputs.
+- extended/medical/dna/chem6 (chem6-V11-04-01)
+  o Added verbose for PhyChem processes.
+  o Fixed energy unit for LET(100).                                         (o)
+  o Cleanup implementation in main(): use default random engine MixMax and  (o)
+    use auto whenever appropriate.
+  o Set 1 as number of threads in beam.in to clear run-time warnings and    (o)
+    fix Windows crash on exit.
+- extended/medical/dna/dnadamage2 (dnadamage2-V11-04-00)
+  o Cleanup implementation in main(): use default random engine MixMax and  (o)
+    use auto whenever appropriate.
+
+tests                                            tests-V11-04-01
+-----
+- Updated reference outputs and tools.

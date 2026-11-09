@@ -1,0 +1,30 @@
+// Copyright (C) 2010, Guy Barrand. All rights reserved.
+// See the file tools.license for terms.
+
+#ifndef tools_wroot_ibo
+#define tools_wroot_ibo
+
+#include <string>
+
+namespace tools
+{
+namespace wroot
+{
+class buffer;
+
+class ibo
+{
+  public:
+
+    virtual ~ibo() {}
+
+  public:
+
+    virtual const std::string& store_cls() const = 0;
+    virtual bool stream(buffer&) const = 0;
+};
+
+}  // namespace wroot
+}  // namespace tools
+
+#endif
